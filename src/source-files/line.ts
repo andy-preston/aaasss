@@ -1,3 +1,5 @@
+import type { Failure } from "../failure.ts";
+
 export type SymbolicOperands =
     readonly [] |
     readonly [string] |
@@ -12,20 +14,6 @@ export type NumericOperands =
     readonly [Numeric, Numeric, Numeric];
 
 export type OperandIndex = 0 | 1 | 2;
-
-export type FailureKind = "js" | "outOfRange" | "mockUp";
-
-export const failure = (
-    operand: OperandIndex | undefined,
-    kind: FailureKind,
-    exceptionMessage: string
-) => ({
-    "operand": operand,
-    "kind": kind,
-    "exceptionMessage": exceptionMessage
-});
-
-type Failure = Readonly<ReturnType<typeof failure>>;
 
 export type Code =
     readonly [] |
