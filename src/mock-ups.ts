@@ -7,13 +7,6 @@ import {
     failure
 } from "./source-files/line.ts";
 
-export const nextLine = function* () {
-    const fileName = "1";
-    const lineNumber = 2;
-    const source = "3";
-    yield rawLine(fileName, lineNumber, source);
-};
-
 export const splitJavascript = (line: RawLine): AssemblyLine => {
     var splitted: string = "";
     try {

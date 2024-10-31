@@ -32,10 +32,14 @@ export type Code =
     readonly [number, number] |
     readonly [number, number, number, number];
 
+export type FileName = string;
+export type LineNumber = number;
+export type SourceCode = string;
+
 const line = (
-    fileName: string,
-    lineNumber: number,
-    source: string
+    fileName: FileName,
+    lineNumber: LineNumber,
+    source: SourceCode
 ) => {
     const failures: Array<Failure> = [];
     const addFailure = (failure: Failure) => {
@@ -64,9 +68,9 @@ type RawProperties = "fileName" | "lineNumber" | "rawSource" |
 export type RawLine = Readonly<Pick<Line, RawProperties>>;
 
 export const rawLine = (
-    fileName: string,
-    lineNumber: number,
-    source: string
+    fileName: FileName,
+    lineNumber: LineNumber,
+    source: SourceCode
 ) => line(fileName, lineNumber, source) as RawLine;
 
 type AssemblyProperties = RawProperties | "assemblySource";
@@ -74,7 +78,7 @@ export type AssemblyLine = Readonly<Pick<Line, AssemblyProperties>>;
 
 export const assemblyLine = (
     line: RawLine,
-    source: string
+    source: SourceCode
 ): AssemblyLine => {
     (line as Line).assemblySource = source;
     return line as AssemblyLine;
