@@ -1,0 +1,20 @@
+{
+    "family": "attiny-x4",
+    "spec": {
+        "SPL": {
+            "value": "5D",
+            "description": "Stack Pointer ----------------------- IO Address 3D"
+        },
+        "SPH": {
+            "value": "5E",
+            "description": "Stack Pointer ----------------------- IO Address 3E"
+        },
+        "ioEnd":         { "value": "3F"   },
+        "eepromEnd":     { "value": "00FF" },
+        "programEnd":    { "value": "0FFF" },
+        "mappedIoStart": { "value": "0020" },
+        "mappedIoEnd":   { "value": "005F" },
+        "ramStart":      { "value": "0060" },
+        "ramEnd":        { "value": "015F" }
+    }
+}
