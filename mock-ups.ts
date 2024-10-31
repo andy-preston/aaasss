@@ -1,10 +1,11 @@
 import {
     type RawLine, rawLine,
-    type AssemblyLine, assemblyLine, assemblyError,
-    type SymbolicOperands, type TokenisedLine, tokenisedLine, tokenisedError,
-    type NumericOperands, type OperandLine, operandLine, operandError,
-    type Code, type CodeLine, codeLine, codeError
-} from "./line";
+    type AssemblyLine, assemblyLine, assemblyFailure,
+    type SymbolicOperands, type TokenisedLine, tokenisedLine, tokenisedFailure,
+    type NumericOperands, type OperandLine, operandLine, operandFailure,
+    type Code, type CodeLine, codeLine, codeFailure,
+    failure
+} from "./line.ts";
 
 export const nextLine = function* () {
     const fileName = "1";
@@ -14,16 +15,24 @@ export const nextLine = function* () {
 };
 
 export const splitJavascript = (line: RawLine): AssemblyLine => {
-    const splitted: string = "";
-    if (splitted == "broken") {
-        return assemblyError(line, ["broken"]);
+    var splitted: string = "";
+    try {
+        splitted = "I've been splitted!";
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            return assemblyFailure(
+                line,
+                failure(undefined, "js", error.message)
+            );
+        }
     }
     return assemblyLine(line, splitted);
 };
 
 export const tokenise = (line: AssemblyLine): TokenisedLine => {
-    if (line.hasErrors()) {
-        return tokenisedError(line, ["yuk"]);
+    if (line.failed()) {
+        return tokenisedFailure(line, failure(undefined, "mockUp", ""));
     }
     const mnemonic = "";
     const symbolicOperands: SymbolicOperands = ["1", "2", "3"];
@@ -31,16 +40,16 @@ export const tokenise = (line: AssemblyLine): TokenisedLine => {
 };
 
 export const getOperands = (line: TokenisedLine): OperandLine => {
-    if (line.hasErrors()) {
-        return operandError(line, ["nasty"]);
+    if (line.failed()) {
+        return operandFailure(line, failure(2, "outOfRange", ""));
     }
     const numericOperands: NumericOperands = [1, "symbolic", 3];
     return operandLine(line, numericOperands);
 };
 
 export const generateCode = (line: OperandLine): CodeLine => {
-    if (line.hasErrors()) {
-        return codeError(line, ["horrible"]);
+    if (line.failed()) {
+        return codeFailure(line, failure(3, "outOfRange", ""));
     }
     const code: Code = [1, 2];
     return codeLine(line, code);
