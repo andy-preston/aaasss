@@ -1,15 +1,18 @@
 import type { OperandIndex } from "./source-files/line.ts";
 
-type FailureKind = "js" | "outOfRange" | "mockUp";
+type ParameterFailures = "outOfRange";
+type ContextFailures = "redefined";
+export type FailureKind = "mockUp" | "js" | ContextFailures | ParameterFailures;
 
 export const failure = (
     operand: OperandIndex | undefined,
     kind: FailureKind,
-    exceptionMessage: string
+    error: Error | undefined
 ) => ({
+    "which": "failure" as const,
     "operand": operand,
     "kind": kind,
-    "exceptionMessage": exceptionMessage
+    "error": error
 });
 
 export type Failure = Readonly<ReturnType<typeof failure>>;
