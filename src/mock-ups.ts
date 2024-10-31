@@ -5,7 +5,7 @@ import {
     type NumericOperands, type OperandLine, operandLine, operandFailure,
     type Code, type CodeLine, codeLine, codeFailure,
     failure
-} from "./line.ts";
+} from "./source-files/line.ts";
 
 export const nextLine = function* () {
     const fileName = "1";

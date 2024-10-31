@@ -1,4 +1,4 @@
-import { pipeline } from "./line.ts";
+import { pipeline } from "./pipeline.ts";
 import {
     generateCode, getOperands, nextLine, splitJavascript, tokenise
 } from "./mock-ups.ts";
