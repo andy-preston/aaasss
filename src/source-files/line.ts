@@ -1,17 +1,21 @@
 import type { Failure } from "../failure.ts";
 
+export type Mnemonic = string;
+
+export type SymbolicOperand = string;
+
 export type SymbolicOperands =
     readonly [] |
-    readonly [string] |
-    readonly [string, string] |
-    readonly [string, string, string];
+    readonly [SymbolicOperand] |
+    readonly [SymbolicOperand, SymbolicOperand] |
+    readonly [SymbolicOperand, SymbolicOperand, SymbolicOperand];
 
-type Numeric = number | "symbolic";
+type NumericOperand = number | "symbolic";
 export type NumericOperands =
     readonly [] |
-    readonly [Numeric] |
-    readonly [Numeric, Numeric] |
-    readonly [Numeric, Numeric, Numeric];
+    readonly [NumericOperand] |
+    readonly [NumericOperand, NumericOperand] |
+    readonly [NumericOperand, NumericOperand, NumericOperand];
 
 export type OperandIndex = 0 | 1 | 2;
 
@@ -38,11 +42,11 @@ const line = (
         "failures": failures,
         "failed": failed,
         "addFailure": addFailure,
-        "fileName": fileName,
-        "lineNumber": lineNumber,
-        "rawSource": source,
-        "assemblySource": "",
-        "mnemonic": "",
+        "fileName": fileName as FileName,
+        "lineNumber": lineNumber as LineNumber,
+        "rawSource": source as SourceCode,
+        "assemblySource": "" as SourceCode,
+        "mnemonic": "" as Mnemonic,
         "symbolicOperands": [] as SymbolicOperands,
         "numericOperands": [] as NumericOperands,
         "code": [] as Code
