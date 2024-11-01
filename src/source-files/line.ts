@@ -1,4 +1,4 @@
-import type { Failure } from "../failure.ts";
+import type { Failures } from "../failure.ts";
 
 export type Mnemonic = string;
 
@@ -17,12 +17,16 @@ export type NumericOperands =
     readonly [NumericOperand, NumericOperand] |
     readonly [NumericOperand, NumericOperand, NumericOperand];
 
+type OperandLength = SymbolicOperands['length'] & NumericOperands['length'];
+
 export type OperandIndex = 0 | 1 | 2;
 
 export type Code =
     readonly [] |
     readonly [number, number] |
     readonly [number, number, number, number];
+
+type CodeLength = Code['length'];
 
 export type FileName = string;
 export type LineNumber = number;
@@ -33,15 +37,15 @@ const line = (
     lineNumber: LineNumber,
     source: SourceCode
 ) => {
-    const failures: Array<Failure> = [];
-    const addFailure = (failure: Failure) => {
-        failures.push(failure);
+    const failures: Failures = [];
+    const addFailures = (additional: Failures) => {
+        failures.concat(additional);
     };
     const failed = () => failures.length > 0;
     return {
         "failures": failures,
         "failed": failed,
-        "addFailure": addFailure,
+        "addFailures": addFailures,
         "fileName": fileName as FileName,
         "lineNumber": lineNumber as LineNumber,
         "rawSource": source as SourceCode,
@@ -56,7 +60,7 @@ const line = (
 type Line = ReturnType<typeof line>;
 
 type RawProperties = "fileName" | "lineNumber" | "rawSource" |
-    "failures" | "addFailure" | "failed";
+    "failures" | "addFailures" | "failed";
 export type RawLine = Readonly<Pick<Line, RawProperties>>;
 
 export const rawLine = (
@@ -76,11 +80,11 @@ export const assemblyLine = (
     return line as AssemblyLine;
 };
 
-export const assemblyFailure = (
+export const assemblyFailures = (
     line: RawLine,
-    failure: Failure
+    failures: Failures
 ): AssemblyLine => {
-    line.addFailure(failure);
+    line.addFailures(failures);
     return line as AssemblyLine;
 };
 
@@ -97,11 +101,11 @@ export const tokenisedLine = (
     return line as TokenisedLine;
 };
 
-export const tokenisedFailure = (
+export const tokenisedFailures = (
     line: AssemblyLine,
-    failure: Failure
+    failures: Failures
 ): TokenisedLine => {
-    line.addFailure(failure);
+    line.addFailures(failures);
     return line as TokenisedLine;
 };
 
@@ -116,11 +120,11 @@ export const operandLine = (
     return line as OperandLine;
 };
 
-export const operandFailure = (
+export const operandFailures = (
     line: TokenisedLine,
-    failure: Failure
+    failures: Failures
 ): OperandLine => {
-    line.addFailure(failure);
+    line.addFailures(failures);
     return line as OperandLine;
 };
 
@@ -135,10 +139,10 @@ export const codeLine = (
     return line as CodeLine;
 };
 
-export const codeFailure = (
+export const codeFailures = (
     line: OperandLine,
-    failure: Failure
+    failures: Failures
 ): CodeLine => {
-    line.addFailure(failure);
+    line.addFailures(failures);
     return line as CodeLine;
 };

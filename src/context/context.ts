@@ -35,7 +35,7 @@ export const newContext = (pass: Pass) => {
             return contextValue(result == undefined ? "" : `${result}`.trim());
         } catch (error) {
             if (error instanceof Error) {
-                return failure(undefined, "js", error);
+                return failure(undefined, "jsError", error);
             }
             throw error;
         }

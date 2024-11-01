@@ -1,0 +1,26 @@
+import { assertEquals } from "assert";
+import { javascript } from "./javascript.ts";
+import { anEmptyContext } from "../testing.ts";
+import { rawLine } from "./line.ts";
+
+Deno.test("JS can be delimited with moustaches on the same line", () => {
+    const js = javascript(anEmptyContext());
+    const line = rawLine(
+        "", 0, "MOV {{ this.test = 27; return this.test; }}, R2"
+    );
+    const assemblyLine = js(line);
+    assertEquals(assemblyLine.assemblySource, "MOV 27, R2");
+});
+
+Deno.test("JS can be delimited by moustaches across several lines", () => {
+    const js = javascript(anEmptyContext());
+    const lines = [
+        rawLine("", 0, "some ordinary stuff {{ this.test = 27;"),
+        rawLine("", 0, "this.andThat = \"hello\";"),
+        rawLine("", 0, "return this.andThat; }} matey!")
+    ];
+    const results = lines.map(js);
+    assertEquals(results[0]!.assemblySource, "some ordinary stuff");
+    assertEquals(results[1]!.assemblySource, "");
+    assertEquals(results[2]!.assemblySource, "hello matey!");
+});

@@ -1,7 +1,7 @@
 import { assert, assertEquals, assertInstanceOf } from "assert";
-import { newContext, type ContextValue } from "./context.ts";
-import type { Failure, FailureKind } from "../failure.ts";
-import { newPass } from "../state/pass.ts";
+import { newContext, type ContextValue } from "./context/context.ts";
+import type { Failure, FailureKind } from "./failure.ts";
+import { newPass } from "./state/pass.ts";
 
 export const anEmptyContext = () => newContext(newPass(() => {}));
 

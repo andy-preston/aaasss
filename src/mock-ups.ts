@@ -1,27 +1,10 @@
 import {
-    type RawLine, rawLine,
-    type AssemblyLine, assemblyLine, assemblyFailure,
+    type AssemblyLine,
     type SymbolicOperands, type TokenisedLine, tokenisedLine, tokenisedFailure,
     type NumericOperands, type OperandLine, operandLine, operandFailure,
     type Code, type CodeLine, codeLine, codeFailure,
     failure
 } from "./source-files/line.ts";
-
-export const splitJavascript = (line: RawLine): AssemblyLine => {
-    var splitted: string = "";
-    try {
-        splitted = "I've been splitted!";
-    }
-    catch (error) {
-        if (error instanceof Error) {
-            return assemblyFailure(
-                line,
-                failure(undefined, "js", error.message)
-            );
-        }
-    }
-    return assemblyLine(line, splitted);
-};
 
 export const tokenise = (line: AssemblyLine): TokenisedLine => {
     if (line.failed()) {
