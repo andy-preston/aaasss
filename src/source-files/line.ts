@@ -39,7 +39,7 @@ const line = (
 ) => {
     const failures: Failures = [];
     const addFailures = (additional: Failures) => {
-        failures.concat(additional);
+        failures.push(...additional);
     };
     const failed = () => failures.length > 0;
     return {
@@ -68,6 +68,14 @@ export const rawLine = (
     lineNumber: LineNumber,
     source: SourceCode
 ) => line(fileName, lineNumber, source) as RawLine;
+
+export const rawFailures = (
+    line: RawLine,
+    failures: Failures
+): RawLine => {
+    line.addFailures(failures);
+    return line as RawLine;
+};
 
 type AssemblyProperties = RawProperties | "assemblySource";
 export type AssemblyLine = Readonly<Pick<Line, AssemblyProperties>>;

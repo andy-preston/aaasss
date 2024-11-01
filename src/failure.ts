@@ -2,9 +2,10 @@ import type { OperandIndex } from "./source-files/line.ts";
 
 type ParameterFailures = "outOfRange";
 type ContextFailures = "redefined";
+type FileFailures = "notFound";
 type JavascriptFailures = "jsError" | "jsMode" | "assemblerMode";
 export type FailureKind = "mockUp"
-    | JavascriptFailures | ContextFailures | ParameterFailures;
+    | JavascriptFailures | FileFailures | ContextFailures | ParameterFailures;
 
 export const failure = (
     operand: OperandIndex | undefined,
