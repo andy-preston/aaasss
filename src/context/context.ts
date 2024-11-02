@@ -1,4 +1,4 @@
-import { failure, type Failure } from "../failure.ts";
+import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
 import type { SymbolicOperand } from "../source-files/line.ts";
 import type { Pass } from "../state/pass.ts";
 import { returnIfExpression } from "./magic.ts";
@@ -11,28 +11,21 @@ type Directive = StringDirective | NumberDirective | ArrayDirective;
 type NumericGetter = () => number;
 type ContextFields = SimpleFunction | Directive | number;
 
-export const contextValue = (value: string) => ({
-    "which": "value" as const,
-    "value": value
-});
-
-export type ContextValue = Readonly<ReturnType<typeof contextValue>>;
-
 export const newContext = (pass: Pass) => {
     const context: Record<string, ContextFields> = {
         "low": (n: number) => n & 0xff,
         "high": (n: number) => (n >> 8) & 0xff
     };
 
-    const value = (jsSource: string): ContextValue | Failure => {
+    const value = (jsSource: string): Box | Failure => {
         const trimmed = jsSource.trim().replace(/;*$/, "").trim();
         if (trimmed == "") {
-            return contextValue("");
+            return box("");
         }
         const functionBody = `with (this) { ${returnIfExpression(trimmed)}; }`;
         try {
             const result = new Function(functionBody).call(context);
-            return contextValue(result == undefined ? "" : `${result}`.trim());
+            return box(result == undefined ? "" : `${result}`.trim());
         } catch (error) {
             if (error instanceof Error) {
                 return failure(undefined, "jsError", error);
@@ -41,10 +34,10 @@ export const newContext = (pass: Pass) => {
         }
     };
 
-    const operand = (operand: SymbolicOperand): ContextValue | Failure => {
+    const operand = (operand: SymbolicOperand): Box | Failure => {
         const fromContext = value(operand);
         return fromContext.which == "failure" && pass.ignoreErrors()
-            ? contextValue("0")
+            ? box("0")
             : fromContext;
     };
 

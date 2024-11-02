@@ -1,5 +1,6 @@
-import { contextValue, type ContextValue } from "../context/context.ts";
-import { failure, type Failure } from "../failure.ts";
+import {
+    box, failure, type Box, type Failure
+} from "../value-or-failure.ts";
 import {
     rawFailures, rawLine, type FileName, type LineNumber, type SourceCode
 } from "./line.ts";
@@ -32,13 +33,13 @@ export const fileStack = () => {
         }
     }
 
-    const includeFile = (fileName: FileName): ContextValue | Failure => {
+    const includeFile = (fileName: FileName): Box | Failure => {
         const contents = fileContents(fileName);
         if (contents.which == "failure") {
             return contents;
         }
         fileStack.push([fileName, contents.iterator]);
-        return contextValue("");
+        return box("");
     };
 
     const lines = function* (fileName: FileName) {

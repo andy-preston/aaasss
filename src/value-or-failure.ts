@@ -1,7 +1,7 @@
 import type { OperandIndex } from "./source-files/line.ts";
 
 type ParameterFailures = "outOfRange";
-type ContextFailures = "redefined";
+type ContextFailures = "redefined" | "noDevice";
 type FileFailures = "notFound";
 type JavascriptFailures = "jsError" | "jsMode" | "assemblerMode";
 export type FailureKind = "mockUp"
@@ -20,3 +20,11 @@ export const failure = (
 
 export type Failure = Readonly<ReturnType<typeof failure>>;
 export type Failures = Array<Failure>;
+
+export const box = (value: string) => ({
+    "which": "value" as const,
+    "value": value
+});
+
+export type Box = Readonly<ReturnType<typeof box>>;
+

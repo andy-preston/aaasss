@@ -1,4 +1,4 @@
-import type { Failures } from "../failure.ts";
+import type { Failures } from "../value-or-failure.ts";
 
 export type Mnemonic = string;
 

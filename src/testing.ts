@@ -1,20 +1,20 @@
 import { assert, assertEquals, assertInstanceOf } from "assert";
-import { newContext, type ContextValue } from "./context/context.ts";
-import type { Failure, FailureKind } from "./failure.ts";
+import { newContext } from "./context/context.ts";
+import type { Box, Failure, FailureKind } from "./value-or-failure.ts";
 import { newPass } from "./state/pass.ts";
 
 export const anEmptyContext = () => newContext(newPass(() => {}));
 
 export const assertSuccess = (
-    actual: ContextValue | Failure,
+    actual: Box | Failure,
     expected: string
 ) => {
     assertEquals(actual.which, "value");
-    assertEquals((actual as ContextValue).value, expected);
+    assertEquals((actual as Box).value, expected);
 };
 
 export const assertFailure = (
-    actual: ContextValue | Failure,
+    actual: Box | Failure,
     expectedKind: FailureKind
 ) => {
     assertEquals(actual.which, "failure");
@@ -22,7 +22,7 @@ export const assertFailure = (
 };
 
 export const assertFailureWithError = (
-    actual: ContextValue | Failure,
+    actual: Box | Failure,
     expectedKind: FailureKind,
     expectedError: ErrorConstructor,
     expectedMessage: string

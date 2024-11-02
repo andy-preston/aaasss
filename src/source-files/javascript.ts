@@ -1,5 +1,5 @@
 import type { Context } from "../context/context.ts";
-import { failure, type Failure } from "../failure.ts";
+import { failure, type Failure } from "../value-or-failure.ts";
 import {
 assemblyFailures,
     assemblyLine, type AssemblyLine, type RawLine
