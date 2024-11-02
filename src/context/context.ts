@@ -17,21 +17,28 @@ export const newContext = (pass: Pass) => {
         "high": (n: number) => (n >> 8) & 0xff
     };
 
-    const value = (jsSource: string): Box | Failure => {
-        const trimmed = jsSource.trim().replace(/;*$/, "").trim();
-        if (trimmed == "") {
-            return box("");
-        }
-        const functionBody = `with (this) { ${returnIfExpression(trimmed)}; }`;
+    const functionCall = (functionBody: string) => {
         try {
-            const result = new Function(functionBody).call(context);
-            return box(result == undefined ? "" : `${result}`.trim());
+            return new Function(functionBody).call(context);
         } catch (error) {
             if (error instanceof Error) {
                 return failure(undefined, "jsError", error);
             }
             throw error;
         }
+    };
+
+    const value = (jsSource: string): Box | Failure => {
+        const trimmed = jsSource.trim().replace(/;*$/, "").trim();
+        if (trimmed == "") {
+            return box("");
+        }
+        const result = functionCall(
+            `with (this) { ${returnIfExpression(trimmed)}; }`
+        );
+        return result == undefined
+            ? box("") : Object.hasOwn(result, "which")
+            ? result as Box | Failure : box(`${result}`.trim());
     };
 
     const operand = (operand: SymbolicOperand): Box | Failure => {

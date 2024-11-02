@@ -1,5 +1,6 @@
 import { assertEquals, assertFalse, assertThrows } from "assert";
 import { anEmptyContext, assertFailureWithError, assertSuccess } from "../testing.ts";
+import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
 
 Deno.test("Simple expressions do not require a `return`", () => {
     const context = anEmptyContext();
@@ -41,13 +42,40 @@ Deno.test("Any directives that are added can be called as functions", () => {
     const context = anEmptyContext();
 
     let directiveParameter = "";
-    const testDirective = (parameter: string): void => {
+    const testDirective = (parameter: string): Box | Failure => {
         directiveParameter = parameter;
+        return box("");
     };
     context.directive("testDirective", testDirective);
 
     context.value("testDirective('says hello')");
     assertEquals(directiveParameter, "says hello");
+});
+
+Deno.test("Directives can return a failure", () => {
+    const context = anEmptyContext();
+
+    const testDirective = (_: string): Box | Failure => {
+        return failure(undefined, "notFound", undefined);
+    };
+    context.directive("testDirective", testDirective);
+
+    const result = context.value("testDirective('')");
+    assertEquals(result.which, "failure");
+    assertEquals((result as Failure).kind, "notFound");
+});
+
+Deno.test("Directives can return success", () => {
+    const context = anEmptyContext();
+
+    const testDirective = (_: string): Box | Failure => {
+        return box("");
+    };
+    context.directive("testDirective", testDirective);
+
+    const result = context.value("testDirective('')");
+    assertEquals(result.which, "value");
+    assertEquals((result as Box).value, "");
 });
 
 Deno.test("Syntax errors are returned as errors too", () => {
