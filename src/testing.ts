@@ -9,7 +9,7 @@ export const assertSuccess = (
     actual: Box | Failure,
     expected: string
 ) => {
-    assertEquals(actual.which, "value");
+    assertEquals(actual.which, "box");
     assertEquals((actual as Box).value, expected);
 };
 

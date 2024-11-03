@@ -74,7 +74,7 @@ Deno.test("Directives can return success", () => {
     context.directive("testDirective", testDirective);
 
     const result = context.value("testDirective('')");
-    assertEquals(result.which, "value");
+    assertEquals(result.which, "box");
     assertEquals((result as Box).value, "");
 });
 
