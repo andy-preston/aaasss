@@ -1,11 +1,13 @@
 import type { OperandIndex } from "./source-files/line.ts";
 
-type ParameterFailures = "outOfRange";
-type ContextFailures = "redefined" | "noDevice";
+type ContextFailures = "redefined";
+type DeviceFailures = "deviceNotFound" | "noDeviceSelected" | "multipleDevice";
 type FileFailures = "notFound";
 type JavascriptFailures = "jsError" | "jsMode" | "assemblerMode";
-export type FailureKind = "mockUp"
-    | JavascriptFailures | FileFailures | ContextFailures | ParameterFailures;
+type ParameterFailures = "outOfRange";
+export type FailureKind = "mockUp" |
+    ContextFailures | DeviceFailures | FileFailures |
+    JavascriptFailures | ParameterFailures;
 
 export const failure = (
     operand: OperandIndex | undefined,
