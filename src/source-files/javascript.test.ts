@@ -1,6 +1,7 @@
 import { assertEquals } from "assert";
-import { javascript } from "./javascript.ts";
+import { cpuRegisters } from "../device/registers.ts";
 import { anEmptyContext } from "../testing.ts";
+import { javascript } from "./javascript.ts";
 import { rawLine } from "./line.ts";
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {
@@ -10,6 +11,16 @@ Deno.test("JS can be delimited with moustaches on the same line", () => {
     );
     const assemblyLine = js(line);
     assertEquals(assemblyLine.assemblySource, "MOV 27, R2");
+});
+
+Deno.test("JS can use registers from the context", () => {
+    const context = anEmptyContext();
+    const registers = cpuRegisters(context);
+    registers.choose(false);
+    const js = javascript(context);
+    const line = rawLine("", 0, "MOV {{ R6 }}, R2");
+    const result = js(line);
+    assertEquals(result.assemblySource, "MOV 6, R2");
 });
 
 Deno.test("JS can be delimited by moustaches across several lines", () => {
