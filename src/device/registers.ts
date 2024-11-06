@@ -15,7 +15,7 @@ export const cpuRegisters = (context: Context) => {
             ["YH", 29],
             ["Z", 30],
             ["ZL", 30],
-            ["ZH", 31]
+            ["ZH", 31],
         ];
         for (const [name, value] of specialRegisters) {
             context.property(name, value);
@@ -23,7 +23,7 @@ export const cpuRegisters = (context: Context) => {
     };
 
     return {
-        "choose": choose
+        "choose": choose,
     };
 };
 

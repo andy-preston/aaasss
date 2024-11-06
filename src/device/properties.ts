@@ -11,7 +11,7 @@ import { cpuRegisters } from "./registers.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
 export const deviceProperties = (context: Context) => {
-    let deviceName = ""
+    let deviceName = "";
     let reducedCore = false;
     const unsupported = unsupportedInstructions();
     const registers = cpuRegisters(context);
@@ -46,8 +46,8 @@ export const deviceProperties = (context: Context) => {
         "public": {
             "name": name,
             "hasReducedCore": hasReducedCore,
-            "isUnsupported": isUnsupported
-        }
+            "isUnsupported": isUnsupported,
+        },
     };
 };
 

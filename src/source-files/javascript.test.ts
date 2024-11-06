@@ -27,8 +27,8 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
     const js = javascript(anEmptyContext());
     const lines = [
         rawLine("", 0, "some ordinary stuff {{ this.test = 27;"),
-        rawLine("", 0, "this.andThat = \"hello\";"),
-        rawLine("", 0, "return this.andThat; }} matey!")
+        rawLine("", 0, 'this.andThat = "hello";'),
+        rawLine("", 0, "return this.andThat; }} matey!"),
     ];
     const results = lines.map(js);
     assertEquals(results[0]!.assemblySource, "some ordinary stuff");

@@ -7,9 +7,9 @@ import type { DeviceProperties } from "./properties.ts";
 
 type FullSpec = Record<string, number | boolean | Array<string>>;
 type RawProperty = string | boolean | Array<string>;
-type RawItem = { "description"?: string, "value": RawProperty };
+type RawItem = { "description"?: string; "value": RawProperty };
 type RawItems = Record<string, RawItem>;
-type DeviceSpec = { "family"? : string, "spec": RawItems };
+type DeviceSpec = { "family"?: string; "spec": RawItems };
 
 const deviceFileName = (deviceName: string) =>
     deviceName.replace(/[^\w\']|_/g, "").toLowerCase();
@@ -91,6 +91,6 @@ export const deviceChooser = (
 
     return {
         "choose": choose,
-        "directive": directive
+        "directive": directive,
     };
 };

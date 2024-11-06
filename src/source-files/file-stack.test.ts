@@ -5,22 +5,22 @@ import { assertFailure, assertSuccess } from "../testing.ts";
 Deno.test("Including a file returns a blank value", () => {
     assertSuccess(
         // This file is irrelevant but we can guarantee it exists
-        fileStack().includeFile('deno.json'),
+        fileStack().includeFile("deno.json"),
         ""
     );
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
     assertFailure(
-        fileStack().includeFile('does-not-exist.test'),
+        fileStack().includeFile("does-not-exist.test"),
         "notFound"
     );
 });
 
 Deno.test("Reading a non existant source file gives one line with a failure", () => {
     let lineCount = 0;
-    for (const line of fileStack().lines('does-not-exist.test')) {
-        assertEquals(line.fileName, 'does-not-exist.test');
+    for (const line of fileStack().lines("does-not-exist.test")) {
+        assertEquals(line.fileName, "does-not-exist.test");
         assertEquals(line.lineNumber, 0);
         assertEquals(line.rawSource, "");
         assert(line.failed);

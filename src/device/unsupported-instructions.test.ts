@@ -1,7 +1,7 @@
 import { assert, assertFalse, assertThrows } from "assert";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
-Deno.test ("Instructions are added to the unssuported list in groups", () => {
+Deno.test("Instructions are added to the unssuported list in groups", () => {
     const unsupported = unsupportedInstructions();
     unsupported.choose(["readModifyWrite"]);
     for (const instruction of ["LAC", "LAS", "LAT", "XCH"]) {
@@ -12,7 +12,7 @@ Deno.test ("Instructions are added to the unssuported list in groups", () => {
     }
 });
 
-Deno.test ("An unknown group throws an error", () => {
+Deno.test("An unknown group throws an error", () => {
     const unsupported = unsupportedInstructions();
     // cSpell:words wibbly-wobbly
     assertThrows(

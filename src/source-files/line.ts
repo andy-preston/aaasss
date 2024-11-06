@@ -17,7 +17,7 @@ export type NumericOperands =
     readonly [NumericOperand, NumericOperand] |
     readonly [NumericOperand, NumericOperand, NumericOperand];
 
-type OperandLength = SymbolicOperands['length'] & NumericOperands['length'];
+type OperandLength = SymbolicOperands["length"] & NumericOperands["length"];
 
 export type OperandIndex = 0 | 1 | 2;
 
@@ -26,7 +26,7 @@ export type Code =
     readonly [number, number] |
     readonly [number, number, number, number];
 
-type CodeLength = Code['length'];
+type CodeLength = Code["length"];
 
 export type FileName = string;
 export type LineNumber = number;
@@ -53,7 +53,7 @@ const line = (
         "mnemonic": "" as Mnemonic,
         "symbolicOperands": [] as SymbolicOperands,
         "numericOperands": [] as NumericOperands,
-        "code": [] as Code
+        "code": [] as Code,
     };
 };
 
@@ -61,6 +61,7 @@ type Line = ReturnType<typeof line>;
 
 type RawProperties = "fileName" | "lineNumber" | "rawSource" |
     "failures" | "addFailures" | "failed";
+
 export type RawLine = Readonly<Pick<Line, RawProperties>>;
 
 export const rawLine = (

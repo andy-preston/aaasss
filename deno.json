@@ -9,5 +9,10 @@
         "noImplicitReturns": true,
         "strict": true
     },
+    "fmt": {
+        "indentWidth": 4,
+        "semiColons": true,
+        "proseWrap": "preserve",
+    },
     "exclude": ["_deno"]
 }

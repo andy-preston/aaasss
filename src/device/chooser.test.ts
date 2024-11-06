@@ -12,13 +12,12 @@ Deno.test("You can choose any device that has a definition file", () => {
         assertEquals(result.which, "box");
         assertEquals((result as Box).value, "");
     }
-})
+});
 
 Deno.test("Choosing an non-existant device returns a Failure", () => {
     const context = anEmptyContext();
     const chooser = deviceChooser(deviceProperties(context), context);
-    const result = chooser.directive('notARealDevice');
+    const result = chooser.directive("notARealDevice");
     assertEquals(result.which, "failure");
     assertEquals((result as Failure).kind, "deviceNotFound");
 });
-

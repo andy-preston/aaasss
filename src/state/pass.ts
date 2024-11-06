@@ -19,7 +19,7 @@ export const newPass = (resetStateCallback: ResetStateCallback) => {
     return {
         "start": start,
         "ignoreErrors": ignoreErrors,
-        "showErrors": showErrors
+        "showErrors": showErrors,
     };
 };
 

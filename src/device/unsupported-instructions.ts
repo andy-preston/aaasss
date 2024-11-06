@@ -15,7 +15,7 @@ export const unsupportedInstructions = () => {
         // SPM but not SPM.Z
         ["SPM.Z", ["SPM.Z"]],
         // ELPM needs more study!
-        ["ELPM", ["ELPM", "ELPM.Z"]]
+        ["ELPM", ["ELPM", "ELPM.Z"]],
     ]);
 
     const choose = (unsupportedGroups: Array<string>) => {
@@ -34,6 +34,6 @@ export const unsupportedInstructions = () => {
 
     return {
         "choose": choose,
-        "isUnsupported": isUnsupported
+        "isUnsupported": isUnsupported,
     };
 };

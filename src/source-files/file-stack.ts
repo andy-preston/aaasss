@@ -7,8 +7,8 @@ import {
 
 type FileIterator = ArrayIterator<[LineNumber, SourceCode]>;
 type FileContents = {
-    "which": "contents",
-    "iterator": FileIterator
+    "which": "contents";
+    "iterator": FileIterator;
 };
 type StackEntry = [FileName, FileIterator];
 
@@ -22,7 +22,7 @@ export const fileStack = () => {
         try {
             return {
                 "which": "contents",
-                "iterator": Deno.readTextFileSync(fileName).split("\n").entries()
+                "iterator": Deno.readTextFileSync(fileName).split("\n").entries(),
             };
         }
         catch (error) {
@@ -31,7 +31,7 @@ export const fileStack = () => {
             }
             throw error;
         }
-    }
+    };
 
     const includeFile = (fileName: FileName): Box | Failure => {
         const contents = fileContents(fileName);
@@ -65,6 +65,6 @@ export const fileStack = () => {
 
     return {
         "includeFile": includeFile,
-        "lines": lines
+        "lines": lines,
     };
 };

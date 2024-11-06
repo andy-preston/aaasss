@@ -1,8 +1,7 @@
 import type { Context } from "../context/context.ts";
 import { failure, type Failure } from "../value-or-failure.ts";
 import {
-assemblyFailures,
-    assemblyLine, type AssemblyLine, type RawLine
+    assemblyFailures, assemblyLine, type AssemblyLine, type RawLine
 } from "./line.ts";
 
 const scriptDelimiter = /({{|}})/;
@@ -10,7 +9,7 @@ const scriptDelimiter = /({{|}})/;
 export const javascript = (context: Context) => {
     const buffer = {
         "javascript": [] as Array<string>,
-        "assembler": [] as Array<string>
+        "assembler": [] as Array<string>,
     };
 
     type BufferName = keyof typeof buffer;
@@ -55,7 +54,10 @@ export const javascript = (context: Context) => {
     };
 
     return (line: RawLine): AssemblyLine => {
-        const failures = line.rawSource.split(scriptDelimiter).reduce(usePart, []);
+        const failures = line.rawSource.split(scriptDelimiter).reduce(
+            usePart,
+            [],
+        );
         if (failures.length > 0) {
             return assemblyFailures(line, failures);
         }
