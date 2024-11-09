@@ -4,10 +4,11 @@ type ContextFailures = "redefined";
 type DeviceFailures = "deviceNotFound" | "noDeviceSelected" | "multipleDevice";
 type FileFailures = "notFound";
 type JavascriptFailures = "jsError" | "jsMode" | "assemblerMode";
-type ParameterFailures = "outOfRange";
+type OperandFailures = "outOfRange" | "tooManyOperands";
+type SyntaxErrors = "noSpaceInLabel" | "tooManyIndexOffset";
 export type FailureKind = "mockUp" |
     ContextFailures | DeviceFailures | FileFailures |
-    JavascriptFailures | ParameterFailures;
+    JavascriptFailures | OperandFailures | SyntaxErrors;
 
 export const failure = (
     operand: OperandIndex | undefined,

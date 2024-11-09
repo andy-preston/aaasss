@@ -1,5 +1,7 @@
 import type { Failures } from "../value-or-failure.ts";
 
+export type Label = string;
+
 export type Mnemonic = string;
 
 export type SymbolicOperand = string;
@@ -10,7 +12,15 @@ export type SymbolicOperands =
     readonly [SymbolicOperand, SymbolicOperand] |
     readonly [SymbolicOperand, SymbolicOperand, SymbolicOperand];
 
+export const symbolicOperands = (operands: Array<string>) => {
+    if (operands.length > 3) {
+        throw Error("More than 3 symbolic operands isn't possible");
+    }
+    return operands as unknown as SymbolicOperands;
+}
+
 type NumericOperand = number | "symbolic";
+
 export type NumericOperands =
     readonly [] |
     readonly [NumericOperand] |
@@ -50,6 +60,7 @@ const line = (
         "lineNumber": lineNumber as LineNumber,
         "rawSource": source as SourceCode,
         "assemblySource": "" as SourceCode,
+        "label": "" as Label,
         "mnemonic": "" as Mnemonic,
         "symbolicOperands": [] as SymbolicOperands,
         "numericOperands": [] as NumericOperands,
@@ -79,6 +90,7 @@ export const rawFailures = (
 };
 
 type AssemblyProperties = RawProperties | "assemblySource";
+
 export type AssemblyLine = Readonly<Pick<Line, AssemblyProperties>>;
 
 export const assemblyLine = (
@@ -97,14 +109,18 @@ export const assemblyFailures = (
     return line as AssemblyLine;
 };
 
-type TokenisedProperties = AssemblyProperties | "mnemonic" | "symbolicOperands";
+type TokenisedProperties = AssemblyProperties |
+    "label" | "mnemonic" | "symbolicOperands";
+
 export type TokenisedLine = Readonly<Pick<Line, TokenisedProperties>>;
 
 export const tokenisedLine = (
     line: AssemblyLine,
-    mnemonic: string,
+    label: Label,
+    mnemonic: Mnemonic,
     symbolicOperands: SymbolicOperands
 ): TokenisedLine => {
+    (line as Line).label = label;
     (line as Line).mnemonic = mnemonic;
     (line as Line).symbolicOperands = symbolicOperands;
     return line as TokenisedLine;
@@ -119,6 +135,7 @@ export const tokenisedFailures = (
 };
 
 type OperandProperties = TokenisedProperties | "numericOperands";
+
 export type OperandLine = Readonly<Pick<Line, OperandProperties>>;
 
 export const operandLine = (
@@ -138,6 +155,7 @@ export const operandFailures = (
 };
 
 type CodeProperties = OperandProperties | "code";
+
 export type CodeLine = Readonly<Pick<Line, CodeProperties>>;
 
 export const codeLine = (

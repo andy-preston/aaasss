@@ -1,10 +1,11 @@
 import { pipeline } from "./pipeline.ts";
 import {
-    generateCode, getOperands, tokenise
+    generateCode, getOperands
 } from "./mock-ups.ts";
 import { fileStack } from "./source-files/file-stack.ts";
-import { newPass, passes } from "./state/pass.ts";
 import { javascript } from "./source-files/javascript.ts";
+import { tokenise } from "./tokenise/tokenise.ts";
+import { newPass, passes } from "./state/pass.ts";
 import { newContext } from "./context/context.ts";
 
 const pass = newPass(() => {});
