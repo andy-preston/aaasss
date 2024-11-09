@@ -33,7 +33,7 @@ export const fileStack = () => {
         }
     };
 
-    const includeFile = (fileName: FileName): Box | Failure => {
+    const includeFile = (fileName: FileName): Box<string> | Failure => {
         const contents = fileContents(fileName);
         if (contents.which == "failure") {
             return contents;

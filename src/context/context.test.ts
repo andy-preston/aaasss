@@ -42,7 +42,7 @@ Deno.test("Any directives that are added can be called as functions", () => {
     const context = anEmptyContext();
 
     let directiveParameter = "";
-    const testDirective = (parameter: string): Box | Failure => {
+    const testDirective = (parameter: string): Box<string> | Failure => {
         directiveParameter = parameter;
         return box("");
     };
@@ -55,7 +55,7 @@ Deno.test("Any directives that are added can be called as functions", () => {
 Deno.test("Directives can return a failure", () => {
     const context = anEmptyContext();
 
-    const testDirective = (_: string): Box | Failure => {
+    const testDirective = (_: string): Box<string> | Failure => {
         return failure(undefined, "notFound", undefined);
     };
     context.directive("testDirective", testDirective);
@@ -68,14 +68,14 @@ Deno.test("Directives can return a failure", () => {
 Deno.test("Directives can return success", () => {
     const context = anEmptyContext();
 
-    const testDirective = (_: string): Box | Failure => {
+    const testDirective = (_: string): Box<string> | Failure => {
         return box("");
     };
     context.directive("testDirective", testDirective);
 
     const result = context.value("testDirective('')");
     assertEquals(result.which, "box");
-    assertEquals((result as Box).value, "");
+    assertEquals((result as Box<string>).value, "");
 });
 
 Deno.test("Syntax errors are returned as errors too", () => {

@@ -10,7 +10,7 @@ Deno.test("You can choose any device that has a definition file", () => {
         const chooser = deviceChooser(deviceProperties(context), context);
         const result = chooser.directive(deviceName);
         assertEquals(result.which, "box");
-        assertEquals((result as Box).value, "");
+        assertEquals((result as Box<string>).value, "");
     }
 });
 

@@ -3,7 +3,7 @@ import type { Context } from "../context/context.ts";
 import type { Mnemonic } from "../source-files/line.ts";
 
 import {
-    answer, box, failure, type Answer, type Box, type Failure
+    box, failure, type Box, type Failure
 } from "../value-or-failure.ts";
 
 import { cpuRegisters } from "./registers.ts";
@@ -16,18 +16,18 @@ export const deviceProperties = (context: Context) => {
     const unsupported = unsupportedInstructions();
     const registers = cpuRegisters(context);
 
-    const name = (): Box | Failure => deviceName == ""
+    const name = (): Box<string> | Failure => deviceName == ""
         ? failure(undefined, "noDeviceSelected", undefined)
         : box(deviceName);
 
-    const hasReducedCore = (): Answer | Failure => deviceName == ""
+    const hasReducedCore = (): Box<boolean> | Failure => deviceName == ""
         ? failure(undefined, "noDeviceSelected", undefined)
-        : answer(reducedCore);
+        : box(reducedCore);
 
-    const isUnsupported = (mnemonic: Mnemonic): Answer | Failure =>
+    const isUnsupported = (mnemonic: Mnemonic): Box<boolean> | Failure =>
         deviceName == ""
             ? failure(undefined, "noDeviceSelected", undefined)
-            : answer(unsupported.isUnsupported(mnemonic));
+            : box(unsupported.isUnsupported(mnemonic));
 
     const setReducedCore = (value: boolean) => {
         reducedCore = value;

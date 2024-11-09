@@ -23,16 +23,9 @@ export const failure = (
 export type Failure = Readonly<ReturnType<typeof failure>>;
 export type Failures = Array<Failure>;
 
-export const box = (value: string) => ({
+export const box = <T>(value: T) => ({
     "which": "box" as const,
     "value": value,
 });
 
-export type Box = Readonly<ReturnType<typeof box>>;
-
-export const answer = (answer: boolean) => ({
-    "which": "answer" as const,
-    "answer": answer,
-});
-
-export type Answer = Readonly<ReturnType<typeof answer>>;
+export type Box<T> = Readonly<ReturnType<typeof box<T>>>;

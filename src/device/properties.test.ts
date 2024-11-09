@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import type { Answer, Box, Failure } from "../value-or-failure.ts";
+import type { Box, Failure } from "../value-or-failure.ts";
 import { deviceProperties } from "./properties.ts";
 import { anEmptyContext } from "../testing.ts";
 
@@ -25,15 +25,15 @@ Deno.test("Returns default Answer(s) once a device name is selected", () => {
     properties.setName("testName");
     const name = properties.public.name();
     assertEquals(name.which, "box");
-    assertEquals((name as Box).value, "testName");
+    assertEquals((name as Box<string>).value, "testName");
 
     const reducedCore = properties.public.hasReducedCore();
-    assertEquals(reducedCore.which, "answer");
-    assertFalse((reducedCore as Answer).answer);
+    assertEquals(reducedCore.which, "box");
+    assertFalse((reducedCore as Box<boolean>).value);
 
     const unsupported = properties.public.isUnsupported("MUL");
-    assertEquals(unsupported.which, "answer");
-    assertFalse((unsupported as Answer).answer);
+    assertEquals(unsupported.which, "box");
+    assertFalse((unsupported as Box<boolean>).value);
 });
 
 Deno.test("Returns selected Answer(s) once 'rules' are selected", () => {
@@ -42,15 +42,15 @@ Deno.test("Returns selected Answer(s) once 'rules' are selected", () => {
     properties.setName("testName");
     const name = properties.public.name();
     assertEquals(name.which, "box");
-    assertEquals((name as Box).value, "testName");
+    assertEquals((name as Box<string>).value, "testName");
 
     properties.reducedCore(true);
     const reducedCore = properties.public.hasReducedCore();
-    assertEquals(reducedCore.which, "answer");
-    assert((reducedCore as Answer).answer);
+    assertEquals(reducedCore.which, "box");
+    assert((reducedCore as Box<boolean>).value);
 
     properties.unsupportedInstructions(["multiply"]);
     const unsupported = properties.public.isUnsupported("MUL");
-    assertEquals(unsupported.which, "answer");
-    assert((unsupported as Answer).answer);
+    assertEquals(unsupported.which, "box");
+    assert((unsupported as Box<boolean>).value);
 });

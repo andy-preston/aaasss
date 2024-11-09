@@ -32,7 +32,10 @@ export const deviceChooser = (
         return asNumber;
     };
 
-    const choose = (deviceName: string, fullSpec: FullSpec): Box | Failure => {
+    const choose = (
+        deviceName: string,
+        fullSpec: FullSpec
+    ): Box<string> | Failure => {
         const previousName = properties.name();
         if (previousName == deviceName) {
             return box("");
@@ -60,7 +63,7 @@ export const deviceChooser = (
         return box("");
     };
 
-    const directive = (name: string): Box | Failure => {
+    const directive = (name: string): Box<string> | Failure => {
         const fullSpec: FullSpec = {};
 
         const loadSpec = (spec: RawItems) => {

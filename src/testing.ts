@@ -6,15 +6,15 @@ import { newPass } from "./state/pass.ts";
 export const anEmptyContext = () => newContext(newPass(() => {}));
 
 export const assertSuccess = (
-    actual: Box | Failure,
+    actual: Box<string> | Failure,
     expected: string
 ) => {
     assertEquals(actual.which, "box");
-    assertEquals((actual as Box).value, expected);
+    assertEquals((actual as Box<string>).value, expected);
 };
 
 export const assertFailure = (
-    actual: Box | Failure,
+    actual: Box<string> | Failure,
     expectedKind: FailureKind
 ) => {
     assertEquals(actual.which, "failure");
@@ -22,7 +22,7 @@ export const assertFailure = (
 };
 
 export const assertFailureWithError = (
-    actual: Box | Failure,
+    actual: Box<string> | Failure,
     expectedKind: FailureKind,
     expectedError: ErrorConstructor,
     expectedMessage: string

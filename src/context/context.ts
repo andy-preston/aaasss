@@ -28,7 +28,7 @@ export const newContext = (pass: Pass) => {
         }
     };
 
-    const value = (jsSource: string): Box | Failure => {
+    const value = (jsSource: string): Box<string> | Failure => {
         const trimmed = jsSource.trim().replace(/;*$/, "").trim();
         if (trimmed == "") {
             return box("");
@@ -38,10 +38,10 @@ export const newContext = (pass: Pass) => {
         );
         return result == undefined
             ? box("") : Object.hasOwn(result, "which")
-            ? result as Box | Failure : box(`${result}`.trim());
+            ? result as Box<string> | Failure : box(`${result}`.trim());
     };
 
-    const operand = (operand: SymbolicOperand): Box | Failure => {
+    const operand = (operand: SymbolicOperand): Box<string> | Failure => {
         const fromContext = value(operand);
         return fromContext.which == "failure" && pass.ignoreErrors()
             ? box("0")
