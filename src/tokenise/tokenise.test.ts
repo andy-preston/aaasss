@@ -2,7 +2,7 @@ import { assertEquals } from "assert";
 import { tokenise } from "./tokenise.ts";
 import {
     assemblyLine, rawLine, type AssemblyLine, type SourceCode
-} from "../source-files/line.ts";
+} from "../pipeline/line.ts";
 
 const testLine = (source: SourceCode): AssemblyLine =>
     assemblyLine(rawLine("", 0, source), source);

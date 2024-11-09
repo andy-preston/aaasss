@@ -1,4 +1,4 @@
-import type { Mnemonic } from "../source-files/line.ts";
+import type { Mnemonic } from "../pipeline/line.ts";
 
 export const unsupportedInstructions = () => {
     let instructions: Array<Mnemonic> = [];

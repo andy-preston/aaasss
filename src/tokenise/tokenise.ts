@@ -2,10 +2,10 @@ import { failure, type Box, type Failures } from "../value-or-failure.ts";
 
 import {
     tokenisedLine, tokenisedFailures, type AssemblyLine, type TokenisedLine
-} from "../source-files/line.ts";
+} from "../pipeline/line.ts";
 
 import { indexOffsetOperands } from "./index-offset-operands.ts";
-import { symbolicOperands } from "../source-files/line.ts";
+import { symbolicOperands } from "../pipeline/line.ts";
 
 const stripComment = (raw: string): string => {
     const semicolon = raw.indexOf(";");

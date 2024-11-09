@@ -1,6 +1,6 @@
 import type {
     RawLine, AssemblyLine, TokenisedLine, OperandLine, CodeLine
-} from "./source-files/line.ts";
+} from "./line.ts";
 
 export const pipeline = (
     assembly: (line: RawLine) => AssemblyLine,

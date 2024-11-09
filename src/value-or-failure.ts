@@ -1,4 +1,4 @@
-import type { OperandIndex } from "./source-files/line.ts";
+import type { OperandIndex } from "./pipeline/line.ts";
 
 type ContextFailures = "redefined";
 type DeviceFailures = "deviceNotFound" | "noDeviceSelected" | "multipleDevice";

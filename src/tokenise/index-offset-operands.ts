@@ -1,5 +1,5 @@
 import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
-import type { OperandIndex } from "../source-files/line.ts";
+import type { OperandIndex } from "../pipeline/line.ts";
 
 export const indexOffsetOperands = (
     operands: Array<string>

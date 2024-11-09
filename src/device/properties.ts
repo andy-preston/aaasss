@@ -1,6 +1,6 @@
 import type { Context } from "../context/context.ts";
 
-import type { Mnemonic } from "../source-files/line.ts";
+import type { Mnemonic } from "../pipeline/line.ts";
 
 import {
     box, failure, type Box, type Failure

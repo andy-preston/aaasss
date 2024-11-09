@@ -1,5 +1,5 @@
 import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
-import type { SymbolicOperand } from "../source-files/line.ts";
+import type { SymbolicOperand } from "../pipeline/line.ts";
 import type { Pass } from "../state/pass.ts";
 import { returnIfExpression } from "./magic.ts";
 
