@@ -1,28 +1,29 @@
-import { assert, assertEquals, assertInstanceOf } from "assert";
+import { assertEquals, assertInstanceOf } from "assert";
 import { newContext } from "./context/context.ts";
 import type { Box, Failure, FailureKind } from "./value-or-failure.ts";
 import { newPass } from "./state/pass.ts";
+import { NumericOperand } from "./pipeline/line.ts";
 
 export const anEmptyContext = () => newContext(newPass(() => {}));
 
-export const assertSuccess = (
-    actual: Box<string> | Failure,
-    expected: string
+export const assertSuccess = <Boxed extends string | NumericOperand>(
+    actual: Box<Boxed> | Failure,
+    expected: Boxed
 ) => {
     assertEquals(actual.which, "box");
-    assertEquals((actual as Box<string>).value, expected);
+    assertEquals((actual as Box<Boxed>).value, expected);
 };
 
-export const assertFailure = (
-    actual: Box<string> | Failure,
+export const assertFailure = <Boxed extends string | NumericOperand>(
+    actual: Box<Boxed> | Failure,
     expectedKind: FailureKind
 ) => {
     assertEquals(actual.which, "failure");
-    assert((actual as Failure).kind, expectedKind);
+    assertEquals((actual as Failure).kind, expectedKind);
 };
 
-export const assertFailureWithError = (
-    actual: Box<string> | Failure,
+export const assertFailureWithError = <Boxed extends string | NumericOperand>(
+    actual: Box<Boxed> | Failure,
     expectedKind: FailureKind,
     expectedError: ErrorConstructor,
     expectedMessage: string

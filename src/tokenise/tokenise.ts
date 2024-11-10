@@ -1,11 +1,11 @@
-import { failure, type Box, type Failures } from "../value-or-failure.ts";
-
 import {
-    tokenisedLine, tokenisedFailures, type AssemblyLine, type TokenisedLine
+    operands, tokenisedLine, tokenisedFailures,
+    type AssemblyLine, type SymbolicOperands, type TokenisedLine,
 } from "../pipeline/line.ts";
 
+import { failure, type Box, type Failures } from "../value-or-failure.ts";
+
 import { indexOffsetOperands } from "./index-offset-operands.ts";
-import { symbolicOperands } from "../pipeline/line.ts";
 
 const stripComment = (raw: string): string => {
     const semicolon = raw.indexOf(";");
@@ -58,6 +58,8 @@ export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
             theLine,
             label,
             mnemonic.toUpperCase(),
-            symbolicOperands((expandedOperands as Box<Array<string>>).value)
+            operands<SymbolicOperands>(
+                (expandedOperands as Box<Array<string>>).value
+            )
         );
 };
