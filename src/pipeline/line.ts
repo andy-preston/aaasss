@@ -12,7 +12,7 @@ export type SymbolicOperands =
     readonly [SymbolicOperand, SymbolicOperand] |
     readonly [SymbolicOperand, SymbolicOperand, SymbolicOperand];
 
-type NumericOperand = number | undefined;
+export type NumericOperand = number | undefined;
 
 export type NumericOperands =
     readonly [] |
@@ -144,16 +144,10 @@ export type OperandLine = Readonly<Pick<Line, OperandProperties>>;
 
 export const operandLine = (
     line: TokenisedLine,
-    numeric: NumericOperands
-): OperandLine => {
-    (line as Line).numericOperands = numeric;
-    return line as OperandLine;
-};
-
-export const operandFailures = (
-    line: TokenisedLine,
+    numeric: NumericOperands,
     failures: Failures
 ): OperandLine => {
+    (line as Line).numericOperands = numeric;
     line.addFailures(failures);
     return line as OperandLine;
 };

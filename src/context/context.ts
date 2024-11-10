@@ -41,11 +41,18 @@ export const newContext = (pass: Pass) => {
             ? result as Box<string> | Failure : box(`${result}`.trim());
     };
 
-    const operand = (operand: SymbolicOperand): Box<string> | Failure => {
+    const operand = (
+        operand: SymbolicOperand
+    ): Box<number | undefined> | Failure => {
         const fromContext = value(operand);
-        return fromContext.which == "failure" && pass.ignoreErrors()
-            ? box("0")
-            : fromContext;
+        if (fromContext.which == "box") {
+            return box(
+                fromContext.value == ""
+                    ? undefined
+                    : parseInt(fromContext.value)
+            );
+        }
+        return pass.ignoreErrors() ? box(undefined) : fromContext;
     };
 
     const directive = (name: string, directive: Directive) => {
