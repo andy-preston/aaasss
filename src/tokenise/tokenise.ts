@@ -1,9 +1,9 @@
 import {
     operands, tokenisedLine, tokenisedFailures,
-    type AssemblyLine, type SymbolicOperands, type TokenisedLine,
+    type AssemblyLine, type SymbolicOperands, type TokenisedLine
 } from "../pipeline/line.ts";
 
-import { failure, type Box, type Failures } from "../value-or-failure.ts";
+import { failure, type Failures } from "../value-or-failure.ts";
 
 import { indexOffsetOperands } from "./index-offset-operands.ts";
 
@@ -44,12 +44,10 @@ export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
     const operandsList = split("before", ",", operandsText).filter(
         (operand: string) => operand != ""
     );
+
     const expandedOperands = indexOffsetOperands(operandsList);
-    if (expandedOperands.which == "failure") {
-        failures.push(expandedOperands);
-    }
-    else if (expandedOperands.value.length > 3) {
-        failures.push(failure(undefined, "tooManyOperands", undefined));
+    if (expandedOperands.length > 3) {
+        failures.push(failure(1, "tooManyIndexOffset", undefined));
     }
 
     return failures.length > 0
@@ -58,8 +56,6 @@ export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
             theLine,
             label,
             mnemonic.toUpperCase(),
-            operands<SymbolicOperands>(
-                (expandedOperands as Box<Array<string>>).value
-            )
+            operands<SymbolicOperands>(expandedOperands)
         );
 };
