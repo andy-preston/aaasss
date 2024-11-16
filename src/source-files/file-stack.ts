@@ -27,7 +27,7 @@ export const fileStack = () => {
         }
         catch (error) {
             if (error instanceof Error) {
-                return failure(undefined, "notFound", error);
+                return failure(undefined, "file.notFound", error);
             }
             throw error;
         }

@@ -1,14 +1,7 @@
-import type { OperandIndex } from "./pipeline/line.ts";
+import type { OperandIndex } from "./coupling/line.ts";
+import { failures } from "./output/failures-messages.ts";
 
-type ContextFailures = "redefined";
-type DeviceFailures = "deviceNotFound" | "noDeviceSelected" | "multipleDevice";
-type FileFailures = "notFound";
-type JavascriptFailures = "jsError" | "jsMode" | "assemblerMode";
-type OperandFailures = "outOfRange" | "tooManyOperands";
-type SyntaxErrors = "noSpaceInLabel" | "tooManyIndexOffset";
-export type FailureKind = "mockUp" |
-    ContextFailures | DeviceFailures | FileFailures |
-    JavascriptFailures | OperandFailures | SyntaxErrors;
+export type FailureKind = keyof typeof failures;
 
 export const failure = (
     operand: OperandIndex | undefined,

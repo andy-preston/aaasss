@@ -17,16 +17,16 @@ export const deviceProperties = (context: Context) => {
     const registers = cpuRegisters(context);
 
     const name = (): Box<string> | Failure => deviceName == ""
-        ? failure(undefined, "noDeviceSelected", undefined)
+        ? failure(undefined, "device.notSelected", undefined)
         : box(deviceName);
 
     const hasReducedCore = (): Box<boolean> | Failure => deviceName == ""
-        ? failure(undefined, "noDeviceSelected", undefined)
+        ? failure(undefined, "device.notSelected", undefined)
         : box(reducedCore);
 
     const isUnsupported = (mnemonic: Mnemonic): Box<boolean> | Failure =>
         deviceName == ""
-            ? failure(undefined, "noDeviceSelected", undefined)
+            ? failure(undefined, "device.notSelected", undefined)
             : box(unsupported.isUnsupported(mnemonic));
 
     const setReducedCore = (value: boolean) => {

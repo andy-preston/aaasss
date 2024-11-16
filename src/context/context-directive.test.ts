@@ -20,13 +20,13 @@ Deno.test("Directives can return a failure", () => {
     const context = anEmptyContext();
 
     const testDirective = (_: string): Box<string> | Failure => {
-        return failure(undefined, "notFound", undefined);
+        return failure(undefined, "file.notFound", undefined);
     };
     context.directive("testDirective", testDirective);
 
     const result = context.value("testDirective('')");
     assertEquals(result.which, "failure");
-    assertEquals((result as Failure).kind, "notFound");
+    assertEquals((result as Failure).kind, "file.notFound");
 });
 
 Deno.test("Directives can return success", () => {

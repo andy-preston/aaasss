@@ -81,7 +81,7 @@ export const deviceChooser = (
 
         const baseName = `./devices/${deviceFileName(name)}.json`;
         if (!existsSync(baseName)) {
-            return failure(undefined, "deviceNotFound", undefined);
+            return failure(undefined, "device.notFound", undefined);
         }
         const baseSpec: DeviceSpec = loadJsonFile(baseName);
         const familySpec: RawItems = "family" in baseSpec

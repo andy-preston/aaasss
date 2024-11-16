@@ -32,7 +32,7 @@ Deno.test("An unknown variable gives a reference error", () => {
     const context = anEmptyContext();
     assertFailureWithError(
         context.value("this.test = plop * 10;"),
-        "jsError",
+        "js.error",
         ReferenceError,
         "plop is not defined"
     );
@@ -42,7 +42,7 @@ Deno.test("Syntax errors are returned as errors too", () => {
     const context = anEmptyContext();
     assertFailureWithError(
         context.value("this is just nonsense"),
-        "jsError",
+        "js.error",
         SyntaxError,
         "Unexpected identifier 'is'"
     );

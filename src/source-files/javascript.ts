@@ -18,7 +18,7 @@ export const javascript = (context: Context) => {
 
     const javascript = (failures: Array<Failure>): Array<Failure> => {
         if (current == "javascript") {
-            failures.push(failure(undefined, "jsMode", undefined));
+            failures.push(failure(undefined, "js.jsMode", undefined));
         } else {
             current = "javascript";
         }
@@ -27,7 +27,7 @@ export const javascript = (context: Context) => {
 
     const assembler = (failures: Array<Failure>): Array<Failure> => {
         if (current == "assembler") {
-            failures.push(failure(undefined, "assemblerMode", undefined));
+            failures.push(failure(undefined, "js.assemblerMode", undefined));
         } else {
             const javascript = buffer.javascript.join("\n").trim();
             buffer.javascript = [];

@@ -13,7 +13,7 @@ Deno.test("Including a file returns a blank value", () => {
 Deno.test("Including a non existant file returns a failure", () => {
     assertFailure(
         fileStack().includeFile("does-not-exist.test"),
-        "notFound"
+        "file.notFound"
     );
 });
 
@@ -25,7 +25,7 @@ Deno.test("Reading a non existant source file gives one line with a failure", ()
         assertEquals(line.rawSource, "");
         assert(line.failed);
         assertEquals(line.failures.length, 1);
-        assertEquals(line.failures[0]!.kind, "notFound");
+        assertEquals(line.failures[0]!.kind, "file.notFound");
         lineCount = lineCount + 1;
     }
     assertEquals(lineCount, 1);

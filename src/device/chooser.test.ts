@@ -19,5 +19,5 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
     const chooser = deviceChooser(deviceProperties(context), context);
     const result = chooser.directive("notARealDevice");
     assertEquals(result.which, "failure");
-    assertEquals((result as Failure).kind, "deviceNotFound");
+    assertEquals((result as Failure).kind, "device.notFound");
 });

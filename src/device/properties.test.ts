@@ -8,15 +8,15 @@ Deno.test("Returns Failure when no device is selected", () => {
 
     const name = properties.public.name();
     assertEquals(name.which, "failure");
-    assertEquals((name as Failure).kind, "noDeviceSelected");
+    assertEquals((name as Failure).kind, "device.notSelected");
 
     const reducedCore = properties.public.hasReducedCore();
     assertEquals(reducedCore.which, "failure");
-    assertEquals((reducedCore as Failure).kind, "noDeviceSelected");
+    assertEquals((reducedCore as Failure).kind, "device.notSelected");
 
     const unsupported = properties.public.isUnsupported("MUL");
     assertEquals(unsupported.which, "failure");
-    assertEquals((unsupported as Failure).kind, "noDeviceSelected");
+    assertEquals((unsupported as Failure).kind, "device.notSelected");
 });
 
 Deno.test("Returns default Answer(s) once a device name is selected", () => {

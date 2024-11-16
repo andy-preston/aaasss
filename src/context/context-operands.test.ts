@@ -17,7 +17,7 @@ Deno.test("An uninitialised property yields and error", () => {
     const context = anEmptyContext();
     assertFailureWithError(
         context.operand("notDefined"),
-        "jsError",
+        "js.error",
         ReferenceError,
         "notDefined is not defined"
     );

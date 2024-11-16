@@ -36,7 +36,7 @@ export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
 
     const [label, withoutLabel] = split("after", ":", cleaned);
     if (label.indexOf(" ") != -1) {
-        failures.push(failure(undefined, "noSpaceInLabel", undefined));
+        failures.push(failure(undefined, "syntax.spaceInLabel", undefined));
     }
 
     const [mnemonic, operandsText] = split("before", " ", withoutLabel);
@@ -47,7 +47,7 @@ export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
 
     const expandedOperands = indexOffsetOperands(operandsList);
     if (expandedOperands.length > 3) {
-        failures.push(failure(1, "tooManyIndexOffset", undefined));
+        failures.push(failure(1, "operand.tooManyIndexOffset", undefined));
     }
 
     return failures.length > 0

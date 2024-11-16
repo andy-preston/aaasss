@@ -42,7 +42,7 @@ Deno.test("An undefined property yields a failure and an undefined property", ()
     assertEquals(line.failures.length, 1);
     assertFailureWithError(
         line.failures[0]!,
-        "jsError",
+        "js.error",
         ReferenceError,
         "notDefined is not defined"
     );

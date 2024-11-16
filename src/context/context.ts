@@ -22,7 +22,7 @@ export const newContext = (pass: Pass) => {
             return new Function(functionBody).call(context);
         } catch (error) {
             if (error instanceof Error) {
-                return failure(undefined, "jsError", error);
+                return failure(undefined, "js.error", error);
             }
             throw error;
         }
