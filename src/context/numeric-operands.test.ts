@@ -1,7 +1,7 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import {
     assemblyLine, rawLine, SymbolicOperands, tokenisedLine
-} from "../pipeline/line.ts";
+} from "../coupling/line.ts";
 import { anEmptyContext, assertFailureWithError } from "../testing.ts";
 import { numericOperands  } from "./numeric-operands.ts";
 

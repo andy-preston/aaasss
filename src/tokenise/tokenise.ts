@@ -1,7 +1,7 @@
 import {
     operands, tokenisedLine, tokenisedFailures,
     type AssemblyLine, type SymbolicOperands, type TokenisedLine
-} from "../pipeline/line.ts";
+} from "../coupling/line.ts";
 
 import { failure, type Failures } from "../value-or-failure.ts";
 

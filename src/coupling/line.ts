@@ -20,7 +20,7 @@ export type NumericOperands =
     readonly [NumericOperand, NumericOperand] |
     readonly [NumericOperand, NumericOperand, NumericOperand];
 
-type OperandLength = SymbolicOperands["length"] & NumericOperands["length"];
+//type OperandLength = SymbolicOperands["length"] & NumericOperands["length"];
 
 export type OperandIndex = 0 | 1 | 2;
 
@@ -40,7 +40,7 @@ export type Code =
     readonly [number, number] |
     readonly [number, number, number, number];
 
-type CodeLength = Code["length"];
+// type CodeLength = Code["length"];
 
 export type FileName = string;
 export type LineNumber = number;
@@ -142,6 +142,12 @@ type OperandProperties = TokenisedProperties | "numericOperands";
 
 export type OperandLine = Readonly<Pick<Line, OperandProperties>>;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// TODO: All line types should use this mechanism to allow for
+// "try my best" error handling!
+//
+////////////////////////////////////////////////////////////////////////////////
 export const operandLine = (
     line: TokenisedLine,
     numeric: NumericOperands,

@@ -3,7 +3,7 @@ import {
 } from "../value-or-failure.ts";
 import {
     rawFailures, rawLine, type FileName, type LineNumber, type SourceCode
-} from "../pipeline/line.ts";
+} from "../coupling/line.ts";
 
 type FileIterator = ArrayIterator<[LineNumber, SourceCode]>;
 type FileContents = {

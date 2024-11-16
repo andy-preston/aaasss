@@ -2,7 +2,7 @@ import { assertEquals, assertInstanceOf } from "assert";
 import { newContext } from "./context/context.ts";
 import type { Box, Failure, FailureKind } from "./value-or-failure.ts";
 import { newPass } from "./state/pass.ts";
-import { NumericOperand } from "./pipeline/line.ts";
+import { NumericOperand } from "./coupling/line.ts";
 
 export const anEmptyContext = () => newContext(newPass(() => {}));
 

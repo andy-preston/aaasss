@@ -2,7 +2,7 @@ import { assertEquals } from "assert";
 import { cpuRegisters } from "../device/registers.ts";
 import { anEmptyContext } from "../testing.ts";
 import { javascript } from "./javascript.ts";
-import { rawLine } from "../pipeline/line.ts";
+import { rawLine } from "../coupling/line.ts";
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {
     const js = javascript(anEmptyContext());

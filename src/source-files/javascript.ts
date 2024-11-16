@@ -2,7 +2,7 @@ import type { Context } from "../context/context.ts";
 import { failure, type Failure } from "../value-or-failure.ts";
 import {
     assemblyFailures, assemblyLine, type AssemblyLine, type RawLine
-} from "../pipeline/line.ts";
+} from "../coupling/line.ts";
 
 const scriptDelimiter = /({{|}})/;
 
