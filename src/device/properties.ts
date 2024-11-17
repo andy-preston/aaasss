@@ -3,7 +3,7 @@ import type { Context } from "../context/context.ts";
 import type { Mnemonic } from "../coupling/line.ts";
 
 import {
-    box, failure, type Box, type Failure
+    box, failure, Failures, type Box, type Failure
 } from "../value-or-failure.ts";
 
 import { cpuRegisters } from "./registers.ts";
@@ -24,10 +24,13 @@ export const deviceProperties = (context: Context) => {
         ? failure(undefined, "device.notSelected", undefined)
         : box(reducedCore);
 
-    const isUnsupported = (mnemonic: Mnemonic): Box<boolean> | Failure =>
-        deviceName == ""
-            ? failure(undefined, "device.notSelected", undefined)
-            : box(unsupported.isUnsupported(mnemonic));
+    const isUnsupported = (mnemonic: Mnemonic): Failures =>
+        deviceName == "" ? [
+            failure(undefined, "device.notSelected", undefined),
+            failure(undefined, "mnemonic.supportedUnknown", undefined)
+        ] : unsupported.isUnsupported(mnemonic) ? [
+            failure(undefined, "mnemonic.notSupported", undefined)
+        ] : [];
 
     const setReducedCore = (value: boolean) => {
         reducedCore = value;
@@ -52,3 +55,4 @@ export const deviceProperties = (context: Context) => {
 };
 
 export type DeviceProperties = ReturnType<typeof deviceProperties>;
+export type DevicePropertiesInterface = DeviceProperties["public"];

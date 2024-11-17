@@ -138,9 +138,9 @@ export const tokenisedFailures = (
     return line as TokenisedLine;
 };
 
-type OperandProperties = TokenisedProperties | "numericOperands";
+type CodeProperties = TokenisedProperties | "numericOperands" | "code";
 
-export type OperandLine = Readonly<Pick<Line, OperandProperties>>;
+export type CodeLine = Readonly<Pick<Line, CodeProperties>>;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -148,32 +148,14 @@ export type OperandLine = Readonly<Pick<Line, OperandProperties>>;
 // "try my best" error handling!
 //
 ////////////////////////////////////////////////////////////////////////////////
-export const operandLine = (
+export const codeLine = (
     line: TokenisedLine,
     numeric: NumericOperands,
+    code: Code,
     failures: Failures
-): OperandLine => {
+): CodeLine => {
     (line as Line).numericOperands = numeric;
-    line.addFailures(failures);
-    return line as OperandLine;
-};
-
-type CodeProperties = OperandProperties | "code";
-
-export type CodeLine = Readonly<Pick<Line, CodeProperties>>;
-
-export const codeLine = (
-    line: OperandLine,
-    code: Code
-): CodeLine => {
     (line as Line).code = code;
-    return line as CodeLine;
-};
-
-export const codeFailures = (
-    line: OperandLine,
-    failures: Failures
-): CodeLine => {
     line.addFailures(failures);
     return line as CodeLine;
 };

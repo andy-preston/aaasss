@@ -11,8 +11,11 @@ export const failures = {
     "js.error": (_line: CodeLine) => [""],
     "js.jsMode": (_line: CodeLine) => [""],
     "js.assemblerMode": (_line: CodeLine) => [""],
+    "mnemonic.supportedUnknown": (_line: CodeLine) => [""],
+    "mnemonic.notSupported": (_line: CodeLine) => [""],
+    "mnemonic.unknown": (_line: CodeLine) => [""],
     "operand.outOfRange": (_line: CodeLine) => [""],
-    "operand.tooMany": (_line: CodeLine) => [""],
+    "operand.wrongCount": (_line: CodeLine) => [""],
     "operand.tooManyIndexOffset": (_line: CodeLine) => {
         return ["An instruction can only have 1 index offset (Z+qq) operand"];
     },

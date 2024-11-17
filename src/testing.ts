@@ -1,10 +1,9 @@
 import { assertEquals, assertInstanceOf } from "assert";
 import { newContext } from "./context/context.ts";
 import type { Box, Failure, FailureKind } from "./value-or-failure.ts";
-import { newPass } from "./state/pass.ts";
 import { NumericOperand } from "./coupling/line.ts";
 
-export const anEmptyContext = () => newContext(newPass(() => {}));
+export const anEmptyContext = () => newContext();
 
 export const assertSuccess = <Boxed extends string | NumericOperand>(
     actual: Box<Boxed> | Failure,
@@ -29,6 +28,6 @@ export const assertFailureWithError = <Boxed extends string | NumericOperand>(
     expectedMessage: string
 ) => {
     assertFailure(actual, expectedKind);
-    assertInstanceOf((actual as Failure).error, expectedError);
-    assertEquals((actual as Failure).error!.message, expectedMessage);
+    assertInstanceOf((actual as Failure).extra, expectedError);
+    assertEquals(((actual as Failure).extra as Error).message, expectedMessage);
 };

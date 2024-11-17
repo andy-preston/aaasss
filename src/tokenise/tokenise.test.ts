@@ -85,7 +85,7 @@ Deno.test("A label may not contain whitespace", () => {
     assertEquals(tokenised.failures.length, 1);
     assertEquals(tokenised.failures[0]!.kind, "syntax.spaceInLabel");
     assertEquals(tokenised.failures[0]!.operand, undefined);
-    assertEquals(tokenised.failures[0]!.error, undefined);
+    assertEquals(tokenised.failures[0]!.extra, undefined);
 });
 
 Deno.test("The mnemonic is separated from the operands by whitespace", () => {
@@ -150,5 +150,5 @@ Deno.test("Only one Z+q operand is allowed in an instruction", () => {
     assertEquals(tokenised.failures.length, 1);
     assertEquals(tokenised.failures[0]!.kind, "operand.tooManyIndexOffset");
     assertEquals(tokenised.failures[0]!.operand, 1);
-    assertEquals(tokenised.failures[0]!.error, undefined);
+    assertEquals(tokenised.failures[0]!.extra, undefined);
 });

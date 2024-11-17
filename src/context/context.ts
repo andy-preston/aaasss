@@ -1,6 +1,5 @@
 import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
 import type { SymbolicOperand } from "../coupling/line.ts";
-import type { Pass } from "../state/pass.ts";
 import { returnIfExpression } from "./magic.ts";
 
 type SimpleFunction = (n: number) => number;
@@ -11,7 +10,7 @@ type Directive = StringDirective | NumberDirective | ArrayDirective;
 type NumericGetter = () => number;
 type ContextFields = SimpleFunction | Directive | number;
 
-export const newContext = (pass: Pass) => {
+export const newContext = () => {
     const context: Record<string, ContextFields> = {
         "low": (n: number) => n & 0xff,
         "high": (n: number) => (n >> 8) & 0xff
@@ -41,18 +40,11 @@ export const newContext = (pass: Pass) => {
             ? result as Box<string> | Failure : box(`${result}`.trim());
     };
 
-    const operand = (
-        operand: SymbolicOperand
-    ): Box<number | undefined> | Failure => {
+    const operand = (operand: SymbolicOperand): Box<number> | Failure => {
         const fromContext = value(operand);
-        if (fromContext.which == "box") {
-            return box(
-                fromContext.value == ""
-                    ? undefined
-                    : parseInt(fromContext.value)
-            );
-        }
-        return pass.ignoreErrors() ? box(undefined) : fromContext;
+        return fromContext.which == "failure"
+            ? fromContext
+            : box(fromContext.value == "" ? 0 : parseInt(fromContext.value));
     };
 
     const directive = (name: string, directive: Directive) => {

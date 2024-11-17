@@ -1,17 +1,17 @@
 import type { OperandIndex } from "./coupling/line.ts";
-import { failures } from "./output/failures-messages.ts";
+import { failures } from "./output/failure-messages.ts";
 
 export type FailureKind = keyof typeof failures;
 
 export const failure = (
     operand: OperandIndex | undefined,
     kind: FailureKind,
-    error: Error | undefined
+    extra: Error | string | undefined
 ) => ({
     "which": "failure" as const,
     "operand": operand,
     "kind": kind,
-    "error": error,
+    "extra": extra,
 });
 
 export type Failure = Readonly<ReturnType<typeof failure>>;
