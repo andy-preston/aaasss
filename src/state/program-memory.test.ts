@@ -2,10 +2,10 @@ import { assertEquals } from "assert";
 import { newContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { Box, Failure } from "../value-or-failure.ts";
-import { programMemory } from "./program-memory.ts";
+import { newProgramMemory } from "./program-memory.ts";
 
 Deno.test("A device must be selected before program memory can be set", () => {
-    const memory = programMemory(deviceProperties(newContext()));
+    const memory = newProgramMemory(deviceProperties(newContext()));
     const result = memory.origin(10);
     assertEquals(result.which, "failure");
     assertEquals((result as Failure).kind, "programMemory.sizeUnknown");
@@ -13,7 +13,7 @@ Deno.test("A device must be selected before program memory can be set", () => {
 });
 
 Deno.test("org addresses can't be less than zero", () => {
-    const memory = programMemory(deviceProperties(newContext()));
+    const memory = newProgramMemory(deviceProperties(newContext()));
     const result = memory.origin(-1);
     assertEquals(result.which, "failure");
     assertEquals((result as Failure).kind, "address.negative");
@@ -22,7 +22,7 @@ Deno.test("org addresses can't be less than zero", () => {
 
 Deno.test("Device name is used to determine if properties have been set", () => {
     const properties = deviceProperties(newContext());
-    const memory = programMemory(properties);
+    const memory = newProgramMemory(properties);
     properties.programMemoryBytes(100);
     const result = memory.origin(10);
     assertEquals(result.which, "failure");
@@ -32,7 +32,7 @@ Deno.test("Device name is used to determine if properties have been set", () => 
 
 Deno.test("org addresses must be progmem size when a device is chosen", () => {
     const properties = deviceProperties(newContext());
-    const memory = programMemory(properties);
+    const memory = newProgramMemory(properties);
     properties.setName("testing");
     properties.programMemoryBytes(100);
     const result = memory.origin(92);
@@ -43,7 +43,7 @@ Deno.test("org addresses must be progmem size when a device is chosen", () => {
 
 Deno.test("programMemoryOrigin directive sets current address", () => {
     const properties = deviceProperties(newContext());
-    const memory = programMemory(properties);
+    const memory = newProgramMemory(properties);
     properties.setName("testing");
     properties.programMemoryBytes(100);
 

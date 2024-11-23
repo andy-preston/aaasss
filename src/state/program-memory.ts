@@ -2,22 +2,26 @@ import type { Code } from "../coupling/line.ts";
 import type { DeviceProperties } from "../device/properties.ts";
 import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
 
-export const programMemory = (properties: DeviceProperties) => {
+export const newProgramMemory = (properties: DeviceProperties) => {
     let address = 0;
 
-    const origin = (newAddress: number): Box<number> | Failure => {
-        if (newAddress < 0) {
-            return failure(undefined, "address.negative", `${newAddress}`);
+    const reset = () => {
+        address = 0;
+    }
+
+    const origin = (wordAddress: number): Box<number> | Failure => {
+        if (wordAddress < 0) {
+            return failure(undefined, "address.negative", `${wordAddress}`);
         }
-        if (newAddress == 0) {
+        if (wordAddress == 0) {
             address = 0;
             return box(address);
         }
-        const pastEnd = properties.public.programMemoryEnd(newAddress);
+        const pastEnd = properties.public.programMemoryEnd(wordAddress);
         if (pastEnd.which == "failure") {
             return pastEnd;
         }
-        address = newAddress;
+        address = wordAddress;
         return box(address);
     };
 
@@ -32,10 +36,11 @@ export const programMemory = (properties: DeviceProperties) => {
     };
 
     return {
+        "reset": reset,
         "address": () => address,
         "origin": origin,
         "step": step
     };
 };
 
-export type ProgramMemory = ReturnType<typeof programMemory>;
+export type ProgramMemory = ReturnType<typeof newProgramMemory>;

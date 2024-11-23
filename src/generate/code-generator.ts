@@ -1,8 +1,8 @@
 import { failure } from "../value-or-failure.ts";
 import { codeLine, type TokenisedLine, type CodeLine } from "../coupling/line.ts";
-import { Pass } from "../state/pass.ts";
-import { Context } from "../context/context.ts";
-import { DevicePropertiesInterface } from "../device/properties.ts";
+import type { ProgramMemory } from "../state/program-memory.ts";
+import type { Context } from "../context/context.ts";
+import type { DevicePropertiesInterface } from "../device/properties.ts";
 import { addressingModeList } from "./addressing-mode-list.ts";
 
 export type AddressingModeGenerator = (context: Context) => CodeLine;
@@ -22,9 +22,12 @@ const addressingMode = (
 export const codeGenerator = (
     context: Context,
     device: DevicePropertiesInterface,
-    _pass: Pass
+    programMemory: ProgramMemory
 ) => (line: TokenisedLine): CodeLine => {
-    if (line.failed() || line.mnemonic == "") {
+    if (line.label != "") {
+        context.property(line.label, programMemory.address());
+    }
+    if (line.mnemonic == "") {
         return codeLine(line, [], [], []);
     }
     const isUnsupported = device.isUnsupported(line.mnemonic);
@@ -37,5 +40,10 @@ export const codeGenerator = (
             failure(undefined, "mnemonic.unknown", undefined)
         ]);
     }
-    return mode(context);
+    const generationResult = mode(context);
+    const stepResult = programMemory.step(generationResult.code);
+    if (stepResult.which == "failure") {
+        generationResult.addFailures([stepResult]);
+    }
+    return generationResult;
 };
