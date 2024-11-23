@@ -1,7 +1,7 @@
 import type { Context } from "../context/context.ts";
 import { failure, type Failure } from "../value-or-failure.ts";
 import {
-    assemblyFailures, assemblyLine, type AssemblyLine, type RawLine
+    assemblyLine, type AssemblyLine, type RawLine
 } from "../coupling/line.ts";
 
 const scriptDelimiter = /({{|}})/;
@@ -59,10 +59,10 @@ export const javascript = (context: Context) => {
             [],
         );
         if (failures.length > 0) {
-            return assemblyFailures(line, failures);
+            return assemblyLine(line, "", failures);
         }
         const assembler = buffer.assembler.join("").trim();
         buffer.assembler = [];
-        return assemblyLine(line, assembler);
+        return assemblyLine(line, assembler, []);
     };
 };

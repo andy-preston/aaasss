@@ -1,5 +1,5 @@
 import {
-    operands, tokenisedLine, tokenisedFailures,
+    operands, tokenisedLine,
     type AssemblyLine, type SymbolicOperands, type TokenisedLine
 } from "../coupling/line.ts";
 
@@ -50,12 +50,13 @@ export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
         failures.push(failure(1, "operand.tooManyIndexOffset", undefined));
     }
 
-    return failures.length > 0
-        ? tokenisedFailures(theLine, failures)
-        : tokenisedLine(
-            theLine,
-            label,
-            mnemonic.toUpperCase(),
-            operands<SymbolicOperands>(expandedOperands)
-        );
+    return tokenisedLine(
+        theLine,
+        label,
+        mnemonic.toUpperCase(),
+        operands<SymbolicOperands>(
+            expandedOperands.length > 3 ? operandsList : expandedOperands
+        ),
+        failures
+    );
 };

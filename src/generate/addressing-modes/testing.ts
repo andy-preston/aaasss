@@ -9,9 +9,9 @@ export type Tests = Array<Test>;
 
 export const testLine = (test: TestTokens) => tokenisedLine(
     assemblyLine(
-        rawLine("", 0, ""),
-        ""
-    ), ...test
+        rawLine("", 0, "", []),
+        "", []
+    ), ...test, []
 );
 
 export const description = (test: Test) => {

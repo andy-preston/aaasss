@@ -2,7 +2,7 @@ import {
     box, failure, type Box, type Failure
 } from "../value-or-failure.ts";
 import {
-    rawFailures, rawLine, type FileName, type LineNumber, type SourceCode
+    rawLine, type FileName, type LineNumber, type SourceCode
 } from "../coupling/line.ts";
 
 type FileIterator = ArrayIterator<[LineNumber, SourceCode]>;
@@ -46,7 +46,7 @@ export const fileStack = () => {
         fileStack = [];
         const topFile = includeFile(fileName);
         if (topFile.which == "failure") {
-            yield rawFailures(rawLine(fileName, 0, ""), [topFile]);
+            yield rawLine(fileName, 0, "", [topFile]);
         }
         let file = currentFile();
         while (file != undefined) {
@@ -55,7 +55,7 @@ export const fileStack = () => {
                 fileStack.pop();
             } else {
                 const [lineNumber, rawSource] = next.value;
-                yield rawLine(file[0], lineNumber, rawSource);
+                yield rawLine(file[0], lineNumber, rawSource, []);
             }
             // Bear in mind that another file could have been pushed on top
             // by an include directive "whilst we weren't watching"

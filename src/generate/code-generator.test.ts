@@ -14,9 +14,10 @@ const testLine = (
     operands: SymbolicOperands
 ): TokenisedLine => tokenisedLine(
     assemblyLine(
-        rawLine("", 0, ""),
-        ""
-    ), "", mnemonic, operands
+        rawLine("", 0, "", []),
+        "", []
+    ),
+    "", mnemonic, operands, []
 );
 
 Deno.test("Failed lines don't bother generating code", () => {
@@ -24,8 +25,8 @@ Deno.test("Failed lines don't bother generating code", () => {
     const context = newContext();
     const device = deviceProperties(context);
     const generator = codeGenerator(context, device.public, pass);
-    const line = tokenisedFailures(
-        assemblyLine(rawLine("", 0, ""), ""),
+    const line = tokenisedLine(
+        assemblyLine(rawLine("", 0, "", []), "", []), "", "", [],
         [failure(undefined, "js.error", undefined)]
     );
     const result = generator(line);

@@ -82,15 +82,12 @@ export type RawLine = Readonly<Pick<Line, RawProperties>>;
 export const rawLine = (
     fileName: FileName,
     lineNumber: LineNumber,
-    source: SourceCode
-) => line(fileName, lineNumber, source) as RawLine;
-
-export const rawFailures = (
-    line: RawLine,
+    source: SourceCode,
     failures: Failures
-): RawLine => {
-    line.addFailures(failures);
-    return line as RawLine;
+) => {
+    const result = line(fileName, lineNumber, source) as RawLine;
+    result.addFailures(failures);
+    return result;
 };
 
 type AssemblyProperties = RawProperties | "assemblySource";
@@ -99,16 +96,10 @@ export type AssemblyLine = Readonly<Pick<Line, AssemblyProperties>>;
 
 export const assemblyLine = (
     line: RawLine,
-    source: SourceCode
-): AssemblyLine => {
-    (line as Line).assemblySource = source;
-    return line as AssemblyLine;
-};
-
-export const assemblyFailures = (
-    line: RawLine,
+    source: SourceCode,
     failures: Failures
 ): AssemblyLine => {
+    (line as Line).assemblySource = source;
     line.addFailures(failures);
     return line as AssemblyLine;
 };
@@ -122,18 +113,12 @@ export const tokenisedLine = (
     line: AssemblyLine,
     label: Label,
     mnemonic: Mnemonic,
-    symbolicOperands: SymbolicOperands
+    symbolicOperands: SymbolicOperands,
+    failures: Failures
 ): TokenisedLine => {
     (line as Line).label = label;
     (line as Line).mnemonic = mnemonic;
     (line as Line).symbolicOperands = symbolicOperands;
-    return line as TokenisedLine;
-};
-
-export const tokenisedFailures = (
-    line: AssemblyLine,
-    failures: Failures
-): TokenisedLine => {
     line.addFailures(failures);
     return line as TokenisedLine;
 };
@@ -142,12 +127,6 @@ type CodeProperties = TokenisedProperties | "numericOperands" | "code";
 
 export type CodeLine = Readonly<Pick<Line, CodeProperties>>;
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// TODO: All line types should use this mechanism to allow for
-// "try my best" error handling!
-//
-////////////////////////////////////////////////////////////////////////////////
 export const codeLine = (
     line: TokenisedLine,
     numeric: NumericOperands,

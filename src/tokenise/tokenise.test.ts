@@ -5,7 +5,7 @@ import {
 } from "../coupling/line.ts";
 
 const testLine = (source: SourceCode): AssemblyLine =>
-    assemblyLine(rawLine("", 0, source), source);
+    assemblyLine(rawLine("", 0, source, []), source, []);
 
 Deno.test("Leading and trailing whitespace is discarded", () => {
     const line = testLine("\tLDI R16, 23   ");
