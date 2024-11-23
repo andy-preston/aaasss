@@ -28,8 +28,8 @@ export const codeGenerator = (
         return codeLine(line, [], [], []);
     }
     const isUnsupported = device.isUnsupported(line.mnemonic);
-    if (isUnsupported.length > 0) {
-        return codeLine(line, [], [], isUnsupported);
+    if (isUnsupported.which == "failure") {
+        return codeLine(line, [], [], [isUnsupported]);
     }
     const mode = addressingMode(line);
     if (mode == undefined) {

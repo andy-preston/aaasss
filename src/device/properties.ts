@@ -2,9 +2,7 @@ import type { Context } from "../context/context.ts";
 
 import type { Mnemonic } from "../coupling/line.ts";
 
-import {
-    box, failure, Failures, type Box, type Failure
-} from "../value-or-failure.ts";
+import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
 
 import { cpuRegisters } from "./registers.ts";
 
@@ -17,21 +15,23 @@ export const deviceProperties = (context: Context) => {
     const unsupported = unsupportedInstructions();
     const registers = cpuRegisters(context);
 
-    const name = (): Box<string> | Failure => deviceName == ""
-        ? failure(undefined, "device.notSelected", undefined)
-        : box(deviceName);
+    const name = (): Box<string> | Failure =>
+        deviceName == ""
+            ? failure(undefined, "device.notSelected", undefined)
+            : box(deviceName);
 
-    const hasReducedCore = (): Box<boolean> | Failure => deviceName == ""
-        ? failure(undefined, "device.notSelected", undefined)
-        : box(reducedCore);
+    const hasReducedCore = (): Box<boolean> | Failure =>
+        deviceName == ""
+            ? failure(undefined, "device.notSelected", undefined)
+            : box(reducedCore);
 
-    const isUnsupported = (mnemonic: Mnemonic): Failures =>
-        deviceName == "" ? [
-            failure(undefined, "device.notSelected", undefined),
-            failure(undefined, "mnemonic.supportedUnknown", undefined)
-        ] : unsupported.isUnsupported(mnemonic) ? [
-            failure(undefined, "mnemonic.notSupported", undefined)
-        ] : [];
+    const isUnsupported = (mnemonic: Mnemonic): Box<boolean> | Failure =>
+        deviceName == ""
+            ? failure(undefined, "mnemonic.supportedUnknown", undefined)
+            : unsupported.isUnsupported(mnemonic)
+            ? failure(undefined, "mnemonic.notSupported", undefined)
+            : box(false);
+
     const programMemoryEnd = (address: number): Box<boolean> | Failure =>
         deviceName == ""
             ? failure(undefined, "programMemory.sizeUnknown", `${address}`)

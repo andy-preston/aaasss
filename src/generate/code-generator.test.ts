@@ -55,9 +55,8 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
     const line = testLine("DES", []);
     const result = generator(line);
     assert(result.failed());
-    assertEquals(result.failures.length, 2);
-    assertEquals(result.failures[0]!.kind, "device.notSelected");
-    assertEquals(result.failures[1]!.kind, "mnemonic.supportedUnknown");
+    assertEquals(result.failures.length, 1);
+    assertEquals(result.failures[0]!.kind, "mnemonic.supportedUnknown");
     assertEquals(result.code.length, 0);
 });
 

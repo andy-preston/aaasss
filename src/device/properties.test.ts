@@ -17,9 +17,9 @@ Deno.test("Returns Failure when no device is selected", () => {
     assertEquals((reducedCore as Failure).kind, "device.notSelected");
 
     const unsupported = properties.public.isUnsupported("MUL");
-    assertEquals(unsupported.length, 2);
-    assertEquals(unsupported[0]!.kind, "device.notSelected");
-    assertEquals(unsupported[1]!.kind, "mnemonic.supportedUnknown");
+
+    assertEquals(unsupported.which, "failure");
+    assertEquals((unsupported as Failure).kind, "mnemonic.supportedUnknown");
 });
 
 Deno.test("Returns default Answer(s) once a device name is selected", () => {
@@ -35,7 +35,8 @@ Deno.test("Returns default Answer(s) once a device name is selected", () => {
     assertFalse((reducedCore as Box<boolean>).value);
 
     const unsupported = properties.public.isUnsupported("MUL");
-    assertEquals(unsupported.length, 0);
+    assertEquals(unsupported.which, "box");
+    assertFalse((unsupported as Box<boolean>).value);
 });
 
 Deno.test("Returns selected Answer(s) once 'rules' are selected", () => {
@@ -53,6 +54,6 @@ Deno.test("Returns selected Answer(s) once 'rules' are selected", () => {
 
     properties.unsupportedInstructions(["multiply"]);
     const unsupported = properties.public.isUnsupported("MUL");
-    assertEquals(unsupported.length, 1);
-    assertEquals(unsupported[0]!.kind, "mnemonic.notSupported");
+    assertEquals(unsupported.which, "failure");
+    assertEquals((unsupported as Failure).kind, "mnemonic.notSupported");
 });
