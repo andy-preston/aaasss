@@ -3,11 +3,15 @@ import type { SymbolicOperand } from "../coupling/line.ts";
 import { returnIfExpression } from "./magic.ts";
 
 type SimpleFunction = (n: number) => number;
-type StringDirective = (s: string) => void;
-type NumberDirective = (n: number) => void;
-type ArrayDirective = (a: Array<number> | string) => void;
-type Directive = StringDirective | NumberDirective | ArrayDirective;
+
 type NumericGetter = () => number;
+
+type ArrayParameter = Array<number> | string;
+type StringDirective = (s: string) => Box<string> | Failure ;
+type NumberDirective = (n: number) => Box<number> | Failure ;
+type ArrayDirective = (a: ArrayParameter) => Box<ArrayParameter> | Failure ;
+type Directive = StringDirective | NumberDirective | ArrayDirective;
+
 type ContextFields = SimpleFunction | Directive | number;
 
 export const newContext = () => {
