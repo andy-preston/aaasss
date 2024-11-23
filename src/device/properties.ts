@@ -13,6 +13,7 @@ import { unsupportedInstructions } from "./unsupported-instructions.ts";
 export const deviceProperties = (context: Context) => {
     let deviceName = "";
     let reducedCore = false;
+    let programMemory = 0;
     const unsupported = unsupportedInstructions();
     const registers = cpuRegisters(context);
 
@@ -31,6 +32,12 @@ export const deviceProperties = (context: Context) => {
         ] : unsupported.isUnsupported(mnemonic) ? [
             failure(undefined, "mnemonic.notSupported", undefined)
         ] : [];
+    const programMemoryEnd = (address: number): Box<boolean> | Failure =>
+        deviceName == ""
+            ? failure(undefined, "programMemory.sizeUnknown", `${address}`)
+            : address > programMemory
+            ? failure(undefined, "programMemory.outOfRange", `${address}`)
+            : box(false);
 
     const setReducedCore = (value: boolean) => {
         reducedCore = value;
@@ -40,16 +47,23 @@ export const deviceProperties = (context: Context) => {
         deviceName = value;
     };
 
+    const programMemoryBytes = (value: number) => {
+        // Specified in bytes but used as words
+        programMemory = value / 2;
+    };
+
     return {
         "setName": setDeviceName,
         "name": () => deviceName,
         "reducedCore": setReducedCore,
         "unsupportedInstructions": unsupported.choose,
         "registers": registers.choose,
+        "programMemoryBytes": programMemoryBytes,
         "public": {
             "name": name,
             "hasReducedCore": hasReducedCore,
             "isUnsupported": isUnsupported,
+            "programMemoryEnd": programMemoryEnd
         },
     };
 };

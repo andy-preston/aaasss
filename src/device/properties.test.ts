@@ -3,6 +3,8 @@ import type { Box, Failure } from "../value-or-failure.ts";
 import { deviceProperties } from "./properties.ts";
 import { anEmptyContext } from "../testing.ts";
 
+// See also: ./src/state/program-memory.test.ts
+
 Deno.test("Returns Failure when no device is selected", () => {
     const properties = deviceProperties(anEmptyContext());
 

@@ -20,4 +20,7 @@ export const failures = {
         return ["An instruction can only have 1 index offset (Z+qq) operand"];
     },
     "syntax.spaceInLabel": (_line: CodeLine) => [""],
+    "address.negative": (_line: CodeLine) => [""],
+    "programMemory.outOfRange": (_line: CodeLine) => [""],
+    "programMemory.sizeUnknown": (_line: CodeLine) => [""],
 } as const satisfies Record<string, FailureMessage>;

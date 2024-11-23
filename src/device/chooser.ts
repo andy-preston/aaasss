@@ -55,6 +55,9 @@ export const deviceChooser = (
                     properties.reducedCore(value as boolean);
                     properties.registers(value as boolean);
                     break;
+                case "programEnd":
+                    properties.programMemoryBytes(value as number);
+                    break;
                 default:
                     context.property(key, value as number);
                     break;
