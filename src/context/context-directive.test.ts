@@ -1,5 +1,5 @@
 import { assertEquals } from "assert";
-import { anEmptyContext } from "../testing.ts";
+import { anEmptyContext, assertFailure, assertSuccess } from "../testing.ts";
 import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
 
 Deno.test("Any directives that are added can be called as functions", () => {
@@ -25,8 +25,7 @@ Deno.test("Directives can return a failure", () => {
     context.directive("testDirective", testDirective);
 
     const result = context.value("testDirective('')");
-    assertEquals(result.which, "failure");
-    assertEquals((result as Failure).kind, "file.notFound");
+    assertFailure(result, "file.notFound");
 });
 
 Deno.test("Directives can return success", () => {
@@ -38,6 +37,5 @@ Deno.test("Directives can return success", () => {
     context.directive("testDirective", testDirective);
 
     const result = context.value("testDirective('')");
-    assertEquals(result.which, "box");
-    assertEquals((result as Box<string>).value, "");
+    assertSuccess(result, "");
 });
