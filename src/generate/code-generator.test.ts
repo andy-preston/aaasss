@@ -9,6 +9,18 @@ import { newProgramMemory } from "../state/program-memory.ts";
 import type { Box } from "../value-or-failure.ts";
 import { codeGenerator } from "./code-generator.ts";
 
+const testEnvironment = () => {
+    const context = newContext();
+    const device = deviceProperties(context);
+    const programMemory = newProgramMemory(context, device);
+    return {
+        "context": context,
+        "device": device,
+        "programMemory": programMemory,
+        "generator": codeGenerator(context, device.public, programMemory)
+    };
+};
+
 const testLine = (
     label: Label,
     mnemonic: Mnemonic,
@@ -22,24 +34,16 @@ const testLine = (
 );
 
 Deno.test("Lines with no mnemonic don't bother generating code", () => {
-    const context = newContext();
-    const device = deviceProperties(context);
-    const programMemory = newProgramMemory(device);
-    const generator = codeGenerator(context, device.public, programMemory);
-    const line = testLine("", "", []);
-    const result = generator(line);
+    const environment = testEnvironment();
+    const result = environment.generator(testLine("", "", []));
     assertFalse(result.failed());
     assertEquals(result.failures.length, 0);
     assertEquals(result.code.length, 0);
 });
 
 Deno.test("Attempting to generate code with no device selected fails", () => {
-    const context = newContext();
-    const device = deviceProperties(context);
-    const programMemory = newProgramMemory(device);
-    const generator = codeGenerator(context, device.public, programMemory);
-    const line = testLine("", "DES", []);
-    const result = generator(line);
+    const environment = testEnvironment();
+    const result = environment.generator(testLine("", "DES", []));
     assert(result.failed());
     assertEquals(result.failures.length, 1);
     assertEquals(result.failures[0]!.kind, "mnemonic.supportedUnknown");
@@ -47,14 +51,10 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
 });
 
 Deno.test("Lines with unsupported instructions fail", () => {
-    const context = newContext();
-    const device = deviceProperties(context);
-    const programMemory = newProgramMemory(device);
-    device.setName("testDevice");
-    device.unsupportedInstructions(["DES"]);
-    const generator = codeGenerator(context, device.public, programMemory);
-    const line = testLine("", "DES", []);
-    const result = generator(line);
+    const environment = testEnvironment();
+    environment.device.setName("testDevice");
+    environment.device.unsupportedInstructions(["DES"]);
+    const result = environment.generator(testLine("", "DES", []));
     assert(result.failed());
     assertEquals(result.failures.length, 1);
     assertEquals(result.failures[0]!.kind, "mnemonic.notSupported");
@@ -62,13 +62,9 @@ Deno.test("Lines with unsupported instructions fail", () => {
 });
 
 Deno.test("Lines with unknown instructions fail", () => {
-    const context = newContext();
-    const device = deviceProperties(context);
-    const programMemory = newProgramMemory(device);
-    device.setName("testDevice");
-    const generator = codeGenerator(context, device.public, programMemory);
-    const line = testLine("", "NOT_REAL", []);
-    const result = generator(line);
+    const environment = testEnvironment();
+    environment.device.setName("testDevice");
+    const result = environment.generator(testLine("", "NOT_REAL", []));
     assert(result.failed());
     assertEquals(result.failures.length, 1);
     assertEquals(result.failures[0]!.kind, "mnemonic.unknown");
@@ -76,14 +72,10 @@ Deno.test("Lines with unknown instructions fail", () => {
 });
 
 Deno.test("Insufficient program memory causes generation to fail", () => {
-    const context = newContext();
-    const device = deviceProperties(context);
-    const programMemory = newProgramMemory(device);
-    device.setName("testDevice");
-    device.programMemoryBytes(0);
-    const generator = codeGenerator(context, device.public, programMemory);
-    const line = testLine("", "DES", ["15"]);
-    const result = generator(line);
+    const environment = testEnvironment();
+    environment.device.setName("testDevice");
+    environment.device.programMemoryBytes(0);
+    const result = environment.generator(testLine("", "DES", ["15"]));
     assert(result.failed(), "Didn't fail!");
     assertEquals(result.failures.length, 1);
     assertEquals(result.failures[0]!.kind, "programMemory.outOfRange");
@@ -93,14 +85,11 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
 });
 
 Deno.test("Advancing beyond the end of program memory causes failure", () => {
-    const context = newContext();
-    const device = deviceProperties(context);
-    const programMemory = newProgramMemory(device);
-    device.setName("testDevice");
-    device.programMemoryBytes(2);
-    const generator = codeGenerator(context, device.public, programMemory);
-    const line = testLine("", "DES", ["15"]);
-    const firstResult = generator(line);
+    const environment = testEnvironment();
+    environment.device.setName("testDevice");
+    environment.device.programMemoryBytes(2);
+
+    const firstResult = environment.generator(testLine("", "DES", ["15"]));
     assertFalse(firstResult.failed(), "Unexpected failure");
     assertEquals(firstResult.failures.length, 0);
     assertEquals(firstResult.code.length, 2);
