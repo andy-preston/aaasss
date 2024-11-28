@@ -14,6 +14,7 @@ export const failures = {
     "mnemonic.supportedUnknown": (_line: CodeLine) => [""],
     "mnemonic.notSupported": (_line: CodeLine) => [""],
     "mnemonic.unknown": (_line: CodeLine) => [""],
+    "byte.outOfRange": (_line: CodeLine) => [""],
     "operand.outOfRange": (_line: CodeLine) => [""],
     "operand.wrongCount": (_line: CodeLine) => [""],
     "operand.tooManyIndexOffset": (_line: CodeLine) => {

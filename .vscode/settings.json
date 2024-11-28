@@ -47,6 +47,7 @@
         "FMULSU",
         "GAVRASM",
         "GPIO",
+        "haram",
         "ICALL",
         "IJMP",
         "ksss",

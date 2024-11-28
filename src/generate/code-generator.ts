@@ -1,14 +1,14 @@
-import { failure } from "../value-or-failure.ts";
-import { codeLine, type TokenisedLine, type CodeLine } from "../coupling/line.ts";
-import type { ProgramMemory } from "../state/program-memory.ts";
 import type { Context } from "../context/context.ts";
+import { codeLine, type PokedLine, type CodeLine } from "../coupling/line.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
+import type { ProgramMemory } from "../program-memory/program-memory.ts";
+import { failure } from "../value-or-failure.ts";
 import { addressingModeList } from "./addressing-mode-list.ts";
 
 export type AddressingModeGenerator = (context: Context) => CodeLine;
 
 const addressingMode = (
-    line: TokenisedLine
+    line: PokedLine
 ): AddressingModeGenerator | undefined => {
     for (const addressingMode of addressingModeList) {
         const codeGenerator = addressingMode(line)
@@ -23,10 +23,7 @@ export const codeGenerator = (
     context: Context,
     device: DevicePropertiesInterface,
     programMemory: ProgramMemory
-) => (line: TokenisedLine): CodeLine => {
-    if (line.label != "") {
-        context.property(line.label, programMemory.address());
-    }
+) => (line: PokedLine): CodeLine => {
     if (line.mnemonic == "") {
         return codeLine(line, [], [], []);
     }
@@ -40,10 +37,10 @@ export const codeGenerator = (
             failure(undefined, "mnemonic.unknown", undefined)
         ]);
     }
-    const generationResult = mode(context);
-    const stepResult = programMemory.step(generationResult.code);
+    const theCodeLine = mode(context);
+    const stepResult = programMemory.step(theCodeLine);
     if (stepResult.which == "failure") {
-        generationResult.addFailures([stepResult]);
+        theCodeLine.addFailures([stepResult]);
     }
-    return generationResult;
+    return theCodeLine;
 };

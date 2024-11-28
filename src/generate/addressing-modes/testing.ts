@@ -1,5 +1,5 @@
 import {
-    assemblyLine, rawLine, tokenisedLine,
+    addressedLine, assemblyLine, pokedLine, rawLine, tokenisedLine,
     type Code, type Label, type Mnemonic, type SymbolicOperands
 } from "../../coupling/line.ts";
 
@@ -7,12 +7,13 @@ type TestTokens = [Label, Mnemonic, SymbolicOperands]
 type Test = [TestTokens, Code];
 export type Tests = Array<Test>;
 
-export const testLine = (test: TestTokens) => tokenisedLine(
-    assemblyLine(
-        rawLine("", 0, "", []),
-        "", []
-    ), ...test, []
-);
+export const testLine = (test: TestTokens) => {
+    const raw = rawLine("", 0, "", []);
+    const assembly = assemblyLine(raw, "", []);
+    const tokenised = tokenisedLine(assembly, ...test, []);
+    const addressed = addressedLine(tokenised, 0, []);
+    return pokedLine(addressed, [], []);
+};
 
 export const description = (test: Test) => {
     const instruction = test[0];

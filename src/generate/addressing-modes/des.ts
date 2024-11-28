@@ -1,14 +1,14 @@
 import { Context } from "../../context/context.ts";
 import {
-    codeLine, NumericOperands, type Code, type CodeLine, type TokenisedLine
+    codeLine, NumericOperands,
+    type Code, type PokedLine, type CodeLine
 } from "../../coupling/line.ts";
 import { box, failure, type Failures } from "../../value-or-failure.ts";
 import { AddressingModeGenerator } from "../code-generator.ts";
 import { template } from "../template.ts"
 
-export const des = (
-    line: TokenisedLine
-): AddressingModeGenerator | undefined => {
+export const des = (line: PokedLine): AddressingModeGenerator | undefined => {
+
     const codeGenerator = (context: Context): CodeLine => {
         const failures: Failures = [];
         if (line.symbolicOperands.length != 1) {
@@ -31,5 +31,6 @@ export const des = (
             ]);
         return codeLine(line, numericOperands, code, failures);
     };
+
     return line.mnemonic == "DES" ? codeGenerator : undefined;
 };

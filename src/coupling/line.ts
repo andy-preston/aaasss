@@ -68,7 +68,8 @@ const line = (
         "mnemonic": "" as Mnemonic,
         "symbolicOperands": [] as SymbolicOperands,
         "numericOperands": [] as NumericOperands,
-        "code": [] as Code,
+        "address": 0,
+        "code": [] as Array<Code>,
     };
 };
 
@@ -123,18 +124,48 @@ export const tokenisedLine = (
     return line as TokenisedLine;
 };
 
-type CodeProperties = TokenisedProperties | "numericOperands" | "code";
+type AddressedProperties = TokenisedProperties | "address";
+
+export type AddressedLine = Readonly<Pick<Line, AddressedProperties>>;
+
+export const addressedLine = (
+    line: TokenisedLine,
+    address: number,
+    failures: Failures
+): AddressedLine => {
+    (line as Line).address = address;
+    line.addFailures(failures);
+    return line as AddressedLine;
+};
+
+type PokedProperties = AddressedProperties | "code";
+
+export type PokedLine = Readonly<Pick<Line, PokedProperties>>;
+
+export const pokedLine = (
+    line: AddressedLine,
+    poked: Array<Code>,
+    failures: Failures
+): PokedLine => {
+    (line as Line).code = poked;
+    line.addFailures(failures);
+    return line as PokedLine;
+};
+
+type CodeProperties = PokedProperties | "numericOperands";
 
 export type CodeLine = Readonly<Pick<Line, CodeProperties>>;
 
 export const codeLine = (
-    line: TokenisedLine,
+    line: PokedLine,
     numeric: NumericOperands,
     code: Code,
     failures: Failures
 ): CodeLine => {
     (line as Line).numericOperands = numeric;
-    (line as Line).code = code;
+    if (code.length > 0) {
+        (line as Line).code.push(code);
+    }
     line.addFailures(failures);
     return line as CodeLine;
 };

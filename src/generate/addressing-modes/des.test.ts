@@ -17,6 +17,6 @@ Deno.test("DES Code Generation", () => {
         assertNotEquals(translate, undefined);
         const result = translate!(context);
         assertFalse(result.failed());
-        assertEquals(result.code, test[1], description(test));
+        assertEquals(result.code, [test[1]], description(test));
     }
 });
