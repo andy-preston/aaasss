@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# cSpell:words deno biomejs
+# cSpell:words deno
 
 export DENO_DIR="$(pwd)/_deno"
 mkdir -p "${DENO_DIR}"

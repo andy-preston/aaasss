@@ -68,25 +68,27 @@ export const newContext = () => {
         });
     };
 
-    const validProperty = (name: string, value: number) =>
-        !Object.hasOwn(context, name) || context[name] == value;
-
-    const property = (name: string, value: number): void => {
-        if (Object.hasOwn(context, name) && context[name] == value) {
-            return;
+    const property = (name: string, value: number): Box<number> | Failure => {
+        if (Object.hasOwn(context, name)) {
+            if (context[name] != value) {
+                return failure(
+                    undefined, "context.redefined", `${context[name]!}`
+                );
+            }
+        } else {
+            Object.defineProperty(context, name, {
+                "configurable": false,
+                "enumerable": true,
+                "value": value,
+                "writable": false
+            });
         }
-        Object.defineProperty(context, name, {
-            "configurable": false,
-            "enumerable": true,
-            "value": value,
-            "writable": false
-        });
+        return box(value);
     };
 
     return {
         "operand": operand,
         "value": value,
-        "validProperty": validProperty,
         "property": property,
         "directive": directive,
         "coupledProperty": coupledProperty
