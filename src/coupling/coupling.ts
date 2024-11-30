@@ -35,7 +35,7 @@ export const coupling = () => {
     const poke = pokeBuffer();
     context.directive("poke", poke.directive);
 
-    const sourceFiles = fileStack();
+    const sourceFiles = fileStack(Deno.readTextFileSync);
     context.directive("include", sourceFiles.includeFile);
 
     const assembly = javascript(context);

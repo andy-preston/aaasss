@@ -11,8 +11,9 @@ type FileContents = {
     "iterator": FileIterator;
 };
 type StackEntry = [FileName, FileIterator];
+export type ReaderMethod = typeof Deno.readTextFileSync;
 
-export const fileStack = () => {
+export const fileStack = (read: ReaderMethod) => {
     let fileStack: Array<StackEntry> = [];
 
     const currentFile = (): StackEntry | undefined =>
@@ -22,7 +23,7 @@ export const fileStack = () => {
         try {
             return {
                 "which": "contents",
-                "iterator": Deno.readTextFileSync(fileName).split("\n").entries(),
+                "iterator": read(fileName).split("\n").entries(),
             };
         }
         catch (error) {
