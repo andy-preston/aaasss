@@ -10,7 +10,11 @@ type FileContents = {
     "which": "contents";
     "iterator": FileIterator;
 };
-type StackEntry = [FileName, FileIterator];
+type StackEntry = {
+    "name": FileName;
+    "iterator": FileIterator;
+};
+
 export type ReaderMethod = typeof Deno.readTextFileSync;
 
 export const fileStack = (read: ReaderMethod) => {
@@ -39,7 +43,7 @@ export const fileStack = (read: ReaderMethod) => {
         if (contents.which == "failure") {
             return contents;
         }
-        fileStack.push([fileName, contents.iterator]);
+        fileStack.push({"name": fileName, "iterator": contents.iterator});
         return box("");
     };
 
@@ -51,12 +55,12 @@ export const fileStack = (read: ReaderMethod) => {
         }
         let file = currentFile();
         while (file != undefined) {
-            const next = file[1].next();
+            const next = file.iterator.next();
             if (next.done) {
                 fileStack.pop();
             } else {
                 const [lineNumber, rawSource] = next.value;
-                yield rawLine(file[0], lineNumber, rawSource, []);
+                yield rawLine(file.name, lineNumber, rawSource, []);
             }
             // Bear in mind that another file could have been pushed on top
             // by an include directive "whilst we weren't watching"
