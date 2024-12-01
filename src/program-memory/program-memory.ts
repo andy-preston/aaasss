@@ -7,7 +7,7 @@ import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
 
-export const newProgramMemory = (
+export const programMemory = (
     context: Context,
     properties: DeviceProperties
 ) => {
@@ -63,4 +63,4 @@ export const newProgramMemory = (
     };
 };
 
-export type ProgramMemory = ReturnType<typeof newProgramMemory>;
+export type ProgramMemory = ReturnType<typeof programMemory>;

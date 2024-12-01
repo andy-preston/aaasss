@@ -4,7 +4,7 @@ type PassNumber = typeof passes[number];
 
 type ResetStateCallback = () => void;
 
-export const newPass = (resetCallbacks: Array<ResetStateCallback>) => {
+export const pass = (resetCallbacks: Array<ResetStateCallback>) => {
     let current: PassNumber;
 
     const start = (pass: PassNumber) => {
@@ -25,4 +25,4 @@ export const newPass = (resetCallbacks: Array<ResetStateCallback>) => {
     };
 };
 
-export type Pass = ReturnType<typeof newPass>;
+export type Pass = ReturnType<typeof pass>;

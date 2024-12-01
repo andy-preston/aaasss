@@ -5,7 +5,7 @@ import {
 } from "../coupling/line.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { Box } from "../value-or-failure.ts";
-import { newProgramMemory } from "./program-memory.ts";
+import { programMemory } from "./program-memory.ts";
 import { passes } from "../pass/pass.ts";
 
 const testEnvironment = () => {
@@ -14,7 +14,7 @@ const testEnvironment = () => {
     return {
         "context": context,
         "device": device,
-        "programMemory": newProgramMemory(context, device),
+        "programMemory": programMemory(context, device),
     };
 };
 

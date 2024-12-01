@@ -1,9 +1,9 @@
 import { anEmptyContext } from "../context/context.ts";
 
-import { newProgramMemory } from "../program-memory/program-memory.ts";
+import { programMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../program-memory/poke.ts";
 
-import { newPass } from "../pass/pass.ts";
+import { pass } from "../pass/pass.ts";
 
 import { deviceProperties } from "../device/properties.ts";
 import { deviceChooser } from "../device/chooser.ts";
@@ -27,8 +27,8 @@ export const coupling = () => {
     const chooser = deviceChooser(properties, context);
     context.directive("device", chooser.directive);
 
-    const programMemory = newProgramMemory(context, properties);
-    context.directive("origin", programMemory.origin);
+    const progMem = programMemory(context, properties);
+    context.directive("origin", progMem.origin);
 
     const poke = pokeBuffer();
     context.directive("poke", poke.directive);
@@ -38,13 +38,11 @@ export const coupling = () => {
 
     const js = javascript(context);
 
-    const code = codeGenerator(
-        context, properties.public, programMemory
-    );
+    const code = codeGenerator(context, properties.public, progMem);
 
-    const pass = newPass([programMemory.reset, js.reset]);
+    const thePass = pass([progMem.reset, js.reset]);
 
-    const result = output(pass);
+    const result = output(thePass);
 
     const illegal = illegalState(
         [js.illegalState],
@@ -52,10 +50,10 @@ export const coupling = () => {
     );
 
     const pipeline = (line: RawLine) =>
-        result(code(poke.line(programMemory.label(tokenise(assembly(line))))));
+        result.line(code(poke.line(progMem.label(tokenise(js.assembly(line))))));
 
     return {
-        "pass": pass,
+        "pass": thePass,
         "lines": sourceFiles.lines,
         "pipeline": pipeline,
         "illegalState": illegal

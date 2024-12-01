@@ -5,18 +5,18 @@ import {
     type Label, type Mnemonic, type SymbolicOperands, type PokedLine
 } from "../coupling/line.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { newProgramMemory } from "../program-memory/program-memory.ts";
+import { programMemory } from "../program-memory/program-memory.ts";
 import { codeGenerator } from "./code-generator.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
     const device = deviceProperties(context);
-    const programMemory = newProgramMemory(context, device);
+    const memory = programMemory(context, device);
     return {
         "context": context,
         "device": device,
-        "programMemory": programMemory,
-        "generator": codeGenerator(context, device.public, programMemory)
+        "programMemory": memory,
+        "generator": codeGenerator(context, device.public, memory)
     };
 };
 

@@ -5,14 +5,14 @@ import {
     type Code
 } from "../coupling/line.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { newProgramMemory } from "./program-memory.ts";
+import { programMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
     const device = deviceProperties(context);
     return {
         "device": device,
-        "memory": newProgramMemory(context, device)
+        "memory": programMemory(context, device)
     };
 };
 
