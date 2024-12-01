@@ -1,5 +1,5 @@
 import { assertEquals, assertFalse, assertNotEquals } from "assert";
-import { newContext } from "../../context/context.ts";
+import { anEmptyContext } from "../../context/context.ts";
 import { des } from "./des.ts";
 import { description, testLine, Tests } from "./testing.ts";
 
@@ -12,7 +12,7 @@ const tests: Tests = [
 
 Deno.test("DES Code Generation", () => {
     for (const test of tests) {
-        const context = newContext();
+        const context = anEmptyContext();
         const translate = des(testLine(test[0]));
         assertNotEquals(translate, undefined);
         const result = translate!(context);

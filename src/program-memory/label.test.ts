@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import { newContext } from "../context/context.ts";
+import { anEmptyContext } from "../context/context.ts";
 import {
     assemblyLine, rawLine, tokenisedLine, type Label, type TokenisedLine
 } from "../coupling/line.ts";
@@ -9,7 +9,7 @@ import { newProgramMemory } from "./program-memory.ts";
 import { passes } from "../pass/pass.ts";
 
 const testEnvironment = () => {
-    const context = newContext();
+    const context = anEmptyContext();
     const device = deviceProperties(context);
     return {
         "context": context,

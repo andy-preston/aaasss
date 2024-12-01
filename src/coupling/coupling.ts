@@ -1,4 +1,4 @@
-import { newContext } from "../context/context.ts";
+import { anEmptyContext } from "../context/context.ts";
 
 import { newProgramMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../program-memory/poke.ts";
@@ -21,7 +21,7 @@ import { illegalState } from "../output/illegalState.ts";
 import type { RawLine } from "./line.ts";
 
 export const coupling = () => {
-    const context = newContext();
+    const context = anEmptyContext();
 
     const properties = deviceProperties(context);
     const chooser = deviceChooser(properties, context);

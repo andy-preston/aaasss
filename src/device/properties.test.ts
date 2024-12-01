@@ -1,6 +1,6 @@
+import { assertSuccess, assertFailure } from "../testing.ts";
+import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "./properties.ts";
-import { anEmptyContext, assertFailure } from "../testing.ts";
-import { assertSuccess } from "../testing.ts";
 
 // See also: ./src/state/program-memory.test.ts
 

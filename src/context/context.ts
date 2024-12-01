@@ -14,7 +14,7 @@ type Directive = StringDirective | NumberDirective | ArrayDirective;
 
 type ContextFields = SimpleFunction | Directive | number;
 
-export const newContext = () => {
+export const anEmptyContext = () => {
     const context: Record<string, ContextFields> = {
         "low": (n: number) => n & 0xff,
         "high": (n: number) => (n >> 8) & 0xff
@@ -95,4 +95,4 @@ export const newContext = () => {
     };
 };
 
-export type Context = ReturnType<typeof newContext>;
+export type Context = ReturnType<typeof anEmptyContext>;

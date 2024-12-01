@@ -1,5 +1,5 @@
 import { assertEquals } from "assert";
-import { newContext } from "../context/context.ts";
+import { anEmptyContext } from "../context/context.ts";
 import {
     rawLine, assemblyLine, tokenisedLine, addressedLine, pokedLine, codeLine,
     type Code
@@ -8,7 +8,7 @@ import { deviceProperties } from "../device/properties.ts";
 import { newProgramMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {
-    const context = newContext();
+    const context = anEmptyContext();
     const device = deviceProperties(context);
     return {
         "device": device,

@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import { newContext } from "../context/context.ts";
+import { anEmptyContext } from "../context/context.ts";
 import {
     rawLine, assemblyLine, tokenisedLine, addressedLine, pokedLine,
     type Label, type Mnemonic, type SymbolicOperands, type PokedLine
@@ -9,7 +9,7 @@ import { newProgramMemory } from "../program-memory/program-memory.ts";
 import { codeGenerator } from "./code-generator.ts";
 
 const testEnvironment = () => {
-    const context = newContext();
+    const context = anEmptyContext();
     const device = deviceProperties(context);
     const programMemory = newProgramMemory(context, device);
     return {

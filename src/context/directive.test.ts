@@ -1,10 +1,10 @@
 import { assertEquals } from "assert";
-import { anEmptyContext, assertFailure, assertSuccess } from "../testing.ts";
+import { assertFailure, assertSuccess } from "../testing.ts";
 import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
+import { anEmptyContext } from "./context.ts";
 
 Deno.test("Any directives that are added can be called as functions", () => {
     const context = anEmptyContext();
-
     let directiveParameter = "";
     const testDirective = (parameter: string): Box<string> | Failure => {
         directiveParameter = parameter;

@@ -1,6 +1,5 @@
-import {
-    anEmptyContext, assertFailureWithError, assertSuccess
-} from "../testing.ts";
+import { assertFailureWithError, assertSuccess } from "../testing.ts";
+import { anEmptyContext } from "./context.ts";
 
 Deno.test("An expression yields a value", () => {
     const context = anEmptyContext();

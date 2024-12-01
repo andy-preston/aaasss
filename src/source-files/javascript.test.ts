@@ -1,7 +1,7 @@
 import { assert, assertEquals, assertFalse } from "assert";
+import { anEmptyContext } from "../context/context.ts";
 import { rawLine } from "../coupling/line.ts";
 import { cpuRegisters } from "../device/registers.ts";
-import { anEmptyContext } from "../testing.ts";
 import { javascript } from "./javascript.ts";
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {

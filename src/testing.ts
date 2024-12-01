@@ -1,8 +1,5 @@
 import { assertEquals, assertInstanceOf } from "assert";
-import { newContext } from "./context/context.ts";
 import type { Box, Failure, FailureKind } from "./value-or-failure.ts";
-
-export const anEmptyContext = newContext;
 
 export const assertSuccess = <Boxed>(
     actual: Box<Boxed> | Failure,

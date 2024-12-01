@@ -1,11 +1,11 @@
 import { assertEquals } from "assert";
-import { newContext } from "../context/context.ts";
+import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { Box, Failure } from "../value-or-failure.ts";
 import { newProgramMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {
-    const context = newContext();
+    const context = anEmptyContext();
     const device = deviceProperties(context);
     const memory = newProgramMemory(context, device);
     return {
