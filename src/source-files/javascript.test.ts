@@ -1,8 +1,8 @@
-import { assertEquals } from "assert";
+import { assert, assertEquals, assertFalse } from "assert";
+import { rawLine } from "../coupling/line.ts";
 import { cpuRegisters } from "../device/registers.ts";
 import { anEmptyContext } from "../testing.ts";
 import { javascript } from "./javascript.ts";
-import { rawLine } from "../coupling/line.ts";
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {
     const js = javascript(anEmptyContext());
@@ -19,8 +19,8 @@ Deno.test("JS can use registers from the context", () => {
     registers.choose(false);
     const js = javascript(context);
     const line = rawLine("", 0, "MOV {{ R6 }}, R2", []);
-    const result = js.assembly(line);
-    assertEquals(result.assemblySource, "MOV 6, R2");
+    const assemblyLine = js.assembly(line);
+    assertEquals(assemblyLine.assemblySource, "MOV 6, R2");
 });
 
 Deno.test("JS can be delimited by moustaches across several lines", () => {
@@ -30,8 +30,34 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
         rawLine("", 0, 'this.andThat = "hello";', []),
         rawLine("", 0, "return this.andThat; }} matey!", []),
     ];
-    const results = lines.map(js.assembly);
-    assertEquals(results[0]!.assemblySource, "some ordinary stuff");
-    assertEquals(results[1]!.assemblySource, "");
-    assertEquals(results[2]!.assemblySource, "hello matey!");
+    const assemblyLines = lines.map(js.assembly);
+    assertEquals(assemblyLines[0]!.assemblySource, "some ordinary stuff");
+    assertEquals(assemblyLines[1]!.assemblySource, "");
+    assertEquals(assemblyLines[2]!.assemblySource, "hello matey!");
+});
+
+Deno.test("Multiple opening moustaches are illegal", () => {
+    const js = javascript(anEmptyContext());
+    const assemblyLine = js.assembly(rawLine("", 0, "{{ {{ }}", []));
+    assert(assemblyLine.failed());
+    assertEquals(assemblyLine.failures.length, 1);
+    assertEquals(assemblyLine.failures[0]!.kind, "js.jsMode");
+});
+
+Deno.test("Multiple closing moustaches are illegal", () => {
+    const js = javascript(anEmptyContext());
+    const assemblyLine = js.assembly(rawLine("", 0, "{{ }} }}", []));
+    assert(assemblyLine.failed());
+    assertEquals(assemblyLine.failures.length, 1);
+    assertEquals(assemblyLine.failures[0]!.kind, "js.assemblerMode");
+});
+
+Deno.test("Omitting a closing moustache is illegal", () => {
+    const js = javascript(anEmptyContext());
+    const assemblyLine = js.assembly(rawLine("", 0, "{{", []));
+    assertFalse(assemblyLine.failed());
+    assertEquals(assemblyLine.failures.length, 0);
+    const illegal = js.illegalState();
+    assertEquals(illegal.length, 1);
+    assertEquals(illegal[0]!.kind, "js.jsMode");
 });

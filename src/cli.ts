@@ -8,3 +8,4 @@ for (const passNumber of passes) {
         coupled.pipeline(line);
     }
 }
+coupled.illegalState();

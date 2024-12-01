@@ -22,13 +22,19 @@ export const javascript = (context: Context) => {
         current = "assembler";
     };
 
+    const illegalState = (): Array<Failure> =>
+        current == "javascript"
+            ? [failure(undefined, "js.jsMode", undefined)]
+            : [];
+
     const javascript = (failures: Array<Failure>): Array<Failure> => {
-        if (current == "javascript") {
-            failures.push(failure(undefined, "js.jsMode", undefined));
+        const alreadyInJs = illegalState();
+        if (alreadyInJs.length > 0) {
+            return failures.concat(alreadyInJs);
         } else {
             current = "javascript";
+            return failures;
         }
-        return failures;
     };
 
     const assembler = (failures: Array<Failure>): Array<Failure> => {
@@ -74,6 +80,7 @@ export const javascript = (context: Context) => {
 
     return {
         "reset": reset,
+        "illegalState": illegalState,
         "assembly": assembly
     }
 };
