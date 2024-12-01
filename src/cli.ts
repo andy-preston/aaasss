@@ -1,5 +1,5 @@
 import { coupling } from "./coupling/coupling.ts";
-import { passes } from "./state/pass.ts";
+import { passes } from "./pass/pass.ts";
 
 const coupled = coupling();
 for (const passNumber of passes) {

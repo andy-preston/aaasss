@@ -6,7 +6,7 @@ import {
 import { deviceProperties } from "../device/properties.ts";
 import { Box } from "../value-or-failure.ts";
 import { newProgramMemory } from "./program-memory.ts";
-import { passes } from "../state/pass.ts";
+import { passes } from "../pass/pass.ts";
 
 const testEnvironment = () => {
     const context = newContext();

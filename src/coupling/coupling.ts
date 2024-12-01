@@ -1,7 +1,7 @@
 import { newContext } from "../context/context.ts";
 
 import { newProgramMemory } from "../program-memory/program-memory.ts";
-import { newPass } from "../state/pass.ts";
+import { newPass } from "../pass/pass.ts";
 
 import { deviceProperties } from "../device/properties.ts";
 import { deviceChooser } from "../device/chooser.ts";
