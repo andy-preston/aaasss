@@ -1,16 +1,15 @@
 import {
-    operands, tokenisedLine,
-    type AssemblyLine, type SymbolicOperands, type TokenisedLine
+    tokenisedLine, operands,
+    type AssemblyLine, type TokenisedLine, type SymbolicOperands
 } from "../coupling/line.ts";
 
 import { failure, type Failures } from "../value-or-failure.ts";
 
 import { indexOffsetOperands } from "./index-offset-operands.ts";
 
-const stripComment = (raw: string): string => {
-    const semicolon = raw.indexOf(";");
-    return semicolon == -1 ? raw : raw.substring(0, semicolon);
-};
+const validLabel = /^\w*$/;
+const anyWhitespace = /\s+/g;
+const comment = /;.*$/;
 
 const split = (
     keep: "before" | "after",
@@ -30,13 +29,15 @@ const split = (
 export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
     const failures: Failures = [];
 
-    const cleaned = stripComment(
-        theLine.assemblySource
-    ).replace(/\s+/g, " ").trim();
+    const cleaned = theLine.assemblySource.replace(
+        comment, ""
+    ).replace(
+        anyWhitespace, " "
+    ).trim();
 
     const [label, withoutLabel] = split("after", ":", cleaned);
-    if (label.indexOf(" ") != -1) {
-        failures.push(failure(undefined, "syntax.spaceInLabel", undefined));
+    if (!validLabel.test(label)) {
+        failures.push(failure(undefined, "syntax.invalidLabel", undefined));
     }
 
     const [mnemonic, operandsText] = split("before", " ", withoutLabel);

@@ -79,13 +79,29 @@ Deno.test("A line can contain JUST a label", () => {
     assertEquals(tokenised.symbolicOperands, []);
 });
 
-Deno.test("A label may not contain whitespace", () => {
-    const line = testLine("count bytes: LDI R16, 23");
-    const tokenised = tokenise(line);
-    assertEquals(tokenised.failures.length, 1);
-    assertEquals(tokenised.failures[0]!.kind, "syntax.spaceInLabel");
-    assertEquals(tokenised.failures[0]!.operand, undefined);
-    assertEquals(tokenised.failures[0]!.extra, undefined);
+Deno.test("A label must only contain alphanumerics or underscore", () => {
+    const badLines = [
+        "count bytes:",
+        "count-bytes:",
+        "count$bytes:",
+        "count?bytes:"
+    ];
+    for (const line of badLines) {
+        const tokenised = tokenise(testLine(line));
+        assertEquals(tokenised.failures.length, 1, `${line} should fail`);
+        assertEquals(tokenised.failures[0]!.kind, "syntax.invalidLabel");
+        assertEquals(tokenised.failures[0]!.operand, undefined);
+        assertEquals(tokenised.failures[0]!.extra, undefined);
+    }
+    const goodLines = [
+        "countBytes:",
+        "count_bytes:",
+        "count_8bit:"
+    ];
+    for (const line of goodLines) {
+        const tokenised = tokenise(testLine(line));
+        assertEquals(tokenised.failures.length, 0, `${line} should pass`);
+    }
 });
 
 Deno.test("The mnemonic is separated from the operands by whitespace", () => {

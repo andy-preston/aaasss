@@ -17,10 +17,12 @@ export const failures = {
     "byte.outOfRange": (_line: CodeLine) => [""],
     "operand.outOfRange": (_line: CodeLine) => [""],
     "operand.wrongCount": (_line: CodeLine) => [""],
-    "operand.tooManyIndexOffset": (_line: CodeLine) => {
-        return ["An instruction can only have 1 index offset (Z+qq) operand"];
-    },
-    "syntax.spaceInLabel": (_line: CodeLine) => [""],
+    "operand.tooManyIndexOffset": (_line: CodeLine) => [
+        "An instruction can only have 1 index offset (Z+qq) operand"
+    ],
+    "syntax.invalidLabel": (_line: CodeLine) => [
+        "A label must only contain alphanumeric characters and underscore"
+    ],
     "address.negative": (_line: CodeLine) => [""],
     "programMemory.outOfRange": (_line: CodeLine) => [""],
     "programMemory.sizeUnknown": (_line: CodeLine) => [""],
