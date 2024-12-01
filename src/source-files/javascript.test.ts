@@ -9,7 +9,7 @@ Deno.test("JS can be delimited with moustaches on the same line", () => {
     const line = rawLine(
         "", 0, "MOV {{ this.test = 27; return this.test; }}, R2", []
     );
-    const assemblyLine = js(line);
+    const assemblyLine = js.assembly(line);
     assertEquals(assemblyLine.assemblySource, "MOV 27, R2");
 });
 
@@ -19,7 +19,7 @@ Deno.test("JS can use registers from the context", () => {
     registers.choose(false);
     const js = javascript(context);
     const line = rawLine("", 0, "MOV {{ R6 }}, R2", []);
-    const result = js(line);
+    const result = js.assembly(line);
     assertEquals(result.assemblySource, "MOV 6, R2");
 });
 
@@ -30,7 +30,7 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
         rawLine("", 0, 'this.andThat = "hello";', []),
         rawLine("", 0, "return this.andThat; }} matey!", []),
     ];
-    const results = lines.map(js);
+    const results = lines.map(js.assembly);
     assertEquals(results[0]!.assemblySource, "some ordinary stuff");
     assertEquals(results[1]!.assemblySource, "");
     assertEquals(results[2]!.assemblySource, "hello matey!");

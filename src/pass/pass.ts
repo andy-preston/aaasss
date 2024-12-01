@@ -9,7 +9,9 @@ export const newPass = (resetStateCallback: ResetStateCallback) => {
 
     const start = (pass: PassNumber) => {
         current = pass;
-        resetStateCallback();
+        if (pass == 2) {
+            resetStateCallback();
+        }
     };
 
     const showErrors = () => current == 2;

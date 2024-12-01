@@ -16,6 +16,12 @@ export const javascript = (context: Context) => {
 
     let current: BufferName = "assembler";
 
+    const reset = () => {
+        buffer.javascript = [];
+        buffer.assembler = [];
+        current = "assembler";
+    };
+
     const javascript = (failures: Array<Failure>): Array<Failure> => {
         if (current == "javascript") {
             failures.push(failure(undefined, "js.jsMode", undefined));
@@ -53,7 +59,7 @@ export const javascript = (context: Context) => {
         return failures;
     };
 
-    return (line: RawLine): AssemblyLine => {
+    const assembly = (line: RawLine): AssemblyLine => {
         const failures = line.rawSource.split(scriptDelimiter).reduce(
             usePart,
             [],
@@ -65,4 +71,9 @@ export const javascript = (context: Context) => {
         buffer.assembler = [];
         return assemblyLine(line, assembler, []);
     };
+
+    return {
+        "reset": reset,
+        "assembly": assembly
+    }
 };

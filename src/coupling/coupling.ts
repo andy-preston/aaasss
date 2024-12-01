@@ -28,21 +28,22 @@ export const coupling = () => {
     const programMemory = newProgramMemory(context, properties);
     context.directive("origin", programMemory.origin);
 
-    const pass = newPass(() => {
-        programMemory.reset();
-    });
-
     const poke = pokeBuffer();
     context.directive("poke", poke.directive);
 
     const sourceFiles = fileStack(Deno.readTextFileSync);
     context.directive("include", sourceFiles.includeFile);
 
-    const assembly = javascript(context);
+    const js = javascript(context);
 
     const code = codeGenerator(
         context, properties.public, programMemory
     );
+
+    const pass = newPass(() => {
+        programMemory.reset();
+        js.reset();
+    });
 
     const result = output(pass);
 
