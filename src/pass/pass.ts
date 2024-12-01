@@ -4,13 +4,13 @@ type PassNumber = typeof passes[number];
 
 type ResetStateCallback = () => void;
 
-export const newPass = (resetStateCallback: ResetStateCallback) => {
+export const newPass = (resetCallbacks: Array<ResetStateCallback>) => {
     let current: PassNumber;
 
     const start = (pass: PassNumber) => {
         current = pass;
         if (pass == 2) {
-            resetStateCallback();
+            resetCallbacks.forEach(resetCallback => resetCallback());
         }
     };
 

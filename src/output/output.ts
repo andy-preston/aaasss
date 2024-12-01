@@ -11,7 +11,9 @@ export const output = (pass: Pass) => {
     };
 
     const final = (failures: Array<Failure>) => {
-        failures.forEach(failure => console.log(failure));
+        if (pass.showErrors()) {
+            failures.forEach(failure => console.log(failure));
+        }
     };
 
     return {

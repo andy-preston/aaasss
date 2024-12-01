@@ -42,18 +42,13 @@ export const coupling = () => {
         context, properties.public, programMemory
     );
 
-    const pass = newPass(() => {
-        programMemory.reset();
-        js.reset();
-    });
+    const pass = newPass([programMemory.reset, js.reset]);
 
     const result = output(pass);
 
     const illegal = illegalState(
-        [
-            // macro.illegalState,
-            js.illegalState
-        ], result.final
+        [js.illegalState],
+        result.final
     );
 
     const pipeline = (line: RawLine) =>
