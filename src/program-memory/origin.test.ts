@@ -1,5 +1,7 @@
 import { assertEquals } from "assert";
-import { assertFailureWithExtra, assertSuccess } from "../testing.ts";
+import {
+    assertFailureWithExtra, assertSuccess
+} from "../coupling/value-failure-testing.ts";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { programMemory } from "./program-memory.ts";

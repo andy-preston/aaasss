@@ -1,10 +1,10 @@
-import { Context } from "../../context/context.ts";
+import { box, failure, type Failures } from "../../coupling/value-failure.ts";
 import {
     codeLine, NumericOperands,
     type Code, type PokedLine, type CodeLine
 } from "../../coupling/line.ts";
-import { box, failure, type Failures } from "../../value-or-failure.ts";
-import { AddressingModeGenerator } from "../code-generator.ts";
+import type { Context } from "../../context/context.ts";
+import type { AddressingModeGenerator } from "../code-generator.ts";
 import { template } from "../template.ts"
 
 export const des = (line: PokedLine): AddressingModeGenerator | undefined => {

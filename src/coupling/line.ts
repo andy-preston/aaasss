@@ -1,4 +1,4 @@
-import type { Failures } from "../value-or-failure.ts";
+import type { Failures } from "./value-failure.ts";
 
 export type Label = string;
 

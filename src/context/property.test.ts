@@ -1,4 +1,6 @@
-import { assertFailure, assertSuccess } from "../testing.ts";
+import {
+    assertFailure, assertSuccess
+} from "../coupling/value-failure-testing.ts";
 import { anEmptyContext } from "./context.ts";
 
 Deno.test("Coupled properties can be an arrow function", () => {

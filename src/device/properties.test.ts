@@ -1,4 +1,6 @@
-import { assertSuccess, assertFailure } from "../testing.ts";
+import {
+    assertSuccess, assertFailure
+} from "../coupling/value-failure-testing.ts";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "./properties.ts";
 

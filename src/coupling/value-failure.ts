@@ -1,5 +1,5 @@
-import type { OperandIndex } from "./coupling/line.ts";
-import { failures } from "./output/failure-messages.ts";
+import type { OperandIndex } from "./line.ts";
+import { failures } from "../output/failure-messages.ts";
 
 export type FailureKind = keyof typeof failures;
 

@@ -1,6 +1,6 @@
+import { Failure } from "../coupling/value-failure.ts";
 import { CodeLine } from "../coupling/line.ts";
 import { Pass } from "../pass/pass.ts";
-import { Failure } from "../value-or-failure.ts";
 
 export const output = (pass: Pass) => {
 

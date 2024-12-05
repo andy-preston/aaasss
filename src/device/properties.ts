@@ -1,11 +1,7 @@
-import type { Context } from "../context/context.ts";
-
+import { box, failure, type Box, type Failure } from "../coupling/value-failure.ts";
 import type { Mnemonic } from "../coupling/line.ts";
-
-import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
-
+import type { Context } from "../context/context.ts";
 import { cpuRegisters } from "./registers.ts";
-
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
 export const deviceProperties = (context: Context) => {

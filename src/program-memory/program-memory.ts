@@ -1,9 +1,11 @@
-import type { Context } from "../context/context.ts";
+import {
+    box, failure, type Box, type Failure
+} from "../coupling/value-failure.ts";
 import {
     addressedLine, CodeLine, type AddressedLine, type TokenisedLine
 } from "../coupling/line.ts";
+import type { Context } from "../context/context.ts";
 import type { DeviceProperties } from "../device/properties.ts";
-import { box, failure, type Box, type Failure } from "../value-or-failure.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
 

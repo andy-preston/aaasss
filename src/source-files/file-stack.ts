@@ -1,6 +1,6 @@
 import {
     box, failure, type Box, type Failure
-} from "../value-or-failure.ts";
+} from "../coupling/value-failure.ts";
 import {
     rawLine, type FileName, type LineNumber, type SourceCode
 } from "../coupling/line.ts";

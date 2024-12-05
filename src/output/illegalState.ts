@@ -1,4 +1,4 @@
-import { Failure } from "../value-or-failure.ts";
+import { Failure } from "../coupling/value-failure.ts";
 
 type IllegalState = () => Array<Failure>;
 

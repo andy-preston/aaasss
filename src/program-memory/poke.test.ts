@@ -1,5 +1,5 @@
 import { assertEquals } from "assert";
-import { assertFailureWithExtra } from "../testing.ts";
+import { assertFailureWithExtra } from "../coupling/value-failure-testing.ts";
 import {
     rawLine, assemblyLine, tokenisedLine, addressedLine
 } from "../coupling/line.ts";

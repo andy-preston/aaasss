@@ -1,6 +1,8 @@
 import { assert, assertFalse, assertEquals } from "assert";
+import {
+    assertFailure, assertSuccess
+} from "../coupling/value-failure-testing.ts";
 import { fileStack } from "./file-stack.ts";
-import { assertFailure, assertSuccess } from "../testing.ts";
 
 Deno.test("Including a file returns a blank value", () => {
     assertSuccess(

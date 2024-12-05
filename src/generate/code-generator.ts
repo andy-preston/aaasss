@@ -1,8 +1,8 @@
-import type { Context } from "../context/context.ts";
+import { failure } from "../coupling/value-failure.ts";
 import { codeLine, type PokedLine, type CodeLine } from "../coupling/line.ts";
+import type { Context } from "../context/context.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
-import { failure } from "../value-or-failure.ts";
 import { addressingModeList } from "./addressing-mode-list.ts";
 
 export type AddressingModeGenerator = (context: Context) => CodeLine;
