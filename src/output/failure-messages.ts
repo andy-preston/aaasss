@@ -9,8 +9,12 @@ export const failures = {
     "device.multiple": (_line: CodeLine) => [""],
     "file.notFound": (_line: CodeLine) => [""],
     "js.error": (_line: CodeLine) => [""],
-    "js.jsMode": (_line: CodeLine) => [""],
-    "js.assemblerMode": (_line: CodeLine) => [""],
+    "js.jsMode": (_line: CodeLine) => [
+        "\"{{\" when already in js mode"
+    ],
+    "js.assemblerMode": (_line: CodeLine) => [
+        "\"}}\" when already in assembly mode"
+    ],
     "mnemonic.supportedUnknown": (_line: CodeLine) => [""],
     "mnemonic.notSupported": (_line: CodeLine) => [""],
     "mnemonic.unknown": (_line: CodeLine) => [""],

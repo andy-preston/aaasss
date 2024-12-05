@@ -1,20 +1,39 @@
-import { assertEquals, assertInstanceOf } from "assert";
+import { assertEquals, AssertionError } from "assert";
 import type { Box, Failure, FailureKind } from "./value-or-failure.ts";
+
+const whichError = (expected: string, actual: string) =>
+    new AssertionError(`"which" should be ${expected}, not ${actual}`);
 
 export const assertSuccess = <Boxed>(
     actual: Box<Boxed> | Failure,
     expected: Boxed
 ) => {
-    assertEquals(actual.which, "box");
-    assertEquals((actual as Box<Boxed>).value, expected);
+    if (actual.which != "box") {
+        throw whichError("box", actual.which);
+    }
+    assertEquals(actual.value, expected);
 };
 
 export const assertFailure = <Boxed>(
     actual: Box<Boxed> | Failure,
     expectedKind: FailureKind
 ) => {
-    assertEquals(actual.which, "failure");
-    assertEquals((actual as Failure).kind, expectedKind);
+    if (actual.which != "failure") {
+        throw whichError("failure", actual.which);
+    }
+    assertEquals(actual.kind, expectedKind);
+};
+
+export const assertFailureWithExtra = <Boxed>(
+    actual: Box<Boxed> | Failure,
+    expectedKind: FailureKind,
+    expectedExtra: string
+) => {
+    if (actual.which != "failure") {
+        throw whichError("failure", actual.which);
+    }
+    assertEquals(actual.kind, expectedKind);
+    assertEquals(actual.extra, expectedExtra);
 };
 
 export const assertFailureWithError = <Boxed>(
@@ -23,7 +42,14 @@ export const assertFailureWithError = <Boxed>(
     expectedError: ErrorConstructor,
     expectedMessage: string
 ) => {
-    assertFailure(actual, expectedKind);
-    assertInstanceOf((actual as Failure).extra, expectedError);
-    assertEquals(((actual as Failure).extra as Error).message, expectedMessage);
+    if (actual.which != "failure") {
+        throw whichError("failure", actual.which);
+    }
+    assertEquals(actual.kind, expectedKind);
+    if (!(actual.extra instanceof expectedError)) {
+        throw new AssertionError(
+            `"extra" should be ${expectedError.name}`
+        );
+    }
+    assertEquals(actual.extra.message, expectedMessage);
 };

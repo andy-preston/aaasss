@@ -1,6 +1,5 @@
 import { assertEquals } from "assert";
-import { assertFailure } from "../testing.ts";
-import { Failure } from "../value-or-failure.ts";
+import { assertFailureWithExtra } from "../testing.ts";
 import {
     rawLine, assemblyLine, tokenisedLine, addressedLine
 } from "../coupling/line.ts";
@@ -58,8 +57,7 @@ Deno.test("... or UTF-8 strings", () => {
 Deno.test("Poked numbers must be bytes (0-255)", () => {
     const poker = pokeBuffer();
     const directiveResult = poker.directive([-1, 2, 300, 4]);
-    assertFailure(directiveResult, "byte.outOfRange");
-    assertEquals((directiveResult as Failure).extra, "-1, 300");
+    assertFailureWithExtra(directiveResult, "byte.outOfRange", "-1, 300");
     const lineResult = poker.line(testLine());
     assertEquals(lineResult.code, [[2, 4]]);
 });
