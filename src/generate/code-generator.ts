@@ -44,3 +44,5 @@ export const codeGenerator = (
     }
     return theCodeLine;
 };
+
+export type CodeGenerator = ReturnType<typeof codeGenerator>;

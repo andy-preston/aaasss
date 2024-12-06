@@ -1,6 +1,6 @@
-import { Failure } from "../coupling/value-failure.ts";
-import { CodeLine } from "../coupling/line.ts";
-import { Pass } from "../pass/pass.ts";
+import type { Failure } from "../coupling/value-failure.ts";
+import type { CodeLine } from "../coupling/line.ts";
+import type { Pass } from "../pass/pass.ts";
 
 export const output = (pass: Pass) => {
 
@@ -21,3 +21,5 @@ export const output = (pass: Pass) => {
         "final": final
     }
 };
+
+export type Output = ReturnType<typeof output>;

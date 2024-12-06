@@ -59,3 +59,5 @@ export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
         failures
     );
 };
+
+export type Tokenise = typeof tokenise;

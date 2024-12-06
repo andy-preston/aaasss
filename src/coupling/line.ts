@@ -169,3 +169,11 @@ export const codeLine = (
     line.addFailures(failures);
     return line as CodeLine;
 };
+
+export const emptyCodeLine = (
+    line: TokenisedLine,
+    failures: Failures
+): CodeLine => {
+    line.addFailures(failures);
+    return line as CodeLine;
+};

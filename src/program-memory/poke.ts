@@ -8,11 +8,6 @@ import {
 export const pokeBuffer = () => {
     let theBuffer: Array<Code> = [];
 
-    ////////////////////////////////////////////////////////////////////////////
-    //
-    // Directives need to check their run time parameters are the right type
-    //
-    ////////////////////////////////////////////////////////////////////////////
     const directive = (data: Array<number> | string): Failure | Box<string> => {
         const bytes: Array<number> = typeof data == "string"
             ? Array.from(new TextEncoder().encode(data))

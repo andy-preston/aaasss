@@ -15,6 +15,12 @@ export const failures = {
     "js.assemblerMode": (_line: CodeLine) => [
         "\"}}\" when already in assembly mode"
     ],
+    "macro.define": (_line: CodeLine) => [
+        "Previous macro definition was not closed"
+    ],
+    "macro.end": (_line: CodeLine) => [
+        "Can't end macro definition when a macro is not being defined"
+    ],
     "mnemonic.supportedUnknown": (_line: CodeLine) => [""],
     "mnemonic.notSupported": (_line: CodeLine) => [""],
     "mnemonic.unknown": (_line: CodeLine) => [""],

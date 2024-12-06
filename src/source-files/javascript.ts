@@ -84,3 +84,5 @@ export const javascript = (context: Context) => {
         "assembly": assembly
     }
 };
+
+export type Javascript = ReturnType<typeof javascript>;
