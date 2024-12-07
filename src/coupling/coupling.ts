@@ -10,8 +10,7 @@ import { tokenise } from "../tokenise/tokenise.ts";
 import { codeGenerator } from "../object-code/code-generator.ts";
 import { processor } from "../macro/processor.ts";
 import { output } from "../output/output.ts";
-import { illegalState } from "../output/illegalState.ts";
-import { pipeline } from "./pipeline.ts";
+import { pipeLine } from "./pipeline.ts";
 
 export const coupling = () => {
     const context = anEmptyContext();
@@ -41,19 +40,16 @@ export const coupling = () => {
 
     const out = output(thePass);
 
-    const illegal = illegalState(
-        [macroProcessor.illegalState, js.illegalState],
-        out.final
+    return pipeLine(
+        thePass,
+        sourceFiles.lines,
+        js.assembly,
+        tokenise,
+        macroProcessor.lines,
+        progMem.label,
+        poke.line,
+        code,
+        out,
+        [macroProcessor.illegalState, js.illegalState]
     );
-
-    const pipe = pipeline(
-        tokenise, macroProcessor, js, progMem, poke, code, out
-    );
-
-    return {
-        "pass": thePass,
-        "lines": sourceFiles.lines,
-        "pipeline": pipe,
-        "illegalState": illegal
-    };
 };

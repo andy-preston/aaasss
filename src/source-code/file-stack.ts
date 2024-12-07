@@ -70,3 +70,5 @@ export const fileStack = (read: ReaderMethod) => {
         "lines": lines,
     };
 };
+
+export type FileStack = ReturnType<typeof fileStack>;
