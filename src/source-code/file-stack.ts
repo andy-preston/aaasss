@@ -1,6 +1,6 @@
 import { box, failure, type Box, type Failure } from "../coupling/value-failure.ts";
-import { rawLine } from "../line-types/lines.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
+import { rawLine } from "./raw-line.ts";
 
 type FileIterator = ArrayIterator<[LineNumber, SourceCode]>;
 type FileContents = {

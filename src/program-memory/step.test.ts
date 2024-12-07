@@ -2,9 +2,10 @@ import { assertEquals } from "assert";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
 import {
-    rawLine, assemblyLine, tokenisedLine, addressedLine, pokedLine, codeLine
+    assemblyLine, tokenisedLine, addressedLine, pokedLine, codeLine
 } from "../line-types/lines.ts";
 import { Code } from "../object-code/data-types.ts";
+import { rawLine } from "../source-code/raw-line.ts";
 import { programMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {

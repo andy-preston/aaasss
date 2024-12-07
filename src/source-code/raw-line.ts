@@ -1,8 +1,8 @@
 import type { Failures } from "../coupling/value-failure.ts";
 import type {
     FileName, LineNumber, SourceCode
-} from "../source-code/data-types.ts";
-import { line, type Line } from "./0-line.ts";
+} from "./data-types.ts";
+import { line, type Line } from "../line-types/0-line.ts";
 
 export type RawProperties = "fileName" | "lineNumber" | "rawSource" |
     "failures" | "addFailures" | "failed";

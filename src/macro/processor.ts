@@ -1,7 +1,8 @@
 import { box, failure, type Box, type Failure } from "../coupling/value-failure.ts";
 import {
-    assemblyLine, rawLine, tokenisedLine, type TokenisedLine
+    assemblyLine, tokenisedLine, type TokenisedLine
 } from "../line-types/lines.ts";
+import { rawLine } from "../source-code/raw-line.ts";
 import { macro, Macro } from "./macro.ts";
 
 export const processor = () => {

@@ -3,12 +3,13 @@ import {
     assertFailureWithExtra, assertSuccess
 } from "../coupling/value-failure-testing.ts";
 import {
-    assemblyLine, rawLine, tokenisedLine, type TokenisedLine
+    assemblyLine, tokenisedLine, type TokenisedLine
 } from "../line-types/lines.ts";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { passes } from "../pass/pass.ts";
 import { Label } from "../source-code/data-types.ts";
+import { rawLine } from "../source-code/raw-line.ts";
 import { programMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {

@@ -1,7 +1,7 @@
 import type { Failures } from "../coupling/value-failure.ts";
 import { SourceCode } from "../source-code/data-types.ts";
 import type { Line } from "./0-line.ts";
-import type { RawLine, RawProperties } from "./1-raw-line.ts";
+import type { RawLine, RawProperties } from "../source-code/raw-line.ts";
 
 export type AssemblyProperties = RawProperties | "assemblySource";
 
