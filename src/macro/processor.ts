@@ -1,6 +1,6 @@
 import { box, failure, type Box, type Failure } from "../coupling/value-failure.ts";
-import { assemblyLine, rawLine } from "../source-code/line-types.ts";
-import { tokenisedLine, type TokenisedLine } from "../tokenise/tokenised-line.ts";
+import type { TokenisedLine } from "../tokenise/tokenised-line.ts";
+import { expandedLine } from "./line-types.ts";
 import { macro, Macro } from "./macro.ts";
 
 export const processor = () => {
@@ -34,8 +34,15 @@ export const processor = () => {
         return box(name);
     };
 
-    const saveLine = (line: TokenisedLine) => {
-        currentMacro!.saveLine(line);
+    const lines = function* (line: TokenisedLine) {
+        if (currentMacro != undefined) {
+            currentMacro!.saveLine(line);
+        }
+        yield expandedLine(
+            line,
+            currentMacro == undefined ? "" : currentMacro.name,
+            []
+        );
     };
 
     const defining = () => currentMacro != undefined;
@@ -46,8 +53,7 @@ export const processor = () => {
         "endDirective": endDirective,
         "defining": defining,
         "macroDirective": null,
-        "saveLine": saveLine,
-        "nextLine": () => [tokenisedLine(assemblyLine(rawLine("", 0, "", []), "", []), "", "", [], [])]
+        "lines": lines,
     };
 };
 

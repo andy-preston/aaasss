@@ -28,6 +28,7 @@ export const line = (
         "label": "" as Label,
         "mnemonic": "" as Mnemonic,
         "symbolicOperands": [] as SymbolicOperands,
+        "macroName": "" as string,
         "numericOperands": [] as NumericOperands,
         "address": 0,
         "code": [] as Array<Code>,
