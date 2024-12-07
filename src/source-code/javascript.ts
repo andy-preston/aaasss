@@ -20,13 +20,13 @@ export const javascript = (context: Context) => {
         current = "assembler";
     };
 
-    const illegalState = (): Array<Failure> =>
+    const leftInIllegalState = (): Array<Failure> =>
         current == "javascript"
             ? [failure(undefined, "js.jsMode", undefined)]
             : [];
 
     const javascript = (failures: Array<Failure>): Array<Failure> => {
-        const alreadyInJs = illegalState();
+        const alreadyInJs = leftInIllegalState();
         if (alreadyInJs.length > 0) {
             return failures.concat(alreadyInJs);
         } else {
@@ -78,7 +78,7 @@ export const javascript = (context: Context) => {
 
     return {
         "reset": reset,
-        "illegalState": illegalState,
+        "leftInIllegalState": leftInIllegalState,
         "assembly": assembly
     }
 };

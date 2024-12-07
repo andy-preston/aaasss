@@ -50,6 +50,6 @@ export const coupling = () => {
         poke.line,
         code,
         out,
-        [macroProcessor.illegalState, js.illegalState]
+        [macroProcessor.leftInIllegalState, js.leftInIllegalState]
     );
 };

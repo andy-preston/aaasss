@@ -12,7 +12,7 @@ import type { Tokenise } from "../tokenise/tokenise.ts";
 import type { TokenisedLine } from "../tokenise/tokenised-line.ts";
 import type { Failure } from "./value-failure.ts";
 
-type IllegalState = () => Array<Failure>;
+type IllegalStateCallback = () => Array<Failure>;
 
 export const pipeLine = (
     pass: Pass,
@@ -24,8 +24,7 @@ export const pipeLine = (
     poke: PokeBuffer["line"],
     code: CodeGenerator,
     output: Output,
-    illegalState: Array<IllegalState>,
-
+    illegalStateCallbacks: Array<IllegalStateCallback>,
 ) => {
     const assembly = (tokenised: TokenisedLine) => {
         for (const expanded of macro(tokenised)) {
@@ -43,6 +42,6 @@ export const pipeLine = (
                 assembly(tokenise(javascript(line)));
             }
         }
-        illegalState.forEach(callback => output.final(callback()));
+        illegalStateCallbacks.forEach(callback => output.final(callback()));
     };
 };

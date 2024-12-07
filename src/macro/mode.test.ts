@@ -2,10 +2,10 @@ import { assertEquals } from "assert/equals";
 import { processor } from "./processor.ts";
 import { assertFailure, assertSuccess } from "../coupling/value-failure-testing.ts";
 
-Deno.test("illegalState returns a failure is a definition wasn't closed", () => {
+Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", () => {
     const macroProcessor = processor();
     macroProcessor.defineDirective("plop");
-    const result = macroProcessor.illegalState();
+    const result = macroProcessor.leftInIllegalState();
     assertEquals(result.length, 1);
     assertEquals(result[0]!.kind, "macro.define");
 });

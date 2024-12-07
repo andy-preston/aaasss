@@ -8,7 +8,7 @@ export const processor = () => {
 
     const macros: Array<Macro> = [];
 
-    const illegalState = (): Array<Failure> =>
+    const leftInIllegalState = (): Array<Failure> =>
         currentMacro != undefined
             ? [failure(undefined, "macro.define", undefined)]
             : [];
@@ -48,7 +48,7 @@ export const processor = () => {
     const defining = () => currentMacro != undefined;
 
     return {
-        "illegalState": illegalState,
+        "leftInIllegalState": leftInIllegalState,
         "defineDirective": defineDirective,
         "endDirective": endDirective,
         "defining": defining,
