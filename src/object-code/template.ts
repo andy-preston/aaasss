@@ -1,4 +1,4 @@
-import type { Code } from "../coupling/line.ts";
+import type { Code } from "../object-code/data-types.ts";
 
 type BinaryDigit = "0" | "1";
 type Binary = Array<BinaryDigit>;

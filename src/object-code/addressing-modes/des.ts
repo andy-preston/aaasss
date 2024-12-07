@@ -1,11 +1,12 @@
+import type { Context } from "../../context/context.ts";
 import { box, failure, type Failures } from "../../coupling/value-failure.ts";
 import {
-    codeLine, NumericOperands,
-    type Code, type PokedLine, type CodeLine
-} from "../../coupling/line.ts";
-import type { Context } from "../../context/context.ts";
+    codeLine, type PokedLine, type CodeLine
+} from "../../line-types/lines.ts";
+import type { NumericOperands } from "../../operands/data-types.ts";
 import type { AddressingModeGenerator } from "../code-generator.ts";
-import { template } from "../template.ts"
+import { Code } from "../data-types.ts";
+import { template } from "../template.ts";
 
 export const des = (line: PokedLine): AddressingModeGenerator | undefined => {
 

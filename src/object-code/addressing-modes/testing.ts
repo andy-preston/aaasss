@@ -1,7 +1,9 @@
 import {
-    addressedLine, assemblyLine, pokedLine, rawLine, tokenisedLine,
-    type Code, type Label, type Mnemonic, type SymbolicOperands
-} from "../../coupling/line.ts";
+    addressedLine, assemblyLine, pokedLine, rawLine, tokenisedLine
+} from "../../line-types/lines.ts";
+import { SymbolicOperands } from "../../operands/data-types.ts";
+import { Label, Mnemonic } from "../../source-code/data-types.ts";
+import { Code } from "../data-types.ts";
 
 type TestTokens = [Label, Mnemonic, SymbolicOperands]
 type Test = [TestTokens, Code];

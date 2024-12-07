@@ -1,11 +1,13 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { anEmptyContext } from "../context/context.ts";
+import { deviceProperties } from "../device/properties.ts";
 import {
     rawLine, assemblyLine, tokenisedLine, addressedLine, pokedLine,
-    type Label, type Mnemonic, type SymbolicOperands, type PokedLine
-} from "../coupling/line.ts";
-import { deviceProperties } from "../device/properties.ts";
+    type PokedLine
+} from "../line-types/lines.ts";
+import type { SymbolicOperands } from "../operands/data-types.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
+import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { codeGenerator } from "./code-generator.ts";
 
 const testEnvironment = () => {
