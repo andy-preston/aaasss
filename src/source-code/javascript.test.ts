@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { anEmptyContext } from "../context/context.ts";
-import { rawLine } from "../coupling/line.ts";
+import { rawLine } from "../line-types/lines.ts";
 import { cpuRegisters } from "../device/registers.ts";
 import { javascript } from "./javascript.ts";
 
