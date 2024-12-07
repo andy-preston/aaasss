@@ -1,4 +1,4 @@
-import type { Failures } from "../coupling/value-failure.ts";
+import type { Failures } from "./value-failure.ts";
 import { Code } from "../object-code/data-types.ts";
 import type {
     NumericOperands, SymbolicOperands

@@ -1,5 +1,5 @@
 import type { Failures } from "../coupling/value-failure.ts";
-import type { Line } from "../line-types/0-line.ts";
+import type { Line } from "../coupling/line.ts";
 import { Code } from "../object-code/data-types.ts";
 import type { TokenisedLine, TokenisedProperties } from "../tokenise/tokenised-line.ts";
 

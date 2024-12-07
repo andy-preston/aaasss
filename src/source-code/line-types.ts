@@ -2,7 +2,7 @@ import type { Failures } from "../coupling/value-failure.ts";
 import type {
     FileName, LineNumber, SourceCode
 } from "./data-types.ts";
-import { line, type Line } from "../line-types/0-line.ts";
+import { line, type Line } from "../coupling/line.ts";
 
 type RawProperties = "fileName" | "lineNumber" | "rawSource" |
     "failures" | "addFailures" | "failed";
