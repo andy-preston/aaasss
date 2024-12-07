@@ -1,7 +1,7 @@
 import { assertEquals } from "assert";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { codeLine } from "../line-types/lines.ts";
+import { codeLine } from "../object-code/code-line.ts";
 import { Code } from "../object-code/data-types.ts";
 import { assemblyLine, rawLine } from "../source-code/line-types.ts";
 import { tokenisedLine } from "../tokenise/tokenised-line.ts";

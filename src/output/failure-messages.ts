@@ -1,4 +1,4 @@
-import { CodeLine } from "../line-types/lines.ts";
+import { CodeLine } from "../object-code/code-line.ts";
 
 export type FailureMessage = (line: CodeLine) => [string];
 
