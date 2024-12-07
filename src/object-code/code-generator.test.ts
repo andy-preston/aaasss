@@ -2,14 +2,13 @@ import { assert, assertEquals, assertFalse } from "assert";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import {
-    addressedLine, pokedLine, type PokedLine
-} from "../program-memory/line-types.ts";
+import { addressedLine, pokedLine } from "../program-memory/line-types.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { assemblyLine, rawLine } from "../source-code/line-types.ts";
 import { tokenisedLine } from "../tokenise/tokenised-line.ts";
 import { codeGenerator } from "./code-generator.ts";
+import { expandedLine } from "../macro/line-types.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
@@ -25,11 +24,12 @@ const testEnvironment = () => {
 
 const testLine = (
     label: Label, mnemonic: Mnemonic, operands: SymbolicOperands
-): PokedLine => {
+) => {
     const raw = rawLine("", 0, "", []);
     const assembly = assemblyLine(raw, "", []);
     const tokenised = tokenisedLine(assembly, label, mnemonic, operands, []);
-    const addressed = addressedLine(tokenised, 0, []);
+    const expanded = expandedLine(tokenised, "", []);
+    const addressed = addressedLine(expanded, 0, []);
     return pokedLine(addressed, [], []);
 };
 

@@ -4,12 +4,14 @@ import { assemblyLine, rawLine } from "../source-code/line-types.ts";
 import { tokenisedLine } from "../tokenise/tokenised-line.ts";
 import { addressedLine } from "./line-types.ts";
 import { pokeBuffer } from "./poke.ts";
+import { expandedLine } from "../macro/line-types.ts";
 
 const testLine = () => {
     const raw = rawLine("", 0, "", []);
     const assembly = assemblyLine(raw, "", []);
     const tokenised = tokenisedLine(assembly, "", "", [], []);
-    return addressedLine(tokenised, 0, []);
+    const expanded = expandedLine(tokenised, "", []);
+    return addressedLine(expanded, 0, []);
 };
 
 Deno.test("You can poke bytes", () => {

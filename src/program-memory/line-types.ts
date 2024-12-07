@@ -1,14 +1,14 @@
 import type { Failures } from "../coupling/value-failure.ts";
 import type { Line } from "../coupling/line.ts";
-import { Code } from "../object-code/data-types.ts";
-import type { TokenisedLine, TokenisedProperties } from "../tokenise/tokenised-line.ts";
+import type { ExpandedLine, ExpandedProperties } from "../macro/line-types.ts";
+import type { Code } from "../object-code/data-types.ts";
 
-type AddressedProperties = TokenisedProperties | "address";
+type AddressedProperties = ExpandedProperties | "address";
 
 export type AddressedLine = Readonly<Pick<Line, AddressedProperties>>;
 
 export const addressedLine = (
-    line: TokenisedLine,
+    line: ExpandedLine,
     address: number,
     failures: Failures
 ): AddressedLine => {

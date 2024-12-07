@@ -4,10 +4,11 @@ import {
 } from "../coupling/value-failure-testing.ts";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
+import { expandedLine, type ExpandedLine } from "../macro/line-types.ts";
 import { passes } from "../pass/pass.ts";
 import { Label } from "../source-code/data-types.ts";
 import { assemblyLine, rawLine } from "../source-code/line-types.ts";
-import { tokenisedLine, type TokenisedLine } from "../tokenise/tokenised-line.ts";
+import { tokenisedLine } from "../tokenise/tokenised-line.ts";
 import { programMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {
@@ -20,10 +21,11 @@ const testEnvironment = () => {
     };
 };
 
-const testLine = (label: Label): TokenisedLine => {
+const testLine = (label: Label): ExpandedLine => {
     const raw = rawLine("", 0, "", []);
     const assembly = assemblyLine(raw, "", []);
-    return tokenisedLine(assembly, label, "", [], []);
+    const tokenised = tokenisedLine(assembly, label, "", [], []);
+    return expandedLine(tokenised, "", []);
 };
 
 Deno.test("A label is stored in the context with the current address", () => {

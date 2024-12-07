@@ -1,3 +1,4 @@
+import { expandedLine } from "../../macro/line-types.ts";
 import { SymbolicOperands } from "../../operands/data-types.ts";
 import { addressedLine, pokedLine } from "../../program-memory/line-types.ts";
 import { Label, Mnemonic } from "../../source-code/data-types.ts";
@@ -13,7 +14,8 @@ export const testLine = (test: TestTokens) => {
     const raw = rawLine("", 0, "", []);
     const assembly = assemblyLine(raw, "", []);
     const tokenised = tokenisedLine(assembly, ...test, []);
-    const addressed = addressedLine(tokenised, 0, []);
+    const expanded = expandedLine(tokenised, "", []);
+    const addressed = addressedLine(expanded, 0, []);
     return pokedLine(addressed, [], []);
 };
 

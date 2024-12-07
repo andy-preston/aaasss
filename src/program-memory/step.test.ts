@@ -7,6 +7,7 @@ import { assemblyLine, rawLine } from "../source-code/line-types.ts";
 import { tokenisedLine } from "../tokenise/tokenised-line.ts";
 import { addressedLine, pokedLine } from "./line-types.ts";
 import { programMemory } from "./program-memory.ts";
+import { expandedLine } from "../macro/line-types.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
@@ -21,7 +22,8 @@ const testLine = (pokes: Array<Code>, code: Code) => {
     const raw = rawLine("", 0, "", []);
     const assembly = assemblyLine(raw, "", []);
     const tokenised = tokenisedLine(assembly, "", "", [], []);
-    const addressed = addressedLine(tokenised, 0, []);
+    const expanded = expandedLine(tokenised, "", []);
+    const addressed = addressedLine(expanded, 0, []);
     const poked = pokedLine(addressed, pokes, []);
     return codeLine(poked, [], code, []);
 };

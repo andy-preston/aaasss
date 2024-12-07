@@ -3,8 +3,8 @@ import {
     box, failure, type Box, type Failure
 } from "../coupling/value-failure.ts";
 import type { DeviceProperties } from "../device/properties.ts";
+import { ExpandedLine } from "../macro/line-types.ts";
 import type { CodeLine } from "../object-code/code-line.ts";
-import type { TokenisedLine } from "../tokenise/tokenised-line.ts";
 import { addressedLine, type AddressedLine } from "./line-types.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
@@ -43,7 +43,7 @@ export const programMemory = (
         return origin(newAddress);
     };
 
-    const label = (line: TokenisedLine): AddressedLine => {
+    const label = (line: ExpandedLine): AddressedLine => {
         if (line.label) {
             const result = context.property(line.label, address);
             if (result.which == "failure") {
