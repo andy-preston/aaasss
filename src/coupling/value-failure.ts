@@ -1,4 +1,4 @@
-import type { OperandIndex } from "./line.ts";
+import type { OperandIndex } from "../operands/data-types.ts";
 import { failures } from "../output/failure-messages.ts";
 
 export type FailureKind = keyof typeof failures;

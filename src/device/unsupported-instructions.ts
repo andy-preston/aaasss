@@ -1,4 +1,4 @@
-import type { Mnemonic } from "../coupling/line.ts";
+import type { Mnemonic } from "../source-code/data-types.ts";
 
 export const unsupportedInstructions = () => {
     let instructions: Array<Mnemonic> = [];

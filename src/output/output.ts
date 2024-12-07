@@ -1,5 +1,5 @@
 import type { Failure } from "../coupling/value-failure.ts";
-import type { CodeLine } from "../coupling/line.ts";
+import type { CodeLine } from "../line-types/lines.ts";
 import type { Pass } from "../pass/pass.ts";
 
 export const output = (pass: Pass) => {

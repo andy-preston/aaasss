@@ -1,7 +1,7 @@
 import {
     box, failure, type Box, type Failure
 } from "../coupling/value-failure.ts";
-import type { SymbolicOperand } from "../coupling/line.ts";
+import type { SymbolicOperand } from "../operands/data-types.ts";
 import { returnIfExpression } from "./magic.ts";
 
 type SimpleFunction = (n: number) => number;

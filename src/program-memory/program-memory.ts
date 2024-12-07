@@ -3,7 +3,7 @@ import {
 } from "../coupling/value-failure.ts";
 import {
     addressedLine, CodeLine, type AddressedLine, type TokenisedLine
-} from "../coupling/line.ts";
+} from "../line-types/lines.ts";
 import type { Context } from "../context/context.ts";
 import type { DeviceProperties } from "../device/properties.ts";
 

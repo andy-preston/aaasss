@@ -1,4 +1,4 @@
-import { SymbolicOperand } from "../coupling/line.ts";
+import { SymbolicOperand } from "../operands/data-types.ts";
 
 const match = (operand: SymbolicOperand): Array<string> => {
     const prefix = operand.toUpperCase().match(/^[Y|Z]\+/);

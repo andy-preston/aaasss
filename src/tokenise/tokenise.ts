@@ -1,8 +1,8 @@
 import { failure, type Failures } from "../coupling/value-failure.ts";
+import { operands, type SymbolicOperands } from "../operands/data-types.ts"
 import {
-    tokenisedLine, operands,
-    type AssemblyLine, type TokenisedLine, type SymbolicOperands
-} from "../coupling/line.ts";
+    tokenisedLine, type AssemblyLine, type TokenisedLine
+} from "../line-types/lines.ts";
 import { indexOffsetOperands } from "./index-offset-operands.ts";
 
 const validLabel = /^\w*$/;
