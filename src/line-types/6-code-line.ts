@@ -1,8 +1,8 @@
 import type { Failures } from "../coupling/value-failure.ts";
 import type { Code } from "../object-code/data-types.ts";
 import type { NumericOperands } from "../operands/data-types.ts";
+import type { PokedLine, PokedProperties } from "../program-memory/line-types.ts";
 import type { Line } from "./0-line.ts";
-import type { PokedLine, PokedProperties } from "./5-poked-line.ts";
 
 export type CodeProperties = PokedProperties | "numericOperands";
 

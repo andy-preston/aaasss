@@ -5,7 +5,7 @@ import {
 import type { DeviceProperties } from "../device/properties.ts";
 import type { TokenisedLine } from "../tokenise/tokenised-line.ts";
 import type { CodeLine } from "../line-types/lines.ts";
-import { addressedLine, type AddressedLine } from "./addressed-line.ts";
+import { addressedLine, type AddressedLine } from "./line-types.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
 

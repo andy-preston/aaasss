@@ -1,6 +1,5 @@
-import { pokedLine } from "../../line-types/lines.ts";
 import { SymbolicOperands } from "../../operands/data-types.ts";
-import { addressedLine } from "../../program-memory/addressed-line.ts";
+import { addressedLine, pokedLine } from "../../program-memory/line-types.ts";
 import { Label, Mnemonic } from "../../source-code/data-types.ts";
 import { assemblyLine, rawLine } from "../../source-code/line-types.ts";
 import { tokenisedLine } from "../../tokenise/tokenised-line.ts";
