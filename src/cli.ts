@@ -1,2 +1,3 @@
 import { coupling } from "./coupling/coupling.ts";
-coupling()("file1.asm");
+const pipeline = coupling();
+pipeline("file1.asm");

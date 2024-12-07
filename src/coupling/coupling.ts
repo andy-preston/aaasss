@@ -34,11 +34,7 @@ export const coupling = () => {
 
     const js = javascript(context);
 
-    const code = codeGenerator(context, properties.public, progMem);
-
     const thePass = pass([progMem.reset, js.reset]);
-
-    const out = output(thePass);
 
     return pipeLine(
         thePass,
@@ -48,8 +44,11 @@ export const coupling = () => {
         macroProcessor.lines,
         progMem.label,
         poke.line,
-        code,
-        out,
-        [macroProcessor.leftInIllegalState, js.leftInIllegalState]
+        codeGenerator(context, properties.public, progMem),
+        output(thePass),
+        [
+            macroProcessor.leftInIllegalState,
+            js.leftInIllegalState
+        ]
     );
 };
