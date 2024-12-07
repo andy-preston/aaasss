@@ -1,5 +1,5 @@
-import { tokenisedLine } from "../line-types/lines.ts";
 import { assemblyLine, rawLine } from "../source-code/line-types.ts";
+import { tokenisedLine } from "../tokenise/tokenised-line.ts";
 import { processor } from "./processor.ts";
 
 const testLine = (label: string, mnemonic: string) => {

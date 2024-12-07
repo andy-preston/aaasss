@@ -1,8 +1,8 @@
 import { failure, type Failures } from "../coupling/value-failure.ts";
-import { tokenisedLine, type TokenisedLine } from "../line-types/lines.ts";
 import { operands, type SymbolicOperands } from "../operands/data-types.ts"
 import type { AssemblyLine } from "../source-code/line-types.ts";
 import { indexOffsetOperands } from "./index-offset-operands.ts";
+import { tokenisedLine, TokenisedLine } from "./tokenised-line.ts";
 
 const validLabel = /^\w*$/;
 const anyWhitespace = /\s+/g;

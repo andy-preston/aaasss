@@ -1,6 +1,6 @@
 import type { Failures } from "../coupling/value-failure.ts";
+import type { TokenisedLine, TokenisedProperties } from "../tokenise/tokenised-line.ts";
 import type { Line } from "./0-line.ts";
-import type { TokenisedLine, TokenisedProperties } from "./3-tokenised-line.ts";
 
 export type AddressedProperties = TokenisedProperties | "address";
 

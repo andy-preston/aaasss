@@ -1,4 +1,4 @@
-import { TokenisedLine } from "../line-types/lines.ts";
+import { TokenisedLine } from "../tokenise/tokenised-line.ts";
 
 type MacroParameters = Array<string>;
 

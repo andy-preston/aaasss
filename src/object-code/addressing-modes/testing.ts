@@ -1,9 +1,8 @@
-import {
-    addressedLine, pokedLine, tokenisedLine
-} from "../../line-types/lines.ts";
+import { addressedLine, pokedLine } from "../../line-types/lines.ts";
 import { SymbolicOperands } from "../../operands/data-types.ts";
 import { Label, Mnemonic } from "../../source-code/data-types.ts";
 import { assemblyLine, rawLine } from "../../source-code/line-types.ts";
+import { tokenisedLine } from "../../tokenise/tokenised-line.ts";
 import { Code } from "../data-types.ts";
 
 type TestTokens = [Label, Mnemonic, SymbolicOperands]
