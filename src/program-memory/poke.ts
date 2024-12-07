@@ -1,10 +1,9 @@
 import {
     box, failure, type Box, type Failure
 } from "../coupling/value-failure.ts";
-import {
-    pokedLine, type AddressedLine, type PokedLine
-} from "../line-types/lines.ts";
+import { pokedLine, type PokedLine } from "../line-types/lines.ts";
 import { Code } from "../object-code/data-types.ts";
+import { AddressedLine } from "./addressed-line.ts";
 
 export const pokeBuffer = () => {
     let theBuffer: Array<Code> = [];
@@ -44,4 +43,3 @@ export const pokeBuffer = () => {
 };
 
 export type PokeBuffer = ReturnType<typeof pokeBuffer>;
-

@@ -1,7 +1,7 @@
 import type { Failures } from "../coupling/value-failure.ts";
 import { Code } from "../object-code/data-types.ts";
 import type { Line } from "./0-line.ts";
-import type { AddressedLine, AddressedProperties } from "./4-addressed-line.ts";
+import type { AddressedLine, AddressedProperties } from "../program-memory/addressed-line.ts";
 
 export type PokedProperties = AddressedProperties | "code";
 

@@ -3,8 +3,9 @@ import {
     box, failure, type Box, type Failure
 } from "../coupling/value-failure.ts";
 import type { DeviceProperties } from "../device/properties.ts";
-import { TokenisedLine } from "../tokenise/tokenised-line.ts";
-import { addressedLine, CodeLine, type AddressedLine } from "../line-types/lines.ts";
+import type { TokenisedLine } from "../tokenise/tokenised-line.ts";
+import type { CodeLine } from "../line-types/lines.ts";
+import { addressedLine, type AddressedLine } from "./addressed-line.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
 
