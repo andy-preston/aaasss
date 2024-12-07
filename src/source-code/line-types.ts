@@ -4,7 +4,7 @@ import type {
 } from "./data-types.ts";
 import { line, type Line } from "../line-types/0-line.ts";
 
-export type RawProperties = "fileName" | "lineNumber" | "rawSource" |
+type RawProperties = "fileName" | "lineNumber" | "rawSource" |
     "failures" | "addFailures" | "failed";
 
 export type RawLine = Readonly<Pick<Line, RawProperties>>;
@@ -18,4 +18,18 @@ export const rawLine = (
     const result = line(fileName, lineNumber, source) as RawLine;
     result.addFailures(failures);
     return result;
+};
+
+export type AssemblyProperties = RawProperties | "assemblySource";
+
+export type AssemblyLine = Readonly<Pick<Line, AssemblyProperties>>;
+
+export const assemblyLine = (
+    line: RawLine,
+    source: SourceCode,
+    failures: Failures
+): AssemblyLine => {
+    (line as Line).assemblySource = source;
+    line.addFailures(failures);
+    return line as AssemblyLine;
 };

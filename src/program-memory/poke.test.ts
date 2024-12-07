@@ -1,9 +1,7 @@
 import { assertEquals } from "assert";
 import { assertFailureWithExtra } from "../coupling/value-failure-testing.ts";
-import {
-    assemblyLine, tokenisedLine, addressedLine
-} from "../line-types/lines.ts";
-import { rawLine } from "../source-code/raw-line.ts";
+import { tokenisedLine, addressedLine } from "../line-types/lines.ts";
+import { assemblyLine, rawLine } from "../source-code/line-types.ts";
 import { pokeBuffer } from "./poke.ts";
 
 const testLine = () => {

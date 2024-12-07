@@ -2,14 +2,12 @@ import { assert, assertEquals, assertFalse } from "assert";
 import {
     assertFailureWithExtra, assertSuccess
 } from "../coupling/value-failure-testing.ts";
-import {
-    assemblyLine, tokenisedLine, type TokenisedLine
-} from "../line-types/lines.ts";
+import { tokenisedLine, type TokenisedLine } from "../line-types/lines.ts";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { passes } from "../pass/pass.ts";
 import { Label } from "../source-code/data-types.ts";
-import { rawLine } from "../source-code/raw-line.ts";
+import { assemblyLine, rawLine } from "../source-code/line-types.ts";
 import { programMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {

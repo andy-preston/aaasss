@@ -1,8 +1,8 @@
 import type { Failures } from "../coupling/value-failure.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
+import type { AssemblyLine, AssemblyProperties } from "../source-code/line-types.ts";
 import type { Line } from "./0-line.ts";
-import type { AssemblyLine, AssemblyProperties } from "./2-assembly-line.ts";
 
 export type TokenisedProperties = AssemblyProperties |
     "label" | "mnemonic" | "symbolicOperands";
