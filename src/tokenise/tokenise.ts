@@ -1,17 +1,15 @@
 import { failure, type Failures } from "../coupling/value-failure.ts";
 import { operands, type SymbolicOperands } from "../operands/data-types.ts"
-import type { AssemblyLine } from "../source-code/line-types.ts";
+import type { LineWithRenderedJavascript } from "../source-code/line-types.ts";
 import { indexOffsetOperands } from "./index-offset-operands.ts";
-import { tokenisedLine, TokenisedLine } from "./tokenised-line.ts";
+import { lineWithTokens } from "./line-types.ts";
 
 const validLabel = /^\w*$/;
 const anyWhitespace = /\s+/g;
 const comment = /;.*$/;
 
 const split = (
-    keep: "before" | "after",
-    marker: string,
-    raw: string
+    keep: "before" | "after", marker: string, raw: string
 ): [string, string] => {
     const position = raw.indexOf(marker);
     if (position == -1) {
@@ -23,7 +21,7 @@ const split = (
     ];
 };
 
-export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
+export const tokenise = (theLine: LineWithRenderedJavascript) => {
     const failures: Failures = [];
 
     const cleaned = theLine.assemblySource.replace(
@@ -48,10 +46,8 @@ export const tokenise = (theLine: AssemblyLine): TokenisedLine => {
         failures.push(failure(1, "operand.tooManyIndexOffset", undefined));
     }
 
-    return tokenisedLine(
-        theLine,
-        label,
-        mnemonic.toUpperCase(),
+    return lineWithTokens(
+        theLine, label, mnemonic.toUpperCase(),
         operands<SymbolicOperands>(
             expandedOperands.length > 3 ? operandsList : expandedOperands
         ),

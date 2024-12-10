@@ -1,6 +1,8 @@
 import { failure, type Failure } from "../coupling/value-failure.ts";
 import type { Context } from "../context/context.ts";
-import { assemblyLine, type AssemblyLine, type RawLine } from "./line-types.ts";
+import {
+    lineWithRenderedJavascript, type LineWithRawSource
+} from "./line-types.ts";
 
 const scriptDelimiter = /({{|}})/;
 
@@ -52,7 +54,9 @@ export const javascript = (context: Context) => {
         return failures;
     };
 
-    const usePart = (failures: Array<Failure>, part: string): Array<Failure> => {
+    const usePart = (
+        failures: Array<Failure>, part: string
+    ): Array<Failure> => {
         if (part == "{{") {
             return javascript(failures);
         }
@@ -63,23 +67,23 @@ export const javascript = (context: Context) => {
         return failures;
     };
 
-    const assembly = (line: RawLine): AssemblyLine => {
+    const rendered = (line: LineWithRawSource) => {
         const failures = line.rawSource.split(scriptDelimiter).reduce(
             usePart,
             [],
         );
         if (failures.length > 0) {
-            return assemblyLine(line, "", failures);
+            return lineWithRenderedJavascript(line, "", failures);
         }
         const assembler = buffer.assembler.join("").trim();
         buffer.assembler = [];
-        return assemblyLine(line, assembler, []);
+        return lineWithRenderedJavascript(line, assembler, []);
     };
 
     return {
         "reset": reset,
         "leftInIllegalState": leftInIllegalState,
-        "assembly": assembly
+        "rendered": rendered
     }
 };
 

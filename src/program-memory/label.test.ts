@@ -4,11 +4,13 @@ import {
 } from "../coupling/value-failure-testing.ts";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { expandedLine, type ExpandedLine } from "../macro/line-types.ts";
+import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import { passes } from "../pass/pass.ts";
 import { Label } from "../source-code/data-types.ts";
-import { assemblyLine, rawLine } from "../source-code/line-types.ts";
-import { tokenisedLine } from "../tokenise/tokenised-line.ts";
+import {
+    lineWithRawSource, lineWithRenderedJavascript
+} from "../source-code/line-types.ts";
+import { lineWithTokens } from "../tokenise/line-types.ts";
 import { programMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {
@@ -21,11 +23,11 @@ const testEnvironment = () => {
     };
 };
 
-const testLine = (label: Label): ExpandedLine => {
-    const raw = rawLine("", 0, "", []);
-    const assembly = assemblyLine(raw, "", []);
-    const tokenised = tokenisedLine(assembly, label, "", [], []);
-    return expandedLine(tokenised, "", []);
+const testLine = (label: Label) => {
+    const raw = lineWithRawSource("", 0, "", []);
+    const rendered = lineWithRenderedJavascript(raw, "", []);
+    const tokenised = lineWithTokens(rendered, label, "", [], []);
+    return lineWithProcessedMacro(tokenised, "", []);
 };
 
 Deno.test("A label is stored in the context with the current address", () => {

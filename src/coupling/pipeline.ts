@@ -1,4 +1,4 @@
-import { shortCutCodeLine } from "../macro/line-types.ts";
+import { lineWithNoObjectCode } from "../macro/line-types.ts";
 import type { MacroProcessor } from "../macro/processor.ts";
 import type { CodeGenerator } from "../object-code/code-generator.ts";
 import type { Output } from "../output/output.ts";
@@ -9,7 +9,7 @@ import type { FileName } from "../source-code/data-types.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
 import type { Javascript } from "../source-code/javascript.ts";
 import type { Tokenise } from "../tokenise/tokenise.ts";
-import type { TokenisedLine } from "../tokenise/tokenised-line.ts";
+import type { LineWithTokens } from "../tokenise/line-types.ts";
 import type { Failure } from "./value-failure.ts";
 
 type IllegalStateCallback = () => Array<Failure>;
@@ -17,7 +17,7 @@ type IllegalStateCallback = () => Array<Failure>;
 export const pipeLine = (
     pass: Pass,
     lines: FileStack["lines"],
-    javascript: Javascript["assembly"],
+    javascript: Javascript["rendered"],
     tokenise: Tokenise,
     macro: MacroProcessor["lines"],
     label: ProgramMemory["label"],
@@ -26,11 +26,11 @@ export const pipeLine = (
     output: Output,
     illegalStateCallbacks: Array<IllegalStateCallback>,
 ) => {
-    const assembly = (tokenised: TokenisedLine) => {
+    const assembly = (tokenised: LineWithTokens) => {
         for (const expanded of macro(tokenised)) {
             const outputLine = expanded.macroName == ""
                 ? code(poke(label(expanded)))
-                : shortCutCodeLine(expanded);
+                : lineWithNoObjectCode(expanded);
             output.line(outputLine);
         }
     };

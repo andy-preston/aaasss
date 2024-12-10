@@ -1,32 +1,30 @@
 import type { Failures } from "../coupling/value-failure.ts";
 import type { Line } from "../coupling/line.ts";
-import type { ExpandedLine, ExpandedProperties } from "../macro/line-types.ts";
+import type {
+    PropertiesForMacroProcessing, LineWithProcessedMacro
+} from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 
-type AddressedProperties = ExpandedProperties | "address";
+type PropertiesForAddress = PropertiesForMacroProcessing | "address";
 
-export type AddressedLine = Readonly<Pick<Line, AddressedProperties>>;
+export type LineWithAddress = Readonly<Pick<Line, PropertiesForAddress>>;
 
-export const addressedLine = (
-    line: ExpandedLine,
-    address: number,
-    failures: Failures
-): AddressedLine => {
+export const lineWithAddress = (
+    line: LineWithProcessedMacro, address: number, failures: Failures
+) => {
     (line as Line).address = address;
     line.addFailures(failures);
-    return line as AddressedLine;
+    return line as LineWithAddress;
 };
 
-export type PokedProperties = AddressedProperties | "code";
+export type PropertiesForPokedBytes = PropertiesForAddress | "code";
 
-export type PokedLine = Readonly<Pick<Line, PokedProperties>>;
+export type LineWithPokedBytes = Readonly<Pick<Line, PropertiesForPokedBytes>>;
 
-export const pokedLine = (
-    line: AddressedLine,
-    poked: Array<Code>,
-    failures: Failures
-): PokedLine => {
+export const lineWithPokedBytes = (
+    line: LineWithAddress, poked: Array<Code>, failures: Failures
+) => {
     (line as Line).code = poked;
     line.addFailures(failures);
-    return line as PokedLine;
+    return line as LineWithPokedBytes;
 };

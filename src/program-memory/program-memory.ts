@@ -3,9 +3,9 @@ import {
     box, failure, type Box, type Failure
 } from "../coupling/value-failure.ts";
 import type { DeviceProperties } from "../device/properties.ts";
-import { ExpandedLine } from "../macro/line-types.ts";
-import type { CodeLine } from "../object-code/code-line.ts";
-import { addressedLine, type AddressedLine } from "./line-types.ts";
+import { LineWithProcessedMacro } from "../macro/line-types.ts";
+import type { LineWithObjectCode } from "../object-code/line-types.ts";
+import { lineWithAddress } from "./line-types.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
 
@@ -35,7 +35,7 @@ export const programMemory = (
         return box(address);
     };
 
-    const step = (line: CodeLine): Box<number> | Failure => {
+    const step = (line: LineWithObjectCode): Box<number> | Failure => {
         const newAddress = bytesToWords(line.code.reduce(
             (accumulated, codeBlock) => accumulated + codeBlock.length,
             address
@@ -43,14 +43,14 @@ export const programMemory = (
         return origin(newAddress);
     };
 
-    const label = (line: ExpandedLine): AddressedLine => {
+    const label = (line: LineWithProcessedMacro) => {
         if (line.label) {
             const result = context.property(line.label, address);
             if (result.which == "failure") {
                 line.addFailures([result]);
             }
         }
-        return addressedLine(line, address, []);
+        return lineWithAddress(line, address, []);
     };
 
     return {

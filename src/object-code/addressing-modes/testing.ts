@@ -1,22 +1,26 @@
-import { expandedLine } from "../../macro/line-types.ts";
-import { SymbolicOperands } from "../../operands/data-types.ts";
-import { addressedLine, pokedLine } from "../../program-memory/line-types.ts";
-import { Label, Mnemonic } from "../../source-code/data-types.ts";
-import { assemblyLine, rawLine } from "../../source-code/line-types.ts";
-import { tokenisedLine } from "../../tokenise/tokenised-line.ts";
-import { Code } from "../data-types.ts";
+import type { Code } from "../data-types.ts";
+import { lineWithProcessedMacro } from "../../macro/line-types.ts";
+import type { SymbolicOperands } from "../../operands/data-types.ts";
+import {
+    lineWithAddress, lineWithPokedBytes
+} from "../../program-memory/line-types.ts";
+import type { Label, Mnemonic } from "../../source-code/data-types.ts";
+import {
+    lineWithRawSource, lineWithRenderedJavascript
+} from "../../source-code/line-types.ts";
+import { lineWithTokens } from "../../tokenise/line-types.ts";
 
 type TestTokens = [Label, Mnemonic, SymbolicOperands]
 type Test = [TestTokens, Code];
 export type Tests = Array<Test>;
 
 export const testLine = (test: TestTokens) => {
-    const raw = rawLine("", 0, "", []);
-    const assembly = assemblyLine(raw, "", []);
-    const tokenised = tokenisedLine(assembly, ...test, []);
-    const expanded = expandedLine(tokenised, "", []);
-    const addressed = addressedLine(expanded, 0, []);
-    return pokedLine(addressed, [], []);
+    const raw = lineWithRawSource("", 0, "", []);
+    const rendered = lineWithRenderedJavascript(raw, "", []);
+    const tokenised = lineWithTokens(rendered, ...test, []);
+    const processed = lineWithProcessedMacro(tokenised, "", []);
+    const addressed = lineWithAddress(processed, 0, []);
+    return lineWithPokedBytes(addressed, [], []);
 };
 
 export const description = (test: Test) => {

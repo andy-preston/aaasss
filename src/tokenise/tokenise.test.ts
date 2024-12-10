@@ -1,11 +1,13 @@
 import { assertEquals } from "assert";
 import { tokenise } from "./tokenise.ts";
-import { SourceCode } from "../source-code/data-types.ts";
-import { assemblyLine, type AssemblyLine } from "../source-code/line-types.ts";
-import { rawLine } from "../source-code/line-types.ts";
+import type { SourceCode } from "../source-code/data-types.ts";
+import { lineWithRenderedJavascript } from "../source-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
 
-const testLine = (source: SourceCode): AssemblyLine =>
-    assemblyLine(rawLine("", 0, source, []), source, []);
+const testLine = (source: SourceCode) => {
+    const raw = lineWithRawSource("", 0, source, []);
+    return lineWithRenderedJavascript(raw, source, []);
+};
 
 Deno.test("Leading and trailing whitespace is discarded", () => {
     const line = testLine("\tLDI R16, 23   ");

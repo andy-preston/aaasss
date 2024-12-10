@@ -1,10 +1,10 @@
 import type { Failure } from "../coupling/value-failure.ts";
-import type { CodeLine } from "../object-code/code-line.ts";
+import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { Pass } from "../pass/pass.ts";
 
 export const output = (pass: Pass) => {
 
-    const line = (line: CodeLine) => {
+    const line = (line: LineWithObjectCode) => {
         if (pass.showErrors()) {
             console.log(line);
         }

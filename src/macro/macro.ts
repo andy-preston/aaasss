@@ -2,8 +2,8 @@ import { failure } from "../coupling/value-failure.ts";
 import { SymbolicOperand } from "../operands/data-types.ts";
 import { operands, SymbolicOperands } from "../operands/data-types.ts";
 import { Label } from "../source-code/data-types.ts";
-import type { TokenisedLine } from "../tokenise/tokenised-line.ts";
-import { mappedExpandedLine } from "./line-types.ts";
+import type { LineWithTokens } from "../tokenise/line-types.ts";
+import { lineWithExpandedMacro } from "./line-types.ts";
 
 export type MacroName = string;
 export type SymbolicParameters = Array<string>;
@@ -11,7 +11,7 @@ export type ActualParameters = Array<string | number>;
 
 export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
 
-    const lines: Array<TokenisedLine> = [];
+    const lines: Array<LineWithTokens> = [];
     let instance = 0;
 
     const mapLabel = (label: Label) =>
@@ -33,11 +33,11 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
             return newOperand == undefined ? oldOperand : `${newOperand}`;
         };
 
-        return function* (callingLine: TokenisedLine) {
+        return function* (callingLine: LineWithTokens) {
             instance = instance + 1;
             for (const [index, line] of lines.entries()) {
                 const symbolicOperands = line.symbolicOperands.map(mapOperand);
-                yield mappedExpandedLine(
+                yield lineWithExpandedMacro(
                     callingLine,
                     line,
                     mapLabel(line.label),
@@ -49,7 +49,7 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
     };
 
     return {
-        "push": (line: TokenisedLine) => lines.push(line),
+        "push": (line: LineWithTokens) => lines.push(line),
         "empty": () => lines.length == 0,
         "mapper": mapper
     }

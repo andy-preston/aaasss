@@ -39,7 +39,7 @@ export const coupling = () => {
     return pipeLine(
         thePass,
         sourceFiles.lines,
-        js.assembly,
+        js.rendered,
         tokenise,
         macroProcessor.lines,
         progMem.label,

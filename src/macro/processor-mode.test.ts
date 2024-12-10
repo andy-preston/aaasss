@@ -1,13 +1,15 @@
 import { assertEquals } from "assert/equals";
 import { processor } from "./processor.ts";
 import { assertFailure, assertSuccess } from "../coupling/value-failure-testing.ts";
-import { tokenisedLine } from "../tokenise/tokenised-line.ts";
-import { assemblyLine, rawLine } from "../source-code/line-types.ts";
+import { lineWithTokens } from "../tokenise/line-types.ts";
+import {
+    lineWithRawSource, lineWithRenderedJavascript
+} from "../source-code/line-types.ts";
 
 const testLine = () => {
-    const raw = rawLine("", 0, "", []);
-    const assembly = assemblyLine(raw, "", []);
-    return tokenisedLine(assembly, "", "TST", [], []);
+    const raw = lineWithRawSource("", 0, "", []);
+    const rendered = lineWithRenderedJavascript(raw, "", []);
+    return lineWithTokens(rendered, "", "TST", [], []);
 };
 
 Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", () => {

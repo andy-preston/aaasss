@@ -1,15 +1,17 @@
 import type { Context } from "../../context/context.ts";
 import { box, failure, type Failures } from "../../coupling/value-failure.ts";
-import { codeLine, type CodeLine } from "../../object-code/code-line.ts";
+import { lineWithObjectCode } from "../line-types.ts";
 import type { NumericOperands } from "../../operands/data-types.ts";
-import { PokedLine } from "../../program-memory/line-types.ts";
+import { LineWithPokedBytes } from "../../program-memory/line-types.ts";
 import type { AddressingModeGenerator } from "../code-generator.ts";
 import { Code } from "../data-types.ts";
 import { template } from "../template.ts";
 
-export const des = (line: PokedLine): AddressingModeGenerator | undefined => {
+export const des = (
+    line: LineWithPokedBytes
+): AddressingModeGenerator | undefined => {
 
-    const codeGenerator = (context: Context): CodeLine => {
+    const codeGenerator = (context: Context) => {
         const failures: Failures = [];
         if (line.symbolicOperands.length != 1) {
             failures.push(failure(undefined, "operand.wrongCount", "1"));
@@ -29,7 +31,7 @@ export const des = (line: PokedLine): AddressingModeGenerator | undefined => {
             : template("1001_0100 KKKK_1011", [
                 ["K", numericOperands[0]!]
             ]);
-        return codeLine(line, numericOperands, code, failures);
+        return lineWithObjectCode(line, numericOperands, code, failures);
     };
 
     return line.mnemonic == "DES" ? codeGenerator : undefined;

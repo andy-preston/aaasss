@@ -1,17 +1,19 @@
 import { assertEquals } from "assert";
 import { assertFailureWithExtra } from "../coupling/value-failure-testing.ts";
-import { assemblyLine, rawLine } from "../source-code/line-types.ts";
-import { tokenisedLine } from "../tokenise/tokenised-line.ts";
-import { addressedLine } from "./line-types.ts";
+import { lineWithProcessedMacro } from "../macro/line-types.ts";
+import {
+    lineWithRawSource, lineWithRenderedJavascript
+} from "../source-code/line-types.ts";
+import { lineWithTokens } from "../tokenise/line-types.ts";
+import { lineWithAddress} from "./line-types.ts";
 import { pokeBuffer } from "./poke.ts";
-import { expandedLine } from "../macro/line-types.ts";
 
 const testLine = () => {
-    const raw = rawLine("", 0, "", []);
-    const assembly = assemblyLine(raw, "", []);
-    const tokenised = tokenisedLine(assembly, "", "", [], []);
-    const expanded = expandedLine(tokenised, "", []);
-    return addressedLine(expanded, 0, []);
+    const raw = lineWithRawSource("", 0, "", []);
+    const rendered = lineWithRenderedJavascript(raw, "", []);
+    const tokenised = lineWithTokens(rendered, "", "", [], []);
+    const processed = lineWithProcessedMacro(tokenised, "", []);
+    return lineWithAddress(processed, 0, []);
 };
 
 Deno.test("You can poke bytes", () => {

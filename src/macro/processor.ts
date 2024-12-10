@@ -1,8 +1,8 @@
 import {
     box, failure, type Box, type Failure
 } from "../coupling/value-failure.ts";
-import type { TokenisedLine } from "../tokenise/tokenised-line.ts";
-import { expandedLine } from "./line-types.ts";
+import type { LineWithTokens } from "../tokenise/line-types.ts";
+import { lineWithProcessedMacro } from "./line-types.ts";
 import {
     macro,
     type ActualParameters, type SymbolicParameters,
@@ -52,7 +52,7 @@ export const processor = () => {
         return box(recordingName);
     };
 
-    const lines = function* (line: TokenisedLine) {
+    const lines = function* (line: LineWithTokens) {
         if (playback != undefined) {
             yield* playback(line);
             playback = undefined;
@@ -60,7 +60,7 @@ export const processor = () => {
         if (recording != undefined) {
             recording.push(line);
         }
-        yield expandedLine(
+        yield lineWithProcessedMacro(
             line,
             recording == undefined ? "" : recordingName,
             []

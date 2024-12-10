@@ -4,32 +4,30 @@ import type {
 } from "./data-types.ts";
 import { line, type Line } from "../coupling/line.ts";
 
-type RawProperties = "fileName" | "lineNumber" | "rawSource" |
+type PropertiesForRawSource = "fileName" | "lineNumber" | "rawSource" |
     "failures" | "addFailures" | "failed";
 
-export type RawLine = Readonly<Pick<Line, RawProperties>>;
+export type LineWithRawSource = Readonly<Pick<Line, PropertiesForRawSource>>;
 
-export const rawLine = (
-    fileName: FileName,
-    lineNumber: LineNumber,
-    source: SourceCode,
+export const lineWithRawSource = (
+    fileName: FileName, lineNumber: LineNumber, source: SourceCode,
     failures: Failures
 ) => {
-    const result = line(fileName, lineNumber, source) as RawLine;
+    const result = line(fileName, lineNumber, source) as LineWithRawSource;
     result.addFailures(failures);
     return result;
 };
 
-export type AssemblyProperties = RawProperties | "assemblySource";
+export type PropertiesForRenderedJavascript
+    = PropertiesForRawSource | "assemblySource";
 
-export type AssemblyLine = Readonly<Pick<Line, AssemblyProperties>>;
+export type LineWithRenderedJavascript
+    = Readonly<Pick<Line, PropertiesForRenderedJavascript>>;
 
-export const assemblyLine = (
-    line: RawLine,
-    source: SourceCode,
-    failures: Failures
-): AssemblyLine => {
+export const lineWithRenderedJavascript = (
+    line: LineWithRawSource, source: SourceCode, failures: Failures
+) => {
     (line as Line).assemblySource = source;
     line.addFailures(failures);
-    return line as AssemblyLine;
+    return line as LineWithRenderedJavascript;
 };
