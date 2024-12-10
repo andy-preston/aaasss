@@ -34,7 +34,7 @@ export const coupling = () => {
 
     const js = javascript(context);
 
-    const thePass = pass([progMem.reset, js.reset]);
+    const thePass = pass([progMem.reset, js.reset, macroProcessor.reset]);
 
     return pipeLine(
         thePass,

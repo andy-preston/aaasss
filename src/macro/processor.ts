@@ -1,59 +1,89 @@
-import { box, failure, type Box, type Failure } from "../coupling/value-failure.ts";
+import {
+    box, failure, type Box, type Failure
+} from "../coupling/value-failure.ts";
 import type { TokenisedLine } from "../tokenise/tokenised-line.ts";
 import { expandedLine } from "./line-types.ts";
-import { macro, Macro } from "./macro.ts";
+import {
+    macro,
+    type ActualParameters, type SymbolicParameters,
+    type MacroName, type Macro, type MacroMapper
+} from "./macro.ts";
 
 export const processor = () => {
-    let currentMacro: Macro | undefined;
+    let playback: MacroMapper | undefined;
 
-    const macros: Array<Macro> = [];
+    let recording: Macro | undefined;
+    let recordingName: MacroName;
 
-    const leftInIllegalState = (): Array<Failure> =>
-        currentMacro != undefined
-            ? [failure(undefined, "macro.define", undefined)]
-            : [];
+    let macros: Map<MacroName, Macro> = new Map();
+
+    const leftInIllegalState = (): Array<Failure> => recording == undefined
+        ? [] : [failure(undefined, "macro.define", undefined)];
+
+    const reset = () => {
+        macros = new Map();
+        recording = undefined;
+        playback = undefined;
+    };
 
     const defineDirective = (
-        name: string,
-        parameters?: Array<string>
+        name: MacroName, parameters?: SymbolicParameters
     ): Box<string> | Failure => {
-        if (currentMacro != undefined) {
+        if (recording != undefined) {
             return failure(undefined, "macro.define", undefined);
         }
-        currentMacro = macro(name, parameters == undefined ? [] : parameters);
+        if (macros.has(name)) {
+            return failure(undefined, "macro.name", name);
+        }
+        recordingName = name;
+        recording = macro(name, parameters == undefined ? [] : parameters);
         return box(name);
     };
 
     const endDirective = (): Box<string> | Failure => {
-        if (currentMacro == undefined) {
+        if (recording == undefined) {
             return failure(undefined, "macro.end", undefined);
         }
-        macros.push(currentMacro);
-        const name = currentMacro.name;
-        currentMacro = undefined;
-        return box(name);
+        if (recording.empty()) {
+            return failure(undefined, "macro.empty", undefined);
+        }
+        macros.set(recordingName, recording);
+        recording = undefined;
+        return box(recordingName);
     };
 
     const lines = function* (line: TokenisedLine) {
-        if (currentMacro != undefined) {
-            currentMacro!.saveLine(line);
+        if (playback != undefined) {
+            yield* playback(line);
+            playback = undefined;
+        }
+        if (recording != undefined) {
+            recording.push(line);
         }
         yield expandedLine(
             line,
-            currentMacro == undefined ? "" : currentMacro.name,
+            recording == undefined ? "" : recordingName,
             []
         );
     };
 
-    const defining = () => currentMacro != undefined;
+    const macroDirective = (
+        name: MacroName, parameters: ActualParameters
+    ): Box<string> | Failure => {
+        if (!macros.has(name)) {
+            return failure(undefined, "macro.notExist", name);
+        }
+        playback = macros.get(name)!.mapper(parameters);
+        return box(name);
+    };
 
     return {
+        "reset": reset,
         "leftInIllegalState": leftInIllegalState,
         "defineDirective": defineDirective,
         "endDirective": endDirective,
-        "defining": defining,
-        "macroDirective": null,
-        "lines": lines,
+        "macroDirective": macroDirective,
+        "lines": lines
     };
 };
 

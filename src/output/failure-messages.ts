@@ -21,6 +21,18 @@ export const failures = {
     "macro.end": (_line: CodeLine) => [
         "Can't end macro definition when a macro is not being defined"
     ],
+    "macro.params": (_line: CodeLine) => [
+        "Parameter count mismatch"
+    ],
+    "macro.empty": (_line: CodeLine) => [
+        "Macro hasn't got any lines!"
+    ],
+    "macro.name": (_line: CodeLine) => [
+        "Macro already exists"
+    ],
+    "macro.notExist": (_line: CodeLine) => [
+        "Macro does not exist"
+    ],
     "mnemonic.supportedUnknown": (_line: CodeLine) => [""],
     "mnemonic.notSupported": (_line: CodeLine) => [""],
     "mnemonic.unknown": (_line: CodeLine) => [""],
