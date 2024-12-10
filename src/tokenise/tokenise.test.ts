@@ -42,11 +42,19 @@ Deno.test("Mnemonics are automatically converted to upper case", () => {
 });
 
 Deno.test("... but operands aren't", () => {
+    const line = testLine("ldi _register, \t 23");
+    const tokenised = tokenise(line);
+    assertEquals(tokenised.label, "");
+    assertEquals(tokenised.mnemonic, "LDI");
+    assertEquals(tokenised.symbolicOperands, ["_register", "23"]);
+});
+
+Deno.test("... unless they are register names", () => {
     const line = testLine("ldi r16, \t 23");
     const tokenised = tokenise(line);
     assertEquals(tokenised.label, "");
     assertEquals(tokenised.mnemonic, "LDI");
-    assertEquals(tokenised.symbolicOperands, ["r16", "23"]);
+    assertEquals(tokenised.symbolicOperands, ["R16", "23"]);
 });
 
 Deno.test("Comments are stripped and discarded", () => {

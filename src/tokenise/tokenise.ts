@@ -7,6 +7,7 @@ import { lineWithTokens } from "./line-types.ts";
 const validLabel = /^\w*$/;
 const anyWhitespace = /\s+/g;
 const comment = /;.*$/;
+const registerName = /^r\d{1,2}$/;
 
 const split = (
     keep: "before" | "after", marker: string, raw: string
@@ -45,12 +46,13 @@ export const tokenise = (theLine: LineWithRenderedJavascript) => {
     if (expandedOperands.length > 3) {
         failures.push(failure(1, "operand.tooManyIndexOffset", undefined));
     }
-
+    const mappedOperands = expandedOperands.map(
+        operand => operand.match(registerName) == null
+            ? operand : operand.toUpperCase()
+    );
     return lineWithTokens(
         theLine, label, mnemonic.toUpperCase(),
-        operands<SymbolicOperands>(
-            expandedOperands.length > 3 ? operandsList : expandedOperands
-        ),
+        operands<SymbolicOperands>(mappedOperands.slice(0, 3)),
         failures
     );
 };
