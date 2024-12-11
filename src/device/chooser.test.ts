@@ -26,3 +26,9 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
     const result = environment.chooser.directive("notARealDevice");
     assertFailure(result, "device.notFound");
 });
+
+Deno.test("The device name must be a string", () => {
+    const environment = testEnvironment();
+    const result = environment.chooser.directive([1, 2, 3] as unknown as string);
+    assertFailure(result, "type.string");
+});

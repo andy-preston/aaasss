@@ -36,7 +36,6 @@ export const failures = {
     "mnemonic.supportedUnknown": (_line: LineWithObjectCode) => [""],
     "mnemonic.notSupported": (_line: LineWithObjectCode) => [""],
     "mnemonic.unknown": (_line: LineWithObjectCode) => [""],
-    "byte.outOfRange": (_line: LineWithObjectCode) => [""],
     "operand.outOfRange": (_line: LineWithObjectCode) => [""],
     "operand.wrongCount": (_line: LineWithObjectCode) => [""],
     "operand.tooManyIndexOffset": (_line: LineWithObjectCode) => [
@@ -45,7 +44,17 @@ export const failures = {
     "syntax.invalidLabel": (_line: LineWithObjectCode) => [
         "A label must only contain alphanumeric characters and underscore"
     ],
-    "address.negative": (_line: LineWithObjectCode) => [""],
+    "type.string": (_line: LineWithObjectCode) => [""],
+    "type.positive": (_line: LineWithObjectCode) => [""],
+    "type.bytes": (_line: LineWithObjectCode) => [
+        "Should be a string or an array of byte values"
+    ],
+    "type.strings": (_line: LineWithObjectCode) => [
+        "Should be an array of strings"
+    ],
+    "type.params": (_line: LineWithObjectCode) => [
+        "Should be an array of numbers &/or strings"
+    ],
     "programMemory.outOfRange": (_line: LineWithObjectCode) => [""],
     "programMemory.sizeUnknown": (_line: LineWithObjectCode) => [""],
 } as const satisfies Record<string, FailureMessage>;

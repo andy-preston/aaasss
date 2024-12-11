@@ -61,7 +61,7 @@ Deno.test("... or UTF-8 strings", () => {
 Deno.test("Poked numbers must be bytes (0-255)", () => {
     const poker = pokeBuffer();
     const directiveResult = poker.directive([-1, 2, 300, 4]);
-    assertFailureWithExtra(directiveResult, "byte.outOfRange", "-1, 300");
+    assertFailureWithExtra(directiveResult, "type.bytes", "-1, 300");
     const lineResult = poker.line(testLine());
     assertEquals(lineResult.code, [[2, 4]]);
 });

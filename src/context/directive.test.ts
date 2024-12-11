@@ -32,7 +32,7 @@ Deno.test("Directives can return a failure", () => {
     assertFailure(result, "file.notFound");
 });
 
-Deno.test("Directives can return success", () => {
+Deno.test("Directives can return success in the form of a string", () => {
     const context = anEmptyContext();
 
     const testDirective = (_: string): Box<string> | Failure => {

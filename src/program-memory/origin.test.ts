@@ -25,7 +25,13 @@ Deno.test("A device must be selected before program memory can be set", () => {
 Deno.test("Origin addresses can't be less than zero", () => {
     const environment = testEnvironment();
     const result = environment.memory.origin(-1);
-    assertFailureWithExtra(result, "address.negative", "-1");
+    assertFailureWithExtra(result, "type.positive", "-1");
+});
+
+Deno.test("Origin addresses can't be strange type", () => {
+    const environment = testEnvironment();
+    const result = environment.memory.origin("nothing" as unknown as number);
+    assertFailureWithExtra(result, "type.positive", "nothing");
 });
 
 Deno.test("Device name is used to determine if properties have been set", () => {

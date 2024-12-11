@@ -1,3 +1,4 @@
+import { stringParameter } from "../coupling/type-checking.ts";
 import {
     box, failure, type Box, type Failure
 } from "../coupling/value-failure.ts";
@@ -8,6 +9,48 @@ import {
     type ActualParameters, type SymbolicParameters,
     type MacroName, type Macro, type MacroMapper
 } from "./macro.ts";
+
+const symbolicCheck = (
+    parameters: SymbolicParameters | undefined
+): Box<SymbolicParameters> | Failure => {
+    if (parameters == undefined) {
+        return box([]);
+    }
+    if (!Array.isArray(parameters)) {
+        return failure(undefined, "type.strings", typeof parameters)
+    }
+    const failed: Array<string> = [];
+    for (const [index, parameter] of parameters.entries()) {
+        const typeOf = typeof parameter;
+        if (typeOf != "string") {
+            failed.push(`${index}: ${typeOf}`);
+        }
+    }
+    return failed.length > 0
+        ? failure(undefined, "type.strings", failed.join(", "))
+        : box(parameters);
+}
+
+const actualCheck = (
+    parameters: ActualParameters | undefined
+): Box<ActualParameters> | Failure => {
+    if (parameters == undefined) {
+        return box([]);
+    }
+    if (!Array.isArray(parameters)) {
+        return failure(undefined, "type.params", typeof parameters)
+    }
+    const failed: Array<string> = [];
+    for (const [index, parameter] of parameters.entries()) {
+        const typeOf = typeof parameter;
+        if (!["string", "number"].includes(typeOf)) {
+            failed.push(`${index}: ${typeOf}`);
+        }
+    }
+    return failed.length > 0
+        ? failure(undefined, "type.params", failed.join(", "))
+        : box(parameters);
+}
 
 export const processor = () => {
     let playback: MacroMapper | undefined;
@@ -27,16 +70,24 @@ export const processor = () => {
     };
 
     const defineDirective = (
-        name: MacroName, parameters?: SymbolicParameters
+        name: MacroName, parameters: SymbolicParameters = []
     ): Box<string> | Failure => {
         if (recording != undefined) {
             return failure(undefined, "macro.define", undefined);
         }
+        const checkedName = stringParameter(name);
+        if (checkedName.which == "failure") {
+            return checkedName;
+        }
         if (macros.has(name)) {
             return failure(undefined, "macro.name", name);
         }
+        const checkedParameters = symbolicCheck(parameters);
+        if (checkedParameters.which == "failure") {
+            return checkedParameters;
+        }
         recordingName = name;
-        recording = macro(name, parameters == undefined ? [] : parameters);
+        recording = macro(name, checkedParameters.value);
         return box(name);
     };
 
@@ -70,8 +121,16 @@ export const processor = () => {
     const macroDirective = (
         name: MacroName, parameters: ActualParameters
     ): Box<string> | Failure => {
+        const checkedName = stringParameter(name);
+        if (checkedName.which == "failure") {
+            return checkedName;
+        }
         if (!macros.has(name)) {
             return failure(undefined, "macro.notExist", name);
+        }
+        const checkedParameters = actualCheck(parameters);
+        if (checkedParameters.which == "failure") {
+            return checkedParameters;
         }
         playback = macros.get(name)!.mapper(parameters);
         return box(name);

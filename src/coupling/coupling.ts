@@ -29,8 +29,9 @@ export const coupling = () => {
     context.directive("include", sourceFiles.includeFile);
 
     const macroProcessor = processor();
-    context.directive("macro", macroProcessor.defineDirective);
+    context.directive("define", macroProcessor.defineDirective);
     context.directive("end", macroProcessor.endDirective);
+    context.directive("macro", macroProcessor.macroDirective);
 
     const js = javascript(context);
 

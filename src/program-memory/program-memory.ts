@@ -1,6 +1,7 @@
 import type { Context } from "../context/context.ts";
+import { positiveParameter } from "../coupling/type-checking.ts";
 import {
-    box, failure, type Box, type Failure
+    box, type Box, type Failure
 } from "../coupling/value-failure.ts";
 import type { DeviceProperties } from "../device/properties.ts";
 import { LineWithProcessedMacro } from "../macro/line-types.ts";
@@ -20,8 +21,9 @@ export const programMemory = (
     }
 
     const origin = (newAddress: number): Box<number> | Failure => {
-        if (newAddress < 0) {
-            return failure(undefined, "address.negative", `${newAddress}`);
+        const check = positiveParameter(newAddress);
+        if (check.which == "failure") {
+            return check;
         }
         if (newAddress == 0) {
             address = 0;

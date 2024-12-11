@@ -25,7 +25,7 @@ export const pokeBuffer = () => {
             theBuffer.push(grouped.good.splice(0, 4) as unknown as Code);
         }
         return grouped.bad.length > 0
-            ? failure(undefined, "byte.outOfRange", grouped.bad.join(", "))
+            ? failure(undefined, "type.bytes", grouped.bad.join(", "))
             : box("")
     };
 

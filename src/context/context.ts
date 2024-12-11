@@ -9,10 +9,16 @@ type SimpleFunction = (n: number) => number;
 type NumericGetter = () => number;
 
 type ArrayParameter = Array<number> | string;
+
 type StringDirective = (s: string) => Box<string> | Failure ;
 type NumberDirective = (n: number) => Box<number> | Failure ;
 type ArrayDirective = (a: ArrayParameter) => Box<ArrayParameter> | Failure ;
-type Directive = StringDirective | NumberDirective | ArrayDirective;
+type ParameterisedDirective = ( // cSpell:words Parameterised
+    s: string, a: Array<string>
+) => Box<string> | Failure;
+
+type Directive = StringDirective | NumberDirective |
+    ArrayDirective | ParameterisedDirective;
 
 type ContextFields = SimpleFunction | Directive | number;
 

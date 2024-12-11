@@ -1,8 +1,15 @@
-import { assert, assertFalse, assertEquals } from "assert";
+import { assert, assertFalse, assertEquals, assertInstanceOf } from "assert";
 import {
     assertFailure, assertSuccess
 } from "../coupling/value-failure-testing.ts";
 import { fileStack } from "./file-stack.ts";
+import { Failure } from "../coupling/value-failure.ts";
+
+const peculiarErrorMessage = (fileName: string) => {
+    const prefix = "No such file or directory (os error 2)";
+    const suffix = `: readfile '${fileName}': `;
+    return `${prefix}${suffix}${prefix}${suffix}${prefix}`;
+};
 
 Deno.test("Including a file returns a blank value", () => {
     assertSuccess(
@@ -13,10 +20,20 @@ Deno.test("Including a file returns a blank value", () => {
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
-    assertFailure(
-        fileStack(Deno.readTextFileSync).includeFile("does-not-exist.test"),
-        "file.notFound"
+    const fileName = "does-not-exist.test";
+    const result = fileStack(Deno.readTextFileSync).includeFile(fileName);
+    assertFailure(result, "file.notFound");
+    const failure = result as Failure;
+    assertInstanceOf(failure.extra, Deno.errors.NotFound);
+    assertEquals(failure.extra.message, peculiarErrorMessage(fileName));
+});
+
+Deno.test("Including an 'irrational' fileName returns a failure", () => {
+    const result = fileStack(Deno.readTextFileSync).includeFile(
+        [1, 2, 3] as unknown as string
     );
+    assertFailure(result, "type.string");
+    assertEquals((result as Failure).extra, "1,2,3");
 });
 
 Deno.test("Reading a file yields multiple lines with the file contents", () => {

@@ -1,3 +1,4 @@
+import { stringParameter } from "../coupling/type-checking.ts";
 import { box, failure, type Box, type Failure } from "../coupling/value-failure.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource } from "./line-types.ts";
@@ -36,6 +37,10 @@ export const fileStack = (read: ReaderMethod) => {
     };
 
     const includeFile = (fileName: FileName): Box<string> | Failure => {
+        const check = stringParameter(fileName);
+        if (check.which == "failure") {
+            return check;
+        }
         const contents = fileContents(fileName);
         if (contents.which == "failure") {
             return contents;

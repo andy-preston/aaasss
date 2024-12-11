@@ -4,6 +4,7 @@ import {
 } from "../coupling/value-failure.ts";
 import type { Context } from "../context/context.ts";
 import type { DeviceProperties } from "./properties.ts";
+import { stringParameter } from "../coupling/type-checking.ts";
 
 type FullSpec = Record<string, number | boolean | Array<string>>;
 type RawProperty = string | boolean | Array<string>;
@@ -82,6 +83,10 @@ export const deviceChooser = (
             }
         };
 
+        const check = stringParameter(name);
+        if (check.which == "failure") {
+            return check;
+        }
         const baseName = `./devices/${deviceFileName(name)}.json`;
         if (!existsSync(baseName)) {
             return failure(undefined, "device.notFound", undefined);
