@@ -38,8 +38,8 @@ export const programMemory = (
     const step = (line: LineWithObjectCode): Box<number> | Failure => {
         const newAddress = bytesToWords(line.code.reduce(
             (accumulated, codeBlock) => accumulated + codeBlock.length,
-            address
-        ));
+            0
+        )) + address;
         return origin(newAddress);
     };
 
