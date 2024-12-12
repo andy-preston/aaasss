@@ -16,8 +16,8 @@ type StackEntry = {
 
 export type ReaderMethod = typeof Deno.readTextFileSync;
 
-export const fileStack = (read: ReaderMethod) => {
-    let fileStack: Array<StackEntry> = [];
+export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
+    const fileStack: Array<StackEntry> = [];
 
     const currentFile = (): StackEntry | undefined =>
         fileStack.length == 0 ? undefined : fileStack[fileStack.length - 1];
@@ -50,11 +50,10 @@ export const fileStack = (read: ReaderMethod) => {
         return box("");
     };
 
-    const lines = function* (fileName: FileName) {
-        fileStack = [];
-        const topFile = include(fileName);
+    const lines = function* () {
+        const topFile = include(topFileName);
         if (topFile.which == "failure") {
-            yield lineWithRawSource(fileName, 0, "", [topFile]);
+            yield lineWithRawSource(topFileName, 0, "", [topFile]);
         }
         let file = currentFile();
         while (file != undefined) {

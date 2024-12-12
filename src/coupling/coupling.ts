@@ -4,6 +4,7 @@ import { pokeBuffer } from "../program-memory/poke.ts";
 import { pass } from "../pass/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { deviceChooser } from "../device/chooser.ts";
+import { FileName } from "../source-code/data-types.ts";
 import { fileStack } from "../source-code/file-stack.ts";
 import { javascript } from "../source-code/javascript.ts";
 import { tokenise } from "../tokenise/tokenise.ts";
@@ -12,7 +13,7 @@ import { processor } from "../macro/processor.ts";
 import { output } from "../output/output.ts";
 import { pipeLine } from "./pipeline.ts";
 
-export const coupling = () => {
+export const coupling = (fileName: FileName) => {
     const context = anEmptyContext();
 
     const properties = deviceProperties(context);
@@ -25,7 +26,9 @@ export const coupling = () => {
     const poke = pokeBuffer();
     context.directive("poke", poke.poke);
 
-    const sourceFiles = fileStack(Deno.readTextFileSync);
+    const sourceFiles = fileStack(
+        Deno.readTextFileSync, fileName
+    );
     context.directive("include", sourceFiles.include);
 
     const macroProcessor = processor();
@@ -46,7 +49,7 @@ export const coupling = () => {
         progMem.label,
         poke.line,
         codeGenerator(context, properties.public, progMem),
-        output(thePass),
+        output(thePass, fileName),
         [
             macroProcessor.leftInIllegalState,
             js.leftInIllegalState

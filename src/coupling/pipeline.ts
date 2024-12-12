@@ -5,7 +5,6 @@ import type { Output } from "../output/output.ts";
 import { type Pass, passes } from "../pass/pass.ts";
 import type { PokeBuffer } from "../program-memory/poke.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
-import type { FileName } from "../source-code/data-types.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
 import type { Javascript } from "../source-code/javascript.ts";
 import type { Tokenise } from "../tokenise/tokenise.ts";
@@ -35,10 +34,10 @@ export const pipeLine = (
         }
     };
 
-    return (fileName: FileName) => {
+    return () => {
         for (const passNumber of passes) {
             pass.start(passNumber);
-            for (const line of lines(fileName)) {
+            for (const line of lines()) {
                 assembly(tokenise(javascript(line)));
             }
         }

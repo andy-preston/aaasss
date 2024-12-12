@@ -14,14 +14,14 @@ const peculiarErrorMessage = (fileName: string) => {
 Deno.test("Including a file returns a blank value", () => {
     assertSuccess(
         // This file is irrelevant but we can guarantee it exists
-        fileStack(Deno.readTextFileSync).include("deno.json"),
+        fileStack(Deno.readTextFileSync, "").include("deno.json"),
         ""
     );
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
     const fileName = "does-not-exist.test";
-    const result = fileStack(Deno.readTextFileSync).include(fileName);
+    const result = fileStack(Deno.readTextFileSync, "").include(fileName);
     assertFailure(result, "file.notFound");
     const failure = result as Failure;
     assertInstanceOf(failure.extra, Deno.errors.NotFound);
@@ -29,7 +29,7 @@ Deno.test("Including a non existant file returns a failure", () => {
 });
 
 Deno.test("Including an 'irrational' fileName returns a failure", () => {
-    const result = fileStack(Deno.readTextFileSync).include(
+    const result = fileStack(Deno.readTextFileSync, "").include(
         [1, 2, 3] as unknown as string
     );
     assertFailure(result, "type.string");
@@ -40,10 +40,11 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
     // cSpell:words plip wibble
     const expectedLines = ["plip", "plop", "wibble", "wobble"];
     const files = fileStack(
-        (_path: string | URL): string => expectedLines.join("\n")
+        (_path: string | URL): string => expectedLines.join("\n"),
+        "mock.test"
     );
     let lineNumber = 0;
-    for (const line of files.lines("mock.test")) {
+    for (const line of files.lines()) {
         assertEquals(line.fileName, "mock.test");
         assertEquals(line.lineNumber, lineNumber);
         assertEquals(line.rawSource, expectedLines[lineNumber]);
@@ -53,9 +54,9 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
 });
 
 Deno.test("Reading a non existant source file gives one line with a failure", () => {
-    const files = fileStack(Deno.readTextFileSync);
+    const files = fileStack(Deno.readTextFileSync, "does-not-exist.test");
     let lineCount = 0;
-    for (const line of files.lines("does-not-exist.test")) {
+    for (const line of files.lines()) {
         assertEquals(line.fileName, "does-not-exist.test");
         assertEquals(line.lineNumber, 0);
         assertEquals(line.rawSource, "");
