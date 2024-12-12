@@ -42,7 +42,7 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
 
 Deno.test("Whilst a macro is being defined, saveLine will... save lines", () => {
     const macroProcessor = processor();
-    macroProcessor.defineDirective("plop");
+    macroProcessor.define("plop");
     const testLines = [["testLabel", "TST"], ["", "AND"], ["", "TST"]];
     for (const [label, mnemonic] of testLines) {
         const tokenised = testLine(label!, mnemonic!);
@@ -51,7 +51,7 @@ Deno.test("Whilst a macro is being defined, saveLine will... save lines", () => 
             "plop", label!, mnemonic!
         );
     }
-    macroProcessor.endDirective();
+    macroProcessor.end();
     const tokenised = testLine("ended", "TST");
     assertProcessedLine(
         macroProcessor.lines(tokenised).toArray(),
@@ -61,14 +61,14 @@ Deno.test("Whilst a macro is being defined, saveLine will... save lines", () => 
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const macroProcessor = processor();
-    macroProcessor.defineDirective("plop");
+    macroProcessor.define("plop");
     const testLines = [["testLabel", "TST"], ["", "AND"], ["", "TST"]];
     for (const [label, mnemonic] of testLines) {
         const tokenised = testLine(label!, mnemonic!);
         macroProcessor.lines(tokenised).toArray();
     }
-    macroProcessor.endDirective();
-    macroProcessor.macroDirective("plop", []);
+    macroProcessor.end();
+    macroProcessor.macro("plop", []);
 
     testLines.push(["ended", "TST"]);
     const tokenised = testLine("ended", "TST");

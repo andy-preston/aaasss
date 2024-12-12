@@ -2,7 +2,7 @@ import { existsSync } from "fs/exists";
 import {
     box, failure, type Box, type Failure
 } from "../coupling/value-failure.ts";
-import type { Context } from "../context/context.ts";
+import type { Context, Directive } from "../context/context.ts";
 import type { DeviceProperties } from "./properties.ts";
 import { stringParameter } from "../coupling/type-checking.ts";
 
@@ -67,7 +67,7 @@ export const deviceChooser = (
         return box("");
     };
 
-    const directive = (name: string): Box<string> | Failure => {
+    const device: Directive = (name: string) => {
         const fullSpec: FullSpec = {};
 
         const loadSpec = (spec: RawItems) => {
@@ -102,6 +102,6 @@ export const deviceChooser = (
 
     return {
         "choose": choose,
-        "directive": directive,
+        "device": device
     };
 };

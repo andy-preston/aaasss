@@ -1,13 +1,12 @@
-import {
-    box, failure, type Box, type Failure
-} from "../coupling/value-failure.ts";
+import type { Directive } from "../context/context.ts";
+import { box, failure } from "../coupling/value-failure.ts";
 import { Code } from "../object-code/data-types.ts";
 import { lineWithPokedBytes, type LineWithAddress } from "./line-types.ts";
 
 export const pokeBuffer = () => {
     let theBuffer: Array<Code> = [];
 
-    const directive = (data: Array<number> | string): Failure | Box<string> => {
+    const poke: Directive = (data: Array<number> | string) => {
         const bytes: Array<number> = typeof data == "string"
             ? Array.from(new TextEncoder().encode(data))
             : data;
@@ -36,7 +35,7 @@ export const pokeBuffer = () => {
     };
 
     return {
-        "directive": directive,
+        "poke": poke,
         "line": line
     };
 };

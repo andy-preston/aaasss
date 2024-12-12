@@ -18,38 +18,38 @@ const testLine = () => {
 
 Deno.test("You can poke bytes", () => {
     const poker = pokeBuffer();
-    poker.directive([1, 2, 3, 4]);
+    poker.poke([1, 2, 3, 4]);
     const result = poker.line(testLine());
     assertEquals(result.code, [[1, 2, 3, 4]]);
 });
 
 Deno.test("Poked bytes are grouped in sets of 4", () => {
     const poker = pokeBuffer();
-    poker.directive([1, 2, 3, 4, 5, 6]);
+    poker.poke([1, 2, 3, 4, 5, 6]);
     const result = poker.line(testLine());
     assertEquals(result.code, [[1, 2, 3, 4], [5, 6]]);
 });
 
 Deno.test("Poked bytes are padded to an even number", () => {
     const poker = pokeBuffer();
-    poker.directive([1, 2, 3]);
+    poker.poke([1, 2, 3]);
     const firstResult = poker.line(testLine());
     assertEquals(firstResult.code, [[1, 2, 3, 0]]);
-    poker.directive([1, 2, 3, 4, 5]);
+    poker.poke([1, 2, 3, 4, 5]);
     const secondResult = poker.line(testLine());
     assertEquals(secondResult.code, [[1, 2, 3, 4], [5, 0]]);
 });
 
 Deno.test("You can also poke ASCII strings", () => {
     const poker = pokeBuffer();
-    poker.directive("Hello");
+    poker.poke("Hello");
     const result = poker.line(testLine());
     assertEquals(result.code, [[72, 101, 108, 108], [111, 0]]);
 });
 
 Deno.test("... or UTF-8 strings", () => {
     const poker = pokeBuffer();
-    poker.directive("ਕਿੱਦਾਂ");
+    poker.poke("ਕਿੱਦਾਂ");
     const result = poker.line(testLine());
     assertEquals(result.code, [
         [224, 168, 149, 224], [168, 191, 224, 169],
@@ -60,8 +60,8 @@ Deno.test("... or UTF-8 strings", () => {
 
 Deno.test("Poked numbers must be bytes (0-255)", () => {
     const poker = pokeBuffer();
-    const directiveResult = poker.directive([-1, 2, 300, 4]);
-    assertFailureWithExtra(directiveResult, "type.bytes", "-1, 300");
+    const pokeResult = poker.poke([-1, 2, 300, 4]);
+    assertFailureWithExtra(pokeResult, "type.bytes", "-1, 300");
     const lineResult = poker.line(testLine());
     assertEquals(lineResult.code, [[2, 4]]);
 });

@@ -1,7 +1,6 @@
+import { Directive } from "../context/context.ts";
 import { parameterList, stringParameter } from "../coupling/type-checking.ts";
-import {
-    box, failure, type Box, type Failure
-} from "../coupling/value-failure.ts";
+import { box, failure, type Failure } from "../coupling/value-failure.ts";
 import type { LineWithTokens } from "../tokenise/line-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 import {
@@ -27,9 +26,9 @@ export const processor = () => {
         playback = undefined;
     };
 
-    const defineDirective = (
+    const define: Directive = (
         name: MacroName, parameters: SymbolicParameters = []
-    ): Box<string> | Failure => {
+    ) => {
         if (recording != undefined) {
             return failure(undefined, "macro.define", undefined);
         }
@@ -52,7 +51,7 @@ export const processor = () => {
         return box(name);
     };
 
-    const endDirective = (): Box<string> | Failure => {
+    const end: Directive = () => {
         if (recording == undefined) {
             return failure(undefined, "macro.end", undefined);
         }
@@ -79,9 +78,9 @@ export const processor = () => {
         );
     };
 
-    const macroDirective = (
+    const macroDirective: Directive = (
         name: MacroName, parameters: ActualParameters
-    ): Box<string> | Failure => {
+    ) => {
         const checkedName = stringParameter(name);
         if (checkedName.which == "failure") {
             return checkedName;
@@ -102,9 +101,9 @@ export const processor = () => {
     return {
         "reset": reset,
         "leftInIllegalState": leftInIllegalState,
-        "defineDirective": defineDirective,
-        "endDirective": endDirective,
-        "macroDirective": macroDirective,
+        "define": define,
+        "end": end,
+        "macro": macroDirective,
         "lines": lines
     };
 };

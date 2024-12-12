@@ -19,91 +19,107 @@ const testLine = (
     return lineWithTokens(rendered, label, mnemonic, operands, []);
 };
 
-Deno.test("The define directive name must be a string", () => {
+const testEnvironment = () => {
     const context = anEmptyContext();
     const macroProcessor = processor();
-    context.directive("define", macroProcessor.defineDirective);
-    const result = context.value("define(47);");
+    context.directive("define", macroProcessor.define);
+    context.directive("end", macroProcessor.end);
+    context.directive("macro", macroProcessor.macro);
+    return {
+        "context": context,
+        "macroProcessor": macroProcessor
+    };
+};
+
+Deno.test("The define directive name must be a string", () => {
+    const environment = testEnvironment();
+    const result = environment.context.value("define(47);");
     assertFailureWithExtra(result, "type.string", "47");
 });
 
 Deno.test("The macro directive name must be a string", () => {
-    const context = anEmptyContext();
-    const macroProcessor = processor();
-    context.directive("macro", macroProcessor.macroDirective);
-    const result = context.value('macro(47);');
+    const environment = testEnvironment();
+    const result = environment.context.value('macro(47);');
     assertFailureWithExtra(result, "type.string", "47");
 });
 
 Deno.test("The define directive can be called without parameters", () => {
-    const context = anEmptyContext();
-    const macroProcessor = processor();
-    context.directive("define", macroProcessor.defineDirective);
-    const result = context.value('define("without");');
+    const environment = testEnvironment();
+    const result = environment.context.value('define("without");');
     assertSuccess(result, "without");
 });
 
 Deno.test("The define directive can be called with parameters", () => {
-    const context = anEmptyContext();
-    const macroProcessor = processor();
-    context.directive("define", macroProcessor.defineDirective);
-    context.directive("end", macroProcessor.endDirective);
-    context.directive("macro", macroProcessor.macroDirective);
+    const environment = testEnvironment();
 
-    const defineResult = context.value('define("with", ["a", "b"]);');
+    const defineResult = environment.context.value(
+        'define("with", ["a", "b"]);'
+    );
     assertSuccess(defineResult, "with");
-    macroProcessor.lines(testLine("", "TST", ["a", "b"])).toArray();
-    const endResult = context.value("end();");
+    environment.macroProcessor.lines(
+        testLine("", "TST", ["a", "b"])
+    ).toArray();
+    const endResult = environment.context.value("end();");
     assertSuccess(endResult, "with");
 
-    const macroResult = context.value('macro("with", ["1", "2"]);');
+    const macroResult = environment.context.value(
+        'macro("with", ["1", "2"]);'
+    );
     assertSuccess(macroResult, "with");
-    const lines = macroProcessor.lines(testLine("", "", [])).toArray();
+    const lines = environment.macroProcessor.lines(
+        testLine("", "", [])
+    ).toArray();
     assertEquals(lines[0]!.symbolicOperands, ["1", "2"]);
 });
 
 Deno.test("If define parameters are provided for define they must be an array", () => {
-    const context = anEmptyContext();
-    const macroProcessor = processor();
-    context.directive("define", macroProcessor.defineDirective);
-    const defineResult = context.value('define("with", {"a": "a", "b": "b"});');
+    const environment = testEnvironment();
+    const defineResult = environment.context.value(
+        'define("with", {"a": "a", "b": "b"});'
+    );
     assertFailureWithExtra(defineResult, "type.strings", "object");
 });
 
 Deno.test("... of strings", () => {
-    const context = anEmptyContext();
-    const macroProcessor = processor();
-    context.directive("define", macroProcessor.defineDirective);
-    const defineResult = context.value('define("with", ["a", 2, "b", 3]);');
-    assertFailureWithExtra(defineResult, "type.strings", "1: number, 3: number");
+    const environment = testEnvironment();
+    const defineResult = environment.context.value(
+        'define("with", ["a", 2, "b", 3]);'
+    );
+    assertFailureWithExtra(
+        defineResult, "type.strings", "1: number, 3: number"
+    );
 });
 
 Deno.test("If macro parameters are provided for define they must be an array", () => {
-    const context = anEmptyContext();
-    const macroProcessor = processor();
-    context.directive("define", macroProcessor.defineDirective);
-    context.directive("end", macroProcessor.endDirective);
-    context.directive("macro", macroProcessor.macroDirective);
+    const environment = testEnvironment();
 
-    context.value('define("with", ["a", "b"]);');
-    macroProcessor.lines(testLine("", "TST", ["a", "b"])).toArray();
-    context.value("end();");
+    environment.context.value(
+        'define("with", ["a", "b"]);'
+    );
+    environment.macroProcessor.lines(
+        testLine("", "TST", ["a", "b"])
+    ).toArray();
+    environment.context.value("end();");
 
-    const result = context.value('macro("with", {"a": "a", "b": "b"});');
+    const result = environment.context.value(
+        'macro("with", {"a": "a", "b": "b"});'
+    );
     assertFailureWithExtra(result, "type.params", "object");
 });
 
 Deno.test("... of strings or numbers", () => {
-    const context = anEmptyContext();
-    const macroProcessor = processor();
-    context.directive("define", macroProcessor.defineDirective);
-    context.directive("end", macroProcessor.endDirective);
-    context.directive("macro", macroProcessor.macroDirective);
+    const environment = testEnvironment();
 
-    context.value('define("with", ["a", "b"]);');
-    macroProcessor.lines(testLine("", "TST", ["a", "b"])).toArray();
-    context.value("end();");
+    environment.context.value(
+        'define("with", ["a", "b"]);'
+    );
+    environment.macroProcessor.lines(
+        testLine("", "TST", ["a", "b"])
+    ).toArray();
+    environment.context.value("end();");
 
-    const result = context.value('macro("with", [true, "a", 2, {"c": "c"}]);');
+    const result = environment.context.value(
+        'macro("with", [true, "a", 2, {"c": "c"}]);'
+    );
     assertFailureWithExtra(result, "type.params", "0: boolean, 3: object");
 });

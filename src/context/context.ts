@@ -10,15 +10,8 @@ type NumericGetter = () => number;
 
 type ArrayParameter = Array<number> | string;
 
-type StringDirective = (s: string) => Box<string> | Failure ;
-type NumberDirective = (n: number) => Box<number> | Failure ;
-type ArrayDirective = (a: ArrayParameter) => Box<ArrayParameter> | Failure ;
-type ParameterisedDirective = ( // cSpell:words Parameterised
-    s: string, a: Array<string>
-) => Box<string> | Failure;
-
-type Directive = StringDirective | NumberDirective |
-    ArrayDirective | ParameterisedDirective;
+// deno-lint-ignore no-explicit-any
+export type Directive = (...args: any[]) => Box<string> | Failure;
 
 type ContextFields = SimpleFunction | Directive | number;
 

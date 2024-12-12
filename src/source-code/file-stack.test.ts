@@ -14,14 +14,14 @@ const peculiarErrorMessage = (fileName: string) => {
 Deno.test("Including a file returns a blank value", () => {
     assertSuccess(
         // This file is irrelevant but we can guarantee it exists
-        fileStack(Deno.readTextFileSync).includeFile("deno.json"),
+        fileStack(Deno.readTextFileSync).include("deno.json"),
         ""
     );
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
     const fileName = "does-not-exist.test";
-    const result = fileStack(Deno.readTextFileSync).includeFile(fileName);
+    const result = fileStack(Deno.readTextFileSync).include(fileName);
     assertFailure(result, "file.notFound");
     const failure = result as Failure;
     assertInstanceOf(failure.extra, Deno.errors.NotFound);
@@ -29,7 +29,7 @@ Deno.test("Including a non existant file returns a failure", () => {
 });
 
 Deno.test("Including an 'irrational' fileName returns a failure", () => {
-    const result = fileStack(Deno.readTextFileSync).includeFile(
+    const result = fileStack(Deno.readTextFileSync).include(
         [1, 2, 3] as unknown as string
     );
     assertFailure(result, "type.string");

@@ -14,7 +14,7 @@ const testLine = () => {
 
 Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", () => {
     const macroProcessor = processor();
-    macroProcessor.defineDirective("plop");
+    macroProcessor.define("plop");
     const result = macroProcessor.leftInIllegalState();
     assertEquals(result.length, 1);
     assertEquals(result[0]!.kind, "macro.define");
@@ -22,36 +22,36 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
     const macroProcessor = processor();
-    const firstDefinition = macroProcessor.defineDirective("aMacro");
+    const firstDefinition = macroProcessor.define("aMacro");
     assertSuccess(firstDefinition, "aMacro");
-    const secondDefinition = macroProcessor.defineDirective("anotherOne");
+    const secondDefinition = macroProcessor.define("anotherOne");
     assertFailure(secondDefinition, "macro.define");
 });
 
 Deno.test("You can't end a definition without any lines in the macro", () => {
     const macroProcessor = processor();
-    const definition = macroProcessor.defineDirective("aMacro");
+    const definition = macroProcessor.define("aMacro");
     assertSuccess(definition, "aMacro");
-    const ending = macroProcessor.endDirective();
+    const ending = macroProcessor.end();
     assertFailure(ending, "macro.empty");
 });
 
 Deno.test("Multiple macros can be defined", () => {
     const macroProcessor = processor();
 
-    const firstDefinition = macroProcessor.defineDirective("aMacro");
+    const firstDefinition = macroProcessor.define("aMacro");
     assertSuccess(firstDefinition, "aMacro");
     macroProcessor.lines(testLine()).toArray();
-    const firstEnding = macroProcessor.endDirective();
+    const firstEnding = macroProcessor.end();
     assertSuccess(firstEnding, "aMacro");
 
-    const secondDefinition = macroProcessor.defineDirective("anotherOne");
+    const secondDefinition = macroProcessor.define("anotherOne");
     assertSuccess(secondDefinition, "anotherOne");
-    macroProcessor.endDirective();
+    macroProcessor.end();
 });
 
 Deno.test("You can't end a macro definition if one isn't being defined", () => {
     const macroProcessor = processor();
-    const ending = macroProcessor.endDirective();
+    const ending = macroProcessor.end();
     assertFailure(ending, "macro.end");
 });

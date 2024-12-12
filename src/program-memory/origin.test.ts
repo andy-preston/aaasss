@@ -55,10 +55,10 @@ Deno.test("Origin directive sets current address", () => {
     environment.device.programMemoryBytes(100);
 
     const first = environment.memory.origin(23);
-    assertSuccess(first, 23);
+    assertSuccess(first, "23");
     assertEquals(environment.memory.address(), 23);
 
     const second = environment.memory.origin(42);
-    assertSuccess(second, 42);
+    assertSuccess(second, "42");
     assertEquals(environment.memory.address(), 42);
 });

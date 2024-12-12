@@ -1,4 +1,4 @@
-import type { Context } from "../context/context.ts";
+import type { Context, Directive } from "../context/context.ts";
 import { positiveParameter } from "../coupling/type-checking.ts";
 import {
     box, type Box, type Failure
@@ -20,24 +20,24 @@ export const programMemory = (
         address = 0;
     }
 
-    const origin = (newAddress: number): Box<number> | Failure => {
+    const origin: Directive = (newAddress: number) => {
         const check = positiveParameter(newAddress);
         if (check.which == "failure") {
             return check;
         }
         if (newAddress == 0) {
             address = 0;
-            return box(address);
+            return box(`${address}`);
         }
         const pastEnd = properties.public.programMemoryEnd(newAddress);
         if (pastEnd.which == "failure") {
             return pastEnd;
         }
         address = newAddress;
-        return box(address);
+        return box(`${address}`);
     };
 
-    const step = (line: LineWithObjectCode): Box<number> | Failure => {
+    const step = (line: LineWithObjectCode): Box<string> | Failure => {
         const newAddress = bytesToWords(line.code.reduce(
             (accumulated, codeBlock) => accumulated + codeBlock.length,
             0

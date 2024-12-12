@@ -17,21 +17,21 @@ export const coupling = () => {
 
     const properties = deviceProperties(context);
     const chooser = deviceChooser(properties, context);
-    context.directive("device", chooser.directive);
+    context.directive("device", chooser.device);
 
     const progMem = programMemory(context, properties);
     context.directive("origin", progMem.origin);
 
     const poke = pokeBuffer();
-    context.directive("poke", poke.directive);
+    context.directive("poke", poke.poke);
 
     const sourceFiles = fileStack(Deno.readTextFileSync);
-    context.directive("include", sourceFiles.includeFile);
+    context.directive("include", sourceFiles.include);
 
     const macroProcessor = processor();
-    context.directive("define", macroProcessor.defineDirective);
-    context.directive("end", macroProcessor.endDirective);
-    context.directive("macro", macroProcessor.macroDirective);
+    context.directive("define", macroProcessor.define);
+    context.directive("end", macroProcessor.end);
+    context.directive("macro", macroProcessor.macro);
 
     const js = javascript(context);
 

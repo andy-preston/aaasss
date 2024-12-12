@@ -1,5 +1,6 @@
+import type { Directive } from "../context/context.ts";
 import { stringParameter } from "../coupling/type-checking.ts";
-import { box, failure, type Box, type Failure } from "../coupling/value-failure.ts";
+import { box, failure, type Failure } from "../coupling/value-failure.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource } from "./line-types.ts";
 
@@ -36,7 +37,7 @@ export const fileStack = (read: ReaderMethod) => {
         }
     };
 
-    const includeFile = (fileName: FileName): Box<string> | Failure => {
+    const include: Directive = (fileName: FileName) => {
         const check = stringParameter(fileName);
         if (check.which == "failure") {
             return check;
@@ -51,7 +52,7 @@ export const fileStack = (read: ReaderMethod) => {
 
     const lines = function* (fileName: FileName) {
         fileStack = [];
-        const topFile = includeFile(fileName);
+        const topFile = include(fileName);
         if (topFile.which == "failure") {
             yield lineWithRawSource(fileName, 0, "", [topFile]);
         }
@@ -71,7 +72,7 @@ export const fileStack = (read: ReaderMethod) => {
     };
 
     return {
-        "includeFile": includeFile,
+        "include": include,
         "lines": lines,
     };
 };

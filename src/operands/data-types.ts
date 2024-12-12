@@ -25,4 +25,4 @@ export const operands = <Goal extends SymbolicOperands | NumericOperands>(
         throw Error("More than 3 operands isn't possible");
     }
     return operands as unknown as Goal;
-}
+};
