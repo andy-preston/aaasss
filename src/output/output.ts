@@ -3,22 +3,35 @@ import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { Pass } from "../pass/pass.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { file } from "./file.ts";
+import { type HexFile, hexFile } from "./hex.ts";
 import { listing } from "./listing.ts";
 
 export const output = (pass: Pass, topFileName: FileName) => {
     const listingFile = file(topFileName, ".lst");
     const listingLine = listing(listingFile.write);
+    let hex: HexFile | undefined = hexFile();
 
     const line = (line: LineWithObjectCode) => {
-        if (pass.showErrors()) {
-            listingLine(line);
+        if (pass.ignoreErrors()) {
+            return;
         }
+        listingLine(line);
+        if (line.failed()) {
+            hex = undefined;
+        }
+        hex?.line(line);
     };
 
     const final = (failures: Array<Failure>) => {
-        if (pass.showErrors()) {
-            failures.forEach(failure => console.log(failure));
-            listingFile.close();
+        if (pass.ignoreErrors()) {
+            return;
+        }
+        failures.forEach(failure => console.log(failure));
+        listingFile.close();
+        if (hex) {
+            const hexFile = file(topFileName, ".hex");
+            hex.save(hexFile.write);
+            hexFile.close();
         }
     };
 
