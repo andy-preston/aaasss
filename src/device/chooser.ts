@@ -59,6 +59,12 @@ export const deviceChooser = (
                 case "programEnd":
                     properties.programMemoryBytes(value as number);
                     break;
+                case "ramStart":
+                    properties.ramStart(value as number);
+                    break;
+                case "ramEnd":
+                    properties.ramEnd(value as number);
+                    break;
                 default:
                     context.property(key, value as number);
                     break;

@@ -8,10 +8,10 @@ import { programMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
-    const device = deviceProperties(context);
-    const memory = programMemory(context, device);
+    const properties = deviceProperties(context);
+    const memory = programMemory(context, properties.public);
     return {
-        "device": device,
+        "properties": properties,
         "memory": memory
     };
 };
@@ -36,23 +36,23 @@ Deno.test("Origin addresses can't be strange type", () => {
 
 Deno.test("Device name is used to determine if properties have been set", () => {
     const environment = testEnvironment();
-    environment.device.programMemoryBytes(100);
+    environment.properties.programMemoryBytes(100);
     const result = environment.memory.origin(10);
     assertFailureWithExtra(result, "programMemory.sizeUnknown", "10");
 });
 
 Deno.test("Origin addresses must be progmem size when a device is chosen", () => {
     const environment = testEnvironment();
-    environment.device.setName("testing");
-    environment.device.programMemoryBytes(100);
+    environment.properties.setName("testing");
+    environment.properties.programMemoryBytes(100);
     const result = environment.memory.origin(92);
     assertFailureWithExtra(result, "programMemory.outOfRange", "92");
 });
 
 Deno.test("Origin directive sets current address", () => {
     const environment = testEnvironment();
-    environment.device.setName("testing");
-    environment.device.programMemoryBytes(100);
+    environment.properties.setName("testing");
+    environment.properties.programMemoryBytes(100);
 
     const first = environment.memory.origin(23);
     assertSuccess(first, "23");

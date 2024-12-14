@@ -57,4 +57,9 @@ export const failures = {
     ],
     "programMemory.outOfRange": (_line: LineWithObjectCode) => [""],
     "programMemory.sizeUnknown": (_line: LineWithObjectCode) => [""],
+    "ram.outOfRange": (_line: LineWithObjectCode) => [""],
+    "ram.sizeUnknown": (_line: LineWithObjectCode) => [""],
+    "ram.stackAllocated": (_line: LineWithObjectCode) => [
+        "Stack Already Allocated"
+    ],
 } as const satisfies Record<string, FailureMessage>;

@@ -3,7 +3,7 @@ import { positiveParameter } from "../coupling/type-checking.ts";
 import {
     box, type Box, type Failure
 } from "../coupling/value-failure.ts";
-import type { DeviceProperties } from "../device/properties.ts";
+import type { DevicePropertiesInterface } from "../device/properties.ts";
 import { LineWithProcessedMacro } from "../macro/line-types.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import { lineWithAddress } from "./line-types.ts";
@@ -12,7 +12,7 @@ const bytesToWords = (byteCount: number): number => byteCount / 2;
 
 export const programMemory = (
     context: Context,
-    properties: DeviceProperties
+    properties: DevicePropertiesInterface
 ) => {
     let address = 0;
 
@@ -29,7 +29,7 @@ export const programMemory = (
             address = 0;
             return box(`${address}`);
         }
-        const pastEnd = properties.public.programMemoryEnd(newAddress);
+        const pastEnd = properties.programMemoryEnd(newAddress);
         if (pastEnd.which == "failure") {
             return pastEnd;
         }

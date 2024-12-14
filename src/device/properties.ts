@@ -8,6 +8,8 @@ export const deviceProperties = (context: Context) => {
     let deviceName = "";
     let reducedCore = false;
     let programMemory = 0;
+    let ramStart = 0;
+    let ramEnd = 0;
     const unsupported = unsupportedInstructions();
     const registers = cpuRegisters(context);
 
@@ -35,6 +37,15 @@ export const deviceProperties = (context: Context) => {
             ? failure(undefined, "programMemory.outOfRange", `${address}`)
             : box(false);
 
+    const getRamAddress = (plusBytes: number): Box<number> | Failure => {
+        const address = ramStart + plusBytes;
+        return deviceName == ""
+            ? failure(undefined, "ram.sizeUnknown", "")
+            : address > ramEnd
+            ? failure(undefined, "ram.outOfRange", "`${address}`")
+            : box(address);
+    };
+
     const setReducedCore = (value: boolean) => {
         reducedCore = value;
     };
@@ -48,6 +59,14 @@ export const deviceProperties = (context: Context) => {
         programMemory = value / 2;
     };
 
+    const setRamStart = (value: number) => {
+        ramStart = value;
+    };
+
+    const setRamEnd = (value: number) => {
+        ramEnd = value;
+    };
+
     return {
         "setName": setDeviceName,
         "name": () => deviceName,
@@ -55,11 +74,14 @@ export const deviceProperties = (context: Context) => {
         "unsupportedInstructions": unsupported.choose,
         "registers": registers.choose,
         "programMemoryBytes": programMemoryBytes,
+        "ramStart": setRamStart,
+        "ramEnd": setRamEnd,
         "public": {
             "name": name,
             "hasReducedCore": hasReducedCore,
             "isUnsupported": isUnsupported,
-            "programMemoryEnd": programMemoryEnd
+            "programMemoryEnd": programMemoryEnd,
+            "ramAddress": getRamAddress
         },
     };
 };

@@ -12,6 +12,7 @@ import { codeGenerator } from "../object-code/code-generator.ts";
 import { processor } from "../macro/processor.ts";
 import { output } from "../output/output.ts";
 import { pipeLine } from "./pipeline.ts";
+import { dataMemory } from "../data-memory/data-memory.ts";
 
 export const coupling = (fileName: FileName) => {
     const context = anEmptyContext();
@@ -20,8 +21,12 @@ export const coupling = (fileName: FileName) => {
     const chooser = deviceChooser(properties, context);
     context.directive("device", chooser.device);
 
-    const progMem = programMemory(context, properties);
+    const progMem = programMemory(context, properties.public);
     context.directive("origin", progMem.origin);
+
+    const dataMem = dataMemory(properties.public);
+    context.directive("alloc", dataMem.alloc);
+    context.directive("allocStack", dataMem.allocStack);
 
     const poke = pokeBuffer();
     context.directive("poke", poke.poke);
@@ -38,7 +43,9 @@ export const coupling = (fileName: FileName) => {
 
     const js = javascript(context);
 
-    const thePass = pass([progMem.reset, js.reset, macroProcessor.reset]);
+    const thePass = pass([
+        progMem.reset, dataMem.reset, js.reset, macroProcessor.reset
+    ]);
 
     return pipeLine(
         thePass,

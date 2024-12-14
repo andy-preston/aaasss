@@ -15,11 +15,11 @@ import { programMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
-    const device = deviceProperties(context);
+    const properties = deviceProperties(context);
     return {
         "context": context,
-        "device": device,
-        "programMemory": programMemory(context, device),
+        "properties": properties,
+        "programMemory": programMemory(context, properties.public),
     };
 };
 
@@ -32,8 +32,8 @@ const testLine = (label: Label) => {
 
 Deno.test("A label is stored in the context with the current address", () => {
     const environment = testEnvironment();
-    environment.device.setName("testDevice");
-    environment.device.programMemoryBytes(1024);
+    environment.properties.setName("testDevice");
+    environment.properties.programMemoryBytes(1024);
     environment.programMemory.origin(10);
 
     const result = environment.programMemory.label(testLine("A_LABEL"));
@@ -46,8 +46,8 @@ Deno.test("A label is stored in the context with the current address", () => {
 
 Deno.test("Labels can be defined on multiple passes but must keep the same address", () => {
     const environment = testEnvironment();
-    environment.device.setName("testDevice");
-    environment.device.programMemoryBytes(1024);
+    environment.properties.setName("testDevice");
+    environment.properties.programMemoryBytes(1024);
     environment.programMemory.origin(10);
     for (const _pass of passes) {
         const result = environment.programMemory.label(testLine("A_LABEL"));
@@ -61,8 +61,8 @@ Deno.test("Labels can be defined on multiple passes but must keep the same addre
 
 Deno.test("... but will cause a failure if the address changes", () => {
     const environment = testEnvironment();
-    environment.device.setName("testDevice");
-    environment.device.programMemoryBytes(1024);
+    environment.properties.setName("testDevice");
+    environment.properties.programMemoryBytes(1024);
 
     environment.programMemory.origin(10);
     const firstResult = environment.programMemory.label(testLine("A_LABEL"));

@@ -16,13 +16,13 @@ import { lineWithProcessedMacro } from "../macro/line-types.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
-    const device = deviceProperties(context);
-    const memory = programMemory(context, device);
+    const properties = deviceProperties(context);
+    const memory = programMemory(context, properties.public);
     return {
         "context": context,
-        "device": device,
+        "properties": properties,
         "programMemory": memory,
-        "generator": codeGenerator(context, device.public, memory)
+        "generator": codeGenerator(context, properties.public, memory)
     };
 };
 
@@ -56,8 +56,8 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
 
 Deno.test("Lines with unsupported instructions fail", () => {
     const environment = testEnvironment();
-    environment.device.setName("testDevice");
-    environment.device.unsupportedInstructions(["DES"]);
+    environment.properties.setName("testDevice");
+    environment.properties.unsupportedInstructions(["DES"]);
     const result = environment.generator(testLine("", "DES", []));
     assert(result.failed());
     assertEquals(result.failures.length, 1);
@@ -67,7 +67,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
 
 Deno.test("Lines with unknown instructions fail", () => {
     const environment = testEnvironment();
-    environment.device.setName("testDevice");
+    environment.properties.setName("testDevice");
     const result = environment.generator(testLine("", "NOT_REAL", []));
     assert(result.failed());
     assertEquals(result.failures.length, 1);
@@ -77,8 +77,8 @@ Deno.test("Lines with unknown instructions fail", () => {
 
 Deno.test("Insufficient program memory causes generation to fail", () => {
     const environment = testEnvironment();
-    environment.device.setName("testDevice");
-    environment.device.programMemoryBytes(0);
+    environment.properties.setName("testDevice");
+    environment.properties.programMemoryBytes(0);
     const result = environment.generator(testLine("", "DES", ["15"]));
     assert(result.failed(), "Didn't fail!");
     assertEquals(result.failures.length, 1);
@@ -90,8 +90,8 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
 
 Deno.test("Advancing beyond the end of program memory causes failure", () => {
     const environment = testEnvironment();
-    environment.device.setName("testDevice");
-    environment.device.programMemoryBytes(2);
+    environment.properties.setName("testDevice");
+    environment.properties.programMemoryBytes(2);
 
     const firstResult = environment.generator(testLine("", "DES", ["15"]));
     assertFalse(firstResult.failed(), "Unexpected failure");
@@ -110,8 +110,8 @@ Deno.test("Advancing beyond the end of program memory causes failure", () => {
 
 Deno.test("Lines with real/supported instructions produce code", () => {
     const environment = testEnvironment();
-    environment.device.setName("testDevice");
-    environment.device.programMemoryBytes(1024);
+    environment.properties.setName("testDevice");
+    environment.properties.programMemoryBytes(1024);
     const result = environment.generator(testLine("", "DES", ["15"]));
     assertFalse(result.failed(), "Unexpected failure");
     assertEquals(result.failures.length, 0);
