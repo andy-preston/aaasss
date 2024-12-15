@@ -1,4 +1,14 @@
 {
+    "tasks": {
+        "cache": "bash -c \"rm -rf ~/.cache/deno\"",
+        "run": "deno run -A ./src/cli.ts",
+        "check": "deno test --allow-read && deno lint",
+        "getCoverage": "rm -rf _coverage && deno test --allow-read --coverage=_coverage",
+        "coverage": {
+            "dependencies": ["getCoverage"],
+            "command": "deno coverage _coverage"
+        }
+    },
     "imports": {
         "assert": "jsr:@std/assert",
         "fs": "jsr:@std/fs"
@@ -8,11 +18,5 @@
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "strict": true
-    },
-    "fmt": {
-        "indentWidth": 4,
-        "semiColons": true,
-        "proseWrap": "preserve",
-    },
-    "exclude": ["_deno"]
+    }
 }
