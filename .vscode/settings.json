@@ -1,5 +1,4 @@
 {
-    "deno.cache": "./_deno/",
     "deno.enable": true,
     "deno.lint": true,
     "cSpell.words": [

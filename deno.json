@@ -2,7 +2,8 @@
     "tasks": {
         "cache": "bash -c \"rm -rf ~/.cache/deno\"",
         "run": "deno run -A ./src/cli.ts",
-        "check": "deno test --allow-read && deno lint",
+        "check": "deno test --allow-read -- --no-integration && deno lint",
+        "integration": "deno test --allow-read integration-tests",
         "getCoverage": "rm -rf _coverage && deno test --allow-read --coverage=_coverage",
         "coverage": {
             "dependencies": ["getCoverage"],
