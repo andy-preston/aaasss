@@ -1,20 +1,26 @@
 import { anEmptyContext } from "../context/context.ts";
+import { dataMemory } from "../data-memory/data-memory.ts";
+import { deviceProperties } from "../device/properties.ts";
+import { deviceChooser } from "../device/chooser.ts";
+import { processor } from "../macro/processor.ts";
+import { codeGenerator } from "../object-code/code-generator.ts";
+import type { OutputFile } from "../output/file.ts";
+import { output } from "../output/output.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../program-memory/poke.ts";
 import { pass } from "../pass/pass.ts";
-import { deviceProperties } from "../device/properties.ts";
-import { deviceChooser } from "../device/chooser.ts";
-import { FileName } from "../source-code/data-types.ts";
+import type { FileName } from "../source-code/data-types.ts";
+import type { ReaderMethod } from "../source-code/file-types.ts";
 import { fileStack } from "../source-code/file-stack.ts";
 import { javascript } from "../source-code/javascript.ts";
 import { tokenise } from "../tokenise/tokenise.ts";
-import { codeGenerator } from "../object-code/code-generator.ts";
-import { processor } from "../macro/processor.ts";
-import { output } from "../output/output.ts";
 import { pipeLine } from "./pipeline.ts";
-import { dataMemory } from "../data-memory/data-memory.ts";
 
-export const coupling = (fileName: FileName) => {
+export const coupling = (
+    fileName: FileName,
+    readerMethod: ReaderMethod,
+    outputFile: OutputFile
+) => {
     const context = anEmptyContext();
 
     const properties = deviceProperties(context);
@@ -31,9 +37,7 @@ export const coupling = (fileName: FileName) => {
     const poke = pokeBuffer();
     context.directive("poke", poke.poke);
 
-    const sourceFiles = fileStack(
-        Deno.readTextFileSync, fileName
-    );
+    const sourceFiles = fileStack(readerMethod, fileName);
     context.directive("include", sourceFiles.include);
 
     const macroProcessor = processor();
@@ -56,7 +60,7 @@ export const coupling = (fileName: FileName) => {
         progMem.label,
         poke.line,
         codeGenerator(context, properties.public, progMem),
-        output(thePass, fileName),
+        output(thePass, fileName, outputFile),
         [
             macroProcessor.leftInIllegalState,
             js.leftInIllegalState

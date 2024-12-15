@@ -1,6 +1,6 @@
 const encoder = new TextEncoder();
 
-export const file = (fileName: string, extension: string) => {
+export const outputFile = (fileName: string, extension: string) => {
     const theFile = Deno.openSync(
         fileName.substring(0, fileName.lastIndexOf(".")) + extension,
         { create: true, write: true, truncate: true }
@@ -17,5 +17,5 @@ export const file = (fileName: string, extension: string) => {
     };
 };
 
-export type OutputFile = ReturnType<typeof file>;
-export type FileWrite = OutputFile["write"];
+export type OutputFile = typeof outputFile;
+export type FileWrite = ReturnType<OutputFile>["write"];

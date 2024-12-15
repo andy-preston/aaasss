@@ -2,12 +2,16 @@ import type { Failure } from "../coupling/value-failure.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { Pass } from "../pass/pass.ts";
 import type { FileName } from "../source-code/data-types.ts";
-import { file } from "./file.ts";
-import { type HexFile, hexFile } from "./hex.ts";
+import type { OutputFile } from "./file.ts";
+import { hexFile, type HexFile } from "./hex.ts";
 import { listing } from "./listing.ts";
 
-export const output = (pass: Pass, topFileName: FileName) => {
-    const listingFile = file(topFileName, ".lst");
+export const output = (
+    pass: Pass,
+    topFileName: FileName,
+    outputFile: OutputFile
+) => {
+    const listingFile = outputFile(topFileName, ".lst");
     const listingLine = listing(listingFile.write);
     let hex: HexFile | undefined = hexFile();
 
@@ -29,7 +33,7 @@ export const output = (pass: Pass, topFileName: FileName) => {
         failures.forEach(failure => console.log(failure));
         listingFile.close();
         if (hex) {
-            const hexFile = file(topFileName, ".hex");
+            const hexFile = outputFile(topFileName, ".hex");
             hex.save(hexFile.write);
             hexFile.close();
         }

@@ -41,6 +41,8 @@ export const pipeLine = (
                 assembly(tokenise(javascript(line)));
             }
         }
-        illegalStateCallbacks.forEach(callback => output.final(callback()));
+        illegalStateCallbacks.forEach(
+            callback => output.final(callback())
+        );
     };
 };
