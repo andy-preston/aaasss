@@ -1,4 +1,4 @@
-import { failure } from "../coupling/value-failure.ts";
+import { failure } from "../failure/failures.ts";
 import { SymbolicOperand } from "../operands/data-types.ts";
 import { operands, SymbolicOperands } from "../operands/data-types.ts";
 import { Label } from "../source-code/data-types.ts";
@@ -23,7 +23,7 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
     const mapper = (actual: ActualParameters) => {
         const parameterFailure = (firstLine: boolean) =>
             firstLine && symbolic.length != actual.length
-                ? [failure(undefined, "macro.params", `${actual.length}`)]
+                ? [failure(undefined, "macro_params", `${actual.length}`)]
                 : [];
 
         const mapOperand = (oldOperand: SymbolicOperand) => {

@@ -34,13 +34,13 @@ const testEnvironment = () => {
 Deno.test("The define directive name must be a string", () => {
     const environment = testEnvironment();
     const result = environment.context.value("define(47);");
-    assertFailureWithExtra(result, "type.string", "47");
+    assertFailureWithExtra(result, "type_string", "47");
 });
 
 Deno.test("The macro directive name must be a string", () => {
     const environment = testEnvironment();
     const result = environment.context.value('macro(47);');
-    assertFailureWithExtra(result, "type.string", "47");
+    assertFailureWithExtra(result, "type_string", "47");
 });
 
 Deno.test("The define directive can be called without parameters", () => {
@@ -77,7 +77,7 @@ Deno.test("If define parameters are provided for define they must be an array", 
     const defineResult = environment.context.value(
         'define("with", {"a": "a", "b": "b"});'
     );
-    assertFailureWithExtra(defineResult, "type.strings", "object");
+    assertFailureWithExtra(defineResult, "type_strings", "object");
 });
 
 Deno.test("... of strings", () => {
@@ -86,7 +86,7 @@ Deno.test("... of strings", () => {
         'define("with", ["a", 2, "b", 3]);'
     );
     assertFailureWithExtra(
-        defineResult, "type.strings", "1: number, 3: number"
+        defineResult, "type_strings", "1: number, 3: number"
     );
 });
 
@@ -104,7 +104,7 @@ Deno.test("If macro parameters are provided for define they must be an array", (
     const result = environment.context.value(
         'macro("with", {"a": "a", "b": "b"});'
     );
-    assertFailureWithExtra(result, "type.params", "object");
+    assertFailureWithExtra(result, "type_params", "object");
 });
 
 Deno.test("... of strings or numbers", () => {
@@ -121,5 +121,5 @@ Deno.test("... of strings or numbers", () => {
     const result = environment.context.value(
         'macro("with", [true, "a", 2, {"c": "c"}]);'
     );
-    assertFailureWithExtra(result, "type.params", "0: boolean, 3: object");
+    assertFailureWithExtra(result, "type_params", "0: boolean, 3: object");
 });

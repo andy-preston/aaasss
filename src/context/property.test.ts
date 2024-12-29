@@ -22,7 +22,7 @@ Deno.test("A property can't be redefined to a new value", () => {
     const firstResult = context.property("plop", 57);
     assertSuccess(firstResult, 57);
     const secondResult = context.property("plop", 75);
-    assertFailure(secondResult, "context.redefined");
+    assertFailure(secondResult, "context_redefined");
 });
 
 Deno.test("... but it can be 'redefined' with the same value", () => {

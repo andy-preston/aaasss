@@ -1,6 +1,7 @@
 import type { Directive } from "../context/context.ts";
 import { stringParameter } from "../coupling/type-checking.ts";
-import { box, failure, type Failure } from "../coupling/value-failure.ts";
+import { box } from "../coupling/value-failure.ts";
+import { failure, type Failure } from "../failure/failures.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource } from "./line-types.ts";
 
@@ -31,7 +32,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         }
         catch (error) {
             if (error instanceof Error) {
-                return failure(undefined, "file.notFound", error);
+                return failure(undefined, "file_notFound", error);
             }
             throw error;
         }

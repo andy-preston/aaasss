@@ -1,7 +1,6 @@
 import { existsSync } from "fs/exists";
-import {
-    box, failure, type Box, type Failure
-} from "../coupling/value-failure.ts";
+import { box, type Box } from "../coupling/value-failure.ts";
+import { failure, type Failure } from "../failure/failures.ts";
 import type { Context, Directive } from "../context/context.ts";
 import type { DeviceProperties } from "./properties.ts";
 import { stringParameter } from "../coupling/type-checking.ts";
@@ -42,7 +41,7 @@ export const deviceChooser = (
             return box("");
         }
         if (previousName != "") {
-            return failure(undefined, "device.multiple", undefined);
+            return failure(undefined, "device_multiple", undefined);
         }
         properties.setName(deviceName);
         for (const [key, value] of Object.entries(fullSpec)) {
@@ -95,7 +94,7 @@ export const deviceChooser = (
         }
         const baseName = `./devices/${deviceFileName(name)}.json`;
         if (!existsSync(baseName)) {
-            return failure(undefined, "device.notFound", undefined);
+            return failure(undefined, "device_notFound", undefined);
         }
         const baseSpec: DeviceSpec = loadJsonFile(baseName);
         const familySpec: RawItems = "family" in baseSpec

@@ -1,4 +1,4 @@
-import type { Failures } from "../coupling/value-failure.ts";
+import type { Failures } from "../failure/failures.ts";
 import type {
     FileName, LineNumber, SourceCode
 } from "./data-types.ts";

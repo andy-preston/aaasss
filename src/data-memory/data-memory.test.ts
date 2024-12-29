@@ -24,7 +24,7 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
     const environment = testEnvironment();
     environment.pass.start(2);
     const allocation = environment.dataMemory.alloc(23);
-    assertFailure(allocation, "ram.sizeUnknown");
+    assertFailure(allocation, "ram_sizeUnknown");
 });
 
 Deno.test("A stack allocation can't be beyond available SRAM", () => {
@@ -32,7 +32,7 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
     environment.choose("dummy", { "ramEnd": 20 });
     environment.pass.start(2);
     const allocation = environment.dataMemory.allocStack(23);
-    assertFailure(allocation, "ram.outOfRange");
+    assertFailure(allocation, "ram_outOfRange");
 });
 
 Deno.test("A memory allocation can't be beyond available SRAM", () => {
@@ -40,7 +40,7 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
     environment.choose("dummy", { "ramEnd": 20 });
     environment.pass.start(2);
     const allocation = environment.dataMemory.allocStack(23);
-    assertFailure(allocation, "ram.outOfRange");
+    assertFailure(allocation, "ram_outOfRange");
 });
 
 Deno.test("Memory allocations start at the top of SRAM and work down", () => {
@@ -59,7 +59,7 @@ Deno.test("Stack and memory allocations both decrease the available SRAM", () =>
     assertSuccess(environment.dataMemory.alloc(25), "0");
     environment.dataMemory.allocStack(25);
     const allocation = environment.dataMemory.alloc(23);
-    assertFailure(allocation, "ram.outOfRange");
+    assertFailure(allocation, "ram_outOfRange");
 });
 
 Deno.test("Allocations don't get repeated on the second pass", () => {

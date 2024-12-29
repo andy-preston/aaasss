@@ -1,4 +1,4 @@
-import type { Failures } from "../coupling/value-failure.ts";
+import type { Failures } from "../failure/failures.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import type {

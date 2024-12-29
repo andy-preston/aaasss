@@ -1,4 +1,4 @@
-import { failure } from "../coupling/value-failure.ts";
+import { failure } from "../failure/failures.ts";
 import type { Context } from "../context/context.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { LineWithPokedBytes } from "../program-memory/line-types.ts";
@@ -37,7 +37,7 @@ export const codeGenerator = (
     const mode = addressingMode(line);
     if (mode == undefined) {
         return lineWithObjectCode(line, [], [], [
-            failure(undefined, "mnemonic.unknown", undefined)
+            failure(undefined, "mnemonic_unknown", undefined)
         ]);
     }
     const codeLine = mode(context);

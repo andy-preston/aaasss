@@ -1,6 +1,7 @@
 import { Directive } from "../context/context.ts";
 import { parameterList, stringParameter } from "../coupling/type-checking.ts";
-import { box, failure, type Failure } from "../coupling/value-failure.ts";
+import { box, } from "../coupling/value-failure.ts";
+import { failure, type Failure } from "../failure/failures.ts";
 import type { LineWithTokens } from "../tokenise/line-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 import {
@@ -18,7 +19,7 @@ export const processor = () => {
     let macros: Map<MacroName, Macro> = new Map();
 
     const leftInIllegalState = (): Array<Failure> => recording == undefined
-        ? [] : [failure(undefined, "macro.define", undefined)];
+        ? [] : [failure(undefined, "macro_define", undefined)];
 
     const reset = () => {
         macros = new Map();
@@ -30,16 +31,16 @@ export const processor = () => {
         name: MacroName, parameters: SymbolicParameters = []
     ) => {
         if (recording != undefined) {
-            return failure(undefined, "macro.define", undefined);
+            return failure(undefined, "macro_define", undefined);
         }
         const checkedName = stringParameter(name);
         if (checkedName.which == "failure") {
             return checkedName;
         }
         if (macros.has(name)) {
-            return failure(undefined, "macro.name", name);
+            return failure(undefined, "macro_name", name);
         }
-        const checkedParameters = parameterList(parameters, "type.strings");
+        const checkedParameters = parameterList(parameters, "type_strings");
         if (checkedParameters.which == "failure") {
             return checkedParameters;
         }
@@ -53,10 +54,10 @@ export const processor = () => {
 
     const end: Directive = () => {
         if (recording == undefined) {
-            return failure(undefined, "macro.end", undefined);
+            return failure(undefined, "macro_end", undefined);
         }
         if (recording.empty()) {
-            return failure(undefined, "macro.empty", undefined);
+            return failure(undefined, "macro_empty", undefined);
         }
         macros.set(recordingName, recording);
         recording = undefined;
@@ -86,9 +87,9 @@ export const processor = () => {
             return checkedName;
         }
         if (!macros.has(name)) {
-            return failure(undefined, "macro.notExist", name);
+            return failure(undefined, "macro_notExist", name);
         }
-        const checkedParameters = parameterList(parameters, "type.params");
+        const checkedParameters = parameterList(parameters, "type_params");
         if (checkedParameters.which == "failure") {
             return checkedParameters;
         }

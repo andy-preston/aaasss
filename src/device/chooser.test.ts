@@ -24,11 +24,11 @@ Deno.test("You can choose any device that has a definition file", () => {
 Deno.test("Choosing an non-existant device returns a Failure", () => {
     const environment = testEnvironment();
     const result = environment.chooser.device("notARealDevice");
-    assertFailure(result, "device.notFound");
+    assertFailure(result, "device_notFound");
 });
 
 Deno.test("The device name must be a string", () => {
     const environment = testEnvironment();
     const result = environment.chooser.device([1, 2, 3] as unknown as string);
-    assertFailure(result, "type.string");
+    assertFailure(result, "type_string");
 });

@@ -1,4 +1,5 @@
-import { box, failure, type Box, type Failure } from "../coupling/value-failure.ts";
+import { box, type Box } from "../coupling/value-failure.ts";
+import { failure, type Failure } from "../failure/failures.ts";
 import type { Context } from "../context/context.ts";
 import type { Mnemonic } from "../source-code/data-types.ts";
 import { cpuRegisters } from "./registers.ts";
@@ -15,34 +16,34 @@ export const deviceProperties = (context: Context) => {
 
     const name = (): Box<string> | Failure =>
         deviceName == ""
-            ? failure(undefined, "device.notSelected", undefined)
+            ? failure(undefined, "device_notSelected", undefined)
             : box(deviceName);
 
     const hasReducedCore = (): Box<boolean> | Failure =>
         deviceName == ""
-            ? failure(undefined, "device.notSelected", undefined)
+            ? failure(undefined, "device_notSelected", undefined)
             : box(reducedCore);
 
     const isUnsupported = (mnemonic: Mnemonic): Box<boolean> | Failure =>
         deviceName == ""
-            ? failure(undefined, "mnemonic.supportedUnknown", undefined)
+            ? failure(undefined, "mnemonic_supportedUnknown", undefined)
             : unsupported.isUnsupported(mnemonic)
-            ? failure(undefined, "mnemonic.notSupported", undefined)
+            ? failure(undefined, "mnemonic_notSupported", undefined)
             : box(false);
 
     const programMemoryEnd = (address: number): Box<boolean> | Failure =>
         deviceName == ""
-            ? failure(undefined, "programMemory.sizeUnknown", `${address}`)
+            ? failure(undefined, "programMemory_sizeUnknown", `${address}`)
             : address > programMemory
-            ? failure(undefined, "programMemory.outOfRange", `${address}`)
+            ? failure(undefined, "programMemory_outOfRange", `${address}`)
             : box(false);
 
     const getRamAddress = (plusBytes: number): Box<number> | Failure => {
         const address = ramStart + plusBytes;
         return deviceName == ""
-            ? failure(undefined, "ram.sizeUnknown", "")
+            ? failure(undefined, "ram_sizeUnknown", "")
             : address > ramEnd
-            ? failure(undefined, "ram.outOfRange", "`${address}`")
+            ? failure(undefined, "ram_outOfRange", "`${address}`")
             : box(address);
     };
 

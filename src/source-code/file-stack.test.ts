@@ -2,8 +2,8 @@ import { assert, assertFalse, assertEquals, assertInstanceOf } from "assert";
 import {
     assertFailure, assertSuccess
 } from "../coupling/value-failure-testing.ts";
+import { type Failure } from "../failure/failures.ts";
 import { fileStack } from "./file-stack.ts";
-import { Failure } from "../coupling/value-failure.ts";
 
 const peculiarErrorMessage = (fileName: string) => {
     const prefix = "No such file or directory (os error 2)";
@@ -22,7 +22,7 @@ Deno.test("Including a file returns a blank value", () => {
 Deno.test("Including a non existant file returns a failure", () => {
     const fileName = "does-not-exist.test";
     const result = fileStack(Deno.readTextFileSync, "").include(fileName);
-    assertFailure(result, "file.notFound");
+    assertFailure(result, "file_notFound");
     const failure = result as Failure;
     assertInstanceOf(failure.extra, Deno.errors.NotFound);
     assertEquals(failure.extra.message, peculiarErrorMessage(fileName));
@@ -32,7 +32,7 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
     const result = fileStack(Deno.readTextFileSync, "").include(
         [1, 2, 3] as unknown as string
     );
-    assertFailure(result, "type.string");
+    assertFailure(result, "type_string");
     assertEquals((result as Failure).extra, "1,2,3");
 });
 

@@ -1,3 +1,4 @@
+import type { Failure } from "../failure/failures.ts";
 import { lineWithNoObjectCode } from "../macro/line-types.ts";
 import type { MacroProcessor } from "../macro/processor.ts";
 import type { CodeGenerator } from "../object-code/code-generator.ts";
@@ -9,7 +10,6 @@ import type { FileStack } from "../source-code/file-stack.ts";
 import type { Javascript } from "../source-code/javascript.ts";
 import type { Tokenise } from "../tokenise/tokenise.ts";
 import type { LineWithTokens } from "../tokenise/line-types.ts";
-import type { Failure } from "./value-failure.ts";
 
 type IllegalStateCallback = () => Array<Failure>;
 

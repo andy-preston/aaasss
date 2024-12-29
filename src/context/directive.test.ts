@@ -2,9 +2,8 @@ import { assertEquals } from "assert";
 import {
     assertFailure, assertSuccess
 } from "../coupling/value-failure-testing.ts";
-import {
-    box, failure, type Box, type Failure
-} from "../coupling/value-failure.ts";
+import { box, type Box } from "../coupling/value-failure.ts";
+import { failure, type Failure } from "../failure/failures.ts";
 import { anEmptyContext } from "./context.ts";
 
 Deno.test("Any directives that are added can be called as functions", () => {
@@ -24,12 +23,12 @@ Deno.test("Directives can return a failure", () => {
     const context = anEmptyContext();
 
     const testDirective = (_: string): Box<string> | Failure => {
-        return failure(undefined, "file.notFound", undefined);
+        return failure(undefined, "file_notFound", undefined);
     };
     context.directive("testDirective", testDirective);
 
     const result = context.value("testDirective('')");
-    assertFailure(result, "file.notFound");
+    assertFailure(result, "file_notFound");
 });
 
 Deno.test("Directives can return success in the form of a string", () => {

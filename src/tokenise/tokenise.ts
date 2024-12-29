@@ -1,4 +1,4 @@
-import { failure, type Failures } from "../coupling/value-failure.ts";
+import { failure, type Failures } from "../failure/failures.ts";
 import { operands, type SymbolicOperands } from "../operands/data-types.ts"
 import type { LineWithRenderedJavascript } from "../source-code/line-types.ts";
 import { indexOffsetOperands } from "./index-offset-operands.ts";
@@ -33,7 +33,7 @@ export const tokenise = (theLine: LineWithRenderedJavascript) => {
 
     const [label, withoutLabel] = split("after", ":", cleaned);
     if (!validLabel.test(label)) {
-        failures.push(failure(undefined, "syntax.invalidLabel", undefined));
+        failures.push(failure(undefined, "syntax_invalidLabel", undefined));
     }
 
     const [mnemonic, operandsText] = split("before", " ", withoutLabel);
@@ -44,7 +44,7 @@ export const tokenise = (theLine: LineWithRenderedJavascript) => {
 
     const expandedOperands = indexOffsetOperands(operandsList);
     if (expandedOperands.length > 3) {
-        failures.push(failure(1, "operand.tooManyIndexOffset", undefined));
+        failures.push(failure(1, "operand_tooManyIndexOffset", undefined));
     }
     const mappedOperands = expandedOperands.map(
         operand => operand.match(registerName) == null

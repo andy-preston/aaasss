@@ -1,5 +1,6 @@
 import type { Directive } from "../context/context.ts";
-import { box, failure } from "../coupling/value-failure.ts";
+import { box } from "../coupling/value-failure.ts";
+import { failure } from "../failure/failures.ts";
 import { Code } from "../object-code/data-types.ts";
 import { lineWithPokedBytes, type LineWithAddress } from "./line-types.ts";
 
@@ -24,7 +25,7 @@ export const pokeBuffer = () => {
             theBuffer.push(grouped.good.splice(0, 4) as unknown as Code);
         }
         return grouped.bad.length > 0
-            ? failure(undefined, "type.bytes", grouped.bad.join(", "))
+            ? failure(undefined, "type_bytes", grouped.bad.join(", "))
             : box("")
     };
 

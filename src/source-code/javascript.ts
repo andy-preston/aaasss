@@ -1,4 +1,4 @@
-import { failure, type Failure } from "../coupling/value-failure.ts";
+import { failure, type Failure } from "../failure/failures.ts";
 import type { Context } from "../context/context.ts";
 import {
     lineWithRenderedJavascript, type LineWithRawSource
@@ -24,7 +24,7 @@ export const javascript = (context: Context) => {
 
     const leftInIllegalState = (): Array<Failure> =>
         current == "javascript"
-            ? [failure(undefined, "js.jsMode", undefined)]
+            ? [failure(undefined, "js_jsMode", undefined)]
             : [];
 
     const javascript = (failures: Array<Failure>): Array<Failure> => {
@@ -39,7 +39,7 @@ export const javascript = (context: Context) => {
 
     const assembler = (failures: Array<Failure>): Array<Failure> => {
         if (current == "assembler") {
-            failures.push(failure(undefined, "js.assemblerMode", undefined));
+            failures.push(failure(undefined, "js_assemblerMode", undefined));
         } else {
             const javascript = buffer.javascript.join("\n").trim();
             buffer.javascript = [];

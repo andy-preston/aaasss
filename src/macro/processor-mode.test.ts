@@ -25,7 +25,7 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
     const firstDefinition = macroProcessor.define("aMacro");
     assertSuccess(firstDefinition, "aMacro");
     const secondDefinition = macroProcessor.define("anotherOne");
-    assertFailure(secondDefinition, "macro.define");
+    assertFailure(secondDefinition, "macro_define");
 });
 
 Deno.test("You can't end a definition without any lines in the macro", () => {
@@ -33,7 +33,7 @@ Deno.test("You can't end a definition without any lines in the macro", () => {
     const definition = macroProcessor.define("aMacro");
     assertSuccess(definition, "aMacro");
     const ending = macroProcessor.end();
-    assertFailure(ending, "macro.empty");
+    assertFailure(ending, "macro_empty");
 });
 
 Deno.test("Multiple macros can be defined", () => {
@@ -53,5 +53,5 @@ Deno.test("Multiple macros can be defined", () => {
 Deno.test("You can't end a macro definition if one isn't being defined", () => {
     const macroProcessor = processor();
     const ending = macroProcessor.end();
-    assertFailure(ending, "macro.end");
+    assertFailure(ending, "macro_end");
 });

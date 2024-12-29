@@ -1,6 +1,5 @@
-import {
-    box, failure, type Box, type Failure
-} from "../coupling/value-failure.ts";
+import { box, type Box } from "../coupling/value-failure.ts";
+import { failure, type Failure } from "../failure/failures.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import { returnIfExpression } from "./magic.ts";
 
@@ -26,7 +25,7 @@ export const anEmptyContext = () => {
             return new Function(functionBody).call(context);
         } catch (error) {
             if (error instanceof Error) {
-                return failure(undefined, "js.error", error);
+                return failure(undefined, "js_error", error);
             }
             throw error;
         }
@@ -73,7 +72,7 @@ export const anEmptyContext = () => {
         if (Object.hasOwn(context, name)) {
             if (context[name] != value) {
                 return failure(
-                    undefined, "context.redefined", `${context[name]!}`
+                    undefined, "context_redefined", `${context[name]!}`
                 );
             }
         } else {

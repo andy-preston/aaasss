@@ -1,5 +1,5 @@
 import type { Line } from "../coupling/line.ts";
-import type { Failures } from "../coupling/value-failure.ts";
+import type { Failures } from "../failure/failures.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import {

@@ -1,9 +1,10 @@
-import { box, failure, type Box, type Failure } from "./value-failure.ts";
+import { failure, type Failure } from "../failure/failures.ts";
+import { box, type Box } from "./value-failure.ts";
 
 export const stringParameter = (value: unknown): Box<string> | Failure => {
     const asString = `${value}`;
     return typeof value == "string"
-        ? box(asString) : failure(undefined, "type.string", asString);
+        ? box(asString) : failure(undefined, "type_string", asString);
 };
 
 export const positiveParameter = (value: unknown): Box<number> | Failure => {
@@ -11,12 +12,12 @@ export const positiveParameter = (value: unknown): Box<number> | Failure => {
     return typeof value == "number"
         && parseInt(`${value}`) == value
         && value >= 0
-        ? box(value as number) : failure(undefined, "type.positive", asString);
+        ? box(value as number) : failure(undefined, "type_positive", asString);
 };
 
 export const parameterList = (
     parameters: unknown,
-    failureName: "type.strings" | "type.params"
+    failureName: "type_strings" | "type_params"
 ): Box<string> | Failure => {
     if (parameters == undefined) {
         return box("undefined");
@@ -26,7 +27,7 @@ export const parameterList = (
         return failure(undefined, failureName, typeof parameters)
     }
 
-    const legalTypes = failureName == "type.strings"
+    const legalTypes = failureName == "type_strings"
         ? ["string"] : ["string", "number"];
     const failed: Array<string> = [];
     for (const [index, parameter] of parameters.entries()) {

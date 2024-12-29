@@ -1,5 +1,6 @@
 import { assertEquals, AssertionError } from "assert";
-import type { Box, Failure, FailureKind } from "./value-failure.ts";
+import type { Failure, FailureKind } from "../failure/failures.ts";
+import type { Box } from "./value-failure.ts";
 
 const whichError = (expected: string, actual: string) =>
     new AssertionError(`"which" should be ${expected}, not ${actual}`);

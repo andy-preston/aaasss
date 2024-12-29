@@ -9,11 +9,11 @@ import { deviceProperties } from "./properties.ts";
 Deno.test("Returns Failure when no device is selected", () => {
     const properties = deviceProperties(anEmptyContext());
     const name = properties.public.name();
-    assertFailure(name, "device.notSelected");
+    assertFailure(name, "device_notSelected");
     const reducedCore = properties.public.hasReducedCore();
-    assertFailure(reducedCore, "device.notSelected");
+    assertFailure(reducedCore, "device_notSelected");
     const unsupported = properties.public.isUnsupported("MUL");
-    assertFailure(unsupported, "mnemonic.supportedUnknown");
+    assertFailure(unsupported, "mnemonic_supportedUnknown");
 });
 
 Deno.test("Returns default Answer(s) once a device name is selected", () => {
@@ -37,5 +37,5 @@ Deno.test("Returns selected Answer(s) once 'rules' are selected", () => {
     assertSuccess(reducedCore, true);
     properties.unsupportedInstructions(["multiply"]);
     const unsupported = properties.public.isUnsupported("MUL");
-    assertFailure(unsupported, "mnemonic.notSupported");
+    assertFailure(unsupported, "mnemonic_notSupported");
 });

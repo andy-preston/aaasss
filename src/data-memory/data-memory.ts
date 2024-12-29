@@ -1,5 +1,6 @@
 import { Directive } from "../context/context.ts";
-import { box, failure } from "../coupling/value-failure.ts";
+import { box } from "../coupling/value-failure.ts";
+import { failure } from "../failure/failures.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 
 export const dataMemory = (properties: DevicePropertiesInterface) => {
@@ -19,7 +20,7 @@ export const dataMemory = (properties: DevicePropertiesInterface) => {
         // but you can if you're worried that your RAM allocations might eat up
         // all the space.
         if (stack != 0) {
-            return failure(undefined, "ram.stackAllocated", `${stack}`);
+            return failure(undefined, "ram_stackAllocated", `${stack}`);
         }
         const check = properties.ramAddress(newAllocationSize(bytes));
         if (check.which == "failure") {
