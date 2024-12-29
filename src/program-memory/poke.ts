@@ -1,5 +1,5 @@
 import type { Directive } from "../context/context.ts";
-import { box } from "../coupling/value-failure.ts";
+import { box } from "../coupling/boxed-value.ts";
 import { failure } from "../failure/failures.ts";
 import { Code } from "../object-code/data-types.ts";
 import { lineWithPokedBytes, type LineWithAddress } from "./line-types.ts";

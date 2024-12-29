@@ -1,5 +1,5 @@
 import type { Context } from "../../context/context.ts";
-import { box } from "../../coupling/value-failure.ts";
+import { box } from "../../coupling/boxed-value.ts";
 import { failure, type Failures } from "../../failure/failures.ts";
 import { lineWithObjectCode } from "../line-types.ts";
 import type { NumericOperands } from "../../operands/data-types.ts";

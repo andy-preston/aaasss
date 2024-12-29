@@ -1,6 +1,6 @@
 import type { Directive } from "../context/context.ts";
 import { stringParameter } from "../coupling/type-checking.ts";
-import { box } from "../coupling/value-failure.ts";
+import { box } from "../coupling/boxed-value.ts";
 import { failure, type Failure } from "../failure/failures.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource } from "./line-types.ts";

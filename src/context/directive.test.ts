@@ -2,7 +2,7 @@ import { assertEquals } from "assert";
 import {
     assertFailure, assertSuccess
 } from "../coupling/value-failure-testing.ts";
-import { box, type Box } from "../coupling/value-failure.ts";
+import { box, type Box } from "../coupling/boxed-value.ts";
 import { failure, type Failure } from "../failure/failures.ts";
 import { anEmptyContext } from "./context.ts";
 

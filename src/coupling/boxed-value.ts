@@ -1,4 +1,3 @@
-
 export const box = <T>(value: T) => ({
     "which": "box" as const,
     "value": value,

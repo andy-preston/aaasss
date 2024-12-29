@@ -1,4 +1,4 @@
-import { box, type Box } from "../coupling/value-failure.ts";
+import { box, type Box } from "../coupling/boxed-value.ts";
 import { failure, type Failure } from "../failure/failures.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import { returnIfExpression } from "./magic.ts";

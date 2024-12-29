@@ -1,5 +1,5 @@
 import { Directive } from "../context/context.ts";
-import { box } from "../coupling/value-failure.ts";
+import { box } from "../coupling/boxed-value.ts";
 import { failure } from "../failure/failures.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 
