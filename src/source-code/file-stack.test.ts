@@ -1,7 +1,5 @@
 import { assert, assertFalse, assertEquals, assertInstanceOf } from "assert";
-import {
-    assertFailure, assertSuccess
-} from "../coupling/value-failure-testing.ts";
+import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { type Failure } from "../failure/failures.ts";
 import { fileStack } from "./file-stack.ts";
 

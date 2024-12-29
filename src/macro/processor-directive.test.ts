@@ -1,8 +1,6 @@
 import { assertEquals } from "assert/equals";
 import { anEmptyContext } from "../context/context.ts";
-import {
-    assertFailureWithExtra, assertSuccess
-} from "../coupling/value-failure-testing.ts";
+import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import {

@@ -1,6 +1,6 @@
 import { assertEquals } from "assert/equals";
 import { processor } from "./processor.ts";
-import { assertFailure, assertSuccess } from "../coupling/value-failure-testing.ts";
+import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { lineWithTokens } from "../tokenise/line-types.ts";
 import {
     lineWithRawSource, lineWithRenderedJavascript

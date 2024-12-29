@@ -1,5 +1,5 @@
 import { assertEquals } from "assert";
-import { assertFailureWithExtra } from "../coupling/value-failure-testing.ts";
+import { assertFailureWithExtra } from "../failure/testing.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import {
     lineWithRawSource, lineWithRenderedJavascript

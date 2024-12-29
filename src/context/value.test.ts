@@ -1,6 +1,4 @@
-import {
-    assertFailureWithError, assertSuccess
-} from "../coupling/value-failure-testing.ts";
+import { assertFailureWithError, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "./context.ts";
 
 Deno.test("Simple expressions do not require a `return`", () => {
