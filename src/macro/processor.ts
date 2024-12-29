@@ -1,6 +1,6 @@
 import { Directive } from "../context/context.ts";
-import { parameterList, stringParameter } from "../coupling/type-checking.ts";
-import { box, } from "../coupling/boxed-value.ts";
+import { box } from "../coupling/boxed-value.ts";
+import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { failure, type Failure } from "../failure/failures.ts";
 import type { LineWithTokens } from "../tokenise/line-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
