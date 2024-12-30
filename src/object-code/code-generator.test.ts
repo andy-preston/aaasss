@@ -29,7 +29,7 @@ const testEnvironment = () => {
 const testLine = (
     label: Label, mnemonic: Mnemonic, operands: SymbolicOperands
 ) => {
-    const raw = lineWithRawSource("", 0, "", []);
+    const raw = lineWithRawSource("", 0, false, "", []);
     const rendered = lineWithRenderedJavascript(raw, "", []);
     const tokenised = lineWithTokens(rendered, label, mnemonic, operands, []);
     const processed = lineWithProcessedMacro(tokenised, "", []);

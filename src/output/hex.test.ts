@@ -18,7 +18,7 @@ import {
 import { hexFile } from "./hex.ts";
 
 const testLine = (test: TestBlock) => {
-    const withRaw = lineWithRawSource("", 0, "", []);
+    const withRaw = lineWithRawSource("", 0, false, "", []);
     const withRendered = lineWithRenderedJavascript(withRaw, "", []);
     const withTokens = lineWithTokens(withRendered, "", "", [], []);
     const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", [], []);

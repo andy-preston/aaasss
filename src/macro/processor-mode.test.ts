@@ -7,7 +7,7 @@ import {
 } from "../source-code/line-types.ts";
 
 const testLine = () => {
-    const raw = lineWithRawSource("", 0, "", []);
+    const raw = lineWithRawSource("", 0, false, "", []);
     const rendered = lineWithRenderedJavascript(raw, "", []);
     return lineWithTokens(rendered, "", "TST", [], []);
 };

@@ -1,20 +1,16 @@
 import type { Directive } from "../context/context.ts";
-import { box } from "../coupling/boxed-value.ts";
+import { box, type Box } from "../coupling/boxed-value.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { failure, type Failure } from "../failure/failures.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource } from "./line-types.ts";
 
-type FileIterator = ArrayIterator<[LineNumber, SourceCode]>;
-
-type FileContents = {
-    "which": "contents";
-    "iterator": FileIterator;
-};
+type FileLineIterator =
+    Generator<[LineNumber, SourceCode, boolean], void, unknown>;
 
 type StackEntry = {
     "name": FileName;
-    "iterator": FileIterator;
+    "iterator": FileLineIterator;
 };
 
 export const defaultReaderMethod = (fileName: FileName) =>
@@ -25,18 +21,23 @@ export type ReaderMethod = typeof defaultReaderMethod;
 export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     const fileStack: Array<StackEntry> = [];
 
-    const fileContents = (fileName: FileName): FileContents | Failure => {
+    const fileContents = (fileName: FileName): Box<Array<string>> | Failure => {
         try {
-            return {
-                "which": "contents",
-                "iterator": read(fileName).entries(),
-            };
+            return box(read(fileName));
         }
         catch (error) {
             if (error instanceof Error) {
                 return failure(undefined, "file_notFound", error);
             }
             throw error;
+        }
+    };
+
+    const fileLineByLine = function*(lines: Array<string>): FileLineIterator  {
+        for (const [index, text] of lines.entries()) {
+            const lineNumber = index + 1;
+            const lastLine = fileStack.length == 1 && lineNumber == lines.length;
+            yield [lineNumber, text, lastLine];
         }
     };
 
@@ -49,28 +50,32 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         if (contents.which == "failure") {
             return contents;
         }
-        fileStack.push({"name": fileName, "iterator": contents.iterator});
+        fileStack.push({
+            "name": fileName,
+            "iterator": fileLineByLine(contents.value)
+        });
         return box("");
     };
 
     const lines = function* () {
         const topFile = include(topFileName);
         if (topFile.which == "failure") {
-            yield lineWithRawSource(topFileName, 0, "", [topFile]);
+            yield lineWithRawSource(topFileName, 0, false, "", [topFile]);
         }
-        let file = fileStack.at(-1);
+        let file = fileStack[0];
         while (file != undefined) {
             const next = file.iterator.next();
             if (next.done) {
                 fileStack.pop();
             } else {
-                const [index, rawSource] = next.value;
+                const [lineNumber, rawSource, lastLine] = next.value;
                 yield lineWithRawSource(
-                    file.name, index + 1, rawSource, []
+                    file.name, lineNumber, lastLine, rawSource, []
                 );
             }
-            // Bear in mind that another file could have been pushed on top
-            // by an include directive "whilst we weren't watching"
+            // Another file could have been pushed by an include directive
+            // "whilst we weren't watching". Always read from the file that's
+            // on the top of the stack.
             file = fileStack.at(-1);
         }
     };

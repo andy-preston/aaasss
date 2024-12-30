@@ -8,8 +8,7 @@ import type {
 } from "../source-code/data-types.ts";
 
 export const line = (
-    fileName: FileName,
-    lineNumber: LineNumber,
+    fileName: FileName, lineNumber: LineNumber, lastLine: boolean,
     source: SourceCode
 ) => {
     const failures: Failures = [];
@@ -23,6 +22,7 @@ export const line = (
         "addFailures": addFailures,
         "fileName": fileName as FileName,
         "lineNumber": lineNumber as LineNumber,
+        "lastLine": lastLine,
         "rawSource": source as SourceCode,
         "assemblySource": "" as SourceCode,
         "label": "" as Label,

@@ -16,7 +16,7 @@ const withNoParameters: SymbolicParameters = [];
 const testLine = (
     label: Label, mnemonic: Mnemonic, symbolic: SymbolicOperands
 ) => {
-    const raw = lineWithRawSource("", 0, "", []);
+    const raw = lineWithRawSource("", 0, false, "", []);
     const rendered = lineWithRenderedJavascript(raw, "", []);
     return lineWithTokens(rendered, label, mnemonic, symbolic, []);
 };

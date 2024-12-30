@@ -4,16 +4,18 @@ import type {
 } from "./data-types.ts";
 import { line, type Line } from "../coupling/line.ts";
 
-type PropertiesForRawSource = "fileName" | "lineNumber" | "rawSource" |
-    "failures" | "addFailures" | "failed";
+type PropertiesForRawSource = "fileName" | "lineNumber" | "lastLine" |
+    "rawSource" | "failures" | "addFailures" | "failed";
 
 export type LineWithRawSource = Readonly<Pick<Line, PropertiesForRawSource>>;
 
 export const lineWithRawSource = (
-    fileName: FileName, lineNumber: LineNumber, source: SourceCode,
-    failures: Failures
+    fileName: FileName, lineNumber: LineNumber, lastLine: boolean,
+    source: SourceCode, failures: Failures
 ) => {
-    const result = line(fileName, lineNumber, source) as LineWithRawSource;
+    const result = line(
+        fileName, lineNumber, lastLine, source
+    ) as LineWithRawSource;
     result.addFailures(failures);
     return result;
 };

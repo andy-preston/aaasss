@@ -32,7 +32,7 @@ export const lineWithExpandedMacro = (
     failures: Failures
 ) => {
     const raw = lineWithRawSource(
-        callingLine.fileName, callingLine.lineNumber,
+        callingLine.fileName, callingLine.lineNumber, false,
         line.rawSource, Array.from(line.failures)
     );
     const rendered = lineWithRenderedJavascript(

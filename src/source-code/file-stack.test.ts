@@ -4,6 +4,8 @@ import { type Failure } from "../failure/failures.ts";
 import { defaultReaderMethod, fileStack } from "./file-stack.ts";
 import { FileName } from "./data-types.ts";
 
+// cSpell:words plip wibble
+
 const peculiarErrorMessage = (fileName: string) => {
     const prefix = "No such file or directory (os error 2)";
     const suffix = `: readfile '${fileName}': `;
@@ -36,7 +38,6 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
 });
 
 Deno.test("Reading a file yields multiple lines with the file contents", () => {
-    // cSpell:words plip wibble
     const expectedLines = ["plip", "plop", "wibble", "wobble"];
     const files = fileStack(
         (_path: FileName) => expectedLines,
@@ -64,4 +65,15 @@ Deno.test("Reading a non existant source file gives one line with a failure", ()
         lineCount = lineCount + 1;
     }
     assertEquals(lineCount, 1);
+});
+
+Deno.test("The last line of the top source file is flagged as such", () => {
+    const expectedLines = ["not last", "not last", "not last", "last"];
+    const files = fileStack(
+        (_path: FileName) => expectedLines,
+        "mock.test"
+    );
+    for (const line of files.lines()) {
+        assertEquals(line.lastLine, line.rawSource == "last");
+    }
 });

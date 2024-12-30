@@ -8,7 +8,7 @@ import type { LineWithProcessedMacro } from "./line-types.ts";
 import { processor } from "./processor.ts";
 
 const testLine = (label: Label, mnemonic: Mnemonic) => {
-    const raw = lineWithRawSource("", 0, "", []);
+    const raw = lineWithRawSource("", 0, false, "", []);
     const rendered = lineWithRenderedJavascript(raw, "", []);
     return lineWithTokens(rendered, label, mnemonic, [], []);
 };
