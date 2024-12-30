@@ -1,6 +1,6 @@
 import { OperandIndex } from "../operands/data-types.ts";
 
-type FailureWithLine =
+export type FailureKind =
     | "context_redefined"
     | "device_notFound" | "device_notSelected" | "device_multiple"
     | "file_notFound"
@@ -14,8 +14,6 @@ type FailureWithLine =
         | "type_params"
     | "programMemory_outOfRange" | "programMemory_sizeUnknown"
     | "ram_outOfRange" | "ram_sizeUnknown" | "ram_stackAllocated";
-
-export type FailureKind = FailureWithLine;
 
 export const failure = (
     operand: OperandIndex | undefined,

@@ -17,7 +17,7 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
     macroProcessor.define("plop");
     const result = macroProcessor.leftInIllegalState();
     assertEquals(result.length, 1);
-    assertEquals(result[0]!.kind, "macro.define");
+    assertEquals(result[0]!.kind, "macro_define");
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {

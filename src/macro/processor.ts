@@ -18,8 +18,10 @@ export const processor = () => {
 
     let macros: Map<MacroName, Macro> = new Map();
 
-    const leftInIllegalState = (): Array<Failure> => recording == undefined
-        ? [] : [failure(undefined, "macro_define", undefined)];
+    const leftInIllegalState = (): Array<Failure> =>
+        recording == undefined
+            ? []
+            : [failure(undefined, "macro_define", undefined)];
 
     const reset = () => {
         macros = new Map();
@@ -59,6 +61,11 @@ export const processor = () => {
         if (recording.empty()) {
             return failure(undefined, "macro_empty", undefined);
         }
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // TODO: put a function in the context
+        //
+        ////////////////////////////////////////////////////////////////////////
         macros.set(recordingName, recording);
         recording = undefined;
         return box(recordingName);
@@ -110,3 +117,31 @@ export const processor = () => {
 };
 
 export type MacroProcessor = ReturnType<typeof processor>;
+
+/*
+{{ this.some_context_value = 10; }}
+{{ define("plop", ["x", "y", "z"]); }}
+    LDI R3, x + some_context_value
+label:
+    DEC y
+    STR R4, z
+{{ end(); }}
+
+{{ macro("plop", [14, "R12" 37]); }}
+;     LDI R3, 24  // x (14) + some_context_value (10)
+; $plop$1$label:
+;     DEC R12
+;     STR R$, 37
+
+define - don't send these down the pipeline, store them in a buffer
+end - go back to normal operation
+macro - replay the previously stored stuff with the parameters replaced
+
+how can we get the macro parameters temporarily into the context?
+bearing in mind that some of them need 2 passes to resolve!
+could we put (e.g.) `x` into the context as `$plop$1$x`?
+
+end of code checks
+1. make sure we're not stuck in Javascript mode
+2. make sure we're not stuck in macro mode
+*/

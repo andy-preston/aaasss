@@ -70,7 +70,7 @@ Deno.test("A failure is given if supplied parameters mismatch defined parameters
     const mapper = testMacro.mapper(["test"]);
     const mapped = mapper(withDummyCallingLine()).toArray();
     assertEquals(mapped[0]!.failures.length, 1);
-    assertEquals(mapped[0]!.failures[0]!.kind, "macro.params");
+    assertEquals(mapped[0]!.failures[0]!.kind, "macro_params");
     assertEquals(mapped[1]!.failures.length, 0);
     assertEquals(mapped[2]!.failures.length, 0);
 });

@@ -99,7 +99,7 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
     for (const line of badLines) {
         const tokenised = tokenise(testLine(line));
         assertEquals(tokenised.failures.length, 1, `${line} should fail`);
-        assertEquals(tokenised.failures[0]!.kind, "syntax.invalidLabel");
+        assertEquals(tokenised.failures[0]!.kind, "syntax_invalidLabel");
         assertEquals(tokenised.failures[0]!.operand, undefined);
         assertEquals(tokenised.failures[0]!.extra, undefined);
     }
@@ -174,7 +174,7 @@ Deno.test("Only one Z+q operand is allowed in an instruction", () => {
     const line = testLine("LDD Z+12, Z+13");
     const tokenised = tokenise(line);
     assertEquals(tokenised.failures.length, 1);
-    assertEquals(tokenised.failures[0]!.kind, "operand.tooManyIndexOffset");
+    assertEquals(tokenised.failures[0]!.kind, "operand_tooManyIndexOffset");
     assertEquals(tokenised.failures[0]!.operand, 1);
     assertEquals(tokenised.failures[0]!.extra, undefined);
 });

@@ -41,7 +41,7 @@ Deno.test("Multiple opening moustaches are illegal", () => {
     const rendered = js.rendered(lineWithRawSource("", 0, "{{ {{ }}", []));
     assert(rendered.failed());
     assertEquals(rendered.failures.length, 1);
-    assertEquals(rendered.failures[0]!.kind, "js.jsMode");
+    assertEquals(rendered.failures[0]!.kind, "js_jsMode");
 });
 
 Deno.test("Multiple closing moustaches are illegal", () => {
@@ -49,7 +49,7 @@ Deno.test("Multiple closing moustaches are illegal", () => {
     const rendered = js.rendered(lineWithRawSource("", 0, "{{ }} }}", []));
     assert(rendered.failed());
     assertEquals(rendered.failures.length, 1);
-    assertEquals(rendered.failures[0]!.kind, "js.assemblerMode");
+    assertEquals(rendered.failures[0]!.kind, "js_assemblerMode");
 });
 
 Deno.test("Omitting a closing moustache is illegal", () => {
@@ -59,5 +59,5 @@ Deno.test("Omitting a closing moustache is illegal", () => {
     assertEquals(rendered.failures.length, 0);
     const illegal = js.leftInIllegalState();
     assertEquals(illegal.length, 1);
-    assertEquals(illegal[0]!.kind, "js.jsMode");
+    assertEquals(illegal[0]!.kind, "js_jsMode");
 });

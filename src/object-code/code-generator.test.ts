@@ -50,7 +50,7 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
     const result = environment.generator(testLine("", "DES", []));
     assert(result.failed());
     assertEquals(result.failures.length, 1);
-    assertEquals(result.failures[0]!.kind, "mnemonic.supportedUnknown");
+    assertEquals(result.failures[0]!.kind, "mnemonic_supportedUnknown");
     assertEquals(result.code.length, 0);
 });
 
@@ -61,7 +61,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
     const result = environment.generator(testLine("", "DES", []));
     assert(result.failed());
     assertEquals(result.failures.length, 1);
-    assertEquals(result.failures[0]!.kind, "mnemonic.notSupported");
+    assertEquals(result.failures[0]!.kind, "mnemonic_notSupported");
     assertEquals(result.code.length, 0);
 });
 
@@ -71,7 +71,7 @@ Deno.test("Lines with unknown instructions fail", () => {
     const result = environment.generator(testLine("", "NOT_REAL", []));
     assert(result.failed());
     assertEquals(result.failures.length, 1);
-    assertEquals(result.failures[0]!.kind, "mnemonic.unknown");
+    assertEquals(result.failures[0]!.kind, "mnemonic_unknown");
     assertEquals(result.code.length, 0);
 });
 
@@ -82,7 +82,7 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
     const result = environment.generator(testLine("", "DES", ["15"]));
     assert(result.failed(), "Didn't fail!");
     assertEquals(result.failures.length, 1);
-    assertEquals(result.failures[0]!.kind, "programMemory.outOfRange");
+    assertEquals(result.failures[0]!.kind, "programMemory_outOfRange");
     // But, look, code is still generated
     assertEquals(result.code,[[0x94, 0xfb]]);
     //assertEquals(environment.programMemory.address(), 1);
@@ -102,7 +102,7 @@ Deno.test("Advancing beyond the end of program memory causes failure", () => {
     const secondResult = environment.generator(testLine("", "DES", ["15"]));
     assert(secondResult.failed(), "Didn't fail!");
     assertEquals(secondResult.failures.length, 1);
-    assertEquals(secondResult.failures[0]!.kind, "programMemory.outOfRange");
+    assertEquals(secondResult.failures[0]!.kind, "programMemory_outOfRange");
     // But, look, code is still generated
     assertEquals(secondResult.code,[[0x94, 0xfb]]);
     //assertEquals(environment.programMemory.address(), 2);
