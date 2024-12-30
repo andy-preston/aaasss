@@ -6,28 +6,30 @@ import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource } from "./line-types.ts";
 
 type FileIterator = ArrayIterator<[LineNumber, SourceCode]>;
+
 type FileContents = {
     "which": "contents";
     "iterator": FileIterator;
 };
+
 type StackEntry = {
     "name": FileName;
     "iterator": FileIterator;
 };
 
-export type ReaderMethod = typeof Deno.readTextFileSync;
+export const defaultReaderMethod = (fileName: FileName) =>
+    Deno.readTextFileSync(fileName).split("\n");
+
+export type ReaderMethod = typeof defaultReaderMethod;
 
 export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     const fileStack: Array<StackEntry> = [];
-
-    const currentFile = (): StackEntry | undefined =>
-        fileStack.length == 0 ? undefined : fileStack[fileStack.length - 1];
 
     const fileContents = (fileName: FileName): FileContents | Failure => {
         try {
             return {
                 "which": "contents",
-                "iterator": read(fileName).split("\n").entries(),
+                "iterator": read(fileName).entries(),
             };
         }
         catch (error) {
@@ -56,18 +58,20 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         if (topFile.which == "failure") {
             yield lineWithRawSource(topFileName, 0, "", [topFile]);
         }
-        let file = currentFile();
+        let file = fileStack.at(-1);
         while (file != undefined) {
             const next = file.iterator.next();
             if (next.done) {
                 fileStack.pop();
             } else {
-                const [lineNumber, rawSource] = next.value;
-                yield lineWithRawSource(file.name, lineNumber, rawSource, []);
+                const [index, rawSource] = next.value;
+                yield lineWithRawSource(
+                    file.name, index + 1, rawSource, []
+                );
             }
             // Bear in mind that another file could have been pushed on top
             // by an include directive "whilst we weren't watching"
-            file = currentFile();
+            file = fileStack.at(-1);
         }
     };
 
