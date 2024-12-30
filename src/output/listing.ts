@@ -1,6 +1,6 @@
 import { LineWithObjectCode } from "../object-code/line-types.ts";
 import { FileName } from "../source-code/data-types.ts";
-import { failures } from "./failure-messages.ts";
+import { failureMessages } from "./failure-messages.ts";
 import { FileWrite } from "./file.ts";
 
 const objectWidth = "00 00 00 00".length;
@@ -13,8 +13,12 @@ export const listing = (write: FileWrite) => {
 
     const fileName = (newName: FileName) => {
         if (newName != currentName) {
-            const underline = "=".repeat(newName.length);
-            write(`\n${newName}\n${underline}\n`);
+            if (currentName != "") {
+                write("");
+            }
+            write(newName);
+            write("=".repeat(newName.length));
+            write("");
             currentName = newName;
         }
     };
@@ -49,7 +53,7 @@ export const listing = (write: FileWrite) => {
             theLine.rawSource || theLine.assemblySource
         );
         for (const failure of theLine.failures) {
-            const messages = failures[failure.kind](theLine);
+            const messages = failureMessages[failure.kind](theLine);
             for (const message of messages) {
                 yield textLine("", message);
             }

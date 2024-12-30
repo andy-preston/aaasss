@@ -2,6 +2,7 @@ import { anEmptyContext } from "../context/context.ts";
 import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { deviceChooser } from "../device/chooser.ts";
+import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { processor } from "../macro/processor.ts";
 import { codeGenerator } from "../object-code/code-generator.ts";
 import type { OutputFile } from "../output/file.ts";
@@ -50,6 +51,11 @@ export const coupling = (
         progMem.reset, dataMem.reset, js.reset, macroProcessor.reset
     ]);
 
+    const illegalState = illegalStateFailures([
+        macroProcessor.leftInIllegalState,
+        js.leftInIllegalState
+    ]);
+
     return pipeLine(
         thePass,
         sourceFiles.lines,
@@ -60,9 +66,6 @@ export const coupling = (
         poke.line,
         codeGenerator(context, properties.public, progMem),
         output(thePass, fileName, outputFile),
-        [
-            macroProcessor.leftInIllegalState,
-            js.leftInIllegalState
-        ]
+        illegalState
     );
 };

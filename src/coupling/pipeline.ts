@@ -1,4 +1,4 @@
-import type { Failure } from "../failure/failures.ts";
+import type { IllegalState } from "../failure/illegal-state.ts";
 import { lineWithNoObjectCode } from "../macro/line-types.ts";
 import type { MacroProcessor } from "../macro/processor.ts";
 import type { CodeGenerator } from "../object-code/code-generator.ts";
@@ -11,8 +11,6 @@ import type { Javascript } from "../source-code/javascript.ts";
 import type { Tokenise } from "../tokenise/tokenise.ts";
 import type { LineWithTokens } from "../tokenise/line-types.ts";
 
-type IllegalStateCallback = () => Array<Failure>;
-
 export const pipeLine = (
     pass: Pass,
     lines: FileStack["lines"],
@@ -23,13 +21,16 @@ export const pipeLine = (
     poke: PokeBuffer["line"],
     code: CodeGenerator,
     output: Output,
-    illegalStateCallbacks: Array<IllegalStateCallback>,
+    illegalState: IllegalState
 ) => {
     const assembly = (tokenised: LineWithTokens) => {
         for (const expanded of macro(tokenised)) {
             const outputLine = expanded.macroName == ""
                 ? code(poke(label(expanded)))
                 : lineWithNoObjectCode(expanded);
+            if (outputLine.lastLine) {
+                outputLine.addFailures(illegalState());
+            }
             output.line(outputLine);
         }
     };
@@ -41,8 +42,6 @@ export const pipeLine = (
                 assembly(tokenise(javascript(line)));
             }
         }
-        illegalStateCallbacks.forEach(
-            callback => output.final(callback())
-        );
+        output.close();
     };
 };
