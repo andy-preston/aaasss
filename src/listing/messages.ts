@@ -1,6 +1,6 @@
 import type { Failure } from "../failure/failures.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
-import { messages } from "./messages/english.ts";
+import { messages } from "./english.ts";
 
 export type FailureMessage = (line: LineWithObjectCode) => Array<string>;
 
