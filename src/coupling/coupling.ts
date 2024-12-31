@@ -24,6 +24,8 @@ export const coupling = (
     outputFile: OutputFile,
     failureMessageTranslator: FailureMessageTranslator
 ) => {
+    const currentPass = pass();
+
     const context = anEmptyContext();
 
     const properties = deviceProperties(context);
@@ -32,10 +34,12 @@ export const coupling = (
 
     const progMem = programMemory(context, properties.public);
     context.directive("origin", progMem.origin);
+    currentPass.addResetStateCallback(progMem.reset);
 
     const dataMem = dataMemory(properties.public);
     context.directive("alloc", dataMem.alloc);
     context.directive("allocStack", dataMem.allocStack);
+    currentPass.addResetStateCallback(dataMem.reset);
 
     const poke = pokeBuffer();
     context.directive("poke", poke.poke);
@@ -47,8 +51,10 @@ export const coupling = (
     context.directive("define", macroProcessor.define);
     context.directive("end", macroProcessor.end);
     context.directive("macro", macroProcessor.macro);
+    currentPass.addResetStateCallback(macroProcessor.reset);
 
     const js = javascript(context);
+    currentPass.addResetStateCallback(js.reset);
 
     const illegalState = illegalStateFailures([
         macroProcessor.leftInIllegalState,
@@ -56,9 +62,7 @@ export const coupling = (
     ]);
 
     return pipeLine(
-        pass([
-            progMem.reset, dataMem.reset, js.reset, macroProcessor.reset
-        ]),
+        currentPass.public,
         sourceFiles.lines,
         js.rendered,
         tokenise,

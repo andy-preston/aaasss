@@ -10,9 +10,10 @@ const testEnvironment = () => {
     const properties = deviceProperties(context);
     const choose = deviceChooser(properties, context);
     const memory = dataMemory(properties.public);
-    const currentPass = pass([memory.reset]);
+    const currentPass = pass();
+    currentPass.addResetStateCallback(memory.reset);
     return {
-        "pass": currentPass,
+        "pass": currentPass.public,
         "choose": choose.choose,
         "dataMemory": memory
     };
