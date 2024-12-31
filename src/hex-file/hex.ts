@@ -1,16 +1,21 @@
-import { LineWithObjectCode } from "../object-code/line-types.ts";
-import type { FileWrite } from "./file.ts";
+import type { OutputFileFactory } from "../pipeline/output-file.ts";
+import type { LineWithObjectCode } from "../object-code/line-types.ts";
+import type { FileName } from "../source-code/data-types.ts";
 import { hexBuffer } from "./hex-buffer.ts";
 import { hexRecord } from "./hex-record.ts";
 
 const programMemoryAddressInBytes = (programMemoryAddress: number): number =>
     programMemoryAddress * 2;
 
-export const hexFile = () => {
+export const hexFile = (outputFile: OutputFileFactory, topFileName: FileName) => {
     const dataRecords: Array<string> = [];
     const buffer = hexBuffer();
+    let noHexFile: boolean = false;
 
     const line = (line: LineWithObjectCode) => {
+        if (line.failed()) {
+            noHexFile = true;
+        }
         const newAddress = programMemoryAddressInBytes(line.address);
         if (!buffer.isContinuous(newAddress)) {
             saveRecordsFromByteBuffer(1);
@@ -32,11 +37,16 @@ export const hexFile = () => {
         }
     };
 
-    const save = (write: FileWrite) => {
+    const save = () => {
+        if (noHexFile) {
+            return;
+        }
         saveRecordsFromByteBuffer(1);
-        write(":020000020000FC");
-        dataRecords.forEach(write);
-        write(":00000001FF");
+        const file = outputFile(topFileName, '.hex');
+        file.write(":020000020000FC");
+        dataRecords.forEach(file.write);
+        file.write(":00000001FF");
+        file.close();
     };
 
     return {

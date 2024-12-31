@@ -1,7 +1,7 @@
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
+import type { OutputFile } from "../pipeline/output-file.ts";
 import type { FileName } from "../source-code/data-types.ts";
-import type { FileWrite } from "./file.ts";
-import { FailureMessageTranslator } from "./messages.ts";
+import type { FailureMessageTranslator } from "./messages.ts";
 
 const objectWidth = "00 00 00 00".length;
 const addressWidth = 5;
@@ -9,18 +9,18 @@ const codeWidth = objectWidth + addressWidth + 1;
 const lineNumberWidth = 4;
 
 export const listing = (
-    write: FileWrite, failureMessages: FailureMessageTranslator
+    file: OutputFile, failureMessages: FailureMessageTranslator
 ) => {
     let currentName = "";
 
     const fileName = (newName: FileName) => {
         if (newName != currentName) {
             if (currentName != "") {
-                write("");
+                file.write("");
             }
-            write(newName);
-            write("=".repeat(newName.length));
-            write("");
+            file.write(newName);
+            file.write("=".repeat(newName.length));
+            file.write("");
             currentName = newName;
         }
     };
@@ -73,14 +73,21 @@ export const listing = (
             if (nextCode.done && nextText.done) {
                 return;
             }
-            write(
+            file.write(
                 pad(nextCode.value, codeWidth) + " " + pad(nextText.value, 0)
             );
         }
     };
 
-    return (theLine: LineWithObjectCode) => {
+    const line = (theLine: LineWithObjectCode) => {
         fileName(theLine.fileName);
         body(extractedCode(theLine), extractedText(theLine));
     };
+
+    return {
+        "line": line,
+        "close": file.close
+    };
 };
+
+export type Listing = ReturnType<typeof listing>;

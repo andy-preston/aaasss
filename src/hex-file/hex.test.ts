@@ -29,10 +29,13 @@ const testLine = (test: TestBlock) => {
 
 const testEnvironment = () => {
     const lines: Array<string> = [];
+    const mockOutputFile = (_fileName: string, _extension: string) => ({
+        "write": (text: string) => lines.push(text),
+        "close": () => {}
+    });
     return {
         "mockFileContents": lines,
-        "hex": hexFile(),
-        "mockFileWrite": (text: string) => lines.push(text)
+        "hex": hexFile(mockOutputFile, "")
     };
 };
 
@@ -75,7 +78,7 @@ Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
     for (const test of testCode) {
         environment.hex.line(testLine(test));
     }
-    environment.hex.save(environment.mockFileWrite);
+    environment.hex.save();
     for (const [index, line] of environment.mockFileContents.entries()) {
         assertEquals(line, expectedResults[index]);
     }
@@ -83,13 +86,13 @@ Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
 
 Deno.test("Every file starts with an extended segment address of zero", () => {
     const environment = testEnvironment();
-    environment.hex.save(environment.mockFileWrite);
+    environment.hex.save();
     assertEquals(":020000020000FC", environment.mockFileContents[0]);
 });
 
 Deno.test("Every file ends with an end-of-file marker", () => {
     const environment = testEnvironment();
-    environment.hex.save(environment.mockFileWrite);
+    environment.hex.save();
     assertEquals(":00000001FF", environment.mockFileContents.pop());
 });
 
@@ -98,7 +101,7 @@ Deno.test("Each record begins with a start code", () => {
     for (const test of testCode) {
         environment.hex.line(testLine(test));
     }
-    environment.hex.save(environment.mockFileWrite);
+    environment.hex.save();
     for (const line of environment.mockFileContents) {
         assert(line.startsWith(":"));
     }
@@ -109,7 +112,7 @@ Deno.test("Each record contains a maximum of 0x10 bytes", () => {
     for (const test of testCode) {
         environment.hex.line(testLine(test));
     }
-    environment.hex.save(environment.mockFileWrite);
+    environment.hex.save();
     const firstRecord = environment.mockFileContents[1]!;
     assertEquals("10", firstRecord.substring(1, 3));
     assertEquals(recordLength(16), firstRecord.length);
@@ -120,7 +123,7 @@ Deno.test("The remainder of the bytes form the last record", () => {
     for (const test of testCode) {
         environment.hex.line(testLine(test));
     }
-    environment.hex.save(environment.mockFileWrite);
+    environment.hex.save();
     const lastRecord = environment.mockFileContents[2]!;
     assertEquals("06", lastRecord.substring(1, 3));
     assertEquals(recordLength(6), lastRecord.length);
@@ -132,7 +135,7 @@ Deno.test("If the address jumps out of sequence, a new record starts", () => {
     environment.hex.line(testLine([0x000001, [0x04, 0x03]]));
     environment.hex.line(testLine([0x000010, [0x06, 0x05]]));
     environment.hex.line(testLine([0x000011, [0x08, 0x07]]));
-    environment.hex.save(environment.mockFileWrite);
+    environment.hex.save();
     assertEquals(
         environment.mockFileContents[1],
         ":04" + "0000" + "00" + "01020304" + "F2"
@@ -160,7 +163,7 @@ Deno.test("Long strings of bytes are stored in multiple records", () => {
     environment.hex.line(testLine([0x000014, [0x4B, 0x4E, 0x20, 0x59]]));
     environment.hex.line(testLine([0x000016, [0x4F, 0x54, 0x4B, 0x4E]]));
     environment.hex.line(testLine([0x000018, [0x21, 0x53]]));
-    environment.hex.save(environment.mockFileWrite);
+    environment.hex.save();
     assertEquals(environment.mockFileContents[1], [
         ":10", "0000", "00",
             "00", "01", "02", "03",
