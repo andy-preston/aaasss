@@ -6,7 +6,7 @@ import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { processor } from "../macro/processor.ts";
 import { codeGenerator } from "../object-code/code-generator.ts";
 import type { OutputFile } from "../output/file.ts";
-import type { FailureMessageTranslator } from "../output/listing.ts";
+import type { FailureMessageTranslator } from "../output/messages.ts";
 import { output } from "../output/output.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../program-memory/poke.ts";

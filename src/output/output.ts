@@ -3,7 +3,8 @@ import type { Pass } from "../pass/pass.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { OutputFile } from "./file.ts";
 import { hexFile, type HexFile } from "./hex.ts";
-import { listing, type FailureMessageTranslator } from "./listing.ts";
+import { listing } from "./listing.ts";
+import type { FailureMessageTranslator } from "./messages.ts";
 
 export const output = (
     pass: Pass,

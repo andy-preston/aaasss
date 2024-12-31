@@ -1,19 +1,12 @@
-import type { Failure } from "../failure/failures.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { FileWrite } from "./file.ts";
-import { messages } from "./messages/english.ts";
+import { FailureMessageTranslator } from "./messages.ts";
 
 const objectWidth = "00 00 00 00".length;
 const addressWidth = 5;
 const codeWidth = objectWidth + addressWidth + 1;
 const lineNumberWidth = 4;
-
-export const defaultFailureMessages = (
-    failure: Failure, line: LineWithObjectCode
-) => messages[failure.kind](line);
-
-export type FailureMessageTranslator = typeof defaultFailureMessages;
 
 export const listing = (
     write: FileWrite, failureMessages: FailureMessageTranslator

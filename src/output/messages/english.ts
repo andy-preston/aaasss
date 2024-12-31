@@ -1,6 +1,6 @@
 import type { FailureKind } from "../../failure/failures.ts";
 import type { LineWithObjectCode } from "../../object-code/line-types.ts";
-import type { FailureMessage } from "./types.ts";
+import type { FailureMessage } from "../messages.ts";
 
 export const messages: Record<FailureKind, FailureMessage> = {
     "context_redefined": (_line: LineWithObjectCode) => [""],

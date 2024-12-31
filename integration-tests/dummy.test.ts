@@ -1,27 +1,26 @@
-import { coupling } from "../src/coupling/coupling.ts";
-
-const mockFileReader = (_path: string | URL): string => {
-    return "dummy file contents";
-};
-
-export const mockOutputFile = (_fileName: string, _extension: string) => {
-    const write = (text: string) => {
-        console.log(text);
-    };
-    const close = () => {
-        console.log("close");
-    };
-    return {
-        "write": write,
-        "close": close
-    };
-};
+import { assertEquals } from "assert";
+import { testEnvironment } from "./environment.ts";
 
 Deno.test({
     "name": "Dummy integration test",
     "ignore": Deno.args.includes("--no-integration"),
-    fn() {
-        const pipeline = coupling("file1.asm", mockFileReader, mockOutputFile);
-        console.log(pipeline);
+    "fn": () => {
+        const environment = testEnvironment([
+            "source line 1",
+            "source line 2"
+        ]);
+        environment.pipeline();
+        assertEquals(environment.listing(), [
+            "mock.asm",
+            "========",
+            "",
+            "                     1 source line 1",
+            "                       mnemonic_supportedUnknown",
+            "                     2 source line 2",
+            "                       mnemonic_supportedUnknown",
+        ]);
+        assertEquals(environment.hexFile(), [
+            "DEADBEEF"
+        ]);
     }
 });
