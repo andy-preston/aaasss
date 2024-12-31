@@ -1,4 +1,4 @@
-import { des } from "./addressing-modes/des.ts";
+import { des } from "../instructions/des.ts";
 
 export const addressingModeList = [
     des

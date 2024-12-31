@@ -1,12 +1,12 @@
-import type { Context } from "../../context/context.ts";
-import { box } from "../../coupling/boxed-value.ts";
-import { failure, type Failures } from "../../failure/failures.ts";
-import { lineWithObjectCode } from "../line-types.ts";
-import type { NumericOperands } from "../../operands/data-types.ts";
-import { LineWithPokedBytes } from "../../program-memory/line-types.ts";
-import type { AddressingModeGenerator } from "../code-generator.ts";
-import { Code } from "../data-types.ts";
-import { template } from "../template.ts";
+import type { Context } from "../context/context.ts";
+import { box } from "../coupling/boxed-value.ts";
+import { failure, type Failures } from "../failure/failures.ts";
+import { lineWithObjectCode } from "../object-code/line-types.ts";
+import type { NumericOperands } from "../operands/data-types.ts";
+import { LineWithPokedBytes } from "../program-memory/line-types.ts";
+import type { AddressingModeGenerator } from "../object-code/code-generator.ts";
+import { Code } from "../object-code/data-types.ts";
+import { template } from "../object-code/template.ts";
 
 export const des = (
     line: LineWithPokedBytes

@@ -1,5 +1,5 @@
 import { assertEquals, assertFalse, assertNotEquals } from "assert";
-import { anEmptyContext } from "../../context/context.ts";
+import { anEmptyContext } from "../context/context.ts";
 import { des } from "./des.ts";
 import { description, testLine, Tests } from "./testing.ts";
 

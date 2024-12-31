@@ -1,14 +1,14 @@
-import type { Code } from "../data-types.ts";
-import { lineWithProcessedMacro } from "../../macro/line-types.ts";
-import type { SymbolicOperands } from "../../operands/data-types.ts";
+import type { Code } from "../object-code/data-types.ts";
+import { lineWithProcessedMacro } from "../macro/line-types.ts";
+import type { SymbolicOperands } from "../operands/data-types.ts";
 import {
     lineWithAddress, lineWithPokedBytes
-} from "../../program-memory/line-types.ts";
-import type { Label, Mnemonic } from "../../source-code/data-types.ts";
+} from "../program-memory/line-types.ts";
+import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import {
     lineWithRawSource, lineWithRenderedJavascript
-} from "../../source-code/line-types.ts";
-import { lineWithTokens } from "../../tokenise/line-types.ts";
+} from "../source-code/line-types.ts";
+import { lineWithTokens } from "../tokenise/line-types.ts";
 
 type TestTokens = [Label, Mnemonic, SymbolicOperands]
 type Test = [TestTokens, Code];
