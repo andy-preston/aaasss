@@ -6,6 +6,7 @@ import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { processor } from "../macro/processor.ts";
 import { codeGenerator } from "../object-code/code-generator.ts";
 import type { OutputFile } from "../output/file.ts";
+import type { FailureMessageTranslator } from "../output/listing.ts";
 import { output } from "../output/output.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../program-memory/poke.ts";
@@ -19,7 +20,8 @@ import { pipeLine } from "./pipeline.ts";
 export const coupling = (
     fileName: FileName,
     readerMethod: ReaderMethod,
-    outputFile: OutputFile
+    outputFile: OutputFile,
+    failureMessageTranslator: FailureMessageTranslator
 ) => {
     const context = anEmptyContext();
 
@@ -65,7 +67,7 @@ export const coupling = (
         progMem.label,
         poke.line,
         codeGenerator(context, properties.public, progMem),
-        output(thePass, fileName, outputFile),
+        output(thePass, fileName, outputFile, failureMessageTranslator),
         illegalState
     );
 };

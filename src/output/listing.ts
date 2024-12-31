@@ -1,14 +1,23 @@
-import { LineWithObjectCode } from "../object-code/line-types.ts";
-import { FileName } from "../source-code/data-types.ts";
-import { failureMessages } from "./failure-messages.ts";
-import { FileWrite } from "./file.ts";
+import type { Failure } from "../failure/failures.ts";
+import type { LineWithObjectCode } from "../object-code/line-types.ts";
+import type { FileName } from "../source-code/data-types.ts";
+import type { FileWrite } from "./file.ts";
+import { messages } from "./messages/english.ts";
 
 const objectWidth = "00 00 00 00".length;
 const addressWidth = 5;
 const codeWidth = objectWidth + addressWidth + 1;
 const lineNumberWidth = 4;
 
-export const listing = (write: FileWrite) => {
+export const defaultFailureMessages = (
+    failure: Failure, line: LineWithObjectCode
+) => messages[failure.kind](line);
+
+export type FailureMessageTranslator = typeof defaultFailureMessages;
+
+export const listing = (
+    write: FileWrite, failureMessages: FailureMessageTranslator
+) => {
     let currentName = "";
 
     const fileName = (newName: FileName) => {
@@ -44,7 +53,6 @@ export const listing = (write: FileWrite) => {
     type ExtractedCode = ReturnType<typeof extractedCode>;
 
     const extractedText = function* (theLine: LineWithObjectCode) {
-
         const textLine = (lineNumber: string, theText: string) =>
             `${lineNumber}`.padStart(lineNumberWidth, " ") + ` ${theText}`;
 
@@ -53,8 +61,7 @@ export const listing = (write: FileWrite) => {
             theLine.rawSource || theLine.assemblySource
         );
         for (const failure of theLine.failures) {
-            const messages = failureMessages[failure.kind](theLine);
-            for (const message of messages) {
+            for (const message of failureMessages(failure, theLine)) {
                 yield textLine("", message);
             }
         }
@@ -64,7 +71,6 @@ export const listing = (write: FileWrite) => {
     type ExtractedText = ReturnType<typeof extractedText>;
 
     const body = (code: ExtractedCode, text: ExtractedText) => {
-
         const pad = (text: string | undefined, width: number) =>
             (text == undefined ? "" : text).padEnd(width);
 

@@ -3,15 +3,16 @@ import type { Pass } from "../pass/pass.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { OutputFile } from "./file.ts";
 import { hexFile, type HexFile } from "./hex.ts";
-import { listing } from "./listing.ts";
+import { listing, type FailureMessageTranslator } from "./listing.ts";
 
 export const output = (
     pass: Pass,
     topFileName: FileName,
-    outputFile: OutputFile
+    outputFile: OutputFile,
+    failureMessageTranslator: FailureMessageTranslator
 ) => {
     const listingFile = outputFile(topFileName, ".lst");
-    const listingLine = listing(listingFile.write);
+    const listingLine = listing(listingFile.write, failureMessageTranslator);
     let hex: HexFile | undefined = hexFile();
 
     const line = (line: LineWithObjectCode) => {

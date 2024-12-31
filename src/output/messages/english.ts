@@ -1,9 +1,8 @@
-import { FailureKind } from "../failure/failures.ts";
-import { LineWithObjectCode } from "../object-code/line-types.ts";
+import type { FailureKind } from "../../failure/failures.ts";
+import type { LineWithObjectCode } from "../../object-code/line-types.ts";
+import type { FailureMessage } from "./types.ts";
 
-export type FailureMessage = (line: LineWithObjectCode) => [string];
-
-export const failureMessages: Record<FailureKind, FailureMessage> = {
+export const messages: Record<FailureKind, FailureMessage> = {
     "context_redefined": (_line: LineWithObjectCode) => [""],
     "device_notFound": (_line: LineWithObjectCode) => [""],
     "device_notSelected": (_line: LineWithObjectCode) => [""],
