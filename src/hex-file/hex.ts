@@ -38,15 +38,16 @@ export const hexFile = (outputFile: OutputFile, topFileName: FileName) => {
     };
 
     const save = () => {
-        if (noHexFile) {
-            return;
-        }
-        saveRecordsFromByteBuffer(1);
         const file = outputFile(topFileName, '.hex');
-        file.write(":020000020000FC");
-        dataRecords.forEach(file.write);
-        file.write(":00000001FF");
-        file.close();
+        if (noHexFile) {
+            file.remove();
+        } else {
+            saveRecordsFromByteBuffer(1);
+            file.write(":020000020000FC");
+            dataRecords.forEach(file.write);
+            file.write(":00000001FF");
+            file.close();
+        }
     };
 
     return {
