@@ -25,7 +25,8 @@ export const testEnvironment = (source: Array<string>) => {
         };
         return {
             "write": write,
-            "close": close
+            "close": close,
+            "remove": () => {}
         };
     };
 

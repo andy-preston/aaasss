@@ -1,4 +1,4 @@
-import type { OutputFileFactory } from "../pipeline/output-file.ts";
+import type { OutputFile } from "../pipeline/output-file.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { hexBuffer } from "./hex-buffer.ts";
@@ -7,7 +7,7 @@ import { hexRecord } from "./hex-record.ts";
 const programMemoryAddressInBytes = (programMemoryAddress: number): number =>
     programMemoryAddress * 2;
 
-export const hexFile = (outputFile: OutputFileFactory, topFileName: FileName) => {
+export const hexFile = (outputFile: OutputFile, topFileName: FileName) => {
     const dataRecords: Array<string> = [];
     const buffer = hexBuffer();
     let noHexFile: boolean = false;

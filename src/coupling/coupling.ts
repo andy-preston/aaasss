@@ -8,7 +8,7 @@ import { listing } from "../listing/listing.ts";
 import { processor } from "../macro/processor.ts";
 import { codeGenerator } from "../object-code/code-generator.ts";
 import type { FailureMessageTranslator } from "../listing/messages.ts";
-import type { OutputFileFactory } from "../pipeline/output-file.ts";
+import type { OutputFile } from "../pipeline/output-file.ts";
 import { pipeLine } from "../pipeline/pipeline.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../program-memory/poke.ts";
@@ -21,7 +21,7 @@ import { tokenise } from "../tokenise/tokenise.ts";
 export const coupling = (
     fileName: FileName,
     readerMethod: ReaderMethod,
-    outputFile: OutputFileFactory,
+    outputFile: OutputFile,
     failureMessageTranslator: FailureMessageTranslator
 ) => {
     const context = anEmptyContext();
@@ -66,7 +66,7 @@ export const coupling = (
         progMem.label,
         poke.line,
         codeGenerator(context, properties.public, progMem),
-        listing(outputFile(fileName, ".lst"), failureMessageTranslator),
+        listing(outputFile, fileName, failureMessageTranslator),
         hexFile(outputFile, fileName),
         illegalState
     );

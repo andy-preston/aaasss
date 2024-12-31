@@ -1,21 +1,34 @@
-export const outputFile = (fileName: string, extension: string) => {
-    const encoder = new TextEncoder();
-    const theFile = Deno.openSync(
-        fileName.substring(0, fileName.lastIndexOf(".")) + extension,
-        { create: true, write: true, truncate: true }
-    );
+const encoder = new TextEncoder();
+
+export const outputFile = (topFileName: string, extension: string) => {
+    let theFile: Deno.FsFile | undefined;
+    const fileName = () =>
+        topFileName.substring(0, topFileName.lastIndexOf(".")) + extension;
+    const open = () => {
+        theFile = Deno.openSync(
+            fileName(),
+            { create: true, write: true, truncate: true }
+        );
+    };
+    const remove = () => {
+        Deno.removeSync(fileName());
+    };
     const write = (text: string) => {
-        theFile.writeSync(encoder.encode(`${text}\n`));
+        if (theFile == undefined) {
+            open();
+        }
+        theFile!.writeSync(encoder.encode(`${text}\n`));
     };
     const close = () => {
-        theFile.close();
+        if (theFile != undefined) {
+            theFile.close();
+        }
     };
     return {
+        "remove": remove,
         "write": write,
         "close": close
     };
 };
 
-export type OutputFileFactory = typeof outputFile;
-export type OutputFile = ReturnType<OutputFileFactory>;
-
+export type OutputFile = typeof outputFile;

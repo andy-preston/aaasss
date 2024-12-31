@@ -9,8 +9,10 @@ const codeWidth = objectWidth + addressWidth + 1;
 const lineNumberWidth = 4;
 
 export const listing = (
-    file: OutputFile, failureMessages: FailureMessageTranslator
+    outputFile: OutputFile, topFileName: FileName,
+    failureMessages: FailureMessageTranslator
 ) => {
+    const file = outputFile(topFileName, ".lst");
     let currentName = "";
 
     const fileName = (newName: FileName) => {
