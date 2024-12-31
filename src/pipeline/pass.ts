@@ -14,14 +14,10 @@ export const pass = (resetCallbacks: Array<ResetStateCallback>) => {
         }
     };
 
-    const showErrors = () => current == 2;
-
-    const ignoreErrors = () => current == 1;
-
     return {
         "start": start,
-        "ignoreErrors": ignoreErrors,
-        "showErrors": showErrors,
+        "ignoreErrors": () => current == 1,
+        "produceOutput": () => current == 2,
     };
 };
 
