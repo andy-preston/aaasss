@@ -1,8 +1,6 @@
 import type { Failures } from "../failure/failures.ts";
-import type {
-    FileName, LineNumber, SourceCode
-} from "./data-types.ts";
-import { line, type Line } from "../coupling/line.ts";
+import { line, type Line } from "../pipeline/line.ts";
+import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 
 type PropertiesForRawSource = "fileName" | "lineNumber" | "lastLine" |
     "rawSource" | "failures" | "addFailures" | "failed";

@@ -1,7 +1,7 @@
-import type { Line } from "../coupling/line.ts";
 import type { Failures } from "../failure/failures.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
+import type { Line } from "../pipeline/line.ts";
 import {
     lineWithAddress, lineWithPokedBytes
 } from "../program-memory/line-types.ts";

@@ -1,8 +1,8 @@
 import type { Failures } from "../failure/failures.ts";
-import type { Line } from "../coupling/line.ts";
 import type {
     PropertiesForMacroProcessing, LineWithProcessedMacro
 } from "../macro/line-types.ts";
+import type { Line } from "../pipeline/line.ts";
 import type { Code } from "../object-code/data-types.ts";
 
 type PropertiesForAddress = PropertiesForMacroProcessing | "address";

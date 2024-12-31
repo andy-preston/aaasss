@@ -1,10 +1,10 @@
 import type { Failures } from "../failure/failures.ts";
-import type { Code } from "./data-types.ts";
 import type { NumericOperands } from "../operands/data-types.ts";
+import type { Line } from "../pipeline/line.ts";
 import type {
     LineWithPokedBytes, PropertiesForPokedBytes
 } from "../program-memory/line-types.ts";
-import type { Line } from "../coupling/line.ts";
+import type { Code } from "./data-types.ts";
 
 export type PropertiesForObjectCode
     = PropertiesForPokedBytes | "numericOperands";

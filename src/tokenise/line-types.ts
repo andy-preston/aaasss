@@ -4,7 +4,7 @@ import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import type {
     LineWithRenderedJavascript, PropertiesForRenderedJavascript
 } from "../source-code/line-types.ts";
-import type { Line } from "../coupling/line.ts";
+import type { Line } from "../pipeline/line.ts";
 
 export type PropertiesForTokens = PropertiesForRenderedJavascript |
     "label" | "mnemonic" | "symbolicOperands";
