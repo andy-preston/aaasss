@@ -50,17 +50,15 @@ export const coupling = (
 
     const js = javascript(context);
 
-    const thePass = pass([
-        progMem.reset, dataMem.reset, js.reset, macroProcessor.reset
-    ]);
-
     const illegalState = illegalStateFailures([
         macroProcessor.leftInIllegalState,
         js.leftInIllegalState
     ]);
 
     return pipeLine(
-        thePass,
+        pass([
+            progMem.reset, dataMem.reset, js.reset, macroProcessor.reset
+        ]),
         sourceFiles.lines,
         js.rendered,
         tokenise,
