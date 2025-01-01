@@ -38,6 +38,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "mnemonic_unknown": (_line: LineWithObjectCode) => [""],
     "operand_outOfRange": (_line: LineWithObjectCode) => [""],
     "operand_wrongCount": (_line: LineWithObjectCode) => [""],
+    "operand_blank": (_line: LineWithObjectCode) => [""],
     "operand_tooManyIndexOffset": (_line: LineWithObjectCode) => [
         "An instruction can only have 1 index offset (Z+qq) operand"
     ],

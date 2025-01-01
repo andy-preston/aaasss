@@ -2,7 +2,7 @@ import { failure } from "../failure/failures.ts";
 import { SymbolicOperand } from "../operands/data-types.ts";
 import { operands, SymbolicOperands } from "../operands/data-types.ts";
 import { Label } from "../source-code/data-types.ts";
-import type { LineWithTokens } from "../tokenise/line-types.ts";
+import type { LineWithTokens } from "../tokens/line-types.ts";
 import { lineWithExpandedMacro } from "./line-types.ts";
 
 export type MacroName = string;

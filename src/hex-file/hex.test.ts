@@ -5,7 +5,7 @@ import {
 } from "../source-code/line-types.ts";
 import {
     lineWithTokens
-} from "../tokenise/line-types.ts";
+} from "../tokens/line-types.ts";
 import {
     lineWithExpandedMacro
 } from "../macro/line-types.ts";

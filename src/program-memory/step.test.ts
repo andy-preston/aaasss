@@ -7,7 +7,7 @@ import { Code } from "../object-code/data-types.ts";
 import {
     lineWithRenderedJavascript, lineWithRawSource
 } from "../source-code/line-types.ts";
-import { lineWithTokens } from "../tokenise/line-types.ts";
+import { lineWithTokens } from "../tokens/line-types.ts";
 import { lineWithAddress, lineWithPokedBytes } from "./line-types.ts";
 import { programMemory } from "./program-memory.ts";
 

@@ -1,7 +1,7 @@
 import { assertEquals } from "assert/equals";
 import { processor } from "./processor.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { lineWithTokens } from "../tokenise/line-types.ts";
+import { lineWithTokens } from "../tokens/line-types.ts";
 import {
     lineWithRawSource, lineWithRenderedJavascript
 } from "../source-code/line-types.ts";

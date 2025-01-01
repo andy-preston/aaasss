@@ -8,8 +8,8 @@ import type { PokeBuffer } from "../program-memory/poke.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
 import type { Javascript } from "../source-code/javascript.ts";
-import type { Tokenise } from "../tokenise/tokenise.ts";
-import type { LineWithTokens } from "../tokenise/line-types.ts";
+import type { Tokenise } from "../tokens/tokenise.ts";
+import type { LineWithTokens } from "../tokens/line-types.ts";
 import { type Pass, passes } from "./pass.ts";
 
 export const pipeLine = (

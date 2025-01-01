@@ -11,7 +11,7 @@ import {
 } from "../source-code/line-types.ts";
 import {
     lineWithTokens, type LineWithTokens, type PropertiesForTokens
-} from "../tokenise/line-types.ts";
+} from "../tokens/line-types.ts";
 
 export type PropertiesForMacroProcessing = PropertiesForTokens | "macroName";
 

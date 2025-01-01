@@ -1,12 +1,12 @@
 import { SymbolicOperand } from "../operands/data-types.ts";
 
 const match = (operand: SymbolicOperand): Array<string> => {
-    const prefix = operand.toUpperCase().match(/^[Y|Z]\+/);
-    if (prefix == null) {
+    const indexRegisterWithPlus = operand.toUpperCase().match(/^[X|Y|Z]\+/);
+    if (indexRegisterWithPlus == null) {
         return [];
     }
     const suffix = operand.substring(2);
-    return isNaN(suffix as unknown as number) ? [] : [prefix[0], suffix];
+    return isNaN(suffix as unknown as number) ? [] : [indexRegisterWithPlus[0], suffix];
 };
 
 export const indexOffsetOperands = (operands: Array<string>): Array<string> => {

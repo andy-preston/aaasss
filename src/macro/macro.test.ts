@@ -4,7 +4,7 @@ import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import {
     lineWithRawSource, lineWithRenderedJavascript
 } from "../source-code/line-types.ts";
-import { lineWithTokens } from "../tokenise/line-types.ts";
+import { lineWithTokens } from "../tokens/line-types.ts";
 import { macro, type SymbolicParameters } from "./macro.ts";
 
 const withNoLabel = "";
