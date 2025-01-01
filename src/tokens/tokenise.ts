@@ -4,17 +4,17 @@ import {
 } from "../operands/data-types.ts"
 import type { LineWithRenderedJavascript } from "../source-code/line-types.ts";
 import { clean } from "./clean.ts";
-import { indexOffsetOperands } from "./index-offset-operands.ts";
+import { indexRegisterWithPlus } from "./index-offset.ts";
 import { invalidLabel } from "./invalid-label.ts";
 import { lineWithTokens } from "./line-types.ts";
 import { splitOperands } from "./split-operands.ts";
 import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
 
-export const tokenise = (theLine: LineWithRenderedJavascript) => {
+export const tokenise = (line: LineWithRenderedJavascript) => {
     const failures: Failures = [];
 
-    const cleaned = clean(theLine.assemblySource);
+    const cleaned = clean(line.assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
     if (invalidLabel(label)) {
@@ -30,21 +30,42 @@ export const tokenise = (theLine: LineWithRenderedJavascript) => {
         ));
     }
 
-    const expandedOperands = indexOffsetOperands(operandsList.slice(0, 2));
-    if (expandedOperands.length > 3) {
-        failures.push(failure(1, "operand_tooManyIndexOffset", undefined));
+    const fullOperands: Array<string> = [];
+    for (const operand of operandsList.slice(0, 2)) {
+        const indexing = indexRegisterWithPlus(operand);
+        if (indexing == "") {
+            fullOperands.push(operand);
+        } else if (indexing == "X+") {
+            failures.push(failure(
+                fullOperands.length as OperandIndex, "operand_offsetX", ""
+            ));
+            fullOperands.push(operand);
+        } else if (fullOperands.length == 0 && mnemonic != "STD") {
+            failures.push(failure(
+                fullOperands.length as OperandIndex, "operand_offsetNotStd", ""
+            ));
+            fullOperands.push(operand);
+        } else if (fullOperands.length == 1 && mnemonic != "LDD") {
+            failures.push(failure(
+                fullOperands.length as OperandIndex, "operand_offsetNotLdd", ""
+            ));
+            fullOperands.push(operand);
+        } else {
+            fullOperands.push(indexing);
+            fullOperands.push(operand.substring(2));
+        }
     }
 
-    const mappedOperands = expandedOperands.slice(0, 3).map(upperCaseRegisters);
-
-    for (const [index, operand] of mappedOperands.entries()) {
+    for (const [index, operand] of fullOperands.entries()) {
         if (operand == "") {
             failures.push(failure(index as OperandIndex, "operand_blank", ""));
         }
     }
 
+    const mappedOperands = fullOperands.map(upperCaseRegisters);
+
     return lineWithTokens(
-        theLine, label, mnemonic.toUpperCase(),
+        line, label, mnemonic.toUpperCase(),
         operands<SymbolicOperands>(mappedOperands),
         failures
     );

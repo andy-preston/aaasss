@@ -39,8 +39,14 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "operand_outOfRange": (_line: LineWithObjectCode) => [""],
     "operand_wrongCount": (_line: LineWithObjectCode) => [""],
     "operand_blank": (_line: LineWithObjectCode) => [""],
-    "operand_tooManyIndexOffset": (_line: LineWithObjectCode) => [
-        "An instruction can only have 1 index offset (Z+qq) operand"
+    "operand_offsetX": (_line: LineWithObjectCode) => [
+        "Index offset instructions only operate on the Y or Z registers"
+    ],
+    "operand_offsetNotLdd": (_line: LineWithObjectCode) => [
+        "An Index offset in the second parameter can only be used on the LDD instruction"
+    ],
+    "operand_offsetNotStd": (_line: LineWithObjectCode) => [
+        "An Index offset in the first parameter can only be used on the STD instruction"
     ],
     "syntax_invalidLabel": (_line: LineWithObjectCode) => [
         "A label must only contain alphanumeric characters and underscore"

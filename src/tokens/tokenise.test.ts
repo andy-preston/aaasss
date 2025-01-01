@@ -182,27 +182,36 @@ Deno.test("Operands can contain whitespace and even be JS expressions", () => {
     assertEquals(tokenised.symbolicOperands, ["baseReg + n", "n * 2"]);
 });
 
-Deno.test("LDD Z+q operands are tokenised as a 'Z+' and 'q'", () => {
-    const line = testLine("LDD R14, Z+23");
+Deno.test("Z+q operands can appear as the second operand of an LDD instruction", () => {
+    const line = testLine("LDD R14, Z+offset");
     const tokenised = tokenise(line);
     assertEquals(tokenised.label, "");
     assertEquals(tokenised.mnemonic, "LDD");
-    assertEquals(tokenised.symbolicOperands, ["R14", "Z+", "23"]);
+    assertEquals(tokenised.symbolicOperands, ["R14", "Z+", "offset"]);
 });
 
-Deno.test("STD Z+q operands are tokenised as a 'Z+' and 'q'", () => {
-    const line = testLine("STD Z+0xa7, R17");
+Deno.test("... or the first operand of a STD instruction", () => {
+    const line = testLine("STD Y+0xa7, R17");
     const tokenised = tokenise(line);
     assertEquals(tokenised.label, "");
     assertEquals(tokenised.mnemonic, "STD");
-    assertEquals(tokenised.symbolicOperands, ["Z+", "0xa7", "R17"]);
+    assertEquals(tokenised.symbolicOperands, ["Y+", "0xa7", "R17"]);
 });
 
-Deno.test("Only one Z+q operand is allowed in an instruction", () => {
-    const line = testLine("LDD Z+12, Z+13");
+Deno.test("... but not as the first operand of any other instruction", () => {
+    const line = testLine("ST Z+19, R17");
     const tokenised = tokenise(line);
-    assertEquals(tokenised.failures.length, 1);
-    assertEquals(tokenised.failures[0]!.kind, "operand_tooManyIndexOffset");
+    assertEquals(tokenised.mnemonic, "ST");
+    assertEquals(tokenised.symbolicOperands, ["Z+19", "R17"]);
+    assertEquals(tokenised.failures[0]!.kind, "operand_offsetNotStd");
+    assertEquals(tokenised.failures[0]!.operand, 0);
+});
+
+Deno.test("... or the second operand", () => {
+    const line = testLine("LDI R14, Z+offset");
+    const tokenised = tokenise(line);
+    assertEquals(tokenised.mnemonic, "LDI");
+    assertEquals(tokenised.symbolicOperands, ["R14", "Z+offset"]);
+    assertEquals(tokenised.failures[0]!.kind, "operand_offsetNotLdd");
     assertEquals(tokenised.failures[0]!.operand, 1);
-    assertEquals(tokenised.failures[0]!.extra, undefined);
 });
