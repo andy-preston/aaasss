@@ -50,11 +50,15 @@ Deno.test("... but operands aren't", () => {
 });
 
 Deno.test("... unless they are register names", () => {
-    const line = testLine("ldi r16, \t 23");
+    const line = testLine("ldi r16, 23");
     const tokenised = tokenise(line);
-    assertEquals(tokenised.label, "");
-    assertEquals(tokenised.mnemonic, "LDI");
     assertEquals(tokenised.symbolicOperands, ["R16", "23"]);
+});
+
+Deno.test("... or index register names", () => {
+    const line = testLine("ldi x, 23");
+    const tokenised = tokenise(line);
+    assertEquals(tokenised.symbolicOperands, ["X", "23"]);
 });
 
 Deno.test("Comments are stripped and discarded", () => {
@@ -128,6 +132,30 @@ Deno.test("The operands are separated by a comma", () => {
     assertEquals(tokenised.label, "label");
     assertEquals(tokenised.mnemonic, "LDI");
     assertEquals(tokenised.symbolicOperands, ["R16", "23"]);
+});
+
+Deno.test("No instruction has three (or more) operands", () => {
+    const line = testLine("LDI R16, 23, 999");
+    const tokenised = tokenise(line);
+    assertEquals(tokenised.symbolicOperands, ["R16", "23"]);
+    assertEquals(tokenised.failures[0]!.kind, "operand_wrongCount");
+    assertEquals(tokenised.failures[0]!.extra, "3");
+});
+
+Deno.test("An operand must not be empty", () => {
+    const line = testLine("LDI , 23");
+    const tokenised = tokenise(line);
+    assertEquals(tokenised.symbolicOperands, ["", "23"]);
+    assertEquals(tokenised.failures[0]!.kind, "operand_blank");
+    assertEquals(tokenised.failures[0]!.operand, 0);
+});
+
+Deno.test("Trailing commas count as an (empty operand)", () => {
+    const line = testLine("LDI r16, ");
+    const tokenised = tokenise(line);
+    assertEquals(tokenised.symbolicOperands, ["R16", ""]);
+    assertEquals(tokenised.failures[0]!.kind, "operand_blank");
+    assertEquals(tokenised.failures[0]!.operand, 1);
 });
 
 Deno.test("Some instructions only have one operand", () => {
