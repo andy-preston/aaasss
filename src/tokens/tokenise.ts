@@ -1,56 +1,29 @@
 import { failure, type Failures } from "../failure/failures.ts";
 import {
-OperandIndex,
-    operands, type SymbolicOperand, type SymbolicOperands
+    operands, type OperandIndex, type SymbolicOperands
 } from "../operands/data-types.ts"
 import type { LineWithRenderedJavascript } from "../source-code/line-types.ts";
+import { clean } from "./clean.ts";
 import { indexOffsetOperands } from "./index-offset-operands.ts";
+import { invalidLabel } from "./invalid-label.ts";
 import { lineWithTokens } from "./line-types.ts";
-
-const validLabel = /^\w*$/;
-const anyWhitespace = /\s+/g;
-const comment = /;.*$/;
-const registerName = /^r\d{1,2}$/;
-const indexRegisterName = /^[xyz]$/;
-
-const isRegister = (operand: SymbolicOperand) =>
-    operand.match(registerName) != null
-        || operand.match(indexRegisterName) != null;
-
-const splitOperands = (text: string): Array<string> =>
-    text == "" ? [] : text.split(",").map(operand => operand.trim());
-
-const split = (
-    keep: "before" | "after", marker: string, raw: string
-): [string, string] => {
-    const position = raw.indexOf(marker);
-    if (position == -1) {
-        return keep == "before" ? [raw.trim(), ""] : ["", raw.trim()];
-    }
-    return [
-        raw.substring(0, position).trim(),
-        raw.substring(position + 1).trim()
-    ];
-};
+import { splitOperands } from "./split-operands.ts";
+import { splitSource } from "./split-source.ts";
+import { upperCaseRegisters } from "./upper-case-registers.ts";
 
 export const tokenise = (theLine: LineWithRenderedJavascript) => {
     const failures: Failures = [];
 
-    const cleaned = theLine.assemblySource.replace(
-        comment, ""
-    ).replace(
-        anyWhitespace, " "
-    ).trim();
+    const cleaned = clean(theLine.assemblySource);
 
-    const [label, withoutLabel] = split("after", ":", cleaned);
-    if (!validLabel.test(label)) {
+    const [label, withoutLabel] = splitSource("after", ":", cleaned);
+    if (invalidLabel(label)) {
         failures.push(failure(undefined, "syntax_invalidLabel", undefined));
     }
 
-    const [mnemonic, operandsText] = split("before", " ", withoutLabel);
+    const [mnemonic, operandsText] = splitSource("before", " ", withoutLabel);
 
     const operandsList = splitOperands(operandsText);
-
     if (operandsList.length > 2) {
         failures.push(failure(
             undefined, "operand_wrongCount", `${operandsList.length}`
@@ -62,9 +35,7 @@ export const tokenise = (theLine: LineWithRenderedJavascript) => {
         failures.push(failure(1, "operand_tooManyIndexOffset", undefined));
     }
 
-    const mappedOperands = expandedOperands.slice(0, 3).map(
-        operand => isRegister(operand) ? operand.toUpperCase() : operand
-    );
+    const mappedOperands = expandedOperands.slice(0, 3).map(upperCaseRegisters);
 
     for (const [index, operand] of mappedOperands.entries()) {
         if (operand == "") {
