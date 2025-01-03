@@ -9,7 +9,7 @@ import { pokeBuffer } from "./poke.ts";
 
 const testLine = () => {
     const raw = lineWithRawSource("", 0, false, "");
-    const rendered = lineWithRenderedJavascript(raw, "", []);
+    const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, "", "", [], []);
     const processed = lineWithProcessedMacro(tokenised, "", []);
     return lineWithAddress(processed, 0, []);

@@ -6,7 +6,7 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 
 const testLine = (source: SourceCode) => {
     const raw = lineWithRawSource("", 0, false, source);
-    return lineWithRenderedJavascript(raw, source, []);
+    return lineWithRenderedJavascript(raw, source);
 };
 
 Deno.test("Leading and trailing whitespace is discarded", () => {

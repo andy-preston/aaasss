@@ -34,8 +34,9 @@ export const lineWithExpandedMacro = (
         callingLine.fileName, callingLine.lineNumber, false, line.rawSource
     );
     const rendered = lineWithRenderedJavascript(
-        raw, line.assemblySource, Array.from(line.failures)
+        raw, line.assemblySource
     );
+    rendered.addFailures(Array.from(line.failures));
     const tokenised = lineWithTokens(
         rendered, label, line.mnemonic, symbolicOperands, failures
     );

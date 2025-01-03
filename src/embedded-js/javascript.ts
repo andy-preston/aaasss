@@ -72,11 +72,13 @@ export const javascript = (context: Context) => {
             [],
         );
         if (failures.length > 0) {
-            return lineWithRenderedJavascript(line, "", failures);
+            const newLine = lineWithRenderedJavascript(line, "");
+            newLine.addFailures(failures);
+            return newLine;
         }
         const assembler = buffer.assembler.join("").trim();
         buffer.assembler = [];
-        return lineWithRenderedJavascript(line, assembler, []);
+        return lineWithRenderedJavascript(line, assembler);
     };
 
     return {

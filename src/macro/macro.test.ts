@@ -1,24 +1,13 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import type { Label, Mnemonic } from "../source-code/data-types.ts";
-import { lineWithRawSource } from "../source-code/line-types.ts";
-import { lineWithTokens } from "../tokens/line-types.ts";
 import { macro, type SymbolicParameters } from "./macro.ts";
+import { testLine } from "./testing.ts";
 
 const withNoLabel = "";
 const withNoMnemonic = "";
 const withNoOperands: SymbolicOperands = [];
 
 const withNoParameters: SymbolicParameters = [];
-
-const testLine = (
-    label: Label, mnemonic: Mnemonic, symbolic: SymbolicOperands
-) => {
-    const raw = lineWithRawSource("", 0, false, "");
-    const rendered = lineWithRenderedJavascript(raw, "", []);
-    return lineWithTokens(rendered, label, mnemonic, symbolic, []);
-};
 
 const withDummyCallingLine = () =>
     testLine(withNoLabel, withNoMnemonic, withNoOperands);
