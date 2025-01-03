@@ -30,7 +30,7 @@ export const pokeBuffer = () => {
     };
 
     const line = (line: LineWithAddress) => {
-        const result = lineWithPokedBytes(line, theBuffer, []);
+        const result = lineWithPokedBytes(line, theBuffer);
         theBuffer = [];
         return result;
     };

@@ -12,7 +12,7 @@ const testLine = () => {
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, "", "", []);
     const processed = lineWithProcessedMacro(tokenised, "", []);
-    return lineWithAddress(processed, 0, []);
+    return lineWithAddress(processed, 0);
 };
 
 Deno.test("You can poke bytes", () => {

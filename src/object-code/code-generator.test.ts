@@ -32,8 +32,8 @@ const testLine = (
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, label, mnemonic, operands);
     const processed = lineWithProcessedMacro(tokenised, "", []);
-    const addressed = lineWithAddress(processed, 0, []);
-    return lineWithPokedBytes(addressed, [], []);
+    const addressed = lineWithAddress(processed, 0);
+    return lineWithPokedBytes(addressed, []);
 };
 
 Deno.test("Lines with no mnemonic don't bother generating code", () => {

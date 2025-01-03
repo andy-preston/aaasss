@@ -45,7 +45,7 @@ export const lineWithExpandedMacro = (
 };
 
 export const lineWithNoObjectCode = (line: LineWithProcessedMacro) => {
-    const addressed = lineWithAddress(line, 0, []);
-    const poked = lineWithPokedBytes(addressed, [], []);
+    const addressed = lineWithAddress(line, 0);
+    const poked = lineWithPokedBytes(addressed, []);
     return lineWithObjectCode(poked, [], [], []);
 };

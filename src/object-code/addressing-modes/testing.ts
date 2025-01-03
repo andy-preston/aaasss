@@ -18,8 +18,8 @@ export const testLine = (test: TestTokens) => {
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, ...test);
     const processed = lineWithProcessedMacro(tokenised, "", []);
-    const addressed = lineWithAddress(processed, 0, []);
-    return lineWithPokedBytes(addressed, [], []);
+    const addressed = lineWithAddress(processed, 0);
+    return lineWithPokedBytes(addressed, []);
 };
 
 export const description = (test: Test) => {

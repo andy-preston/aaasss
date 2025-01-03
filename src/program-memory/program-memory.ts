@@ -51,7 +51,7 @@ export const programMemory = (
                 line.addFailures([result]);
             }
         }
-        return lineWithAddress(line, address, []);
+        return lineWithAddress(line, address);
     };
 
     return {
