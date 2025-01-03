@@ -24,7 +24,7 @@ const testLine = (label: Label) => {
     const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, label, "", []);
-    return lineWithProcessedMacro(tokenised, "", []);
+    return lineWithProcessedMacro(tokenised, "");
 };
 
 Deno.test("A label is stored in the context with the current address", () => {

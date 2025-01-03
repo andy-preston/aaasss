@@ -1,5 +1,4 @@
 import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
-import type { Failures } from "../failure/failures.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Line } from "../pipeline/line.ts";
@@ -18,17 +17,15 @@ export type LineWithProcessedMacro
     = Readonly<Pick<Line, PropertiesForMacroProcessing>>;
 
 export const lineWithProcessedMacro = (
-    line: LineWithTokens, macroName: string, failures: Failures
+    line: LineWithTokens, macroName: string
 ) => {
     (line as Line).macroName = macroName;
-    line.addFailures(failures);
     return line as LineWithProcessedMacro;
 };
 
 export const lineWithExpandedMacro = (
     callingLine: LineWithTokens,
-    line: LineWithTokens, label: Label, symbolicOperands: SymbolicOperands,
-    failures: Failures
+    line: LineWithTokens, label: Label, symbolicOperands: SymbolicOperands
 ) => {
     const raw = lineWithRawSource(
         callingLine.fileName, callingLine.lineNumber, false, line.rawSource
@@ -40,8 +37,7 @@ export const lineWithExpandedMacro = (
         rendered, label, line.mnemonic, symbolicOperands
     );
     tokenised.addFailures(Array.from(line.failures));
-    tokenised.addFailures(failures);
-    return lineWithProcessedMacro(tokenised, "", []);
+    return lineWithProcessedMacro(tokenised, "");
 };
 
 export const lineWithNoObjectCode = (line: LineWithProcessedMacro) => {

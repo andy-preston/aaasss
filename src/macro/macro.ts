@@ -37,13 +37,14 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
             instance = instance + 1;
             for (const [index, line] of lines.entries()) {
                 const symbolicOperands = line.symbolicOperands.map(mapOperand);
-                yield lineWithExpandedMacro(
+                const expandedLine = lineWithExpandedMacro(
                     callingLine,
                     line,
                     mapLabel(line.label),
-                    operands<SymbolicOperands>(symbolicOperands),
-                    parameterFailure(index == 0)
+                    operands<SymbolicOperands>(symbolicOperands)
                 );
+                expandedLine.addFailures(parameterFailure(index == 0));
+                yield expandedLine;
             }
         };
     };

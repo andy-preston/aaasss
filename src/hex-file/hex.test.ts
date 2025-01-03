@@ -14,7 +14,7 @@ const testLine = (test: TestBlock) => {
     const withRaw = lineWithRawSource("", 0, false, "");
     const withRendered = lineWithRenderedJavascript(withRaw, "");
     const withTokens = lineWithTokens(withRendered, "", "", []);
-    const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", [], []);
+    const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", []);
     const withAddress = lineWithAddress(withMacro, test[0]);
     const withPoked = lineWithPokedBytes(withAddress, []);
     return lineWithObjectCode(withPoked, [], test[1]);

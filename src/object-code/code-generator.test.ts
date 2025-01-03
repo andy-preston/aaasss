@@ -31,7 +31,7 @@ const testLine = (
     const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, label, mnemonic, operands);
-    const processed = lineWithProcessedMacro(tokenised, "", []);
+    const processed = lineWithProcessedMacro(tokenised, "");
     const addressed = lineWithAddress(processed, 0);
     return lineWithPokedBytes(addressed, []);
 };

@@ -76,8 +76,7 @@ export const processor = () => {
         }
         yield lineWithProcessedMacro(
             line,
-            recording == undefined ? "" : recordingName,
-            []
+            recording == undefined ? "" : recordingName
         );
     };
 
