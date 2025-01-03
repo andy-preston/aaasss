@@ -36,10 +36,11 @@ export const lineWithExpandedMacro = (
     const rendered = lineWithRenderedJavascript(
         raw, line.assemblySource
     );
-    rendered.addFailures(Array.from(line.failures));
     const tokenised = lineWithTokens(
-        rendered, label, line.mnemonic, symbolicOperands, failures
+        rendered, label, line.mnemonic, symbolicOperands
     );
+    tokenised.addFailures(Array.from(line.failures));
+    tokenised.addFailures(failures);
     return lineWithProcessedMacro(tokenised, "", []);
 };
 

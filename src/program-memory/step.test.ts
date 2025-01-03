@@ -22,7 +22,7 @@ const testEnvironment = () => {
 const testLine = (pokes: Array<Code>, code: Code) => {
     const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "");
-    const tokenised = lineWithTokens(rendered, "", "", [], []);
+    const tokenised = lineWithTokens(rendered, "", "", []);
     const processed = lineWithProcessedMacro(tokenised, "", []);
     const addressed = lineWithAddress(processed, 0, []);
     const poked = lineWithPokedBytes(addressed, pokes, []);

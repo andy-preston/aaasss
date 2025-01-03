@@ -64,11 +64,12 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
 
     const mappedOperands = fullOperands.map(upperCaseRegisters);
 
-    return lineWithTokens(
+    const newLine = lineWithTokens(
         line, label, mnemonic.toUpperCase(),
-        operands<SymbolicOperands>(mappedOperands),
-        failures
+        operands<SymbolicOperands>(mappedOperands)
     );
+    newLine.addFailures(failures);
+    return newLine;
 };
 
 export type Tokenise = typeof tokenise;

@@ -23,7 +23,7 @@ const testEnvironment = () => {
 const testLine = (label: Label) => {
     const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "");
-    const tokenised = lineWithTokens(rendered, label, "", [], []);
+    const tokenised = lineWithTokens(rendered, label, "", []);
     return lineWithProcessedMacro(tokenised, "", []);
 };
 

@@ -9,5 +9,5 @@ export const testLine = (
 ) => {
     const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "");
-    return lineWithTokens(rendered, label, mnemonic, operands, []);
+    return lineWithTokens(rendered, label, mnemonic, operands);
 };
