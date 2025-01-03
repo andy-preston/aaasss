@@ -26,7 +26,7 @@ const testLine = (pokes: Array<Code>, code: Code) => {
     const processed = lineWithProcessedMacro(tokenised, "", []);
     const addressed = lineWithAddress(processed, 0);
     const poked = lineWithPokedBytes(addressed, pokes);
-    return lineWithObjectCode(poked, [], code, []);
+    return lineWithObjectCode(poked, [], code);
 };
 
 Deno.test("If a line has no code the address remains unchanged", () => {

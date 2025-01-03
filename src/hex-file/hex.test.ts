@@ -17,7 +17,7 @@ const testLine = (test: TestBlock) => {
     const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", [], []);
     const withAddress = lineWithAddress(withMacro, test[0]);
     const withPoked = lineWithPokedBytes(withAddress, []);
-    return lineWithObjectCode(withPoked, [], test[1], []);
+    return lineWithObjectCode(withPoked, [], test[1]);
 };
 
 const testEnvironment = () => {
