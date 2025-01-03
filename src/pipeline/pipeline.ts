@@ -12,9 +12,11 @@ import type { LineWithTokens } from "../tokens/line-types.ts";
 import { type Pass, passes } from "./pass.ts";
 import { LineWithRawSource } from "../source-code/line-types.ts";
 
+export type PipelineSource = () => Generator<LineWithRawSource, void, void>;
+
 export const pipeLine = (
     pass: Pass,
-    lines: FileStack["lines"],
+    lines: PipelineSource,
     javascript: Javascript["rendered"],
     tokenise: Tokenise,
     macro: MacroProcessor["lines"],
