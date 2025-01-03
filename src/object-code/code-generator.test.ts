@@ -1,15 +1,14 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import {
     lineWithPokedBytes, lineWithAddress
 } from "../program-memory/line-types.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { codeGenerator } from "./code-generator.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";

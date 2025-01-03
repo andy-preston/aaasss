@@ -1,8 +1,7 @@
-import { failure, type Failure } from "../failure/failures.ts";
 import type { Context } from "../context/context.ts";
-import {
-    lineWithRenderedJavascript, type LineWithRawSource
-} from "./line-types.ts";
+import { failure, type Failure } from "../failure/failures.ts";
+import type { LineWithRawSource } from "../source-code/line-types.ts";
+import { lineWithRenderedJavascript } from "./line-types.ts";
 
 const scriptDelimiter = /({{|}})/;
 

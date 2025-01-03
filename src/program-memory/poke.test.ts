@@ -1,9 +1,8 @@
 import { assertEquals } from "assert";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import { assertFailureWithExtra } from "../failure/testing.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { lineWithAddress} from "./line-types.ts";
 import { pokeBuffer } from "./poke.ts";

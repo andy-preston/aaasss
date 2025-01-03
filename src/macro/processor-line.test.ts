@@ -1,8 +1,7 @@
 import { assertEquals } from "assert";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import type { LineWithProcessedMacro } from "./line-types.ts";
 import { processor } from "./processor.ts";

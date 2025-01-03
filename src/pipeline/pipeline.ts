@@ -6,11 +6,11 @@ import type { MacroProcessor } from "../macro/processor.ts";
 import type { CodeGenerator } from "../object-code/code-generator.ts";
 import type { PokeBuffer } from "../program-memory/poke.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
-import type { FileStack } from "../source-code/file-stack.ts";
-import type { Javascript } from "../source-code/javascript.ts";
+import type { Javascript } from "../embedded-js/javascript.ts";
 import type { Tokenise } from "../tokens/tokenise.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import { type Pass, passes } from "./pass.ts";
+import { LineWithRawSource } from "../source-code/line-types.ts";
 
 export const pipeLine = (
     pass: Pass,

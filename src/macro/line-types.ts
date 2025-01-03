@@ -1,3 +1,4 @@
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import type { Failures } from "../failure/failures.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
@@ -6,9 +7,7 @@ import {
     lineWithAddress, lineWithPokedBytes
 } from "../program-memory/line-types.ts";
 import type { Label } from "../source-code/data-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
 import {
     lineWithTokens, type LineWithTokens, type PropertiesForTokens
 } from "../tokens/line-types.ts";

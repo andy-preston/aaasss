@@ -1,10 +1,9 @@
 import { assertEquals } from "assert/equals";
-import { processor } from "./processor.ts";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
+import { processor } from "./processor.ts";
 
 const testLine = () => {
     const raw = lineWithRawSource("", 0, false, "", []);

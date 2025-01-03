@@ -1,12 +1,11 @@
 import { assertEquals } from "assert";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { Code } from "../object-code/data-types.ts";
-import {
-    lineWithRenderedJavascript, lineWithRawSource
-} from "../source-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { lineWithAddress, lineWithPokedBytes } from "./line-types.ts";
 import { programMemory } from "./program-memory.ts";

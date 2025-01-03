@@ -1,8 +1,8 @@
 import { assert, assertFalse, assertEquals, assertInstanceOf } from "assert";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { type Failure } from "../failure/failures.ts";
-import { defaultReaderMethod, fileStack } from "./file-stack.ts";
 import { FileName } from "./data-types.ts";
+import { defaultReaderMethod, fileStack } from "./file-stack.ts";
 
 // cSpell:words plip wibble
 

@@ -2,12 +2,11 @@ import { assert, assertEquals, assertFalse } from "assert";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import { passes } from "../pipeline/pass.ts";
 import { Label } from "../source-code/data-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { programMemory } from "./program-memory.ts";
 

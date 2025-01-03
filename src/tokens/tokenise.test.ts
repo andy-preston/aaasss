@@ -1,7 +1,7 @@
 import { assertEquals } from "assert";
 import { tokenise } from "./tokenise.ts";
 import type { SourceCode } from "../source-code/data-types.ts";
-import { lineWithRenderedJavascript } from "../source-code/line-types.ts";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 
 const testLine = (source: SourceCode) => {

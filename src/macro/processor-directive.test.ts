@@ -1,11 +1,10 @@
 import { assertEquals } from "assert/equals";
 import { anEmptyContext } from "../context/context.ts";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { processor } from "./processor.ts";
 
