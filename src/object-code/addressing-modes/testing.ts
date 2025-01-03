@@ -14,7 +14,7 @@ type Test = [TestTokens, Code];
 export type Tests = Array<Test>;
 
 export const testLine = (test: TestTokens) => {
-    const raw = lineWithRawSource("", 0, false, "", []);
+    const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "", []);
     const tokenised = lineWithTokens(rendered, ...test, []);
     const processed = lineWithProcessedMacro(tokenised, "", []);

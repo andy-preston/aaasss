@@ -31,11 +31,10 @@ export const lineWithExpandedMacro = (
     failures: Failures
 ) => {
     const raw = lineWithRawSource(
-        callingLine.fileName, callingLine.lineNumber, false,
-        line.rawSource, Array.from(line.failures)
+        callingLine.fileName, callingLine.lineNumber, false, line.rawSource
     );
     const rendered = lineWithRenderedJavascript(
-        raw, line.assemblySource, []
+        raw, line.assemblySource, Array.from(line.failures)
     );
     const tokenised = lineWithTokens(
         rendered, label, line.mnemonic, symbolicOperands, failures

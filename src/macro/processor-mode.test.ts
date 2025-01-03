@@ -6,7 +6,7 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { processor } from "./processor.ts";
 
 const testLine = () => {
-    const raw = lineWithRawSource("", 0, false, "", []);
+    const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "", []);
     return lineWithTokens(rendered, "", "TST", [], []);
 };

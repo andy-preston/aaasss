@@ -5,7 +5,7 @@ import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 
 const testLine = (source: SourceCode) => {
-    const raw = lineWithRawSource("", 0, false, source, []);
+    const raw = lineWithRawSource("", 0, false, source);
     return lineWithRenderedJavascript(raw, source, []);
 };
 

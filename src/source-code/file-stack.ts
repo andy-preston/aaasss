@@ -61,7 +61,9 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     const lines: PipelineSource = function* () {
         const topFile = include(topFileName);
         if (topFile.which == "failure") {
-            yield lineWithRawSource(topFileName, 0, false, "", [topFile]);
+            const failingLine = lineWithRawSource(topFileName, 0, false, "");
+            failingLine.addFailures([topFile]);
+            yield failingLine;
         }
         let file = fileStack[0];
         while (file != undefined) {
@@ -71,7 +73,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             } else {
                 const [lineNumber, rawSource, lastLine] = next.value;
                 yield lineWithRawSource(
-                    file.name, lineNumber, lastLine, rawSource, []
+                    file.name, lineNumber, lastLine, rawSource
                 );
             }
             // Another file could have been pushed by an include directive
