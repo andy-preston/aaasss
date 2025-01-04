@@ -1,7 +1,6 @@
 import { box, type Box } from "../coupling/boxed-value.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { failure, type Failure } from "../failure/failures.ts";
-import type { SymbolicOperand } from "../operands/data-types.ts";
 import { returnIfExpression } from "./magic.ts";
 
 type SimpleFunction = (n: number) => number;
@@ -42,13 +41,6 @@ export const anEmptyContext = () => {
             ? result as Box<string> | Failure : box(`${result}`.trim());
     };
 
-    const operand = (operand: SymbolicOperand): Box<number> | Failure => {
-        const fromContext = value(operand);
-        return fromContext.which == "failure"
-            ? fromContext
-            : box(fromContext.value == "" ? 0 : parseInt(fromContext.value));
-    };
-
     const directive = (name: string, directive: Directive) => {
         Object.defineProperty(context, name, {
             "configurable": false,
@@ -85,7 +77,6 @@ export const anEmptyContext = () => {
     };
 
     return {
-        "operand": operand,
         "value": value,
         "property": property,
         "directive": directive,
