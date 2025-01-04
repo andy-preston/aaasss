@@ -1,4 +1,5 @@
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
+import { lineWithOperands } from "../javascript/operands/line-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Line } from "../pipeline/line.ts";
@@ -9,9 +10,9 @@ import type { Label } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens, type LineWithTokens } from "../tokens/line-types.ts";
 
-export type LineWithProcessedMacro = Readonly<
-    Pick<Line, keyof LineWithTokens | "macroName">
->;
+export type LineWithProcessedMacro = Readonly<Pick<
+    Line, keyof LineWithTokens | "macroName"
+>>;
 
 export const lineWithProcessedMacro = (
     line: LineWithTokens, macroName: string
@@ -39,6 +40,7 @@ export const lineWithExpandedMacro = (
 
 export const lineWithNoObjectCode = (line: LineWithProcessedMacro) => {
     const addressed = lineWithAddress(line, 0);
-    const poked = lineWithPokedBytes(addressed, []);
-    return lineWithObjectCode(poked, [], []);
+    const withOperands = lineWithOperands(addressed, []);
+    const poked = lineWithPokedBytes(withOperands, []);
+    return lineWithObjectCode(poked, []);
 };

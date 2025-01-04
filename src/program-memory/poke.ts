@@ -1,8 +1,9 @@
 import { box } from "../coupling/boxed-value.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { failure } from "../failure/failures.ts";
+import { LineWithOperands } from "../javascript/operands/line-types.ts";
 import { Code } from "../object-code/data-types.ts";
-import { lineWithPokedBytes, type LineWithAddress } from "./line-types.ts";
+import { lineWithPokedBytes } from "./line-types.ts";
 
 export const pokeBuffer = () => {
     let theBuffer: Array<Code> = [];
@@ -31,7 +32,7 @@ export const pokeBuffer = () => {
             : box("")
     };
 
-    const line = (line: LineWithAddress) => {
+    const line = (line: LineWithOperands) => {
         const result = lineWithPokedBytes(line, theBuffer);
         theBuffer = [];
         return result;

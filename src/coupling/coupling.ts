@@ -5,6 +5,7 @@ import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { javascript } from "../javascript/embedded/embedded.ts";
+import { operandsFromContext } from "../javascript/operands/from-context.ts";
 import type { FailureMessageTranslator } from "../listing/messages.ts";
 import { listing } from "../listing/listing.ts";
 import { processor } from "../macro/processor.ts";
@@ -26,12 +27,6 @@ export const coupling = (
 ) => {
     const currentPass = pass();
 
-    ////////////////////////////////////////////////////////////////////////////
-    //
-    // The context has no knowledge of which pass we're on - so it can't
-    // ignoreErrors
-    //
-    ////////////////////////////////////////////////////////////////////////////
     const context = anEmptyContext();
 
     const properties = deviceProperties(context);
@@ -74,8 +69,9 @@ export const coupling = (
         tokenise,
         macroProcessor.lines,
         progMem.label,
+        operandsFromContext(context),
         poke.line,
-        objectCode(context, properties.public, progMem),
+        objectCode(properties.public, progMem),
         listing(outputFile, fileName, failureMessageTranslator),
         hexFile(outputFile, fileName),
         illegalState

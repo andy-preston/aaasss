@@ -1,16 +1,18 @@
 import type { IllegalState } from "../failure/illegal-state.ts";
 import type { HexFile } from "../hex-file/hex.ts";
 import type { Javascript } from "../javascript/embedded/embedded.ts";
+import type { OperandsFromContext } from "../javascript/operands/from-context.ts";
 import type { Listing } from "../listing/listing.ts";
 import { lineWithNoObjectCode } from "../macro/line-types.ts";
 import type { MacroProcessor } from "../macro/processor.ts";
+import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { ObjectCode } from "../object-code/object-code.ts";
 import type { PokeBuffer } from "../program-memory/poke.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
 import type { Tokenise } from "../tokens/tokenise.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
-import { type Pass, passes } from "./pass.ts";
+import { passes, type Pass } from "./pass.ts";
 
 export type PipelineSource = () => Generator<LineWithRawSource, void, void>;
 
@@ -21,24 +23,31 @@ export const pipeLine = (
     tokenise: Tokenise,
     macro: MacroProcessor["lines"],
     label: ProgramMemory["label"],
+    operands: OperandsFromContext,
     poke: PokeBuffer["line"],
     code: ObjectCode,
     listing: Listing,
     hex: HexFile,
     illegalState: IllegalState
 ) => {
-    const assembly = (tokenised: LineWithTokens) => {
-        for (const expanded of macro(tokenised)) {
-            const outputLine = expanded.macroName == ""
-                ? code(poke(label(expanded)))
-                : lineWithNoObjectCode(expanded);
-            if (outputLine.lastLine) {
-                illegalState(outputLine.withFailure);
-            }
-            if (pass.produceOutput()) {
-                listing.line(outputLine);
-                hex.line(outputLine);
-            }
+    const output = (line: LineWithObjectCode) => {
+        if (!pass.produceOutput()) {
+            return;
+        }
+        if (line.lastLine) {
+            illegalState(line.withFailure);
+        }
+        listing.line(line);
+        hex.line(line);
+    };
+
+    const assembly = (line: LineWithTokens) => {
+        for (const expanded of macro(line)) {
+            const outputLine: LineWithObjectCode =
+                expanded.macroName == ""
+                    ? code(poke(operands(label(expanded))))
+                    : lineWithNoObjectCode(expanded);
+            output(outputLine);
         }
     };
 

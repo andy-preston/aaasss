@@ -9,6 +9,7 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { lineWithAddress, lineWithPokedBytes } from "./line-types.ts";
 import { programMemory } from "./program-memory.ts";
+import { lineWithOperands } from "../javascript/operands/line-types.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
@@ -25,8 +26,9 @@ const testLine = (pokes: Array<Code>, code: Code) => {
     const tokenised = lineWithTokens(rendered, "", "", []);
     const processed = lineWithProcessedMacro(tokenised, "");
     const addressed = lineWithAddress(processed, 0);
-    const poked = lineWithPokedBytes(addressed, pokes);
-    return lineWithObjectCode(poked, [], code);
+    const withOperands = lineWithOperands(addressed, []);
+    const poked = lineWithPokedBytes(withOperands, pokes);
+    return lineWithObjectCode(poked, code);
 };
 
 Deno.test("If a line has no code the address remains unchanged", () => {

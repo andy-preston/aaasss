@@ -3,12 +3,10 @@ import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Line } from "../pipeline/line.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 
-export type LineWithTokens = Readonly<
-    Pick<
-        Line,
-        keyof LineWithRenderedJavascript | "label" | "mnemonic" | "symbolicOperands"
-    >
->;
+export type LineWithTokens = Readonly<Pick<
+    Line,
+    keyof LineWithRenderedJavascript | "label" | "mnemonic" | "symbolicOperands"
+>>;
 
 export const lineWithTokens = (
     line: LineWithRenderedJavascript,

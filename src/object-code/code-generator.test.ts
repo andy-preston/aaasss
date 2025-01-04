@@ -2,9 +2,10 @@ import { assert, assertEquals, assertFalse } from "assert";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailure } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
+import { lineWithOperands } from "../javascript/operands/line-types.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
-import type { SymbolicOperands } from "../operands/data-types.ts";
+import type { NumericOperands, SymbolicOperands } from "../operands/data-types.ts";
 import { lineWithPokedBytes, lineWithAddress } from "../program-memory/line-types.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
@@ -17,27 +18,29 @@ const testEnvironment = () => {
     const properties = deviceProperties(context);
     const memory = programMemory(context, properties.public);
     return {
-        "context": context,
         "properties": properties,
         "programMemory": memory,
-        "objectCode": objectCode(context, properties.public, memory)
+        "objectCode": objectCode(properties.public, memory)
     };
 };
 
 const testLine = (
-    label: Label, mnemonic: Mnemonic, operands: SymbolicOperands
+    label: Label, mnemonic: Mnemonic,
+    symbolic: SymbolicOperands, numeric: NumericOperands
 ) => {
     const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "");
-    const tokenised = lineWithTokens(rendered, label, mnemonic, operands);
+    const tokenised = lineWithTokens(rendered, label, mnemonic, symbolic);
     const processed = lineWithProcessedMacro(tokenised, "");
     const addressed = lineWithAddress(processed, 0);
-    return lineWithPokedBytes(addressed, []);
+    const withOperands = lineWithOperands(addressed, numeric);
+    return lineWithPokedBytes(withOperands, []);
 };
 
 Deno.test("Lines with no mnemonic don't bother generating code", () => {
     const environment = testEnvironment();
-    const result = environment.objectCode(testLine("", "", []));
+    const line = testLine("", "", [], []);
+    const result = environment.objectCode(line);
     assertFalse(result.failed());
     assertEquals(result.failures.length, 0);
     assertEquals(result.code.length, 0);
@@ -45,7 +48,8 @@ Deno.test("Lines with no mnemonic don't bother generating code", () => {
 
 Deno.test("Attempting to generate code with no device selected fails", () => {
     const environment = testEnvironment();
-    const result = environment.objectCode(testLine("", "DES", []));
+    const line = testLine("", "DES", [], []);
+    const result = environment.objectCode(line);
     assert(result.failed());
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -58,7 +62,8 @@ Deno.test("Lines with unsupported instructions fail", () => {
     const environment = testEnvironment();
     environment.properties.setName("testDevice");
     environment.properties.unsupportedInstructions(["DES"]);
-    const result = environment.objectCode(testLine("", "DES", []));
+    const line = testLine("", "DES", [], []);
+    const result = environment.objectCode(line);
     assert(result.failed());
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -70,7 +75,8 @@ Deno.test("Lines with unsupported instructions fail", () => {
 Deno.test("Lines with unknown instructions fail", () => {
     const environment = testEnvironment();
     environment.properties.setName("testDevice");
-    const result = environment.objectCode(testLine("", "NOT_REAL", []));
+    const line = testLine("", "NOT_REAL", [], []);
+    const result = environment.objectCode(line);
     assert(result.failed());
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -83,7 +89,8 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
     const environment = testEnvironment();
     environment.properties.setName("testDevice");
     environment.properties.programMemoryBytes(0);
-    const result = environment.objectCode(testLine("", "DES", ["15"]));
+    const line = testLine("", "DES", ["15"], [15]);
+    const result = environment.objectCode(line);
     assert(result.failed(), "Didn't fail!");
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -99,13 +106,15 @@ Deno.test("Advancing beyond the end of program memory causes failure", () => {
     environment.properties.setName("testDevice");
     environment.properties.programMemoryBytes(2);
 
-    const firstResult = environment.objectCode(testLine("", "DES", ["15"]));
+    const firstLine = testLine("", "DES", ["15"], [15]);
+    const firstResult = environment.objectCode(firstLine);
     assertFalse(firstResult.failed(), "Unexpected failure");
     assertEquals(firstResult.failures.length, 0);
     assertEquals(firstResult.code,[[0x94, 0xfb]]);
     //assertEquals(environment.programMemory.address(), 1);
 
-    const secondResult = environment.objectCode(testLine("", "DES", ["15"]));
+    const secondLine = testLine("", "DES", ["15"], [15]);
+    const secondResult = environment.objectCode(secondLine);
     assert(secondResult.failed(), "Didn't fail!");
     secondResult.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -120,7 +129,8 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     const environment = testEnvironment();
     environment.properties.setName("testDevice");
     environment.properties.programMemoryBytes(1024);
-    const result = environment.objectCode(testLine("", "DES", ["15"]));
+    const line = testLine("", "DES", ["15"], [15]);
+    const result = environment.objectCode(line);
     assertFalse(result.failed(), "Unexpected failure");
     assertEquals(result.code,[[0x94, 0xfb]]);
     //assertEquals(environment.programMemory.address(), 1);

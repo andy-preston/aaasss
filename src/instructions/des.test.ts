@@ -1,5 +1,4 @@
 import { assertEquals, assertFalse, assertNotEquals } from "assert";
-import { anEmptyContext } from "../javascript/context.ts";
 import { des } from "./des.ts";
 import { description, testLine, Tests } from "./testing.ts";
 
@@ -7,16 +6,15 @@ import { description, testLine, Tests } from "./testing.ts";
 // that I could get hold of.
 
 const tests: Tests = [
-    [["", "DES", ["15"]], [0x94, 0xfb]]
+    [["", "DES", ["15"]], [15], [0x94, 0xfb]]
 ];
 
 Deno.test("DES Code Generation", () => {
     for (const test of tests) {
-        const context = anEmptyContext();
-        const translate = des(testLine(test[0]));
+        const translate = des(testLine(test[0], test[1]));
         assertNotEquals(translate, undefined);
-        const result = translate!(context);
+        const result = translate!();
         assertFalse(result.failed());
-        assertEquals(result.code, [test[1]], description(test));
+        assertEquals(result.code, [test[2]], description(test));
     }
 });
