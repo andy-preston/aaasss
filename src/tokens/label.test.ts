@@ -1,6 +1,6 @@
 import { assert, assertEquals } from "assert";
-import { tokenise } from "./tokenise.ts";
 import { testLine } from "./testing.ts";
+import { tokenise } from "./tokenise.ts";
 
 Deno.test("A line containing a colon contains a label", () => {
     const line = testLine("label: LDI R16, 23");
