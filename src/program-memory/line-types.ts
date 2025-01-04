@@ -1,12 +1,10 @@
-import type {
-    PropertiesForMacroProcessing, LineWithProcessedMacro
-} from "../macro/line-types.ts";
+import type { LineWithProcessedMacro } from "../macro/line-types.ts";
 import type { Line } from "../pipeline/line.ts";
 import type { Code } from "../object-code/data-types.ts";
 
-type PropertiesForAddress = PropertiesForMacroProcessing | "address";
-
-export type LineWithAddress = Readonly<Pick<Line, PropertiesForAddress>>;
+export type LineWithAddress = Readonly<
+    Pick<Line, keyof LineWithProcessedMacro | "address">
+>;
 
 export const lineWithAddress = (
     line: LineWithProcessedMacro, address: number
@@ -15,9 +13,9 @@ export const lineWithAddress = (
     return line as LineWithAddress;
 };
 
-export type PropertiesForPokedBytes = PropertiesForAddress | "code";
-
-export type LineWithPokedBytes = Readonly<Pick<Line, PropertiesForPokedBytes>>;
+export type LineWithPokedBytes = Readonly<
+    Pick<Line, keyof LineWithAddress | "code">
+>;
 
 export const lineWithPokedBytes = (
     line: LineWithAddress, poked: Array<Code>

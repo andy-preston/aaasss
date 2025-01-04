@@ -1,14 +1,14 @@
-import type {
-    LineWithRenderedJavascript, PropertiesForRenderedJavascript
-} from "../embedded-js/line-types.ts";
+import type { LineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Line } from "../pipeline/line.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 
-export type PropertiesForTokens = PropertiesForRenderedJavascript |
-    "label" | "mnemonic" | "symbolicOperands";
-
-export type LineWithTokens = Readonly<Pick<Line, PropertiesForTokens>>;
+export type LineWithTokens = Readonly<
+    Pick<
+        Line,
+        keyof LineWithRenderedJavascript | "label" | "mnemonic" | "symbolicOperands"
+    >
+>;
 
 export const lineWithTokens = (
     line: LineWithRenderedJavascript,

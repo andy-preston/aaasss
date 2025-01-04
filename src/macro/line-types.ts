@@ -7,14 +7,11 @@ import {
 } from "../program-memory/line-types.ts";
 import type { Label } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
-import {
-    lineWithTokens, type LineWithTokens, type PropertiesForTokens
-} from "../tokens/line-types.ts";
+import { lineWithTokens, type LineWithTokens } from "../tokens/line-types.ts";
 
-export type PropertiesForMacroProcessing = PropertiesForTokens | "macroName";
-
-export type LineWithProcessedMacro
-    = Readonly<Pick<Line, PropertiesForMacroProcessing>>;
+export type LineWithProcessedMacro = Readonly<
+    Pick<Line, keyof LineWithTokens | "macroName">
+>;
 
 export const lineWithProcessedMacro = (
     line: LineWithTokens, macroName: string
