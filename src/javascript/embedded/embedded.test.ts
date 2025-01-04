@@ -4,7 +4,7 @@ import { assertFailure } from "../../failure/testing.ts";
 import { SourceCode } from "../../source-code/data-types.ts";
 import { lineWithRawSource } from "../../source-code/line-types.ts";
 import { anEmptyContext } from "../context.ts";
-import { javascript } from "./javascript.ts";
+import { javascript } from "./embedded.ts";
 
 const testLine = (source: SourceCode) =>
     lineWithRawSource("", 0, false, source);

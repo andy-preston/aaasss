@@ -4,7 +4,7 @@ import { deviceChooser } from "../device/chooser.ts";
 import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { anEmptyContext } from "../javascript/context.ts";
-import { javascript } from "../javascript/embedded/javascript.ts";
+import { javascript } from "../javascript/embedded/embedded.ts";
 import type { FailureMessageTranslator } from "../listing/messages.ts";
 import { listing } from "../listing/listing.ts";
 import { processor } from "../macro/processor.ts";
