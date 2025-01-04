@@ -1,21 +1,8 @@
 import { assertEquals } from "assert/equals";
 import { anEmptyContext } from "../context/context.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
-import type { SymbolicOperands } from "../operands/data-types.ts";
-import type { Label, Mnemonic } from "../source-code/data-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
-import { lineWithTokens } from "../tokenise/line-types.ts";
 import { processor } from "./processor.ts";
-
-const testLine = (
-    label: Label, mnemonic: Mnemonic, operands: SymbolicOperands
-) => {
-    const raw = lineWithRawSource("", 0, false, "", []);
-    const rendered = lineWithRenderedJavascript(raw, "", []);
-    return lineWithTokens(rendered, label, mnemonic, operands, []);
-};
+import { testLine } from "./testing.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();

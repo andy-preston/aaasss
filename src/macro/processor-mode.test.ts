@@ -1,16 +1,7 @@
 import { assertEquals } from "assert/equals";
-import { processor } from "./processor.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { lineWithTokens } from "../tokenise/line-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
-
-const testLine = () => {
-    const raw = lineWithRawSource("", 0, false, "", []);
-    const rendered = lineWithRenderedJavascript(raw, "", []);
-    return lineWithTokens(rendered, "", "TST", [], []);
-};
+import { processor } from "./processor.ts";
+import { testLine } from "./testing.ts";
 
 Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", () => {
     const macroProcessor = processor();
@@ -41,7 +32,7 @@ Deno.test("Multiple macros can be defined", () => {
 
     const firstDefinition = macroProcessor.define("aMacro");
     assertSuccess(firstDefinition, "aMacro");
-    macroProcessor.lines(testLine()).toArray();
+    macroProcessor.lines(testLine("", "TST", [])).toArray();
     const firstEnding = macroProcessor.end();
     assertSuccess(firstEnding, "aMacro");
 

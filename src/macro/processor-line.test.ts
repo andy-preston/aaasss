@@ -1,17 +1,8 @@
 import { assertEquals } from "assert";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
-import { lineWithTokens } from "../tokenise/line-types.ts";
 import type { LineWithProcessedMacro } from "./line-types.ts";
 import { processor } from "./processor.ts";
-
-const testLine = (label: Label, mnemonic: Mnemonic) => {
-    const raw = lineWithRawSource("", 0, false, "", []);
-    const rendered = lineWithRenderedJavascript(raw, "", []);
-    return lineWithTokens(rendered, label, mnemonic, [], []);
-};
+import { testLine } from "./testing.ts";
 
 const assertProcessedLine = (
     lines: Array<LineWithProcessedMacro>,
@@ -32,7 +23,7 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
     const macroProcessor = processor();
     const testLines = [["testLabel", "TST"], ["", "AND"], ["", "TST"]];
     for (const [label, mnemonic] of testLines) {
-        const tokenised = testLine(label!, mnemonic!);
+        const tokenised = testLine(label!, mnemonic!, []);
         assertProcessedLine(
             macroProcessor.lines(tokenised).toArray(),
             noMacroName, label!, mnemonic!
@@ -45,14 +36,14 @@ Deno.test("Whilst a macro is being defined, saveLine will... save lines", () => 
     macroProcessor.define("plop");
     const testLines = [["testLabel", "TST"], ["", "AND"], ["", "TST"]];
     for (const [label, mnemonic] of testLines) {
-        const tokenised = testLine(label!, mnemonic!);
+        const tokenised = testLine(label!, mnemonic!, []);
         assertProcessedLine(
             macroProcessor.lines(tokenised).toArray(),
             "plop", label!, mnemonic!
         );
     }
     macroProcessor.end();
-    const tokenised = testLine("ended", "TST");
+    const tokenised = testLine("ended", "TST", []);
     assertProcessedLine(
         macroProcessor.lines(tokenised).toArray(),
         noMacroName, "ended", "TST"
@@ -64,14 +55,14 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     macroProcessor.define("plop");
     const testLines = [["testLabel", "TST"], ["", "AND"], ["", "TST"]];
     for (const [label, mnemonic] of testLines) {
-        const tokenised = testLine(label!, mnemonic!);
+        const tokenised = testLine(label!, mnemonic!, []);
         macroProcessor.lines(tokenised).toArray();
     }
     macroProcessor.end();
     macroProcessor.macro("plop", []);
 
     testLines.push(["ended", "TST"]);
-    const tokenised = testLine("ended", "TST");
+    const tokenised = testLine("ended", "TST", []);
     const lines = macroProcessor.lines(tokenised).toArray();
     assertEquals(lines.length, testLines.length);
     for (const [index, line] of lines.entries()) {

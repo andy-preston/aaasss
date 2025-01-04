@@ -2,6 +2,7 @@ import type { Directive } from "../context/context.ts";
 import { box, type Box } from "../coupling/boxed-value.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { failure, type Failure } from "../failure/failures.ts";
+import type { PipelineSource } from "../pipeline/pipeline.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource } from "./line-types.ts";
 
@@ -57,10 +58,12 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         return box("");
     };
 
-    const lines = function* () {
+    const lines: PipelineSource = function* () {
         const topFile = include(topFileName);
         if (topFile.which == "failure") {
-            yield lineWithRawSource(topFileName, 0, false, "", [topFile]);
+            const failingLine = lineWithRawSource(topFileName, 0, false, "");
+            failingLine.addFailures([topFile]);
+            yield failingLine;
         }
         let file = fileStack[0];
         while (file != undefined) {
@@ -70,7 +73,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             } else {
                 const [lineNumber, rawSource, lastLine] = next.value;
                 yield lineWithRawSource(
-                    file.name, lineNumber, lastLine, rawSource, []
+                    file.name, lineNumber, lastLine, rawSource
                 );
             }
             // Another file could have been pushed by an include directive

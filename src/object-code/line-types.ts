@@ -1,4 +1,3 @@
-import type { Failures } from "../failure/failures.ts";
 import type { NumericOperands } from "../operands/data-types.ts";
 import type { Line } from "../pipeline/line.ts";
 import type {
@@ -12,13 +11,11 @@ export type PropertiesForObjectCode
 export type LineWithObjectCode = Readonly<Pick<Line, PropertiesForObjectCode>>;
 
 export const lineWithObjectCode = (
-    line: LineWithPokedBytes, numeric: NumericOperands, code: Code,
-    failures: Failures
+    line: LineWithPokedBytes, numeric: NumericOperands, code: Code
 ) => {
     (line as Line).numericOperands = numeric;
     if (code.length > 0) {
         (line as Line).code.push(code);
     }
-    line.addFailures(failures);
     return line as LineWithObjectCode;
 };

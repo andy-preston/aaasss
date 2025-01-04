@@ -5,22 +5,21 @@ import {
     lineWithAddress, lineWithPokedBytes
 } from "../program-memory/line-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
-import { lineWithTokens } from "../tokenise/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
+import { lineWithTokens } from "../tokens/line-types.ts";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
 
 type TestTokens = [Label, Mnemonic, SymbolicOperands]
 type Test = [TestTokens, Code];
 export type Tests = Array<Test>;
 
 export const testLine = (test: TestTokens) => {
-    const raw = lineWithRawSource("", 0, false, "", []);
-    const rendered = lineWithRenderedJavascript(raw, "", []);
-    const tokenised = lineWithTokens(rendered, ...test, []);
-    const processed = lineWithProcessedMacro(tokenised, "", []);
-    const addressed = lineWithAddress(processed, 0, []);
-    return lineWithPokedBytes(addressed, [], []);
+    const raw = lineWithRawSource("", 0, false, "");
+    const rendered = lineWithRenderedJavascript(raw, "");
+    const tokenised = lineWithTokens(rendered, ...test);
+    const processed = lineWithProcessedMacro(tokenised, "");
+    const addressed = lineWithAddress(processed, 0);
+    return lineWithPokedBytes(addressed, []);
 };
 
 export const description = (test: Test) => {

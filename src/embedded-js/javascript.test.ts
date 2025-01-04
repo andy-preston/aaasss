@@ -1,12 +1,12 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { anEmptyContext } from "../context/context.ts";
 import { cpuRegisters } from "../device/registers.ts";
-import { SourceCode } from "./data-types.ts";
+import { SourceCode } from "../source-code/data-types.ts";
 import { javascript } from "./javascript.ts";
-import { lineWithRawSource } from "./line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
 
 const testLine = (source: SourceCode) =>
-    lineWithRawSource("", 0, false, source, []);
+    lineWithRawSource("", 0, false, source);
 
 const testEnvironment = () => {
     const context = anEmptyContext();

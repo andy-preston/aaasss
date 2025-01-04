@@ -15,8 +15,8 @@ import { programMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../program-memory/poke.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { fileStack, type ReaderMethod } from "../source-code/file-stack.ts";
-import { javascript } from "../source-code/javascript.ts";
-import { tokenise } from "../tokenise/tokenise.ts";
+import { javascript } from "../embedded-js/javascript.ts";
+import { tokenise } from "../tokens/tokenise.ts";
 
 export const coupling = (
     fileName: FileName,
@@ -26,6 +26,12 @@ export const coupling = (
 ) => {
     const currentPass = pass();
 
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // The context has no knowledge of which pass we're on - so it can't
+    // ignoreErrors
+    //
+    ////////////////////////////////////////////////////////////////////////////
     const context = anEmptyContext();
 
     const properties = deviceProperties(context);

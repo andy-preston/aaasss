@@ -2,7 +2,7 @@ import { failure } from "../failure/failures.ts";
 import { SymbolicOperand } from "../operands/data-types.ts";
 import { operands, SymbolicOperands } from "../operands/data-types.ts";
 import { Label } from "../source-code/data-types.ts";
-import type { LineWithTokens } from "../tokenise/line-types.ts";
+import type { LineWithTokens } from "../tokens/line-types.ts";
 import { lineWithExpandedMacro } from "./line-types.ts";
 
 export type MacroName = string;
@@ -37,13 +37,14 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
             instance = instance + 1;
             for (const [index, line] of lines.entries()) {
                 const symbolicOperands = line.symbolicOperands.map(mapOperand);
-                yield lineWithExpandedMacro(
+                const expandedLine = lineWithExpandedMacro(
                     callingLine,
                     line,
                     mapLabel(line.label),
-                    operands<SymbolicOperands>(symbolicOperands),
-                    parameterFailure(index == 0)
+                    operands<SymbolicOperands>(symbolicOperands)
                 );
+                expandedLine.addFailures(parameterFailure(index == 0));
+                yield expandedLine;
             }
         };
     };

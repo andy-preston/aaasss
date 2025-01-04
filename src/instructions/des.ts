@@ -32,7 +32,11 @@ export const des = (
             : template("1001_0100 KKKK_1011", [
                 ["K", numericOperands[0]!]
             ]);
-        return lineWithObjectCode(line, numericOperands, code, failures);
+        const codeLine = lineWithObjectCode(line, numericOperands, code);
+        if (failures.length > 0) {
+            codeLine.addFailures(failures);
+        }
+        return codeLine;
     };
 
     return line.mnemonic == "DES" ? codeGenerator : undefined;

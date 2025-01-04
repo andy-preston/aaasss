@@ -2,7 +2,7 @@ import { Directive } from "../context/context.ts";
 import { box } from "../coupling/boxed-value.ts";
 import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { failure, type Failure } from "../failure/failures.ts";
-import type { LineWithTokens } from "../tokenise/line-types.ts";
+import type { LineWithTokens } from "../tokens/line-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 import {
     macro,
@@ -76,8 +76,7 @@ export const processor = () => {
         }
         yield lineWithProcessedMacro(
             line,
-            recording == undefined ? "" : recordingName,
-            []
+            recording == undefined ? "" : recordingName
         );
     };
 

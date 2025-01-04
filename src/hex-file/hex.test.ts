@@ -1,30 +1,23 @@
 import { assert, assertEquals } from "assert";
+import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
+import { lineWithExpandedMacro } from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
-import {
-    lineWithRawSource, lineWithRenderedJavascript
-} from "../source-code/line-types.ts";
-import {
-    lineWithTokens
-} from "../tokenise/line-types.ts";
-import {
-    lineWithExpandedMacro
-} from "../macro/line-types.ts";
+import { lineWithObjectCode } from "../object-code/line-types.ts";
 import {
     lineWithAddress, lineWithPokedBytes
 } from "../program-memory/line-types.ts";
-import {
-    lineWithObjectCode
-} from "../object-code/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
+import { lineWithTokens } from "../tokens/line-types.ts";
 import { hexFile } from "./hex.ts";
 
 const testLine = (test: TestBlock) => {
-    const withRaw = lineWithRawSource("", 0, false, "", []);
-    const withRendered = lineWithRenderedJavascript(withRaw, "", []);
-    const withTokens = lineWithTokens(withRendered, "", "", [], []);
-    const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", [], []);
-    const withAddress = lineWithAddress(withMacro, test[0], []);
-    const withPoked = lineWithPokedBytes(withAddress, [], []);
-    return lineWithObjectCode(withPoked, [], test[1], []);
+    const withRaw = lineWithRawSource("", 0, false, "");
+    const withRendered = lineWithRenderedJavascript(withRaw, "");
+    const withTokens = lineWithTokens(withRendered, "", "", []);
+    const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", []);
+    const withAddress = lineWithAddress(withMacro, test[0]);
+    const withPoked = lineWithPokedBytes(withAddress, []);
+    return lineWithObjectCode(withPoked, [], test[1]);
 };
 
 const testEnvironment = () => {
