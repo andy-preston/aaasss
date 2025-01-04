@@ -1,4 +1,5 @@
 import type { Context } from "../context/context.ts";
+import { box, type Box } from "../coupling/boxed-value.ts";
 import { failure, type Failure } from "../failure/failures.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";
@@ -21,64 +22,61 @@ export const javascript = (context: Context) => {
         current = "assembler";
     };
 
-    const leftInIllegalState = (): Array<Failure> =>
+    const leftInIllegalState = (): Box<boolean> | Failure =>
         current == "javascript"
-            ? [failure(undefined, "js_jsMode", undefined)]
-            : [];
-
-    const javascript = (failures: Array<Failure>): Array<Failure> => {
-        const alreadyInJs = leftInIllegalState();
-        if (alreadyInJs.length > 0) {
-            return failures.concat(alreadyInJs);
-        } else {
-            current = "javascript";
-            return failures;
-        }
-    };
-
-    const assembler = (failures: Array<Failure>): Array<Failure> => {
-        if (current == "assembler") {
-            failures.push(failure(undefined, "js_assemblerMode", undefined));
-        } else {
-            const javascript = buffer.javascript.join("\n").trim();
-            buffer.javascript = [];
-            const jsResult = context.value(javascript);
-            if (jsResult.which == "failure") {
-                failures.push(jsResult);
-            } else {
-                buffer.assembler.push(jsResult.value);
-            }
-            current = "assembler";
-        }
-        return failures;
-    };
-
-    const usePart = (
-        failures: Array<Failure>, part: string
-    ): Array<Failure> => {
-        if (part == "{{") {
-            return javascript(failures);
-        }
-        if (part == "}}") {
-            return assembler(failures);
-        }
-        buffer[current]!.push(part);
-        return failures;
-    };
+            ? failure(undefined, "js_jsMode", undefined)
+            : box(false);
 
     const rendered = (line: LineWithRawSource) => {
-        const failures = line.rawSource.split(scriptDelimiter).reduce(
-            usePart,
-            [],
+        let itFailed = false;
+
+        const failed = (failure: Failure) => {
+            itFailed = true;
+            line.withFailure(failure);
+        };
+
+        const actions = new Map([[
+            "{{", () => {
+                const alreadyInJs = leftInIllegalState();
+                if (alreadyInJs.which == "failure") {
+                    failed(alreadyInJs);
+                } else {
+                    current = "javascript";
+                }
+            }
+        ], [
+            "}}", () => {
+                if (current == "assembler") {
+                    failed(failure(undefined, "js_assemblerMode", undefined));
+                } else {
+                    const javascriptCode = buffer.javascript.join("\n").trim();
+                    buffer.javascript = [];
+                    const result = context.value(javascriptCode);
+                    if (result.which == "failure") {
+                        failed(result);
+                    } else {
+                        buffer.assembler.push(result.value);
+                    }
+                    current = "assembler";
+                }
+            }
+        ]]);
+
+        line.rawSource.split(scriptDelimiter).forEach(
+            (part: string) => {
+                if (actions.has(part)) {
+                    actions.get(part)!();
+                } else {
+                    buffer[current]!.push(part);
+                }
+            }
         );
-        if (failures.length > 0) {
-            const newLine = lineWithRenderedJavascript(line, "");
-            newLine.addFailures(failures);
-            return newLine;
-        }
-        const assembler = buffer.assembler.join("").trim();
+
+        const result = lineWithRenderedJavascript(
+            line, itFailed ? "" : buffer.assembler.join("").trim()
+        );
         buffer.assembler = [];
-        return lineWithRenderedJavascript(line, assembler);
+        return result;
     };
 
     return {

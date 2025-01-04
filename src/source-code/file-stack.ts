@@ -61,9 +61,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     const lines: PipelineSource = function* () {
         const topFile = include(topFileName);
         if (topFile.which == "failure") {
-            const failingLine = lineWithRawSource(topFileName, 0, false, "");
-            failingLine.addFailures([topFile]);
-            yield failingLine;
+            yield lineWithRawSource(topFileName, 0, false, "").withFailure(topFile);
         }
         let file = fileStack[0];
         while (file != undefined) {

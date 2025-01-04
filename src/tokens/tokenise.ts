@@ -1,4 +1,4 @@
-import { failure, type Failures } from "../failure/failures.ts";
+import { failure } from "../failure/failures.ts";
 import {
     operands, type OperandIndex, type SymbolicOperands
 } from "../operands/data-types.ts"
@@ -12,20 +12,18 @@ import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
 
 export const tokenise = (line: LineWithRenderedJavascript) => {
-    const failures: Failures = [];
-
     const cleaned = clean(line.assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
     if (invalidLabel(label)) {
-        failures.push(failure(undefined, "syntax_invalidLabel", undefined));
+        line.withFailure(failure(undefined, "syntax_invalidLabel", undefined));
     }
 
     const [mnemonic, operandsText] = splitSource("before", " ", withoutLabel);
 
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
-        failures.push(failure(
+        line.withFailure(failure(
             undefined, "operand_wrongCount", `${operandsList.length}`
         ));
     }
@@ -36,17 +34,17 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
         if (indexing == "") {
             fullOperands.push(operand);
         } else if (indexing == "X+") {
-            failures.push(failure(
+            line.withFailure(failure(
                 fullOperands.length as OperandIndex, "operand_offsetX", ""
             ));
             fullOperands.push(operand);
         } else if (fullOperands.length == 0 && mnemonic != "STD") {
-            failures.push(failure(
+            line.withFailure(failure(
                 fullOperands.length as OperandIndex, "operand_offsetNotStd", ""
             ));
             fullOperands.push(operand);
         } else if (fullOperands.length == 1 && mnemonic != "LDD") {
-            failures.push(failure(
+            line.withFailure(failure(
                 fullOperands.length as OperandIndex, "operand_offsetNotLdd", ""
             ));
             fullOperands.push(operand);
@@ -58,18 +56,16 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
 
     for (const [index, operand] of fullOperands.entries()) {
         if (operand == "") {
-            failures.push(failure(index as OperandIndex, "operand_blank", ""));
+            line.withFailure(failure(index as OperandIndex, "operand_blank", ""));
         }
     }
 
     const mappedOperands = fullOperands.map(upperCaseRegisters);
 
-    const newLine = lineWithTokens(
+    return lineWithTokens(
         line, label, mnemonic.toUpperCase(),
         operands<SymbolicOperands>(mappedOperands)
     );
-    newLine.addFailures(failures);
-    return newLine;
 };
 
 export type Tokenise = typeof tokenise;

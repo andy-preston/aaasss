@@ -1,4 +1,4 @@
-import { failure, type Failure } from "../failure/failures.ts";
+import { failure } from "../failure/failures.ts";
 import type { Context } from "../context/context.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { LineWithPokedBytes } from "../program-memory/line-types.ts";
@@ -22,11 +22,8 @@ const addressingMode = (
     return undefined;
 };
 
-const failingLine = (line: LineWithPokedBytes, failure: Failure) => {
-    const failed = lineWithObjectCode(line, [], []);
-    failed.addFailures([failure]);
-    return failed;
-}
+const emptyLine = (line: LineWithPokedBytes) =>
+    lineWithObjectCode(line, [], []);
 
 export const codeGenerator = (
     context: Context,
@@ -34,23 +31,22 @@ export const codeGenerator = (
     programMemory: ProgramMemory
 ) => (line: LineWithPokedBytes) => {
     if (line.mnemonic == "") {
-        return lineWithObjectCode(line, [], []);
+        return emptyLine(line);
     }
     const isUnsupported = device.isUnsupported(line.mnemonic);
     if (isUnsupported.which == "failure") {
-        return failingLine(line, isUnsupported);
+        return emptyLine(line).withFailure(isUnsupported);
     }
     const mode = addressingMode(line);
     if (mode == undefined) {
-        return failingLine(
-            line,
+        return emptyLine(line).withFailure(
             failure(undefined, "mnemonic_unknown", undefined)
         );
     }
     const codeLine = mode(context);
     const stepResult = programMemory.step(codeLine);
     if (stepResult.which == "failure") {
-        codeLine.addFailures([stepResult]);
+        codeLine.withFailure(stepResult);
     }
     return codeLine;
 };

@@ -1,3 +1,4 @@
+import type { Javascript } from "../embedded-js/javascript.ts";
 import type { IllegalState } from "../failure/illegal-state.ts";
 import type { HexFile } from "../hex-file/hex.ts";
 import type { Listing } from "../listing/listing.ts";
@@ -6,11 +7,10 @@ import type { MacroProcessor } from "../macro/processor.ts";
 import type { CodeGenerator } from "../object-code/code-generator.ts";
 import type { PokeBuffer } from "../program-memory/poke.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
-import type { Javascript } from "../embedded-js/javascript.ts";
+import type { LineWithRawSource } from "../source-code/line-types.ts";
 import type { Tokenise } from "../tokens/tokenise.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import { type Pass, passes } from "./pass.ts";
-import { LineWithRawSource } from "../source-code/line-types.ts";
 
 export type PipelineSource = () => Generator<LineWithRawSource, void, void>;
 
@@ -33,7 +33,7 @@ export const pipeLine = (
                 ? code(poke(label(expanded)))
                 : lineWithNoObjectCode(expanded);
             if (outputLine.lastLine) {
-                outputLine.addFailures(illegalState());
+                illegalState(outputLine.withFailure);
             }
             if (pass.produceOutput()) {
                 listing.line(outputLine);

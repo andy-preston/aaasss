@@ -1,5 +1,5 @@
 import type { Failure, Failures } from "../failure/failures.ts";
-import { Code } from "../object-code/data-types.ts";
+import type { Code } from "../object-code/data-types.ts";
 import type {
     NumericOperands, SymbolicOperands
 } from "../operands/data-types.ts";
@@ -14,17 +14,18 @@ export const line = (
     source: SourceCode
 ) => {
     const failures: Failures = [];
-    const addFailures = (additional: Failures) => {
-        failures.push(...additional);
+    const withFailure = (failure: Failure) => {
+        failures.push(failure);
+        return theLine;
     };
     const failed = () => failures.length > 0;
     const mapFailures = function*(): Generator<Failure, void, void> {
         yield* failures;
     };
-    return {
+    const theLine = {
         "failures": mapFailures,
         "failed": failed,
-        "addFailures": addFailures,
+        "withFailure": withFailure,
         "fileName": fileName as FileName,
         "lineNumber": lineNumber as LineNumber,
         "lastLine": lastLine,
@@ -38,6 +39,7 @@ export const line = (
         "address": 0,
         "code": [] as Array<Code>,
     };
+    return theLine;
 };
 
 export type Line = ReturnType<typeof line>;

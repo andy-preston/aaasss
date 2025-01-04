@@ -21,11 +21,6 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
         lines.find(line => line.label == parameter) != undefined;
 
     const mapper = (actual: ActualParameters) => {
-        const parameterFailure = (firstLine: boolean) =>
-            firstLine && symbolic.length != actual.length
-                ? [failure(undefined, "macro_params", `${actual.length}`)]
-                : [];
-
         const mapOperand = (oldOperand: SymbolicOperand) => {
             const newOperand = isLabel(oldOperand)
                 ? mapLabel(oldOperand)
@@ -43,7 +38,11 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
                     mapLabel(line.label),
                     operands<SymbolicOperands>(symbolicOperands)
                 );
-                expandedLine.addFailures(parameterFailure(index == 0));
+                if (index == 0 && symbolic.length != actual.length) {
+                    expandedLine.withFailure(
+                        failure(undefined, "macro_params", `${actual.length}`)
+                    );
+                }
                 yield expandedLine;
             }
         };

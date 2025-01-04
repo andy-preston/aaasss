@@ -73,6 +73,5 @@ Deno.test("Omitting a closing moustache is illegal", () => {
     assertFalse(rendered.failed());
     assertEquals(rendered.failures.length, 0);
     const illegal = environment.js.leftInIllegalState();
-    assertEquals(illegal.length, 1);
-    assertEquals(illegal[0]!.kind, "js_jsMode");
+    assertFailure(illegal, "js_jsMode");
 });

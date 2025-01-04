@@ -1,5 +1,5 @@
-import { Directive } from "../context/context.ts";
-import { box } from "../coupling/boxed-value.ts";
+import type { Directive } from "../context/context.ts";
+import { box, type Box} from "../coupling/boxed-value.ts";
 import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { failure, type Failure } from "../failure/failures.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
@@ -18,10 +18,10 @@ export const processor = () => {
 
     let macros: Map<MacroName, Macro> = new Map();
 
-    const leftInIllegalState = (): Array<Failure> =>
-        recording == undefined
-            ? []
-            : [failure(undefined, "macro_define", undefined)];
+    const leftInIllegalState = (): Box<boolean> | Failure =>
+        recording != undefined
+            ? failure(undefined, "macro_define", undefined)
+            : box(false);
 
     const reset = () => {
         macros = new Map();

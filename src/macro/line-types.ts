@@ -33,9 +33,7 @@ export const lineWithExpandedMacro = (
     const tokenised = lineWithTokens(
         rendered, label, line.mnemonic, symbolicOperands
     );
-    for (const failure of line.failures()) {
-        tokenised.addFailures([failure]);
-    };
+    line.failures().forEach(tokenised.withFailure);
     return lineWithProcessedMacro(tokenised, "");
 };
 

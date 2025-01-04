@@ -1,4 +1,3 @@
-import { assertEquals } from "assert/equals";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { processor } from "./processor.ts";
 import { testLine } from "./testing.ts";
@@ -7,8 +6,7 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
     const macroProcessor = processor();
     macroProcessor.define("plop");
     const result = macroProcessor.leftInIllegalState();
-    assertEquals(result.length, 1);
-    assertEquals(result[0]!.kind, "macro_define");
+    assertFailure(result, "macro_define");
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
