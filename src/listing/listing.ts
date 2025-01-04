@@ -55,7 +55,7 @@ export const listing = (
             `${theLine.lineNumber}`,
             theLine.rawSource || theLine.assemblySource
         );
-        for (const failure of theLine.failures) {
+        for (const failure of theLine.failures()) {
             for (const message of failureMessages(failure, theLine)) {
                 yield textLine("", message);
             }

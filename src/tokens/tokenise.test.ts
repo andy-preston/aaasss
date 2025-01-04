@@ -1,8 +1,9 @@
-import { assertEquals } from "assert";
-import { tokenise } from "./tokenise.ts";
-import type { SourceCode } from "../source-code/data-types.ts";
+import { assert, assertEquals } from "assert";
 import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
+import { assertFailureWithExtra } from "../failure/testing.ts";
+import type { SourceCode } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
+import { tokenise } from "./tokenise.ts";
 
 const testLine = (source: SourceCode) => {
     const raw = lineWithRawSource("", 0, false, source);
@@ -102,10 +103,13 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
     ];
     for (const line of badLines) {
         const tokenised = tokenise(testLine(line));
-        assertEquals(tokenised.failures.length, 1, `${line} should fail`);
-        assertEquals(tokenised.failures[0]!.kind, "syntax_invalidLabel");
-        assertEquals(tokenised.failures[0]!.operand, undefined);
-        assertEquals(tokenised.failures[0]!.extra, undefined);
+        assert(tokenised.failed());
+        tokenised.failures().forEach((failure, index) => {
+            assertEquals(index, 0);
+            assertEquals(failure.kind, "syntax_invalidLabel");
+            assertEquals(failure.operand, undefined);
+            assertEquals(failure.extra, undefined);
+        });
     }
     const goodLines = [
         "countBytes:",
@@ -138,24 +142,35 @@ Deno.test("No instruction has three (or more) operands", () => {
     const line = testLine("LDI R16, 23, 999");
     const tokenised = tokenise(line);
     assertEquals(tokenised.symbolicOperands, ["R16", "23"]);
-    assertEquals(tokenised.failures[0]!.kind, "operand_wrongCount");
-    assertEquals(tokenised.failures[0]!.extra, "3");
+    assert(tokenised.failed());
+    tokenised.failures().forEach((failure, index) => {
+        assertEquals(index, 0);
+        assertFailureWithExtra(failure, "operand_wrongCount", "3");
+    });
 });
 
 Deno.test("An operand must not be empty", () => {
     const line = testLine("LDI , 23");
     const tokenised = tokenise(line);
     assertEquals(tokenised.symbolicOperands, ["", "23"]);
-    assertEquals(tokenised.failures[0]!.kind, "operand_blank");
-    assertEquals(tokenised.failures[0]!.operand, 0);
+    assert(tokenised.failed());
+    tokenised.failures().forEach((failure, index) => {
+        assertEquals(index, 0);
+        assertEquals(failure.kind, "operand_blank");
+        assertEquals(failure.operand, 0);
+    });
 });
 
 Deno.test("Trailing commas count as an (empty operand)", () => {
     const line = testLine("LDI r16, ");
     const tokenised = tokenise(line);
     assertEquals(tokenised.symbolicOperands, ["R16", ""]);
-    assertEquals(tokenised.failures[0]!.kind, "operand_blank");
-    assertEquals(tokenised.failures[0]!.operand, 1);
+    assert(tokenised.failed());
+    tokenised.failures().forEach((failure, index) => {
+        assertEquals(index, 0);
+        assertEquals(failure.kind, "operand_blank");
+        assertEquals(failure.operand, 1);
+    });
 });
 
 Deno.test("Some instructions only have one operand", () => {
@@ -203,8 +218,12 @@ Deno.test("... but not as the first operand of any other instruction", () => {
     const tokenised = tokenise(line);
     assertEquals(tokenised.mnemonic, "ST");
     assertEquals(tokenised.symbolicOperands, ["Z+19", "R17"]);
-    assertEquals(tokenised.failures[0]!.kind, "operand_offsetNotStd");
-    assertEquals(tokenised.failures[0]!.operand, 0);
+    assert(tokenised.failed());
+    tokenised.failures().forEach((failure, index) => {
+        assertEquals(index, 0);
+        assertEquals(failure.kind, "operand_offsetNotStd");
+        assertEquals(failure.operand, 0);
+    });
 });
 
 Deno.test("... or the second operand", () => {
@@ -212,6 +231,10 @@ Deno.test("... or the second operand", () => {
     const tokenised = tokenise(line);
     assertEquals(tokenised.mnemonic, "LDI");
     assertEquals(tokenised.symbolicOperands, ["R14", "Z+offset"]);
-    assertEquals(tokenised.failures[0]!.kind, "operand_offsetNotLdd");
-    assertEquals(tokenised.failures[0]!.operand, 1);
+    assert(tokenised.failed());
+    tokenised.failures().forEach((failure, index) => {
+        assertEquals(index, 0);
+        assertEquals(failure.kind, "operand_offsetNotLdd");
+        assertEquals(failure.operand, 1);
+    });
 });

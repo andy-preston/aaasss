@@ -1,9 +1,10 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { anEmptyContext } from "../context/context.ts";
 import { cpuRegisters } from "../device/registers.ts";
+import { assertFailure } from "../failure/testing.ts";
 import { SourceCode } from "../source-code/data-types.ts";
-import { javascript } from "./javascript.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
+import { javascript } from "./javascript.ts";
 
 const testLine = (source: SourceCode) =>
     lineWithRawSource("", 0, false, source);
@@ -50,16 +51,20 @@ Deno.test("Multiple opening moustaches are illegal", () => {
     const environment = testEnvironment();
     const rendered = environment.js.rendered(testLine("{{ {{ }}"));
     assert(rendered.failed());
-    assertEquals(rendered.failures.length, 1);
-    assertEquals(rendered.failures[0]!.kind, "js_jsMode");
+    rendered.failures().forEach((failure, index) => {
+        assertEquals(index, 0);
+        assertFailure(failure, "js_jsMode");
+    });
 });
 
 Deno.test("Multiple closing moustaches are illegal", () => {
     const environment = testEnvironment();
     const rendered = environment.js.rendered(testLine("{{ }} }}"));
     assert(rendered.failed());
-    assertEquals(rendered.failures.length, 1);
-    assertEquals(rendered.failures[0]!.kind, "js_assemblerMode");
+    rendered.failures().forEach((failure, index) => {
+        assertEquals(index, 0);
+        assertFailure(failure, "js_assemblerMode");
+    });
 });
 
 Deno.test("Omitting a closing moustache is illegal", () => {

@@ -1,4 +1,4 @@
-import type { Failures } from "../failure/failures.ts";
+import type { Failure, Failures } from "../failure/failures.ts";
 import { Code } from "../object-code/data-types.ts";
 import type {
     NumericOperands, SymbolicOperands
@@ -6,6 +6,8 @@ import type {
 import type {
     FileName, Label, LineNumber, Mnemonic, SourceCode
 } from "../source-code/data-types.ts";
+
+type FailureMapper = (failure: Failure, index: number) => void;
 
 export const line = (
     fileName: FileName, lineNumber: LineNumber, lastLine: boolean,
@@ -16,8 +18,11 @@ export const line = (
         failures.push(...additional);
     };
     const failed = () => failures.length > 0;
+    const mapFailures = function*(): Generator<Failure, void, void> {
+        yield* failures;
+    };
     return {
-        "failures": failures,
+        "failures": mapFailures,
         "failed": failed,
         "addFailures": addFailures,
         "fileName": fileName as FileName,

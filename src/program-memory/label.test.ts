@@ -69,6 +69,8 @@ Deno.test("... but will cause a failure if the address changes", () => {
     environment.programMemory.origin(20);
     const secondResult = environment.programMemory.label(testLine("A_LABEL"));
     assert(secondResult.failed(), "Unexpected success");
-    assertEquals(secondResult.failures.length, 1);
-    assertFailureWithExtra(secondResult.failures[0]!, "context_redefined", "10");
+    secondResult.failures().forEach((failure, index) => {
+        assertEquals(index, 0);
+        assertFailureWithExtra(failure, "context_redefined", "10");
+    });
 });

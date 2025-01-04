@@ -61,7 +61,10 @@ Deno.test("Reading a non existant source file gives one line with a failure", ()
         assertEquals(line.lineNumber, 0);
         assertEquals(line.rawSource, "");
         assert(line.failed());
-        assertEquals(line.failures[0]!.kind, "file_notFound");
+        line.failures().forEach((failure, index) => {
+            assertEquals(index, 0);
+            assertFailure(failure, "file_notFound");
+        });
         lineCount = lineCount + 1;
     }
     assertEquals(lineCount, 1);

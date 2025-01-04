@@ -1,4 +1,5 @@
 import { assert, assertEquals, assertFalse } from "assert";
+import { assertFailure } from "../failure/testing.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import { macro, type SymbolicParameters } from "./macro.ts";
 import { testLine } from "./testing.ts";
@@ -57,10 +58,13 @@ Deno.test("A failure is given if supplied parameters mismatch defined parameters
     testMacro.push(testLine(withNoLabel, "TST", ["p2"]));
     const mapper = testMacro.mapper(["test"]);
     const mapped = mapper(withDummyCallingLine()).toArray();
-    assertEquals(mapped[0]!.failures.length, 1);
-    assertEquals(mapped[0]!.failures[0]!.kind, "macro_params");
-    assertEquals(mapped[1]!.failures.length, 0);
-    assertEquals(mapped[2]!.failures.length, 0);
+    assert(mapped[0]!.failed());
+    mapped[0]!.failures().forEach((failure, index) => {
+        assertEquals(index, 0);
+        assertFailure(failure, "macro_params");
+    });
+    assertFalse(mapped[1]!.failed());
+    assertFalse(mapped[2]!.failed());
 });
 
 Deno.test("It still tries it's best to map mismatched parameters", () => {
