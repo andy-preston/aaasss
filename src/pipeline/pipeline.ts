@@ -1,4 +1,4 @@
-import type { Javascript } from "../embedded-js/javascript.ts";
+import type { Javascript } from "../javascript/embedded/javascript.ts";
 import type { IllegalState } from "../failure/illegal-state.ts";
 import type { HexFile } from "../hex-file/hex.ts";
 import type { Listing } from "../listing/listing.ts";

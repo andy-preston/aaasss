@@ -2,7 +2,7 @@ import { assert, assertEquals, assertFalse } from "assert";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import { passes } from "../pipeline/pass.ts";
 import { Label } from "../source-code/data-types.ts";

@@ -1,7 +1,7 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { assertFailure } from "../failure/testing.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";

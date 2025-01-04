@@ -2,7 +2,7 @@ import { failure } from "../failure/failures.ts";
 import {
     operands, type OperandIndex, type SymbolicOperands
 } from "../operands/data-types.ts"
-import type { LineWithRenderedJavascript } from "../embedded-js/line-types.ts";
+import type { LineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { clean } from "./clean.ts";
 import { indexRegisterWithPlus } from "./index-offset.ts";
 import { invalidLabel } from "./invalid-label.ts";

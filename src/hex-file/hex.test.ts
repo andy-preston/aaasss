@@ -1,5 +1,5 @@
 import { assert, assertEquals } from "assert";
-import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithExpandedMacro } from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";

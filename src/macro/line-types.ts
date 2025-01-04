@@ -1,4 +1,4 @@
-import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Line } from "../pipeline/line.ts";

@@ -7,7 +7,7 @@ import {
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
-import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 
 type TestTokens = [Label, Mnemonic, SymbolicOperands]
 type Test = [TestTokens, Code];

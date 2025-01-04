@@ -1,9 +1,9 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import { anEmptyContext } from "../context/context.ts";
-import { cpuRegisters } from "../device/registers.ts";
-import { assertFailure } from "../failure/testing.ts";
-import { SourceCode } from "../source-code/data-types.ts";
-import { lineWithRawSource } from "../source-code/line-types.ts";
+import { anEmptyContext } from "../../context/context.ts";
+import { cpuRegisters } from "../../device/registers.ts";
+import { assertFailure } from "../../failure/testing.ts";
+import { SourceCode } from "../../source-code/data-types.ts";
+import { lineWithRawSource } from "../../source-code/line-types.ts";
 import { javascript } from "./javascript.ts";
 
 const testLine = (source: SourceCode) =>

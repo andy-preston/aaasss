@@ -15,7 +15,7 @@ import { programMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../program-memory/poke.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { fileStack, type ReaderMethod } from "../source-code/file-stack.ts";
-import { javascript } from "../embedded-js/javascript.ts";
+import { javascript } from "../javascript/embedded/javascript.ts";
 import { tokenise } from "../tokens/tokenise.ts";
 
 export const coupling = (

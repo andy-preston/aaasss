@@ -1,7 +1,7 @@
 import { assertEquals } from "assert";
 import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { lineWithRenderedJavascript } from "../embedded-js/line-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { Code } from "../object-code/data-types.ts";
