@@ -38,6 +38,14 @@ Deno.test("A property yields a value", () => {
     assertEquals(result.numericOperands[0], 7);
 });
 
+Deno.test("An index offset operand returns special values not related to the context", () => {
+    const environment = testEnvironment();
+    const yResult = environment.operand(testLine(["Y+"]));
+    assertEquals(yResult.numericOperands[0], 1);
+    const zResult = environment.operand(testLine(["Z+"]));
+    assertEquals(zResult.numericOperands[0], 0);
+});
+
 Deno.test("An uninitialised property yields a failure", () => {
     const environment = testEnvironment();
     const result = environment.operand(testLine(["notDefined"]));
