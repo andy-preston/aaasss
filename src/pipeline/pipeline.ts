@@ -4,7 +4,7 @@ import type { HexFile } from "../hex-file/hex.ts";
 import type { Listing } from "../listing/listing.ts";
 import { lineWithNoObjectCode } from "../macro/line-types.ts";
 import type { MacroProcessor } from "../macro/processor.ts";
-import type { CodeGenerator } from "../object-code/code-generator.ts";
+import type { ObjectCode } from "../object-code/object-code.ts";
 import type { PokeBuffer } from "../program-memory/poke.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
@@ -22,7 +22,7 @@ export const pipeLine = (
     macro: MacroProcessor["lines"],
     label: ProgramMemory["label"],
     poke: PokeBuffer["line"],
-    code: CodeGenerator,
+    code: ObjectCode,
     listing: Listing,
     hex: HexFile,
     illegalState: IllegalState

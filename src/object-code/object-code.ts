@@ -25,7 +25,7 @@ const addressingMode = (
 const emptyLine = (line: LineWithPokedBytes) =>
     lineWithObjectCode(line, [], []);
 
-export const codeGenerator = (
+export const objectCode = (
     context: Context,
     device: DevicePropertiesInterface,
     programMemory: ProgramMemory
@@ -51,4 +51,4 @@ export const codeGenerator = (
     return codeLine;
 };
 
-export type CodeGenerator = ReturnType<typeof codeGenerator>;
+export type ObjectCode = ReturnType<typeof objectCode>;

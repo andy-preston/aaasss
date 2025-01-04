@@ -6,7 +6,7 @@ import { hexFile } from "../hex-file/hex.ts";
 import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { listing } from "../listing/listing.ts";
 import { processor } from "../macro/processor.ts";
-import { codeGenerator } from "../object-code/code-generator.ts";
+import { objectCode } from "../object-code/object-code.ts";
 import type { FailureMessageTranslator } from "../listing/messages.ts";
 import type { OutputFile } from "../pipeline/output-file.ts";
 import { pass } from "../pipeline/pass.ts";
@@ -75,7 +75,7 @@ export const coupling = (
         macroProcessor.lines,
         progMem.label,
         poke.line,
-        codeGenerator(context, properties.public, progMem),
+        objectCode(context, properties.public, progMem),
         listing(outputFile, fileName, failureMessageTranslator),
         hexFile(outputFile, fileName),
         illegalState
