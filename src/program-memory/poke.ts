@@ -1,5 +1,5 @@
-import type { Directive } from "../context/context.ts";
 import { box } from "../coupling/boxed-value.ts";
+import type { Directive } from "../directives/data-types.ts";
 import { failure } from "../failure/failures.ts";
 import { Code } from "../object-code/data-types.ts";
 import { lineWithPokedBytes, type LineWithAddress } from "./line-types.ts";
@@ -11,10 +11,12 @@ export const pokeBuffer = () => {
         const bytes: Array<number> = typeof data == "string"
             ? Array.from(new TextEncoder().encode(data))
             : data;
+
         const grouped: Record<"good" | "bad", Array<number>> = {
             "good": [],
             "bad": []
         };
+
         for (const byte of bytes) {
             grouped[byte < 0 || byte > 0xff ? "bad" : "good"].push(byte);
         }

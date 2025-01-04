@@ -1,12 +1,10 @@
 import { failure } from "../failure/failures.ts";
-import type { Context } from "../context/context.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
+import type { Context } from "../javascript/context.ts";
 import type { LineWithPokedBytes } from "../program-memory/line-types.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import { addressingModeList } from "./addressing-mode-list.ts";
-import {
-    lineWithObjectCode, type LineWithObjectCode
-} from "./line-types.ts";
+import { lineWithObjectCode, type LineWithObjectCode } from "./line-types.ts";
 
 export type AddressingModeGenerator = (context: Context) => LineWithObjectCode;
 

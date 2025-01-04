@@ -1,7 +1,7 @@
-import { Directive } from "../context/context.ts";
 import { box } from "../coupling/boxed-value.ts";
-import { failure } from "../failure/failures.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
+import type { Directive } from "../directives/data-types.ts";
+import { failure } from "../failure/failures.ts";
 
 export const dataMemory = (properties: DevicePropertiesInterface) => {
     let stack = 0;

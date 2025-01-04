@@ -1,6 +1,6 @@
 import { box, type Box } from "../coupling/boxed-value.ts";
 import { failure, type Failure } from "../failure/failures.ts";
-import type { Context } from "../context/context.ts";
+import type { Context } from "../javascript/context.ts";
 import type { Mnemonic } from "../source-code/data-types.ts";
 import { cpuRegisters } from "./registers.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";

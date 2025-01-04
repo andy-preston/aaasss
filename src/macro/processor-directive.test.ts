@@ -1,6 +1,6 @@
 import { assertEquals } from "assert/equals";
-import { anEmptyContext } from "../context/context.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
+import { anEmptyContext } from "../javascript/context.ts";
 import { processor } from "./processor.ts";
 import { testLine } from "./testing.ts";
 

@@ -1,8 +1,9 @@
 import { existsSync } from "fs/exists";
 import { box, type Box } from "../coupling/boxed-value.ts";
-import type { Context, Directive } from "../context/context.ts";
+import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { failure, type Failure } from "../failure/failures.ts";
+import type { Context } from "../javascript/context.ts";
 import type { DeviceProperties } from "./properties.ts";
 
 type FullSpec = Record<string, number | boolean | Array<string>>;

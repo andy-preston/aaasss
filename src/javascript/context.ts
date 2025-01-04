@@ -1,4 +1,5 @@
 import { box, type Box } from "../coupling/boxed-value.ts";
+import type { Directive } from "../directives/data-types.ts";
 import { failure, type Failure } from "../failure/failures.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import { returnIfExpression } from "./magic.ts";
@@ -8,9 +9,6 @@ type SimpleFunction = (n: number) => number;
 type NumericGetter = () => number;
 
 type ArrayParameter = Array<number> | string;
-
-// deno-lint-ignore no-explicit-any
-export type Directive = (...args: any[]) => Box<string> | Failure;
 
 type ContextFields = SimpleFunction | Directive | number;
 

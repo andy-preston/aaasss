@@ -1,13 +1,14 @@
-import { anEmptyContext } from "../context/context.ts";
 import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { deviceChooser } from "../device/chooser.ts";
-import { hexFile } from "../hex-file/hex.ts";
 import { illegalStateFailures } from "../failure/illegal-state.ts";
+import { hexFile } from "../hex-file/hex.ts";
+import { anEmptyContext } from "../javascript/context.ts";
+import { javascript } from "../javascript/embedded/javascript.ts";
+import type { FailureMessageTranslator } from "../listing/messages.ts";
 import { listing } from "../listing/listing.ts";
 import { processor } from "../macro/processor.ts";
 import { objectCode } from "../object-code/object-code.ts";
-import type { FailureMessageTranslator } from "../listing/messages.ts";
 import type { OutputFile } from "../pipeline/output-file.ts";
 import { pass } from "../pipeline/pass.ts";
 import { pipeLine } from "../pipeline/pipeline.ts";
@@ -15,7 +16,6 @@ import { programMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../program-memory/poke.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { fileStack, type ReaderMethod } from "../source-code/file-stack.ts";
-import { javascript } from "../javascript/embedded/javascript.ts";
 import { tokenise } from "../tokens/tokenise.ts";
 
 export const coupling = (

@@ -1,6 +1,6 @@
-import type { Context } from "../context/context.ts";
 import { box } from "../coupling/boxed-value.ts";
 import { failure } from "../failure/failures.ts";
+import type { Context } from "../javascript/context.ts";
 import type { AddressingModeGenerator } from "../object-code/object-code.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";

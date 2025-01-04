@@ -1,8 +1,9 @@
-import type { Context, Directive } from "../context/context.ts";
 import { box, type Box } from "../coupling/boxed-value.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
+import type { Directive } from "../directives/data-types.ts";
 import { positiveParameter } from "../directives/type-checking.ts";
 import type { Failure } from "../failure/failures.ts";
+import type { Context } from "../javascript/context.ts";
 import { LineWithProcessedMacro } from "../macro/line-types.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import { lineWithAddress } from "./line-types.ts";

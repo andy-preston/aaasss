@@ -1,7 +1,7 @@
-import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { anEmptyContext } from "../context/context.ts";
 import { deviceChooser } from "../device/chooser.ts";
 import { deviceProperties } from "../device/properties.ts";
+import { assertFailure, assertSuccess } from "../failure/testing.ts";
+import { anEmptyContext } from "../javascript/context.ts";
 import { pass } from "../pipeline/pass.ts";
 import { dataMemory } from "./data-memory.ts";
 

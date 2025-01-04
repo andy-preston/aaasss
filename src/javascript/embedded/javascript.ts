@@ -1,7 +1,7 @@
-import type { Context } from "../../context/context.ts";
 import { box, type Box } from "../../coupling/boxed-value.ts";
 import { failure, type Failure } from "../../failure/failures.ts";
 import type { LineWithRawSource } from "../../source-code/line-types.ts";
+import type { Context } from "../context.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";
 
 const scriptDelimiter = /({{|}})/;

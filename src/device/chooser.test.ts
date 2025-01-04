@@ -1,5 +1,5 @@
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { anEmptyContext } from "../context/context.ts";
+import { anEmptyContext } from "../javascript/context.ts";
 import { deviceChooser } from "./chooser.ts";
 import { deviceProperties } from "./properties.ts";
 

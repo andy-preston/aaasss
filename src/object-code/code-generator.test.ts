@@ -1,13 +1,11 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import { anEmptyContext } from "../context/context.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { assertFailure } from "../failure/testing.ts";
+import { anEmptyContext } from "../javascript/context.ts";
+import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import {
-    lineWithPokedBytes, lineWithAddress
-} from "../program-memory/line-types.ts";
+import { lineWithPokedBytes, lineWithAddress } from "../program-memory/line-types.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
