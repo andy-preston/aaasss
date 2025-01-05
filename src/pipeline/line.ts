@@ -1,13 +1,11 @@
 import type { Failure, Failures } from "../failure/failures.ts";
 import type { Code } from "../object-code/data-types.ts";
 import type {
-    NumericOperands, SymbolicOperands
+    NumericOperands, OperandTypes, SymbolicOperands
 } from "../operands/data-types.ts";
 import type {
     FileName, Label, LineNumber, Mnemonic, SourceCode
 } from "../source-code/data-types.ts";
-
-type FailureMapper = (failure: Failure, index: number) => void;
 
 export const line = (
     fileName: FileName, lineNumber: LineNumber, lastLine: boolean,
@@ -33,9 +31,10 @@ export const line = (
         "assemblySource": "" as SourceCode,
         "label": "" as Label,
         "mnemonic": "" as Mnemonic,
-        "symbolicOperands": [] as SymbolicOperands,
         "macroName": "" as string,
+        "symbolicOperands": [] as SymbolicOperands,
         "numericOperands": [] as NumericOperands,
+        "operandTypes": [] as OperandTypes,
         "address": 0,
         "code": [] as Array<Code>,
     };
