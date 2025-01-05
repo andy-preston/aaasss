@@ -1,6 +1,6 @@
 import { assertEquals } from "assert";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { lineWithOperands } from "../javascript/operands/line-types.ts";
+import { lineWithOperands } from "../javascript/expressions/line-types.ts";
 import { assertFailureWithExtra } from "../failure/testing.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";

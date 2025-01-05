@@ -1,7 +1,7 @@
 import type { LineWithProcessedMacro } from "../macro/line-types.ts";
 import type { Line } from "../pipeline/line.ts";
 import type { Code } from "../object-code/data-types.ts";
-import { LineWithOperands } from "../javascript/operands/line-types.ts";
+import { LineWithOperands } from "../javascript/expressions/line-types.ts";
 
 export type LineWithAddress = Readonly<Pick<
     Line, keyof LineWithProcessedMacro | "address"

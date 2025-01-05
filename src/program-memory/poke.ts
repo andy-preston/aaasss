@@ -1,7 +1,7 @@
 import { box } from "../coupling/boxed-value.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { failure } from "../failure/failures.ts";
-import { LineWithOperands } from "../javascript/operands/line-types.ts";
+import { LineWithOperands } from "../javascript/expressions/line-types.ts";
 import { Code } from "../object-code/data-types.ts";
 import { lineWithPokedBytes } from "./line-types.ts";
 

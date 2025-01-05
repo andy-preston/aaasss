@@ -2,6 +2,7 @@ import { assertEquals } from "assert";
 import { anEmptyContext } from "../javascript/context.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
+import { lineWithOperands } from "../javascript/expressions/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { Code } from "../object-code/data-types.ts";
@@ -9,7 +10,6 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { lineWithAddress, lineWithPokedBytes } from "./line-types.ts";
 import { programMemory } from "./program-memory.ts";
-import { lineWithOperands } from "../javascript/operands/line-types.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();

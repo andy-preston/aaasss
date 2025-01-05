@@ -1,4 +1,3 @@
-import type { DevicePropertiesInterface } from "../device/properties.ts";
 import { failure } from "../failure/failures.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";

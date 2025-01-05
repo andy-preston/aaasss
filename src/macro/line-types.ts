@@ -1,5 +1,5 @@
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { lineWithOperands } from "../javascript/operands/line-types.ts";
+import { lineWithOperands } from "../javascript/expressions/line-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Line } from "../pipeline/line.ts";

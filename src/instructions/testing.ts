@@ -8,7 +8,7 @@ import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { lineWithOperands } from "../javascript/operands/line-types.ts";
+import { lineWithOperands } from "../javascript/expressions/line-types.ts";
 
 type TestTokens = [Label, Mnemonic, SymbolicOperands]
 type Test = [TestTokens, NumericOperands, Code];

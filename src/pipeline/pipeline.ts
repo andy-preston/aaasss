@@ -1,7 +1,7 @@
 import type { IllegalState } from "../failure/illegal-state.ts";
 import type { HexFile } from "../hex-file/hex.ts";
 import type { Javascript } from "../javascript/embedded/embedded.ts";
-import type { OperandsFromContext } from "../javascript/operands/from-context.ts";
+import type { OperandsFromContext } from "../javascript/expressions/from-context.ts";
 import type { Listing } from "../listing/listing.ts";
 import { lineWithNoObjectCode } from "../macro/line-types.ts";
 import type { MacroProcessor } from "../macro/processor.ts";

@@ -2,7 +2,7 @@ import { assert, assertEquals, assertFalse } from "assert";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailure } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
-import { lineWithOperands } from "../javascript/operands/line-types.ts";
+import { lineWithOperands } from "../javascript/expressions/line-types.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import type { NumericOperands, SymbolicOperands } from "../operands/data-types.ts";
