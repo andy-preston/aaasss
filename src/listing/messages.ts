@@ -1,11 +1,11 @@
 import type { Failure } from "../failure/failures.ts";
-import type { LineWithObjectCode } from "../object-code/line-types.ts";
+import type { LineWithAddress } from "../program-memory/line-types.ts";
 import { messages } from "./english.ts";
 
-export type FailureMessage = (line: LineWithObjectCode) => Array<string>;
+export type FailureMessage = (line: LineWithAddress) => Array<string>;
 
 export const defaultFailureMessages = (
-    failure: Failure, line: LineWithObjectCode
+    failure: Failure, line: LineWithAddress
 ) => messages[failure.kind](line);
 
 export type FailureMessageTranslator = typeof defaultFailureMessages;

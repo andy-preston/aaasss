@@ -9,6 +9,7 @@ export type FailureKind =
         | "macro_name" | "macro_notExist"
     | "mnemonic_supportedUnknown" | "mnemonic_notSupported" | "mnemonic_unknown"
     | "operand_outOfRange" | "operand_wrongCount" | "operand_blank"
+        | "operand_wrongType"
         | "operand_offsetX" | "operand_offsetNotLdd" | "operand_offsetNotStd"
     | "syntax_invalidLabel"
     | "type_string" | "type_positive" | "type_bytes" | "type_strings"
