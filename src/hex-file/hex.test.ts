@@ -4,20 +4,20 @@ import { lineWithExpandedMacro } from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
-import { lineWithAddress } from "../program-memory/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { hexFile } from "./hex.ts";
+import { lineWithAddress } from "../program-memory/line-types.ts";
 
 const testLine = (test: TestBlock) => {
     const withRaw = lineWithRawSource("", 0, false, "");
     const withRendered = lineWithRenderedJavascript(withRaw, "");
     const withTokens = lineWithTokens(withRendered, "", "", []);
     const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", []);
-    const withAddress = lineWithAddress(withMacro, test[0]);
-    const withOperands = lineWithOperands(withAddress, [], []);
+    const withOperands = lineWithOperands(withMacro, [], []);
     const withPoked = lineWithPokedBytes(withOperands, []);
-    return lineWithObjectCode(withPoked, test[1]);
+    const withObject = lineWithObjectCode(withPoked, test[1]);
+    return lineWithAddress(withObject, test[0]);
 };
 
 const testEnvironment = () => {

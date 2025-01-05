@@ -4,10 +4,10 @@ import type { Javascript } from "../javascript/embedded/embedded.ts";
 import type { Listing } from "../listing/listing.ts";
 import { lineWithNoObjectCode } from "../macro/line-types.ts";
 import type { MacroProcessor } from "../macro/processor.ts";
-import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { ObjectCode } from "../object-code/object-code.ts";
 import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
+import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
 import type { Tokenise } from "../tokens/tokenise.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
@@ -21,14 +21,14 @@ export const pipeLine = (
     javascript: Javascript["rendered"],
     tokenise: Tokenise,
     macro: MacroProcessor["lines"],
-    label: ProgramMemory["label"],
     operands: SymbolicToNumeric,
     code: ObjectCode,
+    programMemory: ProgramMemory["pipeline"],
     listing: Listing,
     hex: HexFile,
     illegalState: IllegalState
 ) => {
-    const output = (line: LineWithObjectCode) => {
+    const output = (line: LineWithAddress) => {
         if (!pass.produceOutput()) {
             return;
         }
@@ -41,10 +41,10 @@ export const pipeLine = (
 
     const assembly = (line: LineWithTokens) => {
         for (const expanded of macro(line)) {
-            const outputLine: LineWithObjectCode =
+            const outputLine: LineWithAddress =
                 expanded.macroName == ""
-                    ? code(operands(label(expanded)))
-                    : lineWithNoObjectCode(expanded);
+                    ? programMemory(code(operands(expanded)))
+                    : programMemory(lineWithNoObjectCode(expanded));
             output(outputLine);
         }
     };

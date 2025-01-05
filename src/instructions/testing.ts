@@ -4,7 +4,6 @@ import type { Code } from "../object-code/data-types.ts";
 import { lineWithPokedBytes } from "../object-code/line-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
-import { lineWithAddress } from "../program-memory/line-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
@@ -20,8 +19,7 @@ export const testLine = (
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, ...test);
     const processed = lineWithProcessedMacro(tokenised, "");
-    const addressed = lineWithAddress(processed, 0);
-    const withOperands = lineWithOperands(addressed, numeric, types);
+    const withOperands = lineWithOperands(processed, numeric, types);
     return lineWithPokedBytes(withOperands, []);
 };
 

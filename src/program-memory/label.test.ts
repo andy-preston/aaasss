@@ -4,6 +4,8 @@ import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
+import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
+import { lineWithOperands } from "../operands/line-types.ts";
 import { passes } from "../pipeline/pass.ts";
 import type { Label } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
@@ -24,7 +26,10 @@ const testLine = (label: Label) => {
     const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, label, "", []);
-    return lineWithProcessedMacro(tokenised, "");
+    const processed = lineWithProcessedMacro(tokenised, "");
+    const operands = lineWithOperands(processed, [], []);
+    const poked = lineWithPokedBytes(operands, []);
+    return lineWithObjectCode(poked, []);
 };
 
 Deno.test("A label is stored in the context with the current address", () => {
@@ -33,7 +38,8 @@ Deno.test("A label is stored in the context with the current address", () => {
     environment.properties.programMemoryBytes(1024);
     environment.programMemory.origin(10);
 
-    const result = environment.programMemory.label(testLine("A_LABEL"));
+    const line = testLine("A_LABEL");
+    const result = environment.programMemory.pipeline(line);
     assertFalse(result.failed(), "Unexpected failure");
     assertEquals(result.failures.length, 0);
 
@@ -47,7 +53,8 @@ Deno.test("Labels can be defined on multiple passes but must keep the same addre
     environment.properties.programMemoryBytes(1024);
     environment.programMemory.origin(10);
     for (const _pass of passes) {
-        const result = environment.programMemory.label(testLine("A_LABEL"));
+        const line = testLine("A_LABEL");
+        const result = environment.programMemory.pipeline(line);
         assertFalse(result.failed(), "Unexpected failure");
         assertEquals(result.failures.length, 0);
 
@@ -62,12 +69,14 @@ Deno.test("... but will cause a failure if the address changes", () => {
     environment.properties.programMemoryBytes(1024);
 
     environment.programMemory.origin(10);
-    const firstResult = environment.programMemory.label(testLine("A_LABEL"));
+    const firstLine = testLine("A_LABEL");
+    const firstResult = environment.programMemory.pipeline(firstLine);
     assertFalse(firstResult.failed(), "Unexpected failure");
     assertEquals(firstResult.failures.length, 0);
 
     environment.programMemory.origin(20);
-    const secondResult = environment.programMemory.label(testLine("A_LABEL"));
+    const secondLine = testLine("A_LABEL");
+    const secondResult = environment.programMemory.pipeline(secondLine);
     assert(secondResult.failed(), "Unexpected success");
     secondResult.failures().forEach((failure, index) => {
         assertEquals(index, 0);

@@ -1,5 +1,5 @@
-import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { OutputFile } from "../pipeline/output-file.ts";
+import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { FailureMessageTranslator } from "./messages.ts";
 
@@ -27,7 +27,7 @@ export const listing = (
         }
     };
 
-    const extractedCode = function* (theLine: LineWithObjectCode) {
+    const extractedCode = function* (theLine: LineWithAddress) {
         let address = theLine.address;
         for (const block of theLine.code) {
             const addressHex = address
@@ -47,7 +47,7 @@ export const listing = (
 
     type ExtractedCode = ReturnType<typeof extractedCode>;
 
-    const extractedText = function* (theLine: LineWithObjectCode) {
+    const extractedText = function* (theLine: LineWithAddress) {
         const textLine = (lineNumber: string, theText: string) =>
             `${lineNumber}`.padStart(lineNumberWidth, " ") + ` ${theText}`;
 
@@ -81,7 +81,7 @@ export const listing = (
         }
     };
 
-    const line = (theLine: LineWithObjectCode) => {
+    const line = (theLine: LineWithAddress) => {
         fileName(theLine.fileName);
         body(extractedCode(theLine), extractedText(theLine));
     };

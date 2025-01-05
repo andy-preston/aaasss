@@ -1,5 +1,5 @@
 import type { OutputFile } from "../pipeline/output-file.ts";
-import type { LineWithObjectCode } from "../object-code/line-types.ts";
+import { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { hexBuffer } from "./hex-buffer.ts";
 import { hexRecord } from "./hex-record.ts";
@@ -12,7 +12,7 @@ export const hexFile = (outputFile: OutputFile, topFileName: FileName) => {
     const buffer = hexBuffer();
     let noHexFile: boolean = false;
 
-    const line = (line: LineWithObjectCode) => {
+    const line = (line: LineWithAddress) => {
         if (line.failed()) {
             noHexFile = true;
         }

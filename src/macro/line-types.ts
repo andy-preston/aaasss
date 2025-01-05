@@ -3,7 +3,6 @@ import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-type
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
 import type { Line } from "../pipeline/line.ts";
-import { lineWithAddress } from "../program-memory/line-types.ts";
 import type { Label } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens, type LineWithTokens } from "../tokens/line-types.ts";
@@ -37,8 +36,7 @@ export const lineWithExpandedMacro = (
 };
 
 export const lineWithNoObjectCode = (line: LineWithProcessedMacro) => {
-    const addressed = lineWithAddress(line, 0);
-    const withOperands = lineWithOperands(addressed, [], []);
+    const withOperands = lineWithOperands(line, [], []);
     const poked = lineWithPokedBytes(withOperands, []);
     return lineWithObjectCode(poked, []);
 };

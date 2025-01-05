@@ -1,10 +1,8 @@
-import { box, type Box } from "../coupling/boxed-value.ts";
+import { box } from "../coupling/boxed-value.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { positiveParameter } from "../directives/type-checking.ts";
-import type { Failure } from "../failure/failures.ts";
 import type { Context } from "../javascript/context.ts";
-import { LineWithProcessedMacro } from "../macro/line-types.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import { lineWithAddress } from "./line-types.ts";
 
@@ -37,22 +35,22 @@ export const programMemory = (
         return box(`${address}`);
     };
 
-    const step = (line: LineWithObjectCode): Box<string> | Failure => {
-        const newAddress = bytesToWords(line.code.reduce(
-            (accumulated, codeBlock) => accumulated + codeBlock.length,
-            0
-        )) + address;
-        return origin(newAddress);
-    };
-
-    const label = (line: LineWithProcessedMacro) => {
+    const pipeline = (line: LineWithObjectCode) => {
         if (line.label) {
             const result = context.property(line.label, address);
             if (result.which == "failure") {
                 line.withFailure(result);
             }
         }
-        return lineWithAddress(line, address);
+        const newAddress = bytesToWords(line.code.reduce(
+            (accumulated, codeBlock) => accumulated + codeBlock.length,
+            0
+        )) + address;
+        const step = origin(newAddress);
+        if (step.which == "failure") {
+            line.withFailure(step);
+        }
+        return lineWithAddress(line, newAddress);
     };
 
     return {
@@ -62,8 +60,7 @@ export const programMemory = (
         // haram or not but I'm keeping it, at least for now.
         "address": () => address,
         "origin": origin,
-        "label": label,
-        "step": step
+        "pipeline": pipeline
     };
 };
 
