@@ -1,6 +1,7 @@
+import { dataDirect } from "../instructions/data-direct.ts";
 import { des } from "../instructions/des.ts";
 
 export const addressingModeList = [
-    des
+    dataDirect, des
 ] as const;
 

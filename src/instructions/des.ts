@@ -10,7 +10,7 @@ export const des = (
 ): EncodedInstruction | undefined => {
     const codeGenerator = (_device: DevicePropertiesInterface) => {
         const operands = validScaledOperands(line, 1);
-        const operand = operands("nybble", 0);
+        const operand = operands("number", "nybble", 0);
         const code: Code = template("1001_0100 KKKK_1011", [
             ["K", operand]
         ]);

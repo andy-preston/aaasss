@@ -1,3 +1,5 @@
+import { deviceProperties } from "../device/properties.ts";
+import { anEmptyContext } from "../javascript/context.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
@@ -11,6 +13,13 @@ import { lineWithTokens } from "../tokens/line-types.ts";
 type TestTokens = [Label, Mnemonic, SymbolicOperands]
 type Test = [TestTokens, NumericOperands, OperandTypes, Code];
 export type Tests = Array<Test>;
+
+export const testEnvironment = () => {
+    const context = anEmptyContext();
+    return {
+        "device": deviceProperties(context),
+    };
+};
 
 export const testLine = (
     test: TestTokens, numeric: NumericOperands, types: OperandTypes
