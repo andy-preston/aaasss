@@ -5,11 +5,11 @@ import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { javascript } from "../javascript/embedded/embedded.ts";
-import { operandsFromContext } from "../javascript/expressions/from-context.ts";
 import type { FailureMessageTranslator } from "../listing/messages.ts";
 import { listing } from "../listing/listing.ts";
 import { processor } from "../macro/processor.ts";
 import { objectCode } from "../object-code/object-code.ts";
+import { symbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import type { OutputFile } from "../pipeline/output-file.ts";
 import { pass } from "../pipeline/pass.ts";
 import { pipeLine } from "../pipeline/pipeline.ts";
@@ -69,7 +69,7 @@ export const coupling = (
         tokenise,
         macroProcessor.lines,
         progMem.label,
-        operandsFromContext(context),
+        symbolicToNumeric(context),
         poke.line,
         objectCode(properties.public, progMem),
         listing(outputFile, fileName, failureMessageTranslator),

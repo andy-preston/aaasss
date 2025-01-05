@@ -6,15 +6,15 @@ import { description, testLine, Tests } from "./testing.ts";
 // that I could get hold of.
 
 const tests: Tests = [
-    [["", "DES", ["15"]], [15], [0x94, 0xfb]]
+    [["", "DES", ["15"]], [15], ["number"], [0x94, 0xfb]]
 ];
 
 Deno.test("DES Code Generation", () => {
     for (const test of tests) {
-        const translate = des(testLine(test[0], test[1]));
+        const translate = des(testLine(test[0], test[1], test[2]));
         assertNotEquals(translate, undefined);
         const result = translate!();
         assertFalse(result.failed());
-        assertEquals(result.code, [test[2]], description(test));
+        assertEquals(result.code, [test[3]], description(test));
     }
 });

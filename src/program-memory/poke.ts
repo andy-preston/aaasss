@@ -1,8 +1,8 @@
 import { box } from "../coupling/boxed-value.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { failure } from "../failure/failures.ts";
-import { LineWithOperands } from "../javascript/expressions/line-types.ts";
-import { Code } from "../object-code/data-types.ts";
+import type { Code } from "../object-code/data-types.ts";
+import { LineWithOperands } from "../operands/line-types.ts";
 import { lineWithPokedBytes } from "./line-types.ts";
 
 export const pokeBuffer = () => {

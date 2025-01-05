@@ -1,9 +1,9 @@
 import { assert, assertEquals } from "assert";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { lineWithOperands } from "../javascript/expressions/line-types.ts";
 import { lineWithExpandedMacro } from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
+import { lineWithOperands } from "../operands/line-types.ts";
 import {
     lineWithAddress, lineWithPokedBytes
 } from "../program-memory/line-types.ts";
@@ -17,7 +17,7 @@ const testLine = (test: TestBlock) => {
     const withTokens = lineWithTokens(withRendered, "", "", []);
     const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", []);
     const withAddress = lineWithAddress(withMacro, test[0]);
-    const withOperands = lineWithOperands(withAddress, []);
+    const withOperands = lineWithOperands(withAddress, [], []);
     const withPoked = lineWithPokedBytes(withOperands, []);
     return lineWithObjectCode(withPoked, test[1]);
 };

@@ -1,12 +1,12 @@
 import type { IllegalState } from "../failure/illegal-state.ts";
 import type { HexFile } from "../hex-file/hex.ts";
 import type { Javascript } from "../javascript/embedded/embedded.ts";
-import type { OperandsFromContext } from "../javascript/expressions/from-context.ts";
 import type { Listing } from "../listing/listing.ts";
 import { lineWithNoObjectCode } from "../macro/line-types.ts";
 import type { MacroProcessor } from "../macro/processor.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { ObjectCode } from "../object-code/object-code.ts";
+import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import type { PokeBuffer } from "../program-memory/poke.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
@@ -23,7 +23,7 @@ export const pipeLine = (
     tokenise: Tokenise,
     macro: MacroProcessor["lines"],
     label: ProgramMemory["label"],
-    operands: OperandsFromContext,
+    operands: SymbolicToNumeric,
     poke: PokeBuffer["line"],
     code: ObjectCode,
     listing: Listing,

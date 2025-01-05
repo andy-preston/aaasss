@@ -20,12 +20,20 @@ export const failure = (
     operand: OperandIndex | undefined,
     kind: FailureKind,
     extra: Error | string | undefined
-) => ({
-    "which": "failure" as const,
-    "operand": operand,
-    "kind": kind,
-    "extra": extra,
-});
+) => {
+    const onOperand = (index: OperandIndex) => {
+        object.operand = index;
+        return object;
+    }
+    const object = {
+        "which": "failure" as const,
+        "operand": operand,
+        "onOperand": onOperand,
+        "kind": kind,
+        "extra": extra,
+    };
+    return object;
+};
 
 export type Failure = Readonly<ReturnType<typeof failure>>;
 export type Failures = Array<Failure>;

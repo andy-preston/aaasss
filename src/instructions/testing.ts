@@ -1,26 +1,28 @@
-import type { Code } from "../object-code/data-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
-import type { NumericOperands, SymbolicOperands } from "../operands/data-types.ts";
+import type { Code } from "../object-code/data-types.ts";
+import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
+import { lineWithOperands } from "../operands/line-types.ts";
 import {
     lineWithAddress, lineWithPokedBytes
 } from "../program-memory/line-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
-import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { lineWithOperands } from "../javascript/expressions/line-types.ts";
 
 type TestTokens = [Label, Mnemonic, SymbolicOperands]
-type Test = [TestTokens, NumericOperands, Code];
+type Test = [TestTokens, NumericOperands, OperandTypes, Code];
 export type Tests = Array<Test>;
 
-export const testLine = (test: TestTokens, numeric: NumericOperands) => {
+export const testLine = (
+    test: TestTokens, numeric: NumericOperands, types: OperandTypes
+) => {
     const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, ...test);
     const processed = lineWithProcessedMacro(tokenised, "");
     const addressed = lineWithAddress(processed, 0);
-    const withOperands = lineWithOperands(addressed, numeric);
+    const withOperands = lineWithOperands(addressed, numeric, types);
     return lineWithPokedBytes(withOperands, []);
 };
 

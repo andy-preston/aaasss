@@ -1,8 +1,8 @@
 import { assertEquals } from "assert";
-import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { lineWithOperands } from "../javascript/expressions/line-types.ts";
 import { assertFailureWithExtra } from "../failure/testing.ts";
+import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
+import { lineWithOperands } from "../operands/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { lineWithAddress} from "./line-types.ts";
@@ -14,7 +14,7 @@ const testLine = () => {
     const tokenised = lineWithTokens(rendered, "", "", []);
     const processed = lineWithProcessedMacro(tokenised, "");
     const addressed = lineWithAddress(processed, 0);
-    return lineWithOperands(addressed, []);
+    return lineWithOperands(addressed, [], []);
 };
 
 Deno.test("You can poke bytes", () => {

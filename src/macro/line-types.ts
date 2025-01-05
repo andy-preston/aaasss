@@ -1,7 +1,7 @@
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { lineWithOperands } from "../javascript/expressions/line-types.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
+import { lineWithOperands } from "../operands/line-types.ts";
 import type { Line } from "../pipeline/line.ts";
 import {
     lineWithAddress, lineWithPokedBytes
@@ -40,7 +40,7 @@ export const lineWithExpandedMacro = (
 
 export const lineWithNoObjectCode = (line: LineWithProcessedMacro) => {
     const addressed = lineWithAddress(line, 0);
-    const withOperands = lineWithOperands(addressed, []);
+    const withOperands = lineWithOperands(addressed, [], []);
     const poked = lineWithPokedBytes(withOperands, []);
     return lineWithObjectCode(poked, []);
 };
