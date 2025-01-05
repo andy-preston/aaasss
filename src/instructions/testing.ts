@@ -1,11 +1,10 @@
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
+import { lineWithPokedBytes } from "../object-code/line-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
-import {
-    lineWithAddress, lineWithPokedBytes
-} from "../program-memory/line-types.ts";
+import { lineWithAddress } from "../program-memory/line-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";

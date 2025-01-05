@@ -2,11 +2,9 @@ import { assert, assertEquals } from "assert";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithExpandedMacro } from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
-import { lineWithObjectCode } from "../object-code/line-types.ts";
+import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
-import {
-    lineWithAddress, lineWithPokedBytes
-} from "../program-memory/line-types.ts";
+import { lineWithAddress } from "../program-memory/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { hexFile } from "./hex.ts";

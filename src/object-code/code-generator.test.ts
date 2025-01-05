@@ -6,21 +6,23 @@ import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
-import { lineWithPokedBytes, lineWithAddress } from "../program-memory/line-types.ts";
+import { lineWithAddress } from "../program-memory/line-types.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { objectCode } from "./object-code.ts";
+import { pokeBuffer } from "./poke.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
     const properties = deviceProperties(context);
+    const poke = pokeBuffer();
     const memory = programMemory(context, properties.public);
     return {
         "properties": properties,
         "programMemory": memory,
-        "objectCode": objectCode(properties.public, memory)
+        "objectCode": objectCode(properties.public, poke, memory)
     };
 };
 
@@ -33,8 +35,7 @@ const testLine = (
     const tokenised = lineWithTokens(rendered, label, mnemonic, symbolic);
     const processed = lineWithProcessedMacro(tokenised, "");
     const addressed = lineWithAddress(processed, 0);
-    const withOperands = lineWithOperands(addressed, numeric, types);
-    return lineWithPokedBytes(withOperands, []);
+    return lineWithOperands(addressed, numeric, types);
 };
 
 Deno.test("Lines with no mnemonic don't bother generating code", () => {

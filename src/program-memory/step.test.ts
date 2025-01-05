@@ -3,12 +3,12 @@ import { anEmptyContext } from "../javascript/context.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
-import { lineWithObjectCode } from "../object-code/line-types.ts";
+import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import { Code } from "../object-code/data-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
-import { lineWithAddress, lineWithPokedBytes } from "./line-types.ts";
+import { lineWithAddress } from "./line-types.ts";
 import { programMemory } from "./program-memory.ts";
 
 const testEnvironment = () => {

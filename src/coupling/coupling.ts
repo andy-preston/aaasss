@@ -14,7 +14,7 @@ import type { OutputFile } from "../pipeline/output-file.ts";
 import { pass } from "../pipeline/pass.ts";
 import { pipeLine } from "../pipeline/pipeline.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
-import { pokeBuffer } from "../program-memory/poke.ts";
+import { pokeBuffer } from "../object-code/poke.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { fileStack, type ReaderMethod } from "../source-code/file-stack.ts";
 import { tokenise } from "../tokens/tokenise.ts";
@@ -70,8 +70,7 @@ export const coupling = (
         macroProcessor.lines,
         progMem.label,
         symbolicToNumeric(context),
-        poke.line,
-        objectCode(properties.public, progMem),
+        objectCode(properties.public, poke, progMem),
         listing(outputFile, fileName, failureMessageTranslator),
         hexFile(outputFile, fileName),
         illegalState

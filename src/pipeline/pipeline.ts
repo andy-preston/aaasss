@@ -7,7 +7,6 @@ import type { MacroProcessor } from "../macro/processor.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { ObjectCode } from "../object-code/object-code.ts";
 import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
-import type { PokeBuffer } from "../program-memory/poke.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
 import type { Tokenise } from "../tokens/tokenise.ts";
@@ -24,7 +23,6 @@ export const pipeLine = (
     macro: MacroProcessor["lines"],
     label: ProgramMemory["label"],
     operands: SymbolicToNumeric,
-    poke: PokeBuffer["line"],
     code: ObjectCode,
     listing: Listing,
     hex: HexFile,
@@ -45,7 +43,7 @@ export const pipeLine = (
         for (const expanded of macro(line)) {
             const outputLine: LineWithObjectCode =
                 expanded.macroName == ""
-                    ? code(poke(operands(label(expanded))))
+                    ? code(operands(label(expanded)))
                     : lineWithNoObjectCode(expanded);
             output(outputLine);
         }
