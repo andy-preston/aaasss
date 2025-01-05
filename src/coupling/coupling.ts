@@ -68,9 +68,9 @@ export const coupling = (
         js.rendered,
         tokenise,
         macroProcessor.lines,
-        progMem.label,
         symbolicToNumeric(context),
-        objectCode(properties.public, poke, progMem),
+        objectCode(properties.public, poke),
+        progMem.pipeline,
         listing(outputFile, fileName, failureMessageTranslator),
         hexFile(outputFile, fileName),
         illegalState

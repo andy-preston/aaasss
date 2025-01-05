@@ -9,7 +9,7 @@ type Operands<Type> =
 export type SymbolicOperand = string;
 export type SymbolicOperands = Operands<SymbolicOperand>;
 
-export type NumericOperand = number | undefined;
+export type NumericOperand = number;
 export type NumericOperands = Operands<NumericOperand>;
 
 export type OperandType = "failure" | "index_offset" | "register" | "number";

@@ -20,7 +20,7 @@ export const symbolicToNumeric = (
         const operandTypes: Array<OperandType> = [];
         for (const [index, symbolic] of line.symbolicOperands.entries()) {
             if (indexMapping.has(symbolic)) {
-                numericOperands.push(indexMapping.get(symbolic));
+                numericOperands.push(indexMapping.get(symbolic)!);
                 operandTypes.push("index_offset");
                 continue;
             }

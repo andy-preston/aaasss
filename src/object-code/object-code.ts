@@ -34,13 +34,13 @@ export const objectCode = (
     if (isUnsupported.which == "failure") {
         return emptyLine(intermediate).withFailure(isUnsupported);
     }
-    const mode = addressingMode(intermediate);
-    if (mode == undefined) {
+    const generatedCode = addressingMode(intermediate);
+    if (generatedCode == undefined) {
         return emptyLine(intermediate).withFailure(
             failure(undefined, "mnemonic_unknown", undefined)
         );
     }
-    return mode(device);
+    return generatedCode(device);
 };
 
 export type ObjectCode = ReturnType<typeof objectCode>;

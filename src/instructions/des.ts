@@ -1,22 +1,25 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import { failure } from "../failure/failures.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
+import { nybble } from "../operands/check-numeric.ts";
+import { operandCount } from "../operands/count.ts";
 
 export const des = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
     const codeGenerator = (_device: DevicePropertiesInterface) => {
-        if (line.numericOperands.length != 1) {
-            line.withFailure(failure(undefined, "operand_wrongCount", "1"));
+        const count = operandCount(line, 1);
+        if (count.which == "failure") {
+            line.withFailure(count);
         };
         const operand = line.numericOperands.length > 0
             ? line.numericOperands[0]!
             : 0;
-        if (operand < 0 || operand > 0x0f) {
-            line.withFailure(failure(0, "operand_outOfRange", "00-0F"));
+        const range = nybble(operand, 0);
+        if (range.which == "failure") {
+            line.withFailure(range);
         }
         const code: Code = line.failed()
             ? [0, 0]
