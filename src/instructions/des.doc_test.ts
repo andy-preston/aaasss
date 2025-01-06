@@ -4,7 +4,7 @@ import { testEnvironment } from "../pipeline/doc-test-environment.ts";
 Deno.test("DES example code",() => {
     const environment = testEnvironment().deviceSpec({
         "unsupportedInstructions": { "value": [] },
-        "programEnd": { "value": "0100" },
+        "programEnd": { "value": "0100" }
     }).source([
         '    {{ device("testing") }}',
         "    DES 0x00",
@@ -74,7 +74,7 @@ Deno.test("You need to specify a device before it can assemble",() => {
 Deno.test("Some devices don't support DES",() => {
     const environment = testEnvironment().deviceSpec({
         "unsupportedInstructions": { "value": ["DES"] },
-        "programEnd": { "value": "0100" },
+        "programEnd": { "value": "0100" }
     }).source([
         '    {{ device("testing") }}',
         "    DES 15",
