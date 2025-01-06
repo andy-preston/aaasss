@@ -1,4 +1,4 @@
-import { deviceChooser } from "../device/chooser.ts";
+import { deviceChooser, defaultDeviceFinder, defaultJsonLoader } from "../device/chooser.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
@@ -7,9 +7,11 @@ import { dataMemory } from "./data-memory.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
-    const properties = deviceProperties(context);
-    const choose = deviceChooser(properties, context);
-    const memory = dataMemory(properties.public);
+    const device = deviceProperties(context);
+    const choose = deviceChooser(
+        device, context, defaultDeviceFinder, defaultJsonLoader
+    );
+    const memory = dataMemory(device.public);
     const currentPass = pass();
     currentPass.addResetStateCallback(memory.reset);
     return {

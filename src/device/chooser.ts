@@ -12,18 +12,27 @@ type RawItem = { "description"?: string; "value": RawProperty };
 type RawItems = Record<string, RawItem>;
 type DeviceSpec = { "family"?: string; "spec": RawItems };
 
-const deviceFileName = (deviceName: string) =>
-    deviceName.replace(/[^\w\']|_/g, "").toLowerCase();
+export const defaultJsonLoader = (name: string) =>
+    JSON.parse(Deno.readTextFileSync(name));
+
+export type JsonLoader = typeof defaultJsonLoader;
+
+export const defaultDeviceFinder = (deviceName: string) => {
+    const fileName = deviceName.replace(/[^\w]|_/g, "").toLowerCase();
+    const baseName = `./devices/${fileName}.json`;
+    return existsSync(baseName)
+        ? box(baseName)
+        : failure(undefined, "device_notFound", undefined);
+};
+
+export type DeviceFinder = typeof defaultDeviceFinder;
 
 export const deviceChooser = (
     properties: DeviceProperties,
-    context: Context
+    context: Context,
+    deviceFinder: DeviceFinder,
+    loadJsonFile: JsonLoader
 ) => {
-    const loadJsonFile = (name: string) => {
-        const json = Deno.readTextFileSync(name);
-        return JSON.parse(json);
-    };
-
     const hexNumber = (value: string): number => {
         const asNumber = parseInt(value, 16);
         const asHex = asNumber.toString(16).padStart(value.length, "0");
@@ -93,11 +102,11 @@ export const deviceChooser = (
         if (check.which == "failure") {
             return check;
         }
-        const baseName = `./devices/${deviceFileName(name)}.json`;
-        if (!existsSync(baseName)) {
-            return failure(undefined, "device_notFound", undefined);
+        const baseName = deviceFinder(name);
+        if (baseName.which == "failure") {
+            return baseName;
         }
-        const baseSpec: DeviceSpec = loadJsonFile(baseName);
+        const baseSpec: DeviceSpec = loadJsonFile(baseName.value);
         const familySpec: RawItems = "family" in baseSpec
             ? loadJsonFile(`./devices/families/${baseSpec.family}.json`)
             : {};
