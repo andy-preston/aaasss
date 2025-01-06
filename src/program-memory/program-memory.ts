@@ -42,15 +42,19 @@ export const programMemory = (
                 line.withFailure(result);
             }
         }
+
+        const newLine = lineWithAddress(line, address);
+
         const newAddress = bytesToWords(line.code.reduce(
             (accumulated, codeBlock) => accumulated + codeBlock.length,
             0
         )) + address;
         const step = origin(newAddress);
         if (step.which == "failure") {
-            line.withFailure(step);
+            newLine.withFailure(step);
         }
-        return lineWithAddress(line, newAddress);
+
+        return newLine;
     };
 
     return {

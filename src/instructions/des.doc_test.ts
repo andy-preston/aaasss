@@ -7,17 +7,52 @@ Deno.test("DES example code",() => {
         "programEnd": { "value": "0100" },
     }).source([
         '    {{ device("testing") }}',
-        "    DES 15",
+        "    DES 0x00",
+        "    DES 0x01",
+        "    DES 0x02",
+        "    DES 0x03",
+        "    DES 0x04",
+        "    DES 0x05",
+        "    DES 0x06",
+        "    DES 0x07",
+        "    DES 0x08",
+        "    DES 0x09",
+        "    DES 0x0a",
+        "    DES 0x0b",
+        "    DES 0x0c",
+        "    DES 0x0d",
+        "    DES 0x0e",
+        "    DES 0x0f",
     ]);
-    environment.pipeline();
-    // The object code for these tests was cross-checked against last version
-    // of GAVRAsm that I could get hold of.
+    environment.assemble();
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",
         "",
         '                     1     {{ device("testing") }}',
-        "00001 94 FB          2     DES 15",
+        "00000 94 0B          2     DES 0x00",
+        "00001 94 1B          3     DES 0x01",
+        "00002 94 2B          4     DES 0x02",
+        "00003 94 3B          5     DES 0x03",
+        "00004 94 4B          6     DES 0x04",
+        "00005 94 5B          7     DES 0x05",
+        "00006 94 6B          8     DES 0x06",
+        "00007 94 7B          9     DES 0x07",
+        "00008 94 8B         10     DES 0x08",
+        "00009 94 9B         11     DES 0x09",
+        "0000A 94 AB         12     DES 0x0a",
+        "0000B 94 BB         13     DES 0x0b",
+        "0000C 94 CB         14     DES 0x0c",
+        "0000D 94 DB         15     DES 0x0d",
+        "0000E 94 EB         16     DES 0x0e",
+        "0000F 94 FB         17     DES 0x0f"
+    ]);
+    // The comes from the last version of GAVRAsm that I could get hold of.
+    assertEquals(environment.hexFile(), [
+        ":020000020000FC",
+        ":100000000B941B942B943B944B945B946B947B9438",
+        ":100010008B949B94AB94BB94CB94DB94EB94FB9428",
+        ":00000001FF"
     ]);
 });
 
@@ -25,7 +60,7 @@ Deno.test("You need to specify a device before it can assemble",() => {
     const environment = testEnvironment().source([
         "    DES 15",
     ]);
-    environment.pipeline();
+    environment.assemble();
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",
@@ -44,7 +79,7 @@ Deno.test("Some devices don't support DES",() => {
         '    {{ device("testing") }}',
         "    DES 15",
     ]);
-    environment.pipeline();
+    environment.assemble();
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",

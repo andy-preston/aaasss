@@ -53,7 +53,7 @@ export const testEnvironment = () => {
     const environment = {
         "source": addSourceCode,
         "deviceSpec": addDeviceSpec,
-        "pipeline": coupling(
+        "assemble": coupling(
             "mock.asm", mockFileReader, mockOutputFile, mockFailureMessages,
             mockDeviceFinder, mockDeviceReader
         ),
