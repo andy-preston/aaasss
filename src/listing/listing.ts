@@ -22,7 +22,6 @@ export const listing = (
             }
             file.write(newName);
             file.write("=".repeat(newName.length));
-            file.write("");
             currentName = newName;
         }
     };

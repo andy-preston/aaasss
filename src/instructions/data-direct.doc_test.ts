@@ -15,7 +15,6 @@ Deno.test("Data-direct without reduced core",() => {
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",
-        "",
         '                     1     {{ device("testing") }}',
         "00000 91 E0 04 00    2     LDS R30, 1024",
         "00002 92 80 10 00    3     STS 4096, R8"
@@ -42,7 +41,6 @@ Deno.test("Data-direct without reduced core",() => {
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",
-        "",
         '                     1     {{ device("testing") }}',
         "00000 A7 E8          2     LDS R30, 120",
         "00001 AF 2E          3     STS 126, R18"

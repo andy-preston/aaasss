@@ -28,7 +28,6 @@ Deno.test("DES example code",() => {
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",
-        "",
         '                     1     {{ device("testing") }}',
         "00000 94 0B          2     DES 0x00",
         "00001 94 1B          3     DES 0x01",
@@ -64,7 +63,6 @@ Deno.test("You need to specify a device before it can assemble",() => {
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",
-        "",
         "                     1     DES 15",
         "                       mnemonic_supportedUnknown",
     ]);
@@ -83,7 +81,6 @@ Deno.test("Some devices don't support DES",() => {
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",
-        "",
         '                     1     {{ device("testing") }}',
         "                     2     DES 15",
         "                       mnemonic_notSupported",
