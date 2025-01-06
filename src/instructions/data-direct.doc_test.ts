@@ -15,9 +15,9 @@ Deno.test("Data-direct without reduced core",() => {
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",
-        '                     1     {{ device("testing") }}',
-        "00000 91 E0 04 00    2     LDS R30, 1024",
-        "00002 92 80 10 00    3     STS 4096, R8"
+        '                      1     {{ device("testing") }}',
+        "000000 91 E0 04 00    2     LDS R30, 1024",
+        "000002 92 80 10 00    3     STS 4096, R8"
     ]);
     // The comes from the last version of GAVRAsm that I could get hold of.
     assertEquals(environment.hexFile(), [
@@ -41,9 +41,9 @@ Deno.test("Data-direct without reduced core",() => {
     assertEquals(environment.listing(), [
         "mock.asm",
         "========",
-        '                     1     {{ device("testing") }}',
-        "00000 A7 E8          2     LDS R30, 120",
-        "00001 AF 2E          3     STS 126, R18"
+        '                      1     {{ device("testing") }}',
+        "000000 A7 E8          2     LDS R30, 120",
+        "000001 AF 2E          3     STS 126, R18"
 
     ]);
 });

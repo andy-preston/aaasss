@@ -4,7 +4,7 @@ import type { FileName } from "../source-code/data-types.ts";
 import type { FailureMessageTranslator } from "./messages.ts";
 
 const objectWidth = "00 00 00 00".length;
-const addressWidth = 5;
+const addressWidth = 6;
 const codeWidth = objectWidth + addressWidth + 1;
 const lineNumberWidth = 4;
 
