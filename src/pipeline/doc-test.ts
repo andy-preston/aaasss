@@ -4,7 +4,7 @@ import type { Failure } from "../failure/failures.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 
-export const testEnvironment = () => {
+export const docTest = () => {
     let source: Array<string> = [];
     let deviceSpec: object = {};
 

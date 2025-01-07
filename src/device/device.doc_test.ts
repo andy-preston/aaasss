@@ -1,9 +1,9 @@
 import { assertEquals } from "assert/equals";
-import { testEnvironment } from "../pipeline/doc-test-environment.ts";
+import { docTest } from "../pipeline/doc-test.ts";
 import { assertNotEquals } from "assert";
 
 Deno.test("Device demo", () => {
-    const environment = testEnvironment().deviceSpec({
+    const demo = docTest().deviceSpec({
         "unsupportedInstructions": { "value": [] },
         "programEnd": { "value": "0100" },
         "reducedCore": { "value": false }
@@ -11,36 +11,36 @@ Deno.test("Device demo", () => {
         '    {{ device("ATMega-328"); }}',
         "    LDS R30, 1024",
     ]);
-    environment.assemble();
-    assertEquals(environment.listing(), [
+    demo.assemble();
+    assertEquals(demo.listing(), [
         "demo.asm",
         "========",
         '                      1     {{ device("ATMega-328"); }}',
         "000000 91 E0 04 00    2     LDS R30, 1024"
     ]);
-    assertNotEquals(environment.hexFile(), undefined);
+    assertNotEquals(demo.hexFile(), undefined);
 });
 
 Deno.test("A device must be specified before any instructions can be assembled", () => {
-    const environment = testEnvironment().source([
+    const demo = docTest().source([
         "    DES 23",
     ]);
-    environment.assemble();
-    assertEquals(environment.listing(), [
+    demo.assemble();
+    assertEquals(demo.listing(), [
         "demo.asm",
         "========",
         "                      1     DES 23",
         "                        mnemonic_supportedUnknown",
     ]);
-    assertEquals(environment.hexFile(), undefined);
+    assertEquals(demo.hexFile(), undefined);
 });
 
 Deno.test("The device name must be a string",() => {
-    const environment = testEnvironment().source([
+    const demo = docTest().source([
         "    {{ device(testing); }}",
     ]);
-    environment.assemble();
-    assertEquals(environment.listing(), [
+    demo.assemble();
+    assertEquals(demo.listing(), [
         "demo.asm",
         "========",
         "                      1     {{ device(testing); }}",
@@ -48,6 +48,6 @@ Deno.test("The device name must be a string",() => {
         "                        ReferenceError",
         "                        testing is not defined",
     ]);
-    assertEquals(environment.hexFile(), undefined);
+    assertEquals(demo.hexFile(), undefined);
 });
 

@@ -1,8 +1,8 @@
 import { assertEquals } from "assert";
-import { testEnvironment } from "../pipeline/doc-test-environment.ts";
+import { docTest } from "../pipeline/doc-test.ts";
 
 Deno.test("Data-direct without reduced core",() => {
-    const environment = testEnvironment().deviceSpec({
+    const demo = docTest().deviceSpec({
         "unsupportedInstructions": { "value": [] },
         "programEnd": { "value": "0100" },
         "reducedCore": { "value": false }
@@ -11,8 +11,8 @@ Deno.test("Data-direct without reduced core",() => {
         "    LDS R30, 512 * 2",
         "    STS 1024 * 4, R8",
     ]);
-    environment.assemble();
-    assertEquals(environment.listing(), [
+    demo.assemble();
+    assertEquals(demo.listing(), [
         "demo.asm",
         "========",
         '                      1     {{ device("testing"); }}',
@@ -20,7 +20,7 @@ Deno.test("Data-direct without reduced core",() => {
         "000002 92 80 10 00    3     STS 1024 * 4, R8"
     ]);
     // The comes from the last version of GAVRAsm that I could get hold of.
-    assertEquals(environment.hexFile(), [
+    assertEquals(demo.hexFile(), [
         ":020000020000FC",
         ":08000000E09100048092001061",
         ":00000001FF"
@@ -28,7 +28,7 @@ Deno.test("Data-direct without reduced core",() => {
 });
 
 Deno.test("Data-direct with reduced core",() => {
-    const environment = testEnvironment().deviceSpec({
+    const demo = docTest().deviceSpec({
         "unsupportedInstructions": { "value": [] },
         "programEnd": { "value": "0100" },
         "reducedCore": { "value": true }
@@ -37,8 +37,8 @@ Deno.test("Data-direct with reduced core",() => {
         "    LDS R30, 12 * 10",
         "    STS 126, R18"
     ]);
-    environment.assemble();
-    assertEquals(environment.listing(), [
+    demo.assemble();
+    assertEquals(demo.listing(), [
         "demo.asm",
         "========",
         '                      1     {{ device("ATtiny20"); }}',
@@ -46,7 +46,7 @@ Deno.test("Data-direct with reduced core",() => {
         "000001 AF 2E          3     STS 126, R18"
     ]);
     // The comes from the last version of GAVRAsm that I could get hold of.
-    assertEquals(environment.hexFile(), [
+    assertEquals(demo.hexFile(), [
         ":020000020000FC",
         ":04000000E8A72EAF90",
         ":00000001FF"

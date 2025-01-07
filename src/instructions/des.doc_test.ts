@@ -1,8 +1,8 @@
 import { assertEquals } from "assert";
-import { testEnvironment } from "../pipeline/doc-test-environment.ts";
+import { docTest } from "../pipeline/doc-test.ts";
 
 Deno.test("DES example code",() => {
-    const environment = testEnvironment().deviceSpec({
+    const demo = docTest().deviceSpec({
         "unsupportedInstructions": { "value": [] },
         "programEnd": { "value": "0100" }
     }).source([
@@ -24,8 +24,8 @@ Deno.test("DES example code",() => {
         "    DES 0x0e",
         "    DES 0x0f",
     ]);
-    environment.assemble();
-    assertEquals(environment.listing(), [
+    demo.assemble();
+    assertEquals(demo.listing(), [
         "demo.asm",
         "========",
         '                      1     {{ device("testing"); }}',
@@ -47,7 +47,7 @@ Deno.test("DES example code",() => {
         "00000F 94 FB         17     DES 0x0f"
     ]);
     // The comes from the last version of GAVRAsm that I could get hold of.
-    assertEquals(environment.hexFile(), [
+    assertEquals(demo.hexFile(), [
         ":020000020000FC",
         ":100000000B941B942B943B944B945B946B947B9438",
         ":100010008B949B94AB94BB94CB94DB94EB94FB9428",
@@ -56,22 +56,22 @@ Deno.test("DES example code",() => {
 });
 
 Deno.test("Some(most?) devices don't support DES",() => {
-    const environment = testEnvironment().deviceSpec({
+    const demo = docTest().deviceSpec({
         "unsupportedInstructions": { "value": ["DES"] },
         "programEnd": { "value": "0100" }
     }).source([
         '    {{ device("testing"); }}',
         "    DES 15",
     ]);
-    environment.assemble();
-    assertEquals(environment.listing(), [
+    demo.assemble();
+    assertEquals(demo.listing(), [
         "demo.asm",
         "========",
         '                      1     {{ device("testing"); }}',
         "                      2     DES 15",
         "                        mnemonic_notSupported",
     ]);
-    assertEquals(environment.hexFile(), undefined);
+    assertEquals(demo.hexFile(), undefined);
 });
 
 
