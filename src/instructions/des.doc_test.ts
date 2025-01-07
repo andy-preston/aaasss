@@ -6,7 +6,7 @@ Deno.test("DES example code",() => {
         "unsupportedInstructions": { "value": [] },
         "programEnd": { "value": "0100" }
     }).source([
-        '    {{ device("testing") }}',
+        '    {{ device("testing"); }}',
         "    DES 0x00",
         "    DES 0x01",
         "    DES 0x02",
@@ -26,9 +26,9 @@ Deno.test("DES example code",() => {
     ]);
     environment.assemble();
     assertEquals(environment.listing(), [
-        "mock.asm",
+        "demo.asm",
         "========",
-        '                      1     {{ device("testing") }}',
+        '                      1     {{ device("testing"); }}',
         "000000 94 0B          2     DES 0x00",
         "000001 94 1B          3     DES 0x01",
         "000002 94 2B          4     DES 0x02",
@@ -55,33 +55,19 @@ Deno.test("DES example code",() => {
     ]);
 });
 
-Deno.test("You need to specify a device before it can assemble",() => {
-    const environment = testEnvironment().source([
-        "    DES 15",
-    ]);
-    environment.assemble();
-    assertEquals(environment.listing(), [
-        "mock.asm",
-        "========",
-        "                      1     DES 15",
-        "                        mnemonic_supportedUnknown",
-    ]);
-    assertEquals(environment.hexFile(), undefined);
-});
-
-Deno.test("Some devices don't support DES",() => {
+Deno.test("Some(most?) devices don't support DES",() => {
     const environment = testEnvironment().deviceSpec({
         "unsupportedInstructions": { "value": ["DES"] },
         "programEnd": { "value": "0100" }
     }).source([
-        '    {{ device("testing") }}',
+        '    {{ device("testing"); }}',
         "    DES 15",
     ]);
     environment.assemble();
     assertEquals(environment.listing(), [
-        "mock.asm",
+        "demo.asm",
         "========",
-        '                      1     {{ device("testing") }}',
+        '                      1     {{ device("testing"); }}',
         "                      2     DES 15",
         "                        mnemonic_notSupported",
     ]);

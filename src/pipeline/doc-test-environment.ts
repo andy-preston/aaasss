@@ -47,14 +47,24 @@ export const testEnvironment = () => {
         };
     };
 
-    const mockFailureMessages =
-        (failure: Failure, _line: LineWithObjectCode) => [failure.kind];
+    const mockFailureMessages = (
+        failure: Failure, _line: LineWithObjectCode
+    ) => {
+        const result: Array<string> = [failure.kind];
+        if (failure.extra instanceof Error) {
+            result.push(failure.extra.name);
+            result.push(failure.extra.message);
+        } else if (failure.extra != undefined) {
+            result.push(failure.extra);
+        }
+        return result;
+    };
 
     const environment = {
         "source": addSourceCode,
         "deviceSpec": addDeviceSpec,
         "assemble": coupling(
-            "mock.asm", mockFileReader, mockOutputFile, mockFailureMessages,
+            "demo.asm", mockFileReader, mockOutputFile, mockFailureMessages,
             mockDeviceFinder, mockDeviceReader
         ),
         "listing": () => output.get(".lst"),
