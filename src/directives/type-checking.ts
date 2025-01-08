@@ -10,7 +10,7 @@ export const stringParameter = (value: unknown): Box<string> | Failure => {
 export const positiveParameter = (value: unknown): Box<number> | Failure => {
     const asString = `${value}`;
     return typeof value == "number"
-        && parseInt(`${value}`) == value
+        && Number.parseInt(`${value}`) == value
         && value >= 0
         ? box(value as number) : failure(undefined, "type_positive", asString);
 };

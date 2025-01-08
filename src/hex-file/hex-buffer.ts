@@ -8,7 +8,7 @@ export const hexBuffer = () => {
     let byteAddress = 0;
 
     const restartAt = (newByteAddress: number) => {
-        if (buffer.length != 0) {
+        if (buffer.length > 0) {
             throw new Error("Restarting HEX buffer without it being empty");
         }
         byteAddress = newByteAddress;
