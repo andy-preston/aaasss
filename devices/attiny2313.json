@@ -1,0 +1,16 @@
+{
+    "family": "attiny-x313",
+    "spec": {
+        "SP": {
+            "value": "",
+            "description": "Stack Pointer ----------------------- IO Address XX"
+        },
+        "ioEnd":         { "value": ""   },
+        "eepromEnd":     { "value": "" },
+        "programEnd":    { "value": "" },
+        "mappedIoStart": { "value": "" },
+        "mappedIoEnd":   { "value": "" },
+        "ramStart":      { "value": "" },
+        "ramEnd":        { "value": "" }
+    }
+}
