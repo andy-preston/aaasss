@@ -1,3 +1,5 @@
+import { existsSync } from "fs/exists";
+
 const encoder = new TextEncoder();
 
 export const outputFile = (topFileName: string, extension: string) => {
@@ -11,7 +13,9 @@ export const outputFile = (topFileName: string, extension: string) => {
         );
     };
     const remove = () => {
-        Deno.removeSync(fileName());
+        if (existsSync(fileName())) {
+            Deno.removeSync(fileName());
+        }
     };
     const write = (text: string) => {
         if (theFile == undefined) {
