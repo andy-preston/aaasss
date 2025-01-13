@@ -19,7 +19,7 @@ Deno.test("Data-direct without reduced core",() => {
         "000000 91 E0 04 00    2     LDS R30, 512 * 2",
         "000002 92 80 10 00    3     STS 1024 * 4, R8"
     ]);
-    // The comes from the last version of GAVRAsm that I could get hold of.
+    // This comes from the last version of GAVRAsm that I could get hold of.
     assertEquals(demo.hexFile(), [
         ":020000020000FC",
         ":08000000E09100048092001061",
@@ -45,7 +45,7 @@ Deno.test("Data-direct with reduced core",() => {
         "000000 A7 E8          2     LDS R30, 12 * 10",
         "000001 AF 2E          3     STS 126, R18"
     ]);
-    // The comes from the last version of GAVRAsm that I could get hold of.
+    // This comes from the last version of GAVRAsm that I could get hold of.
     assertEquals(demo.hexFile(), [
         ":020000020000FC",
         ":04000000E8A72EAF90",

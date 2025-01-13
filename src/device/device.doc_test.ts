@@ -1,6 +1,5 @@
-import { assertEquals } from "assert/equals";
+import { assertEquals, assertNotEquals } from "assert";
 import { docTest } from "../pipeline/doc-test.ts";
-import { assertNotEquals } from "assert";
 
 Deno.test("Device demo", () => {
     const demo = docTest().deviceSpec({

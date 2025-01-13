@@ -46,7 +46,7 @@ Deno.test("DES example code",() => {
         "00000E 94 EB         16     DES 0x0e",
         "00000F 94 FB         17     DES 0x0f"
     ]);
-    // The comes from the last version of GAVRAsm that I could get hold of.
+    // This comes from the last version of GAVRAsm that I could get hold of.
     assertEquals(demo.hexFile(), [
         ":020000020000FC",
         ":100000000B941B942B943B944B945B946B947B9438",
