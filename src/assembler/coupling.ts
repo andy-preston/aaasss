@@ -1,6 +1,3 @@
-import type { OutputFile } from "../assembler/output-file.ts";
-import { pass } from "../assembler/pass.ts";
-import { pipeLine } from "../assembler/assembler.ts";
 import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser, DeviceFinder, type JsonLoader } from "../device/chooser.ts";
 import { deviceProperties } from "../device/properties.ts";
@@ -18,6 +15,9 @@ import { pokeBuffer } from "../object-code/poke.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { fileStack, type ReaderMethod } from "../source-code/file-stack.ts";
 import { tokenise } from "../tokens/tokenise.ts";
+import type { OutputFile } from "./output-file.ts";
+import { pass } from "./pass.ts";
+import { pipeLine } from "./assembler.ts";
 
 export const coupling = (
     fileName: FileName,
