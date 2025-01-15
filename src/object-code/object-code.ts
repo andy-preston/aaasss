@@ -1,4 +1,4 @@
-import { failure } from "../failure/failures.ts";
+import { failure } from "../failure/failure-or-box.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import { addressingModeList } from "./addressing-mode-list.ts";
 import { lineWithObjectCode, type LineWithPokedBytes, type LineWithObjectCode, lineWithPokedBytes } from "./line-types.ts";

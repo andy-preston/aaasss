@@ -1,4 +1,4 @@
-import type { Failure, Failures } from "../failure/failures.ts";
+import type { Failure, Failures } from "../failure/failure-or-box.ts";
 import type { Code } from "../object-code/data-types.ts";
 import type {
     NumericOperands, OperandTypes, SymbolicOperands

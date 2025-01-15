@@ -1,8 +1,7 @@
 import { existsSync } from "fs/exists";
-import { box, type Box } from "../coupling/boxed-value.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
-import { failure, type Failure } from "../failure/failures.ts";
+import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { Context } from "../javascript/context.ts";
 import type { DeviceProperties } from "./properties.ts";
 

@@ -1,5 +1,4 @@
-import type { Box } from "../coupling/boxed-value.ts";
-import type { Failure } from "./failures.ts";
+import type { Box, Failure } from "../failure/failure-or-box.ts";
 
 type IllegalStateCallback = () => Box<boolean> | Failure;
 

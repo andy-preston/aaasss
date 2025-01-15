@@ -1,6 +1,7 @@
-import { box, type Box } from "../coupling/boxed-value.ts";
 import type { Directive } from "../directives/data-types.ts";
-import { failure, type Failure } from "../failure/failures.ts";
+import {
+    box, failure, isFailureOrBox, type Box, type Failure
+} from "../failure/failure-or-box.ts";
 import { returnIfExpression } from "./magic.ts";
 
 type SimpleFunction = (n: number) => number;

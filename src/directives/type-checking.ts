@@ -1,5 +1,4 @@
-import { failure, type Failure } from "../failure/failures.ts";
-import { box, type Box } from "../coupling/boxed-value.ts";
+import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 
 export const stringParameter = (value: unknown): Box<string> | Failure => {
     const asString = `${value}`;

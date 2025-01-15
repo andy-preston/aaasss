@@ -1,6 +1,5 @@
-import { box } from "../coupling/boxed-value.ts";
 import type { Directive } from "../directives/data-types.ts";
-import { failure } from "../failure/failures.ts";
+import { box, failure } from "../failure/failure-or-box.ts";
 import type { Code } from "./data-types.ts";
 
 export const pokeBuffer = () => {

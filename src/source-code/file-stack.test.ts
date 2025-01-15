@@ -1,6 +1,6 @@
 import { assert, assertFalse, assertEquals, assertInstanceOf } from "assert";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { type Failure } from "../failure/failures.ts";
+import { type Failure } from "../failure/failure-or-box.ts";
 import { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack } from "./file-stack.ts";
 

@@ -1,6 +1,5 @@
-import { box } from "../coupling/boxed-value.ts";
 import { coupling } from "../coupling/coupling.ts";
-import type { Failure } from "../failure/failures.ts";
+import { box, type Failure } from "../failure/failure-or-box.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 

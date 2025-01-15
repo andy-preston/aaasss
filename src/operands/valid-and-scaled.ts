@@ -1,4 +1,4 @@
-import { failure } from "../failure/failures.ts";
+import { failure } from "../failure/failure-or-box.ts";
 import type { NumericOperand, OperandIndex, OperandType } from "./data-types.ts";
 import { LineWithOperands } from "./line-types.ts";
 

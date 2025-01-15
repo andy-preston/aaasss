@@ -1,5 +1,4 @@
-import { box, type Box } from "../../coupling/boxed-value.ts";
-import { failure, type Failure } from "../../failure/failures.ts";
+import { box, failure, type Box, type Failure } from "../../failure/failure-or-box.ts";
 import type { LineWithRawSource } from "../../source-code/line-types.ts";
 import type { Context } from "../context.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";

@@ -1,4 +1,4 @@
-import { failure } from "../failure/failures.ts";
+import { failure } from "../failure/failure-or-box.ts";
 import {
     operands, type OperandIndex, type SymbolicOperands
 } from "../operands/data-types.ts"
