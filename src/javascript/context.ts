@@ -12,6 +12,8 @@ type ArrayParameter = Array<number> | string;
 
 type ContextFields = SimpleFunction | Directive | number;
 
+const trailingSemicolons = /;*$/;
+
 export const anEmptyContext = () => {
     const context: Record<string, ContextFields> = {
         "low": (n: number) => n & 0xff,
@@ -30,7 +32,7 @@ export const anEmptyContext = () => {
     };
 
     const value = (jsSource: string): Box<string> | Failure => {
-        const trimmed = jsSource.trim().replace(/;*$/, "").trim();
+        const trimmed = jsSource.trim().replace(trailingSemicolons, "").trim();
         if (trimmed == "") {
             return box("");
         }
@@ -38,8 +40,10 @@ export const anEmptyContext = () => {
             `with (this) { ${returnIfExpression(trimmed)}; }`
         );
         return result == undefined
-            ? box("") : Object.hasOwn(result, "which")
-            ? result as Box<string> | Failure : box(`${result}`.trim());
+            ? box("")
+            : isFailureOrBox(result)
+            ? result as Box<string> | Failure
+            : box(`${result}`.trim());
     };
 
     const directive = (name: string, directive: Directive) => {
