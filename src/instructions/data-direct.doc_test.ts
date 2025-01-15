@@ -1,5 +1,5 @@
 import { assertEquals } from "assert";
-import { docTest } from "../pipeline/doc-test.ts";
+import { docTest } from "../assembler/doc-test.ts";
 
 Deno.test("Data-direct without reduced core",() => {
     const demo = docTest().deviceSpec({

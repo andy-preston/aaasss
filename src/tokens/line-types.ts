@@ -1,6 +1,6 @@
+import type { Line } from "../assembler/line.ts";
 import type { LineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import type { Line } from "../pipeline/line.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 
 export type LineWithTokens = Readonly<Pick<

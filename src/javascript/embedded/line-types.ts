@@ -1,4 +1,4 @@
-import type { Line } from "../../pipeline/line.ts";
+import type { Line } from "../../assembler/line.ts";
 import type { SourceCode } from "../../source-code/data-types.ts";
 import type { LineWithRawSource } from "../../source-code/line-types.ts";
 

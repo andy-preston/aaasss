@@ -1,3 +1,6 @@
+import type { OutputFile } from "../assembler/output-file.ts";
+import { pass } from "../assembler/pass.ts";
+import { pipeLine } from "../assembler/assembler.ts";
 import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser, DeviceFinder, type JsonLoader } from "../device/chooser.ts";
 import { deviceProperties } from "../device/properties.ts";
@@ -10,9 +13,6 @@ import { listing } from "../listing/listing.ts";
 import { processor } from "../macro/processor.ts";
 import { objectCode } from "../object-code/object-code.ts";
 import { symbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
-import type { OutputFile } from "../pipeline/output-file.ts";
-import { pass } from "../pipeline/pass.ts";
-import { pipeLine } from "../pipeline/pipeline.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { pokeBuffer } from "../object-code/poke.ts";
 import type { FileName } from "../source-code/data-types.ts";

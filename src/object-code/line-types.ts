@@ -1,5 +1,5 @@
+import type { Line } from "../assembler/line.ts";
 import type { LineWithOperands } from "../operands/line-types.ts";
-import type { Line } from "../pipeline/line.ts";
 import type { Code } from "./data-types.ts";
 
 export type LineWithPokedBytes = Readonly<Pick<

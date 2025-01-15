@@ -1,7 +1,7 @@
+import type { PipelineSource } from "../assembler/assembler.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
-import type { PipelineSource } from "../pipeline/pipeline.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource } from "./line-types.ts";
 

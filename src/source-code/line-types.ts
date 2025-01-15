@@ -1,5 +1,5 @@
+import { line, type Line } from "../assembler/line.ts";
 import { LineWithFailures } from "../failure/line-types.ts";
-import { line, type Line } from "../pipeline/line.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 
 export type LineWithRawSource = Readonly<Pick<

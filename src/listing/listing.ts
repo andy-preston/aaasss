@@ -1,4 +1,4 @@
-import type { OutputFile } from "../pipeline/output-file.ts";
+import type { OutputFile } from "../assembler/output-file.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { FailureMessageTranslator } from "./messages.ts";

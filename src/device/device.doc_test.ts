@@ -1,5 +1,5 @@
 import { assertEquals, assertNotEquals } from "assert";
-import { docTest } from "../pipeline/doc-test.ts";
+import { docTest } from "../assembler/doc-test.ts";
 
 Deno.test("Device demo", () => {
     const demo = docTest().deviceSpec({

@@ -1,4 +1,5 @@
 import { assert, assertEquals, assertFalse } from "assert";
+import { passes } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
@@ -6,7 +7,6 @@ import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
-import { passes } from "../pipeline/pass.ts";
 import type { Label } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";

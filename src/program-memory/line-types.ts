@@ -1,5 +1,5 @@
+import type { Line } from "../assembler/line.ts";
 import { LineWithObjectCode } from "../object-code/line-types.ts";
-import type { Line } from "../pipeline/line.ts";
 
 export type LineWithAddress = Readonly<Pick<
     Line, keyof LineWithObjectCode | "address"
