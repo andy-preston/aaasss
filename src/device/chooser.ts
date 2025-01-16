@@ -1,8 +1,8 @@
-import { existsSync } from "fs/exists";
 import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { Context } from "../javascript/context.ts";
+import type { DeviceFileOperations } from "./device-file.ts";
 import type { DeviceProperties } from "./properties.ts";
 
 type FullSpec = Record<string, number | boolean | Array<string>>;
@@ -11,27 +11,13 @@ type RawItem = { "description"?: string; "value": RawProperty };
 type RawItems = Record<string, RawItem>;
 type DeviceSpec = { "family"?: string; "spec": RawItems };
 
-export const defaultJsonLoader = (name: string) =>
-    JSON.parse(Deno.readTextFileSync(name));
-
-export type JsonLoader = typeof defaultJsonLoader;
-
-export const defaultDeviceFinder = (deviceName: string) => {
-    const fileName = deviceName.replace(/[^\w]|_/g, "").toLowerCase();
-    const baseName = `./devices/${fileName}.json`;
-    return existsSync(baseName)
-        ? box(baseName)
-        : failure(undefined, "device_notFound", undefined);
-};
-
-export type DeviceFinder = typeof defaultDeviceFinder;
-
 export const deviceChooser = (
     properties: DeviceProperties,
     context: Context,
-    deviceFinder: DeviceFinder,
-    loadJsonFile: JsonLoader
+    fileOperations: DeviceFileOperations
 ) => {
+    const [deviceFinder, loadJsonFile] = fileOperations;
+
     const hexNumber = (value: string): number => {
         const asNumber = parseInt(value, 16);
         const asHex = asNumber.toString(16).padStart(value.length, "0");

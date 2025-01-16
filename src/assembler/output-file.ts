@@ -1,8 +1,10 @@
 import { existsSync } from "fs/exists";
 
+export type FileExtension = ".lst" | ".hex";
+
 const encoder = new TextEncoder();
 
-export const outputFile = (topFileName: string, extension: string) => {
+export const outputFile = (topFileName: string, extension: FileExtension) => {
     let theFile: Deno.FsFile | undefined;
     const fileName = () =>
         topFileName.substring(0, topFileName.lastIndexOf(".")) + extension;

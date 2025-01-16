@@ -1,5 +1,6 @@
 import { dataMemory } from "../data-memory/data-memory.ts";
-import { deviceChooser, DeviceFinder, type JsonLoader } from "../device/chooser.ts";
+import { deviceChooser } from "../device/chooser.ts";
+import type { DeviceFileOperations } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
@@ -24,15 +25,14 @@ export const coupling = (
     readerMethod: ReaderMethod,
     outputFile: OutputFile,
     failureMessageTranslator: FailureMessageTranslator,
-    deviceFinder: DeviceFinder,
-    jsonLoader: JsonLoader
+    deviceFileOperations: DeviceFileOperations
 ) => {
     const currentPass = pass();
 
     const context = anEmptyContext();
 
     const properties = deviceProperties(context);
-    const chooser = deviceChooser(properties, context, deviceFinder, jsonLoader);
+    const chooser = deviceChooser(properties, context, deviceFileOperations);
     context.directive("device", chooser.device);
 
     const progMem = programMemory(context, properties.public);

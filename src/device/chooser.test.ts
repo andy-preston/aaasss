@@ -1,6 +1,7 @@
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
-import { deviceChooser, defaultJsonLoader, defaultDeviceFinder } from "./chooser.ts";
+import { deviceChooser } from "./chooser.ts";
+import { defaultDeviceFinder, defaultJsonLoader } from "./device-file.ts";
 import { deviceProperties } from "./properties.ts";
 
 const testEnvironment = () => {
@@ -9,7 +10,7 @@ const testEnvironment = () => {
     return {
         "context": context,
         "chooser": deviceChooser(
-            device, context, defaultDeviceFinder, defaultJsonLoader
+            device, context, [defaultDeviceFinder, defaultJsonLoader]
         )
     };
 }

@@ -1,5 +1,6 @@
 import { pass } from "../assembler/pass.ts";
-import { deviceChooser, defaultDeviceFinder, defaultJsonLoader } from "../device/chooser.ts";
+import { deviceChooser } from "../device/chooser.ts";
+import { defaultDeviceFinder, defaultJsonLoader } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
@@ -9,7 +10,7 @@ const testEnvironment = () => {
     const context = anEmptyContext();
     const device = deviceProperties(context);
     const choose = deviceChooser(
-        device, context, defaultDeviceFinder, defaultJsonLoader
+        device, context, [defaultDeviceFinder, defaultJsonLoader]
     );
     const memory = dataMemory(device.public);
     const currentPass = pass();
