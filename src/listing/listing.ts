@@ -75,7 +75,7 @@ export const listing = (
                 return;
             }
             file.write(
-                pad(nextCode.value, codeWidth) + " " + pad(nextText.value, 0)
+                `${pad(nextCode.value, codeWidth)} ${pad(nextText.value, 0)}`.trimEnd()
             );
         }
     };
