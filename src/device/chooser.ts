@@ -2,14 +2,9 @@ import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { Context } from "../javascript/context.ts";
+import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
 import type { DeviceProperties } from "./properties.ts";
-
-type FullSpec = Record<string, number | boolean | Array<string>>;
-type RawProperty = string | boolean | Array<string>;
-type RawItem = { "description"?: string; "value": RawProperty };
-type RawItems = Record<string, RawItem>;
-type DeviceSpec = { "family"?: string; "spec": RawItems };
 
 export const deviceChooser = (
     properties: DeviceProperties,
@@ -91,10 +86,12 @@ export const deviceChooser = (
         if (baseName.which == "failure") {
             return baseName;
         }
-        const baseSpec: DeviceSpec = loadJsonFile(baseName.value);
-        const familySpec: RawItems = "family" in baseSpec
-            ? loadJsonFile(`./devices/families/${baseSpec.family}.json`)
-            : {};
+        const baseSpec = loadJsonFile(baseName.value) as DeviceSpec;
+        const familySpec = (
+            "family" in baseSpec
+                ? loadJsonFile(`./devices/families/${baseSpec.family}.json`)
+                : {}
+        ) as RawItems;
         loadSpec(baseSpec.spec);
         loadSpec(familySpec);
         return choose(name, fullSpec);

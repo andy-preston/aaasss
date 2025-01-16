@@ -1,5 +1,6 @@
 import { existsSync } from "fs/exists";
 import { box, failure } from "../failure/failure-or-box.ts";
+import type { DeviceSpec, RawItems } from "./data-types.ts";
 
 export const defaultDeviceFinder = (deviceName: string) => {
     const fileName = deviceName.replace(/[^\w]|_/g, "").toLowerCase();
@@ -11,7 +12,7 @@ export const defaultDeviceFinder = (deviceName: string) => {
 
 export type DeviceFinder = typeof defaultDeviceFinder;
 
-export const defaultJsonLoader = (name: string) =>
+export const defaultJsonLoader = (name: string): RawItems | DeviceSpec =>
     JSON.parse(Deno.readTextFileSync(name));
 
 export type JsonLoader = typeof defaultJsonLoader;

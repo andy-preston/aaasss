@@ -1,4 +1,4 @@
-import { defaultDeviceFinder, defaultJsonLoader, DeviceFileOperations } from "../device/device-file.ts";
+import { defaultDeviceFinder, defaultJsonLoader, type DeviceFileOperations } from "../device/device-file.ts";
 import { deviceMocks } from "../device/device-file-mocks.ts";
 import { mockFailureMessages } from "../listing/messages-mock.ts";
 import { fileReaderMock } from "../source-code/file-reader-mock.ts";
