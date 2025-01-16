@@ -1,6 +1,6 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { Directive } from "../directives/data-types.ts";
-import { positiveParameter } from "../directives/type-checking.ts";
+import { numericParameter } from "../directives/type-checking.ts";
 import { box } from "../failure/failure-or-box.ts";
 import type { Context } from "../javascript/context.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
@@ -19,7 +19,7 @@ export const programMemory = (
     }
 
     const origin: Directive = (newAddress: number) => {
-        const check = positiveParameter(newAddress);
+        const check = numericParameter(newAddress, "type_positive");
         if (check.which == "failure") {
             return check;
         }

@@ -15,10 +15,8 @@ type ContextFields = SimpleFunction | Directive | number;
 const trailingSemicolons = /;*$/;
 
 export const anEmptyContext = () => {
-    const context: Record<string, ContextFields> = {
-        "low": (n: number) => n & 0xff,
-        "high": (n: number) => (n >> 8) & 0xff
-    };
+
+    const context: Record<string, ContextFields> = {};
 
     const functionCall = (functionBody: string) => {
         try {
