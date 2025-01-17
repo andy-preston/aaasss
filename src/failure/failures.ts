@@ -1,8 +1,10 @@
-export type TypeFailures =
-    "type_string" | "type_positive" | "type_bytes" | "type_strings" |
-    "type_params" | "type_word" | "type_byte" | "type_bitmask";
+export type NumericTypeFailure =
+    "type_positive" | "type_word" | "type_byte" | "type_bitmask";
 
-export type FailureKind = TypeFailures
+export type TypeFailure = NumericTypeFailure |
+    "type_string" | "type_strings" | "type_bytes" | "type_macroParams";
+
+export type FailureKind = TypeFailure
     | "context_redefined"
     | "device_notFound" | "device_notSelected" | "device_multiple"
     | "file_notFound"

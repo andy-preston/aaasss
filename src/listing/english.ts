@@ -63,7 +63,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "type_strings": (_line: LineWithAddress) => [
         "Should be an array of strings"
     ],
-    "type_params": (_line: LineWithAddress) => [
+    "type_macroParams": (_line: LineWithAddress) => [
         "Should be an array of numbers &/or strings"
     ],
     "programMemory_outOfRange": (_line: LineWithAddress) => [""],

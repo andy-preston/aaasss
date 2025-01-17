@@ -89,7 +89,7 @@ export const processor = () => {
         if (!macros.has(name)) {
             return failure(undefined, "macro_notExist", name);
         }
-        const checkedParameters = parameterList(parameters, "type_params");
+        const checkedParameters = parameterList(parameters, "type_macroParams");
         if (checkedParameters.which == "failure") {
             return checkedParameters;
         }

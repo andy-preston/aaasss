@@ -89,7 +89,7 @@ Deno.test("If macro parameters are provided for define they must be an array", (
     const result = environment.context.value(
         'macro("with", {"a": "a", "b": "b"});'
     );
-    assertFailureWithExtra(result, "type_params", "object");
+    assertFailureWithExtra(result, "type_macroParams", "object");
 });
 
 Deno.test("... of strings or numbers", () => {
@@ -106,5 +106,5 @@ Deno.test("... of strings or numbers", () => {
     const result = environment.context.value(
         'macro("with", [true, "a", 2, {"c": "c"}]);'
     );
-    assertFailureWithExtra(result, "type_params", "0: boolean, 3: object");
+    assertFailureWithExtra(result, "type_macroParams", "0: boolean, 3: object");
 });

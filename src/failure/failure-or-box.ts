@@ -25,9 +25,8 @@ export const box = <T>(value: T) => ({
     "value": value,
 });
 
-// deno-lint-ignore no-explicit-any
-export const isFailureOrBox = (it: any) =>
-    typeof it == "object" && Object.hasOwn(it, "which");
+export const isFailureOrBox = (it: unknown) =>
+    it instanceof Object && Object.hasOwn(it, "which");
 
 export type Failure = Readonly<ReturnType<typeof failure>>;
 export type Failures = Array<Failure>;
