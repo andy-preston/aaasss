@@ -19,7 +19,7 @@ import { fileStack, type ReaderMethod } from "../source-code/file-stack.ts";
 import { tokenise } from "../tokens/tokenise.ts";
 import type { OutputFile } from "./output-file.ts";
 import { pass } from "./pass.ts";
-import { pipeLine } from "./assembler.ts";
+import { assemblyPipeline } from "./assembler.ts";
 
 export const coupling = (
     fileName: FileName,
@@ -69,7 +69,7 @@ export const coupling = (
         js.leftInIllegalState
     ]);
 
-    return pipeLine(
+    return assemblyPipeline(
         currentPass.public,
         sourceFiles.lines,
         js.rendered,

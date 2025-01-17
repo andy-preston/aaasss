@@ -1,4 +1,4 @@
-import type { PipelineSource } from "../assembler/assembler.ts";
+import type { SourceOfSource } from "../assembler/assembler.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
@@ -57,7 +57,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         return box("");
     };
 
-    const lines: PipelineSource = function* () {
+    const lines: SourceOfSource = function* () {
         const topFile = include(topFileName);
         if (topFile.which == "failure") {
             yield lineWithRawSource(topFileName, 0, false, "").withFailure(topFile);

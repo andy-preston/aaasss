@@ -13,11 +13,11 @@ import type { Tokenise } from "../tokens/tokenise.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import { passes, type Pass } from "./pass.ts";
 
-export type PipelineSource = () => Generator<LineWithRawSource, void, void>;
+export type SourceOfSource = () => Generator<LineWithRawSource, void, void>;
 
-export const pipeLine = (
+export const assemblyPipeline = (
     pass: Pass,
-    lines: PipelineSource,
+    lines: SourceOfSource,
     javascript: Javascript["rendered"],
     tokenise: Tokenise,
     macro: MacroProcessor["lines"],
