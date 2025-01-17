@@ -1,8 +1,8 @@
 import { failure } from "../failure/failure-or-box.ts";
-import { NumericType } from "../numeric-values/types.ts";
+import type { NumericType } from "../numeric-values/types.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { NumericOperand, OperandIndex, OperandType } from "./data-types.ts";
-import { LineWithOperands } from "./line-types.ts";
+import type { LineWithOperands } from "./line-types.ts";
 
 type Scaler = (value: NumericOperand) => NumericOperand;
 

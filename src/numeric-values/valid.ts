@@ -1,5 +1,5 @@
-import { box, Box, failure, Failure } from "../failure/failure-or-box.ts";
-import { NumericType } from "./types.ts";
+import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import type { NumericType } from "./types.ts";
 
 const minMax: Record<NumericType, [number, number | undefined]> = {
     "type_positive": [0, undefined],
