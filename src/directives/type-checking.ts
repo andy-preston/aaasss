@@ -1,29 +1,9 @@
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
-import type { NumericTypeFailure } from "../failure/failures.ts";
 
 export const stringParameter = (value: unknown): Box<string> | Failure => {
     const asString = `${value}`;
     return typeof value == "string"
         ? box(asString) : failure(undefined, "type_string", asString);
-};
-
-const minMax: Map<NumericTypeFailure, [number, number | undefined]> = new Map([
-    ["type_positive", [0, undefined]],
-    ["type_word", [0, 0xffff]],
-    ["type_byte", [0, 0xff]]
-]);
-
-export const numericParameter = (
-    value: unknown, typeFailure: NumericTypeFailure
-): Box<number> | Failure => {
-    const asString = `${value}`;
-    const [min, max] = minMax.get(typeFailure)!;
-    return typeof value == "number"
-        && Number.parseInt(`${value}`) == value
-        && value >= min
-        && (max == undefined || value <= max)
-        ? box(value as number)
-        : failure(undefined, typeFailure, asString);
 };
 
 export const parameterList = (

@@ -1,8 +1,9 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
+import { NumericType } from "../numeric-values/types.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands, type RangeType } from "../operands/valid-and-scaled.ts";
+import { validScaledOperands } from "../operands/valid-and-scaled.ts";
 import type { OperandIndex } from "../operands/data-types.ts";
 
 const mapping: Map<string, [string, OperandIndex, OperandIndex]> = new Map([
@@ -11,13 +12,13 @@ const mapping: Map<string, [string, OperandIndex, OperandIndex]> = new Map([
 ]);
 
 const options = (hasReducedCore: boolean): [
-    RangeType, RangeType, string, string
+    NumericType, NumericType, string, string
 ] =>
     hasReducedCore ? [
-        "registerImmediate", "dataAddress7Bit",
+        "type_registerImmediate", "type_7BitDataAddress",
         "1010_", "kkk dddd_kkkk"
     ] : [
-        "register", "dataAddress16Bit",
+        "type_register", "type_16BitDataAddress",
         "1001_00", "d dddd_0000 kkkk_kkkk kkkk_kkkk"
     ];
 

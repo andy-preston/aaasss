@@ -36,7 +36,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "mnemonic_supportedUnknown": (_line: LineWithAddress) => [""],
     "mnemonic_notSupported": (_line: LineWithAddress) => [""],
     "mnemonic_unknown": (_line: LineWithAddress) => [""],
-    "operand_outOfRange": (_line: LineWithAddress) => [""],
     "operand_wrongCount": (_line: LineWithAddress) => [""],
     "operand_blank": (_line: LineWithAddress) => [""],
     "operand_wrongType": (_line: LineWithAddress) => [""],
@@ -57,6 +56,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "type_word":  (_line: LineWithAddress) => [""],
     "type_byte":  (_line: LineWithAddress) => [""],
     "type_bitmask": (_line: LineWithAddress) => [""],
+    "type_nybble": (_line: LineWithAddress) => [""],
+    "type_16BitDataAddress": (_line: LineWithAddress) => [""],
+    "type_7BitDataAddress": (_line: LineWithAddress) => [""],
+    "type_register": (_line: LineWithAddress) => [""],
+    "type_registerImmediate": (_line: LineWithAddress) => [""],
     "type_bytes": (_line: LineWithAddress) => [
         "Should be a string or an array of byte values"
     ],
