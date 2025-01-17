@@ -58,3 +58,12 @@ export const template = (
         .map(byte => Number.parseInt(byte, 2));
     return code as unknown as Code;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2024, Andy Preston
+//
+// This file is based on parts of https://github.com/LingDong-/avrlass which is
+// Copyright (c) 2023 Lingdong Huang under the MIT license.
+//
+////////////////////////////////////////////////////////////////////////////////
