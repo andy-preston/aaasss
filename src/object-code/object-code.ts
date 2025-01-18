@@ -26,20 +26,27 @@ export const objectCode = (
     device: DevicePropertiesInterface,
     pokeBuffer: PokeBuffer
 ) => (line: LineWithOperands) => {
+    if (line.macroBeingDefined()) {
+        return emptyLine(lineWithPokedBytes(line, []));
+    }
+
     const intermediate = lineWithPokedBytes(line, pokeBuffer.contents());
     if (line.mnemonic == "") {
         return emptyLine(intermediate);
     }
+
     const isUnsupported = device.isUnsupported(line.mnemonic);
     if (isUnsupported.which == "failure") {
         return emptyLine(intermediate).withFailure(isUnsupported);
     }
+
     const generatedCode = addressingMode(intermediate);
     if (generatedCode == undefined) {
         return emptyLine(intermediate).withFailure(
             failure(undefined, "mnemonic_unknown", undefined)
         );
     }
+
     return generatedCode(device);
 };
 

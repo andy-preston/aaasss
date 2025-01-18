@@ -15,7 +15,10 @@ export const symbolicToNumeric = (
         ["Y+", 1]
     ]);
 
-    return (line: LineWithProcessedMacro) => {
+    const dummyOperation = (line: LineWithProcessedMacro) =>
+        lineWithOperands(line, [], []);
+
+    const actualOperation = (line: LineWithProcessedMacro) => {
         const numericOperands: Array<NumericOperand> = [];
         const operandTypes: Array<OperandType> = [];
         for (const [index, symbolic] of line.symbolicOperands.entries()) {
@@ -42,6 +45,9 @@ export const symbolicToNumeric = (
             operands<OperandTypes>(operandTypes)
         );
     };
+
+    return (line: LineWithProcessedMacro) =>
+        line.macroBeingDefined() ? dummyOperation(line) : actualOperation(line);
 };
 
 export type SymbolicToNumeric = ReturnType<typeof symbolicToNumeric>;

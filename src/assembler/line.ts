@@ -22,12 +22,10 @@ export const line = (
         yield* failures;
     };
 
-    let macroName: MacroName = "";
     const definingMacro = (name: MacroName) => {
-        macroName = name;
+        theLine.macroName = name;
     }
-    const macroBeingDefined = () => macroName != "";
-    const macroNameGetter = () => macroName;
+    const macroBeingDefined = () => theLine.macroName != "";
 
     const theLine = {
         "failures": mapFailures,
@@ -42,7 +40,7 @@ export const line = (
         "mnemonic": "" as Mnemonic,
         "definingMacro": definingMacro,
         "macroBeingDefined": macroBeingDefined,
-        "macroName": macroNameGetter,
+        "macroName": "" as MacroName,
         "symbolicOperands": [] as SymbolicOperands,
         "numericOperands": [] as NumericOperands,
         "operandTypes": [] as OperandTypes,

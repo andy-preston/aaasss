@@ -2,7 +2,6 @@ import type { IllegalState } from "../failure/illegal-state.ts";
 import type { HexFile } from "../hex-file/hex.ts";
 import type { Javascript } from "../javascript/embedded/embedded.ts";
 import type { Listing } from "../listing/listing.ts";
-import { lineWithNoObjectCode, LineWithProcessedMacro } from "../macro/line-types.ts";
 import type { MacroProcessor } from "../macro/processor.ts";
 import type { ObjectCode } from "../object-code/object-code.ts";
 import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
@@ -37,15 +36,12 @@ export const assemblyPipeline = (
         hex.line(line);
     };
 
-    const expandedOutput = (line: LineWithProcessedMacro) => {
-        const withObjectCode = line.macroBeingDefined()
-            ? lineWithNoObjectCode(line)
-            : code(operands(line));
-        output(addressed(withObjectCode));
-    };
-
     const sourceLine = (line: LineWithRawSource) => {
-        macro(tokenise(javascript(line))).forEach(expandedOutput);
+        macro(tokenise(javascript(line))).forEach(
+            (expanded) => {
+                output(addressed(code(operands(expanded))));
+            }
+        );
     }
 
     const allSource = (passNumber: PassNumber) => {

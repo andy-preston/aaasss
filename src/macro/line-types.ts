@@ -1,8 +1,6 @@
 import type { Line } from "../assembler/line.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import { lineWithOperands } from "../operands/line-types.ts";
 import type { Label } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens, type LineWithTokens } from "../tokens/line-types.ts";
@@ -33,10 +31,4 @@ export const lineWithExpandedMacro = (
     );
     line.failures().forEach(tokenised.withFailure);
     return lineWithProcessedMacro(tokenised, "");
-};
-
-export const lineWithNoObjectCode = (line: LineWithProcessedMacro) => {
-    const withOperands = lineWithOperands(line, [], []);
-    const poked = lineWithPokedBytes(withOperands, []);
-    return lineWithObjectCode(poked, []);
 };

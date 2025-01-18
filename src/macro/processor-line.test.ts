@@ -14,7 +14,7 @@ const assertProcessedLine = (
 ) => {
     assertEquals(lines.length, 1);
     const line = lines[0]!;
-    assertEquals(line.macroName(), expectedName);
+    assertEquals(line.macroName, expectedName);
     assertEquals(line.macroBeingDefined(), expectedName != noMacroName);
     assertEquals(line.label, expectedLabel);
     assertEquals(line.mnemonic, expectedMnemonic);
@@ -65,7 +65,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const lines = macroProcessor.lines(tokenised).toArray();
     assertEquals(lines.length, testLines.length);
     for (const [index, line] of lines.entries()) {
-        assertEquals(line.macroName(), noMacroName);
+        assertEquals(line.macroName, noMacroName);
         assertFalse(line.macroBeingDefined());
         assertEquals(line.mnemonic, testLines[index]![1]);
     }
