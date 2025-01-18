@@ -15,14 +15,14 @@ export const processor = () => {
     let recording: Macro | undefined;
     let recordingName: MacroName;
 
-    let macros: Map<MacroName, Macro> = new Map();
+    const macros: Map<MacroName, Macro> = new Map();
 
     const leftInIllegalState = () => recording != undefined
         ? failure(undefined, "macro_define", undefined)
         : emptyBox();
 
     const reset = () => {
-        macros = new Map();
+        macros.clear();
         recording = undefined;
         playback = undefined;
     };
