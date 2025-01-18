@@ -25,6 +25,8 @@ export const box = <T>(value: T) => ({
     "value": value,
 });
 
+export const emptyBox = () => box(undefined);
+
 export const isFailureOrBox = (it: unknown) =>
     it instanceof Object && Object.hasOwn(it, "which");
 

@@ -12,11 +12,11 @@ const peculiarErrorMessage = (fileName: string) => {
     return `${prefix}${suffix}${prefix}${suffix}${prefix}`;
 };
 
-Deno.test("Including a file returns a blank value", () => {
+Deno.test("Including a file doesn't return anything", () => {
     assertSuccess(
         // This file is irrelevant but we can guarantee it exists
         fileStack(defaultReaderMethod, "").include("deno.json"),
-        ""
+        undefined
     );
 });
 

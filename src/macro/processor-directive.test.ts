@@ -31,7 +31,7 @@ Deno.test("The macro directive name must be a string", () => {
 Deno.test("The define directive can be called without parameters", () => {
     const environment = testEnvironment();
     const result = environment.context.value('define("without");');
-    assertSuccess(result, "without");
+    assertSuccess(result, undefined);
 });
 
 Deno.test("The define directive can be called with parameters", () => {
@@ -40,17 +40,17 @@ Deno.test("The define directive can be called with parameters", () => {
     const defineResult = environment.context.value(
         'define("with", ["a", "b"]);'
     );
-    assertSuccess(defineResult, "with");
+    assertSuccess(defineResult, undefined);
     environment.macroProcessor.lines(
         testLine("", "TST", ["a", "b"])
     ).toArray();
     const endResult = environment.context.value("end();");
-    assertSuccess(endResult, "with");
+    assertSuccess(endResult, undefined);
 
     const macroResult = environment.context.value(
         'macro("with", ["1", "2"]);'
     );
-    assertSuccess(macroResult, "with");
+    assertSuccess(macroResult, undefined);
     const lines = environment.macroProcessor.lines(
         testLine("", "", [])
     ).toArray();

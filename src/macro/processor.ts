@@ -1,6 +1,6 @@
 import type { Directive } from "../directives/data-types.ts";
 import { parameterList, stringParameter } from "../directives/type-checking.ts";
-import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 import {
@@ -17,10 +17,9 @@ export const processor = () => {
 
     let macros: Map<MacroName, Macro> = new Map();
 
-    const leftInIllegalState = (): Box<boolean> | Failure =>
-        recording != undefined
-            ? failure(undefined, "macro_define", undefined)
-            : box(false);
+    const leftInIllegalState = () => recording != undefined
+        ? failure(undefined, "macro_define", undefined)
+        : emptyBox();
 
     const reset = () => {
         macros = new Map();
@@ -50,7 +49,7 @@ export const processor = () => {
             name,
             checkedParameters.value == "undefined" ? [] : parameters
         );
-        return box(name);
+        return emptyBox();
     };
 
     const end: Directive = () => {
@@ -62,7 +61,7 @@ export const processor = () => {
         }
         macros.set(recordingName, recording);
         recording = undefined;
-        return box(recordingName);
+        return emptyBox();
     };
 
     const lines = function* (line: LineWithTokens) {
@@ -96,7 +95,7 @@ export const processor = () => {
         playback = macros.get(name)!.mapper(
             checkedParameters.value == "undefined" ? [] : parameters
         );
-        return box(name);
+        return emptyBox();
     };
 
     return {

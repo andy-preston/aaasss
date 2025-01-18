@@ -19,7 +19,7 @@ Deno.test("You can choose any device that has a definition file", () => {
     for (const deviceName of ["AT-Tiny 84", "AT_Tiny 24", "AT.Tiny 44"]) {
         const environment = testEnvironment();
         const result = environment.chooser.device(deviceName);
-        assertSuccess(result, "");
+        assertSuccess(result, undefined);
     }
 });
 

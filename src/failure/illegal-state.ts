@@ -1,6 +1,6 @@
 import type { Box, Failure } from "../failure/failure-or-box.ts";
 
-type IllegalStateCallback = () => Box<boolean> | Failure;
+type IllegalStateCallback = () => Box<undefined> | Failure;
 
 export const illegalStateFailures = (
     callbacks: Array<IllegalStateCallback>

@@ -1,5 +1,5 @@
 import type { Directive } from "../directives/data-types.ts";
-import { box, failure } from "../failure/failure-or-box.ts";
+import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { Code } from "./data-types.ts";
 
 export const pokeBuffer = () => {
@@ -26,7 +26,7 @@ export const pokeBuffer = () => {
         }
         return grouped.bad.length > 0
             ? failure(undefined, "type_bytes", grouped.bad.join(", "))
-            : box("")
+            : emptyBox();
     };
 
     const contents = () => {

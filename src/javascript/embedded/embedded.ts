@@ -1,4 +1,4 @@
-import { box, failure, type Box, type Failure } from "../../failure/failure-or-box.ts";
+import { emptyBox, failure, type Failure } from "../../failure/failure-or-box.ts";
 import type { LineWithRawSource } from "../../source-code/line-types.ts";
 import type { Context } from "../context.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";
@@ -21,10 +21,9 @@ export const javascript = (context: Context) => {
         current = "assembler";
     };
 
-    const leftInIllegalState = (): Box<boolean> | Failure =>
-        current == "javascript"
-            ? failure(undefined, "js_jsMode", undefined)
-            : box(false);
+    const leftInIllegalState = () => current == "javascript"
+        ? failure(undefined, "js_jsMode", undefined)
+        : emptyBox();
 
     const rendered = (line: LineWithRawSource) => {
         let itFailed = false;

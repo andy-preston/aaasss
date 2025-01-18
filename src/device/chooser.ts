@@ -1,6 +1,6 @@
 import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
-import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { Context } from "../javascript/context.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
@@ -25,10 +25,10 @@ export const deviceChooser = (
     const choose = (
         deviceName: string,
         fullSpec: FullSpec
-    ): Box<string> | Failure => {
+    ): Box<undefined> | Failure => {
         const previousName = properties.name();
         if (previousName == deviceName) {
-            return box("");
+            return emptyBox();
         }
         if (previousName != "") {
             return failure(undefined, "device_multiple", undefined);
@@ -59,7 +59,7 @@ export const deviceChooser = (
                     break;
             }
         }
-        return box("");
+        return emptyBox();
     };
 
     const device: Directive = (name: string) => {
