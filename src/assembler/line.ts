@@ -1,4 +1,5 @@
 import type { Failure, Failures } from "../failure/failure-or-box.ts";
+import type { MacroName } from "../macro/macro.ts";
 import type { Code } from "../object-code/data-types.ts";
 import type {
     NumericOperands, OperandTypes, SymbolicOperands
@@ -20,6 +21,14 @@ export const line = (
     const mapFailures = function*(): Generator<Failure, void, void> {
         yield* failures;
     };
+
+    let macroName: MacroName = "";
+    const definingMacro = (name: MacroName) => {
+        macroName = name;
+    }
+    const macroBeingDefined = () => macroName != "";
+    const macroNameGetter = () => macroName;
+
     const theLine = {
         "failures": mapFailures,
         "failed": failed,
@@ -31,7 +40,9 @@ export const line = (
         "assemblySource": "" as SourceCode,
         "label": "" as Label,
         "mnemonic": "" as Mnemonic,
-        "macroName": "" as string,
+        "definingMacro": definingMacro,
+        "macroBeingDefined": macroBeingDefined,
+        "macroName": macroNameGetter,
         "symbolicOperands": [] as SymbolicOperands,
         "numericOperands": [] as NumericOperands,
         "operandTypes": [] as OperandTypes,

@@ -8,13 +8,13 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens, type LineWithTokens } from "../tokens/line-types.ts";
 
 export type LineWithProcessedMacro = Readonly<Pick<
-    Line, keyof LineWithTokens | "macroName"
+    Line, keyof LineWithTokens | "macroName" | "macroBeingDefined"
 >>;
 
 export const lineWithProcessedMacro = (
     line: LineWithTokens, macroName: string
 ) => {
-    (line as Line).macroName = macroName;
+    (line as Line).definingMacro(macroName);
     return line as LineWithProcessedMacro;
 };
 

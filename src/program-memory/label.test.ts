@@ -39,7 +39,7 @@ Deno.test("A label is stored in the context with the current address", () => {
     environment.programMemory.origin(10);
 
     const line = testLine("A_LABEL");
-    const result = environment.programMemory.pipeline(line);
+    const result = environment.programMemory.addressed(line);
     assertFalse(result.failed(), "Unexpected failure");
     assertEquals(result.failures.length, 0);
 
@@ -54,7 +54,7 @@ Deno.test("Labels can be defined on multiple passes but must keep the same addre
     environment.programMemory.origin(10);
     for (const _pass of passes) {
         const line = testLine("A_LABEL");
-        const result = environment.programMemory.pipeline(line);
+        const result = environment.programMemory.addressed(line);
         assertFalse(result.failed(), "Unexpected failure");
         assertEquals(result.failures.length, 0);
 
@@ -70,13 +70,13 @@ Deno.test("... but will cause a failure if the address changes", () => {
 
     environment.programMemory.origin(10);
     const firstLine = testLine("A_LABEL");
-    const firstResult = environment.programMemory.pipeline(firstLine);
+    const firstResult = environment.programMemory.addressed(firstLine);
     assertFalse(firstResult.failed(), "Unexpected failure");
     assertEquals(firstResult.failures.length, 0);
 
     environment.programMemory.origin(20);
     const secondLine = testLine("A_LABEL");
-    const secondResult = environment.programMemory.pipeline(secondLine);
+    const secondResult = environment.programMemory.addressed(secondLine);
     assert(secondResult.failed(), "Unexpected success");
     secondResult.failures().forEach((failure, index) => {
         assertEquals(index, 0);

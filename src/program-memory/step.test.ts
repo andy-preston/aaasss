@@ -35,7 +35,7 @@ Deno.test("If a line has no code the address remains unchanged", () => {
     environment.properties.setName("test");
     environment.properties.programMemoryBytes(100);
     assertEquals(0, environment.memory.address());
-    environment.memory.pipeline(testLine([], []));
+    environment.memory.addressed(testLine([], []));
     assertEquals(0, environment.memory.address());
 });
 
@@ -44,7 +44,7 @@ Deno.test("The program counter advances by the number of words poked", () => {
     environment.properties.setName("test");
     environment.properties.programMemoryBytes(100);
     assertEquals(0, environment.memory.address());
-    environment.memory.pipeline(testLine([[1, 2, 3, 4], [5, 6]], []));
+    environment.memory.addressed(testLine([[1, 2, 3, 4], [5, 6]], []));
     assertEquals(3, environment.memory.address());
 });
 
@@ -53,7 +53,7 @@ Deno.test("... or by the number of words of code", () => {
     environment.properties.setName("test");
     environment.properties.programMemoryBytes(100);
     assertEquals(0, environment.memory.address());
-    environment.memory.pipeline(testLine([], [1, 2]));
+    environment.memory.addressed(testLine([], [1, 2]));
     assertEquals(1, environment.memory.address());
 });
 
@@ -62,7 +62,7 @@ Deno.test("... or both", () => {
     environment.properties.setName("test");
     environment.properties.programMemoryBytes(100);
     assertEquals(0, environment.memory.address());
-    environment.memory.pipeline(testLine([[1, 2, 3, 4], [5, 6]], [1, 2]));
+    environment.memory.addressed(testLine([[1, 2, 3, 4], [5, 6]], [1, 2]));
     assertEquals(4, environment.memory.address());
 });
 
@@ -71,7 +71,7 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
     environment.properties.setName("testDevice");
     environment.properties.programMemoryBytes(0);
     const line = testLine([[1, 2, 3, 4]], [1, 2]);
-    const result = environment.memory.pipeline(line);
+    const result = environment.memory.addressed(line);
     assert(result.failed(), "Didn't fail!");
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -88,14 +88,14 @@ Deno.test("Advancing beyond the end of program memory causes failure", () => {
     environment.properties.programMemoryBytes(6);
 
     const firstLine = testLine([[1, 2, 3, 4]], [1, 2]);
-    const firstResult = environment.memory.pipeline(firstLine);
+    const firstResult = environment.memory.addressed(firstLine);
     assertFalse(firstResult.failed(), "Unexpected failure");
     assertEquals(firstResult.failures.length, 0);
     assertEquals(firstResult.code, [[1, 2, 3, 4], [1, 2]]);
     //assertEquals(environment.programMemory.address(), 1);
 
     const secondLine = testLine([[1, 2, 3, 4]], [1, 2]);
-    const secondResult = environment.memory.pipeline(secondLine);
+    const secondResult = environment.memory.addressed(secondLine);
     assert(secondResult.failed(), "Didn't fail!");
     secondResult.failures().forEach((failure, index) => {
         assertEquals(index, 0);

@@ -35,7 +35,7 @@ export const programMemory = (
         return box(`${address}`);
     };
 
-    const pipeline = (line: LineWithObjectCode) => {
+    const addressed = (line: LineWithObjectCode) => {
         if (line.label) {
             const result = context.property(line.label, address);
             if (result.which == "failure") {
@@ -64,7 +64,7 @@ export const programMemory = (
         // haram or not but I'm keeping it, at least for now.
         "address": () => address,
         "origin": origin,
-        "pipeline": pipeline
+        "addressed": addressed
     };
 };
 

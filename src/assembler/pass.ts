@@ -1,6 +1,6 @@
 export const passes = [1, 2] as const;
 
-type PassNumber = typeof passes[number];
+export type PassNumber = typeof passes[number];
 
 type ResetStateCallback = () => void;
 

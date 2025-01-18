@@ -77,7 +77,7 @@ export const coupling = (
         macroProcessor.lines,
         symbolicToNumeric(context),
         objectCode(properties.public, poke),
-        progMem.pipeline,
+        progMem.addressed,
         listing(outputFile, fileName, failureMessageTranslator),
         hexFile(outputFile, fileName),
         illegalState

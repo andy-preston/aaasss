@@ -1,8 +1,10 @@
-import { assertEquals } from "assert";
+import { assertEquals, assertFalse } from "assert";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import type { LineWithProcessedMacro } from "./line-types.ts";
 import { processor } from "./processor.ts";
 import { testLine } from "./testing.ts";
+
+const noMacroName = "";
 
 const assertProcessedLine = (
     lines: Array<LineWithProcessedMacro>,
@@ -12,12 +14,11 @@ const assertProcessedLine = (
 ) => {
     assertEquals(lines.length, 1);
     const line = lines[0]!;
-    assertEquals(line.macroName, expectedName);
+    assertEquals(line.macroName(), expectedName);
+    assertEquals(line.macroBeingDefined(), expectedName != noMacroName);
     assertEquals(line.label, expectedLabel);
     assertEquals(line.mnemonic, expectedMnemonic);
 };
-
-const noMacroName = "";
 
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
     const macroProcessor = processor();
@@ -37,10 +38,8 @@ Deno.test("Whilst a macro is being defined, saveLine will... save lines", () => 
     const testLines = [["testLabel", "TST"], ["", "AND"], ["", "TST"]];
     for (const [label, mnemonic] of testLines) {
         const tokenised = testLine(label!, mnemonic!, []);
-        assertProcessedLine(
-            macroProcessor.lines(tokenised).toArray(),
-            "plop", label!, mnemonic!
-        );
+        const processed = macroProcessor.lines(tokenised).toArray();
+        assertProcessedLine(processed, "plop", label!, mnemonic!);
     }
     macroProcessor.end();
     const tokenised = testLine("ended", "TST", []);
@@ -66,7 +65,8 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const lines = macroProcessor.lines(tokenised).toArray();
     assertEquals(lines.length, testLines.length);
     for (const [index, line] of lines.entries()) {
-        assertEquals(line.macroName, noMacroName);
+        assertEquals(line.macroName(), noMacroName);
+        assertFalse(line.macroBeingDefined());
         assertEquals(line.mnemonic, testLines[index]![1]);
     }
 });
