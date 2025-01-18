@@ -8,6 +8,7 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { hexFile } from "./hex.ts";
 import { lineWithAddress } from "../program-memory/line-types.ts";
+import { failure } from "../failure/failure-or-box.ts";
 
 const testLine = (test: TestBlock) => {
     const withRaw = lineWithRawSource("", 0, false, "");
@@ -19,6 +20,19 @@ const testLine = (test: TestBlock) => {
     const withObject = lineWithObjectCode(withPoked, test[1]);
     return lineWithAddress(withObject, test[0]);
 };
+
+const testLineWithFailure = () => {
+    const withRaw = lineWithRawSource("", 0, false, "");
+    const withRendered = lineWithRenderedJavascript(withRaw, "");
+    const withTokens = lineWithTokens(withRendered, "", "", []);
+    const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", []);
+    const withOperands = lineWithOperands(withMacro, [], []);
+    const withPoked = lineWithPokedBytes(withOperands, []);
+    const withObject = lineWithObjectCode(withPoked, []);
+    return lineWithAddress(withObject, 0).withFailure(
+        failure(0, "js_error", undefined)
+    );
+}
 
 const testEnvironment = () => {
     const lines: Array<string> = [];
@@ -61,6 +75,22 @@ const testCode: Array<TestBlock> = [
     [0x000009, [0x94, 0x0c, 0x00, 0x14]] // JMP 20
 ];
 
+Deno.test("If there are any failures, no hex is produced", () => {
+    const environment = testEnvironment();
+    environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
+    environment.hex.line(testLineWithFailure());
+    environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
+    environment.hex.save();
+    assertEquals([], environment.mockFileContents);
+});
+
+Deno.test("If no lines have code, no hex is produced", () => {
+    const environment = testEnvironment();
+    environment.hex.line(testLine([0x000000, []]));
+    environment.hex.save();
+    assertEquals([], environment.mockFileContents);
+});
+
 Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
     const expectedResults = [
         ":020000020000FC",
@@ -80,12 +110,14 @@ Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
 
 Deno.test("Every file starts with an extended segment address of zero", () => {
     const environment = testEnvironment();
+    environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
     environment.hex.save();
     assertEquals(":020000020000FC", environment.mockFileContents[0]);
 });
 
 Deno.test("Every file ends with an end-of-file marker", () => {
     const environment = testEnvironment();
+    environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
     environment.hex.save();
     assertEquals(":00000001FF", environment.mockFileContents.pop());
 });
