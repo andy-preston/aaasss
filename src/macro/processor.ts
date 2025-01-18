@@ -1,7 +1,7 @@
 import type { Directive } from "../directives/data-types.ts";
 import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
-import type { LineWithTokens } from "../tokens/line-types.ts";
+import { lineWithTokens, type LineWithTokens } from "../tokens/line-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 import {
     macro,
@@ -65,17 +65,17 @@ export const processor = () => {
     };
 
     const lines = function* (line: LineWithTokens) {
-        if (playback != undefined) {
-            yield* playback(line);
-            playback = undefined;
-        }
-        if (recording != undefined) {
-            recording.push(line);
-        }
         yield lineWithProcessedMacro(
             line,
             recording == undefined ? "" : recordingName
         );
+        if (playback != undefined) {
+            yield* playback(line);
+            playback = undefined;
+        }
+        if (recording != undefined && line.hasAssembly()) {
+            recording.push(line);
+        }
     };
 
     const macroDirective: Directive = (

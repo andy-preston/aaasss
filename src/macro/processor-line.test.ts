@@ -60,8 +60,9 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     macroProcessor.end();
     macroProcessor.macro("plop", []);
 
-    testLines.push(["ended", "TST"]);
-    const tokenised = testLine("ended", "TST", []);
+    testLines.unshift(["ended", ""]);
+    const tokenised = testLine("ended", "", []);
+
     const lines = macroProcessor.lines(tokenised).toArray();
     assertEquals(lines.length, testLines.length);
     for (const [index, line] of lines.entries()) {

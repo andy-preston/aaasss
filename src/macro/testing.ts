@@ -7,7 +7,9 @@ import { lineWithTokens } from "../tokens/line-types.ts";
 export const testLine = (
     label: Label, mnemonic: Mnemonic, operands: SymbolicOperands
 ) => {
-    const raw = lineWithRawSource("", 0, false, "");
-    const rendered = lineWithRenderedJavascript(raw, "");
+    const sourceLabel = label ? `${label}: ` : "";
+    const mockSource = `${sourceLabel}${mnemonic} ${operands.join(", ")}`;
+    const raw = lineWithRawSource("", 0, false, mockSource);
+    const rendered = lineWithRenderedJavascript(raw, mockSource);
     return lineWithTokens(rendered, label, mnemonic, operands);
 };

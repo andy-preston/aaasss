@@ -22,6 +22,8 @@ export const line = (
         yield* failures;
     };
 
+    const hasAssembly = () => theLine.assemblySource.trim() != "";
+
     const definingMacro = (name: MacroName) => {
         theLine.macroName = name;
     }
@@ -36,6 +38,7 @@ export const line = (
         "lastLine": lastLine,
         "rawSource": source as SourceCode,
         "assemblySource": "" as SourceCode,
+        "hasAssembly": hasAssembly,
         "label": "" as Label,
         "mnemonic": "" as Mnemonic,
         "definingMacro": definingMacro,

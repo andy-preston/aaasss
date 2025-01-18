@@ -36,25 +36,26 @@ Deno.test("The define directive can be called without parameters", () => {
 
 Deno.test("The define directive can be called with parameters", () => {
     const environment = testEnvironment();
-
-    const defineResult = environment.context.value(
-        'define("with", ["a", "b"]);'
+    assertSuccess(
+        environment.context.value('define("with", ["a", "b"]);'),
+        undefined
     );
-    assertSuccess(defineResult, undefined);
     environment.macroProcessor.lines(
         testLine("", "TST", ["a", "b"])
     ).toArray();
-    const endResult = environment.context.value("end();");
-    assertSuccess(endResult, undefined);
 
-    const macroResult = environment.context.value(
-        'macro("with", ["1", "2"]);'
+    assertSuccess(
+        environment.context.value("end();"),
+        undefined
     );
-    assertSuccess(macroResult, undefined);
+    assertSuccess(
+        environment.context.value('macro("with", ["1", "2"]);'),
+        undefined
+    );
     const lines = environment.macroProcessor.lines(
         testLine("", "", [])
     ).toArray();
-    assertEquals(lines[0]!.symbolicOperands, ["1", "2"]);
+    assertEquals(lines[1]!.symbolicOperands, ["1", "2"]);
 });
 
 Deno.test("If define parameters are provided for define they must be an array", () => {

@@ -21,7 +21,7 @@ export const lineWithExpandedMacro = (
     line: LineWithTokens, label: Label, symbolicOperands: SymbolicOperands
 ) => {
     const raw = lineWithRawSource(
-        callingLine.fileName, callingLine.lineNumber, false, line.rawSource
+        callingLine.fileName, callingLine.lineNumber, false, line.assemblySource
     );
     const rendered = lineWithRenderedJavascript(
         raw, line.assemblySource

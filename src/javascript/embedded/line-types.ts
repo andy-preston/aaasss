@@ -3,7 +3,7 @@ import type { SourceCode } from "../../source-code/data-types.ts";
 import type { LineWithRawSource } from "../../source-code/line-types.ts";
 
 export type LineWithRenderedJavascript = Readonly<Pick<
-    Line, keyof LineWithRawSource | "assemblySource"
+    Line, keyof LineWithRawSource | "assemblySource" | "hasAssembly"
 >>;
 
 export const lineWithRenderedJavascript = (

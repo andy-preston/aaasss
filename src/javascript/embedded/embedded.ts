@@ -71,7 +71,7 @@ export const javascript = (context: Context) => {
         );
 
         const result = lineWithRenderedJavascript(
-            line, itFailed ? "" : buffer.assembler.join("").trim()
+            line, itFailed ? "" : buffer.assembler.join("").trimEnd()
         );
         buffer.assembler = [];
         return result;
