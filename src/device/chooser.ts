@@ -55,7 +55,7 @@ export const deviceChooser = (
                     properties.ramEnd(value as number);
                     break;
                 default:
-                    context.property(key, value as number);
+                    context.define(key, value as number);
                     break;
             }
         }

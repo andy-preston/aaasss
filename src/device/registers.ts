@@ -4,7 +4,7 @@ export const cpuRegisters = (context: Context) => {
     const choose = (reducedCore: boolean) => {
         let register = reducedCore ? 16 : 0;
         while (register < 32) {
-            context.property(`R${register}`, register++);
+            context.define(`R${register}`, register++);
         }
         const specialRegisters: Array<[string, number]> = [
             ["X", 26],
@@ -18,7 +18,7 @@ export const cpuRegisters = (context: Context) => {
             ["ZH", 31],
         ];
         for (const [name, value] of specialRegisters) {
-            context.property(name, value);
+            context.define(name, value);
         }
     };
 

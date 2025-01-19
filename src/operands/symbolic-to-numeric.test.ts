@@ -30,11 +30,12 @@ Deno.test("An expression yields a value", () => {
     assertEquals(result.operandTypes[0], "number");
 });
 
-Deno.test("A property yields a value", () => {
+Deno.test("A symbol yields a value", () => {
     const environment = testEnvironment();
-    environment.context.property("R7", 7);
+    environment.context.define("R7", 7);
     const result = environment.operands(testLine(["R7"]));
     assertEquals(result.numericOperands[0], 7);
+    //assertEquals(result.operandTypes[0], "register");
     assertEquals(result.operandTypes[0], "number");
 });
 
@@ -46,7 +47,7 @@ Deno.test("An index offset operand returns special values not related to the con
     assertEquals(result.operandTypes, ["index_offset", "index_offset"]);
 });
 
-Deno.test("An uninitialised property yields a failure", () => {
+Deno.test("An uninitialised symbol yields a failure", () => {
     const environment = testEnvironment();
     const result = environment.operands(testLine(["notDefined"]));
     assert(result.failed());

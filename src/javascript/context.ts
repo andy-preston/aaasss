@@ -1,6 +1,6 @@
 import type { Directive } from "../directives/data-types.ts";
 import {
-    box, failure, isFailureOrBox, type Box, type Failure
+    box, emptyBox, failure, isFailureOrBox, type Box, type Failure
 } from "../failure/failure-or-box.ts";
 import { returnIfExpression } from "./magic.ts";
 
@@ -53,29 +53,28 @@ export const anEmptyContext = () => {
         });
     };
 
-    const property = (name: string, value: number): Box<number> | Failure => {
+    const define: Directive = (name: string, value: number) => {
         if (Object.hasOwn(context, name)) {
-            if (context[name] != value) {
-                return failure(
-                    undefined, "context_redefined", `${context[name]!}`
-                );
-            }
-        } else {
-            const getter = () => {
-                return value;
-            };
-            Object.defineProperty(context, name, {
-                "configurable": false,
-                "enumerable": true,
-                "get": getter,
-            });
+            return context[name] == value
+                ? emptyBox()
+                : failure(undefined, "context_redefined", `${context[name]!}`);
         }
-        return box(value);
+
+        const getter = () => {
+            return value;
+        };
+
+        Object.defineProperty(context, name, {
+            "configurable": false,
+            "enumerable": true,
+            "get": getter,
+        });
+        return emptyBox();
     };
 
     return {
         "value": value,
-        "property": property,
+        "define": define,
         "directive": directive
     };
 };

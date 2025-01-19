@@ -37,7 +37,7 @@ export const programMemory = (
 
     const addressed = (line: LineWithObjectCode) => {
         if (line.label) {
-            const result = context.property(line.label, address);
+            const result = context.define(line.label, address);
             if (result.which == "failure") {
                 line.withFailure(result);
             }

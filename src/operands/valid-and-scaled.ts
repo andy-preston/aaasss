@@ -38,7 +38,6 @@ export const validScaledOperands = (
     ) => 0;
 
     const failed = line.numericOperands.length != requiredCount;
-
     if (failed) {
         line.withFailure(
             failure(undefined, "operand_wrongCount", `${requiredCount}`)

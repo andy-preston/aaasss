@@ -19,9 +19,9 @@ const testEnvironment = () => {
     };
 };
 
-Deno.test("A property will not be reassigned", () => {
+Deno.test("A symbol will not be reassigned using this.symbol", () => {
     const environment = testEnvironment();
-    environment.context.property("plop", 57);
+    environment.context.define("plop", 57);
     // The assignment fails silently.
     // I'm not sure if this is a good thing or a bad thing?
     // But let's treat it that assigning to this.something
