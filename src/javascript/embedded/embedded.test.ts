@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertFalse } from "assert";
+import { assert, assertEquals, assertFalse, assertNotEquals } from "assert";
 import { cpuRegisters } from "../../device/registers.ts";
 import { assertFailure } from "../../failure/testing.ts";
 import { SourceCode } from "../../source-code/data-types.ts";
@@ -18,6 +18,20 @@ const testEnvironment = () => {
         "js": javascript(context)
     };
 };
+
+Deno.test("A property will not be reassigned", () => {
+    const environment = testEnvironment();
+    environment.context.property("plop", 57);
+    // The assignment fails silently.
+    // I'm not sure if this is a good thing or a bad thing?
+    // But let's treat it that assigning to this.something
+    // is just not in the specification.
+    const rendered = environment.js.rendered(testLine(
+        "{{ this.plop = 27; return this.plop; }}"
+    ));
+    assertNotEquals(rendered.assemblySource, "27");
+    assertEquals(rendered.assemblySource, "57");
+});
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {
     const environment = testEnvironment();

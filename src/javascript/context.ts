@@ -53,14 +53,6 @@ export const anEmptyContext = () => {
         });
     };
 
-    const coupledProperty = (name: string, getter: NumericGetter) => {
-        Object.defineProperty(context, name, {
-            "configurable": false,
-            "enumerable": true,
-            "get": getter
-        });
-    };
-
     const property = (name: string, value: number): Box<number> | Failure => {
         if (Object.hasOwn(context, name)) {
             if (context[name] != value) {
@@ -69,11 +61,13 @@ export const anEmptyContext = () => {
                 );
             }
         } else {
+            const getter = () => {
+                return value;
+            };
             Object.defineProperty(context, name, {
                 "configurable": false,
                 "enumerable": true,
-                "value": value,
-                "writable": false
+                "get": getter,
             });
         }
         return box(value);
@@ -82,8 +76,7 @@ export const anEmptyContext = () => {
     return {
         "value": value,
         "property": property,
-        "directive": directive,
-        "coupledProperty": coupledProperty
+        "directive": directive
     };
 };
 
