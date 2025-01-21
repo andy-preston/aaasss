@@ -1,4 +1,4 @@
-import { docTest } from "../assembler/doc-test.ts";
+import { assertFileContains, docTest } from "../assembler/doc-test.ts";
 
 Deno.test("Macro demo", () => {
     const demo = docTest();
@@ -13,9 +13,9 @@ Deno.test("Macro demo", () => {
         '    {{ macro("aMacro", [2048]); }}',
     ]);
     demo.assemble();
-    demo.assertFileContains(".lst", [
-        "demo.asm",
-        "========",
+    assertFileContains(".lst", [
+        "/var/tmp/demo.asm",
+        "=================",
         '                      1     {{ device("ATTiny24"); }}',
         "                      2",
         '                      3     {{ define("aMacro", ["address"]); }}',
@@ -27,7 +27,7 @@ Deno.test("Macro demo", () => {
         '                      8     {{ macro("aMacro", [2048]); }}',
         "000002 91 E0 08 00    8     LDS R30, address"
     ]);
-    demo.assertFileContains(".hex", [
+    assertFileContains(".hex", [
         ":020000020000FC",
         ":08000000E0910004E09100080A",
         ":00000001FF"

@@ -17,14 +17,13 @@ import { pokeBuffer } from "../object-code/poke.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { fileStack, type ReaderMethod } from "../source-code/file-stack.ts";
 import { tokenise } from "../tokens/tokenise.ts";
-import type { OutputFile } from "./output-file.ts";
 import { pass } from "./pass.ts";
 import { assemblyPipeline } from "./assembler.ts";
+import { outputFile } from "./output-file.ts";
 
 export const coupling = (
     fileName: FileName,
     readerMethod: ReaderMethod,
-    outputFile: OutputFile,
     failureMessageTranslator: FailureMessageTranslator,
     deviceFileOperations: DeviceFileOperations
 ) => {

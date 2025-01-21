@@ -1,4 +1,4 @@
-import { docTest } from "../assembler/doc-test.ts";
+import { assertFileContains, assertNoFileExists, docTest } from "../assembler/doc-test.ts";
 
 Deno.test("DES example code",() => {
     const demo = docTest();
@@ -26,9 +26,9 @@ Deno.test("DES example code",() => {
         "    DES 0x0f",
     ]);
     demo.assemble();
-    demo.assertFileContains(".lst", [
-        "demo.asm",
-        "========",
+    assertFileContains(".lst", [
+        "/var/tmp/demo.asm",
+        "=================",
         '                      1     {{ device("testing"); }}',
         "000000 94 0B          2     DES 0x00",
         "000001 94 1B          3     DES 0x01",
@@ -48,7 +48,7 @@ Deno.test("DES example code",() => {
         "00000F 94 FB         17     DES 0x0f"
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
-    demo.assertFileContains(".hex", [
+    assertFileContains(".hex", [
         ":020000020000FC",
         ":100000000B941B942B943B944B945B946B947B9438",
         ":100010008B949B94AB94BB94CB94DB94EB94FB9428",
@@ -63,12 +63,12 @@ Deno.test("Some(most?) devices don't support DES",() => {
         "    DES 15",
     ]);
     demo.assemble();
-    demo.assertFileContains(".lst", [
-        "demo.asm",
-        "========",
+    assertFileContains(".lst", [
+        "/var/tmp/demo.asm",
+        "=================",
         '                      1     {{ device("AT-Tiny-24"); }}',
         "                      2     DES 15",
         "                        mnemonic_notSupported",
     ]);
-    demo.assertNoFileExists(".hex");
+    assertNoFileExists(".hex");
 });

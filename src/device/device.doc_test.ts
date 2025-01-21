@@ -1,4 +1,4 @@
-import { docTest } from "../assembler/doc-test.ts";
+import { assertFileContains, assertFileExists, assertNoFileExists, docTest } from "../assembler/doc-test.ts";
 
 Deno.test("Device demo", () => {
     const demo = docTest();
@@ -7,13 +7,13 @@ Deno.test("Device demo", () => {
         "    LDS R30, 1024",
     ]);
     demo.assemble();
-    demo.assertFileContains(".lst", [
-        "demo.asm",
-        "========",
+    assertFileContains(".lst", [
+        "/var/tmp/demo.asm",
+        "=================",
         '                      1     {{ device("ATTiny24"); }}',
         "000000 91 E0 04 00    2     LDS R30, 1024"
     ]);
-    demo.assertFileExists(".hex");
+    assertFileExists(".hex");
 });
 
 Deno.test("A device must be specified before any instructions can be assembled", () => {
@@ -22,13 +22,13 @@ Deno.test("A device must be specified before any instructions can be assembled",
         "    DES 23",
     ]);
     demo.assemble();
-    demo.assertFileContains(".lst", [
-        "demo.asm",
-        "========",
+    assertFileContains(".lst", [
+        "/var/tmp/demo.asm",
+        "=================",
         "                      1     DES 23",
         "                        mnemonic_supportedUnknown",
     ]);
-    demo.assertNoFileExists(".hex");
+    assertNoFileExists(".hex");
 });
 
 Deno.test("The device name must be a string",() => {
@@ -37,13 +37,13 @@ Deno.test("The device name must be a string",() => {
         "    {{ device(ATTiny24); }}",
     ]);
     demo.assemble();
-    demo.assertFileContains(".lst", [
-        "demo.asm",
-        "========",
+    assertFileContains(".lst", [
+        "/var/tmp/demo.asm",
+        "=================",
         "                      1     {{ device(ATTiny24); }}",
         "                        js_error",
         "                        ReferenceError",
         "                        ATTiny24 is not defined",
     ]);
-    demo.assertNoFileExists(".hex");
+    assertNoFileExists(".hex");
 });

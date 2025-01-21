@@ -1,16 +1,21 @@
 import { existsSync } from "fs/exists";
+import { FileName } from "../source-code/data-types.ts";
 
 export type FileExtension = ".lst" | ".hex";
 
 const encoder = new TextEncoder();
 
+export const extensionSwap = (fileName: FileName, extension: FileExtension) =>
+    fileName.substring(0, fileName.lastIndexOf(".")) + extension;
+
 export const outputFile = (topFileName: string, extension: FileExtension) => {
     let theFile: Deno.FsFile | undefined;
-    const fileName = () =>
-        topFileName.substring(0, topFileName.lastIndexOf(".")) + extension;
+
+    const fileName = extensionSwap(topFileName, extension);
+
     const open = () => {
         theFile = Deno.openSync(
-            fileName(),
+            fileName,
             { create: true, write: true, truncate: true }
         );
     };
