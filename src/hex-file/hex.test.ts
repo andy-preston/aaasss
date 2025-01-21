@@ -1,14 +1,14 @@
 import { assert, assertEquals } from "assert";
+import { failure } from "../failure/failure-or-box.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { lineWithExpandedMacro } from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
+import { lineWithAddress } from "../program-memory/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { hexFile } from "./hex.ts";
-import { lineWithAddress } from "../program-memory/line-types.ts";
-import { failure } from "../failure/failure-or-box.ts";
 
 const testLine = (test: TestBlock) => {
     const withRaw = lineWithRawSource("", 0, false, "");
@@ -81,14 +81,14 @@ Deno.test("If there are any failures, no hex is produced", () => {
     environment.hex.line(testLineWithFailure());
     environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
     environment.hex.save();
-    assertEquals([], environment.mockFileContents);
+    assertEquals(environment.mockFileContents, []);
 });
 
 Deno.test("If no lines have code, no hex is produced", () => {
     const environment = testEnvironment();
     environment.hex.line(testLine([0x000000, []]));
     environment.hex.save();
-    assertEquals([], environment.mockFileContents);
+    assertEquals(environment.mockFileContents, []);
 });
 
 Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
@@ -112,14 +112,14 @@ Deno.test("Every file starts with an extended segment address of zero", () => {
     const environment = testEnvironment();
     environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
     environment.hex.save();
-    assertEquals(":020000020000FC", environment.mockFileContents[0]);
+    assertEquals(environment.mockFileContents[0], ":020000020000FC");
 });
 
 Deno.test("Every file ends with an end-of-file marker", () => {
     const environment = testEnvironment();
     environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
     environment.hex.save();
-    assertEquals(":00000001FF", environment.mockFileContents.pop());
+    assertEquals(environment.mockFileContents.pop(), ":00000001FF");
 });
 
 Deno.test("Each record begins with a start code", () => {
@@ -140,8 +140,8 @@ Deno.test("Each record contains a maximum of 0x10 bytes", () => {
     }
     environment.hex.save();
     const firstRecord = environment.mockFileContents[1]!;
-    assertEquals("10", firstRecord.substring(1, 3));
-    assertEquals(recordLength(16), firstRecord.length);
+    assertEquals(firstRecord.substring(1, 3), "10");
+    assertEquals(firstRecord.length, recordLength(16));
 });
 
 Deno.test("The remainder of the bytes form the last record", () => {
@@ -151,8 +151,8 @@ Deno.test("The remainder of the bytes form the last record", () => {
     }
     environment.hex.save();
     const lastRecord = environment.mockFileContents[2]!;
-    assertEquals("06", lastRecord.substring(1, 3));
-    assertEquals(recordLength(6), lastRecord.length);
+    assertEquals(lastRecord.substring(1, 3), "06");
+    assertEquals(lastRecord.length, recordLength(6));
 });
 
 Deno.test("If the address jumps out of sequence, a new record starts", () => {
