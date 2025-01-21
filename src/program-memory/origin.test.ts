@@ -1,18 +1,6 @@
 import { assertEquals } from "assert";
-import { deviceProperties } from "../device/properties.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
-import { anEmptyContext } from "../javascript/context.ts";
-import { programMemory } from "./program-memory.ts";
-
-const testEnvironment = () => {
-    const context = anEmptyContext();
-    const properties = deviceProperties(context);
-    const memory = programMemory(context, properties.public);
-    return {
-        "properties": properties,
-        "memory": memory
-    };
-};
+import { testEnvironment } from "./testing.ts";
 
 Deno.test("A device must be selected before program memory can be set", () => {
     const environment = testEnvironment();
