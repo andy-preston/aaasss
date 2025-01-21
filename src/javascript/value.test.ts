@@ -1,34 +1,34 @@
 import { assertFailureWithError, assertSuccess } from "../failure/testing.ts";
-import { anEmptyContext } from "./context.ts";
+import { testContext } from "./testing.ts";
 
 Deno.test("Simple expressions do not require a `return`", () => {
-    const context = anEmptyContext();
+    const context = testContext();
     assertSuccess(context.value("20 / 2"), "10");
 });
 
 Deno.test("...but you can include one if you want", () => {
-    const context = anEmptyContext();
+    const context = testContext();
     assertSuccess(context.value("return 20 / 2"), "10");
 });
 
 Deno.test("If the result is undefined, `value` returns empty string", () => {
-    const context = anEmptyContext();
+    const context = testContext();
     assertSuccess(context.value("undefined;"), "");
 });
 
 Deno.test("A plain assignment will not return a value", () => {
-    const context = anEmptyContext();
+    const context = testContext();
     assertSuccess(context.value("this.test = 4;"), "");
 });
 
 Deno.test("Javascript can contain newlines", () => {
-    const context = anEmptyContext();
+    const context = testContext();
     const js = "this.test1 = 4;\nthis.test2 = 6;\n return test1 + test2;";
     assertSuccess(context.value(js), "10");
 });
 
 Deno.test("An unknown variable gives a reference error", () => {
-    const context = anEmptyContext();
+    const context = testContext();
     assertFailureWithError(
         context.value("this.test = plop * 10;"),
         "js_error",
@@ -38,7 +38,7 @@ Deno.test("An unknown variable gives a reference error", () => {
 });
 
 Deno.test("Syntax errors are returned as errors too", () => {
-    const context = anEmptyContext();
+    const context = testContext();
     assertFailureWithError(
         context.value("this is just nonsense"),
         "js_error",

@@ -2,10 +2,10 @@ import { assertEquals } from "assert";
 import type { Directive } from "../directives/data-types.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
-import { anEmptyContext } from "./context.ts";
+import { testContext } from "./testing.ts";
 
 Deno.test("Any directives that are added can be called as functions", () => {
-    const context = anEmptyContext();
+    const context = testContext();
     let directiveParameter = "";
     const testDirective: Directive = (parameter: string)=> {
         directiveParameter = parameter;
@@ -18,7 +18,7 @@ Deno.test("Any directives that are added can be called as functions", () => {
 });
 
 Deno.test("Directives can return a failure", () => {
-    const context = anEmptyContext();
+    const context = testContext();
 
     const testDirective: Directive = (_: string) => {
         return failure(undefined, "file_notFound", undefined);
@@ -30,7 +30,7 @@ Deno.test("Directives can return a failure", () => {
 });
 
 Deno.test("Directives can return success in the form of a string", () => {
-    const context = anEmptyContext();
+    const context = testContext();
 
     const testDirective: Directive = (_: string) => {
         return emptyBox();
