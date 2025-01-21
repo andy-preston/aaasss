@@ -1,19 +1,5 @@
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { anEmptyContext } from "../javascript/context.ts";
-import { deviceChooser } from "./chooser.ts";
-import { defaultDeviceFinder, defaultJsonLoader } from "./device-file.ts";
-import { deviceProperties } from "./properties.ts";
-
-const testEnvironment = () => {
-    const context = anEmptyContext();
-    const device = deviceProperties(context);
-    return {
-        "context": context,
-        "chooser": deviceChooser(
-            device, context, [defaultDeviceFinder, defaultJsonLoader]
-        )
-    };
-}
+import { testEnvironment } from "./testing.ts";
 
 Deno.test("You can choose any device that has a definition file", () => {
     for (const deviceName of ["AT-Tiny 84", "AT_Tiny 24", "AT.Tiny 44"]) {
