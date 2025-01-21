@@ -39,7 +39,8 @@ const testEnvironment = () => {
     const mockOutputFile = (_fileName: string, _extension: string) => ({
         "write": (text: string) => lines.push(text),
         "close": () => {},
-        "remove": () => {}
+        "remove": () => {},
+        "empty": () => false
     });
     return {
         "mockFileContents": lines,

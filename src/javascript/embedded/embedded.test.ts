@@ -5,12 +5,13 @@ import { SourceCode } from "../../source-code/data-types.ts";
 import { lineWithRawSource } from "../../source-code/line-types.ts";
 import { anEmptyContext } from "../context.ts";
 import { javascript } from "./embedded.ts";
+import { symbolTable } from "../../listing/symbol-table.ts";
 
 const testLine = (source: SourceCode) =>
     lineWithRawSource("", 0, false, source);
 
 const testEnvironment = () => {
-    const context = anEmptyContext();
+    const context = anEmptyContext(symbolTable());
     const registers = cpuRegisters(context);
     return {
         "context": context,

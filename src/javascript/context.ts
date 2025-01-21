@@ -2,6 +2,7 @@ import type { Directive } from "../directives/data-types.ts";
 import {
     box, emptyBox, failure, isFailureOrBox, type Box, type Failure
 } from "../failure/failure-or-box.ts";
+import { SymbolTable } from "../listing/symbol-table.ts";
 import { returnIfExpression } from "./magic.ts";
 
 type SimpleFunction = (n: number) => number;
@@ -14,7 +15,7 @@ type ContextFields = SimpleFunction | Directive | number;
 
 const trailingSemicolons = /;*$/;
 
-export const anEmptyContext = () => {
+export const anEmptyContext = (symbolTable: SymbolTable) => {
 
     const context: Record<string, ContextFields> = {};
 
@@ -53,28 +54,35 @@ export const anEmptyContext = () => {
         });
     };
 
-    const define: Directive = (name: string, value: number) => {
+    const defineInternal = (name: string, value: number) => {
         if (Object.hasOwn(context, name)) {
             return context[name] == value
                 ? emptyBox()
                 : failure(undefined, "context_redefined", `${context[name]!}`);
         }
-
-        const getter = () => {
-            return value;
-        };
-
         Object.defineProperty(context, name, {
             "configurable": false,
             "enumerable": true,
-            "get": getter,
+            "get": () => {
+                symbolTable.count(name);
+                return value;
+            }
         });
         return emptyBox();
+    };
+
+    const define: Directive = (name: string, value: number) => {
+        const result = defineInternal(name, value);
+        if (result.which != "failure") {
+            symbolTable.count(name);
+        }
+        return result;
     };
 
     return {
         "value": value,
         "define": define,
+        "defineInternal": defineInternal,
         "directive": directive
     };
 };

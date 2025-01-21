@@ -11,9 +11,10 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { objectCode } from "./object-code.ts";
 import { pokeBuffer } from "./poke.ts";
+import { symbolTable } from "../listing/symbol-table.ts";
 
 const testEnvironment = () => {
-    const context = anEmptyContext();
+    const context = anEmptyContext(symbolTable());
     const properties = deviceProperties(context);
     const poke = pokeBuffer();
     return {

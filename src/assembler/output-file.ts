@@ -19,23 +19,32 @@ export const outputFile = (topFileName: string, extension: FileExtension) => {
             { create: true, write: true, truncate: true }
         );
     };
+
     const remove = () => {
-        if (existsSync(fileName())) {
-            Deno.removeSync(fileName());
+        close();
+        if (existsSync(fileName)) {
+            Deno.removeSync(fileName);
         }
     };
+
+    const empty = () => theFile == undefined;
+
     const write = (text: string) => {
         if (theFile == undefined) {
             open();
         }
         theFile!.writeSync(encoder.encode(`${text}\n`));
     };
+
     const close = () => {
         if (theFile != undefined) {
             theFile.close();
+            theFile = undefined;
         }
     };
+
     return {
+        "empty": empty,
         "remove": remove,
         "write": write,
         "close": close

@@ -9,6 +9,7 @@ import { anEmptyContext } from "../javascript/context.ts";
 import { javascript } from "../javascript/embedded/embedded.ts";
 import type { FailureMessageTranslator } from "../listing/messages.ts";
 import { listing } from "../listing/listing.ts";
+import { symbolTable } from "../listing/symbol-table.ts";
 import { processor } from "../macro/processor.ts";
 import { objectCode } from "../object-code/object-code.ts";
 import { symbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
@@ -29,7 +30,12 @@ export const coupling = (
 ) => {
     const currentPass = pass();
 
-    const context = anEmptyContext();
+    const symbols = symbolTable();
+    currentPass.addResetStateCallback(symbols.reset);
+
+    const context = anEmptyContext(symbols);
+
+    //context.directive("define", context.define);
 
     context.directive("bit", maskToBitNumber);
     context.directive("high", high);
@@ -77,7 +83,7 @@ export const coupling = (
         symbolicToNumeric(context),
         objectCode(properties.public, poke),
         progMem.addressed,
-        listing(outputFile, fileName, failureMessageTranslator),
+        listing(outputFile, fileName, failureMessageTranslator, symbols),
         hexFile(outputFile, fileName),
         illegalState
     );

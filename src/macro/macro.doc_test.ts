@@ -25,7 +25,12 @@ Deno.test("Macro demo", () => {
         '                      7     {{ macro("aMacro", [1024]); }}',
         "000000 91 E0 04 00    7     LDS R30, address",
         '                      8     {{ macro("aMacro", [2048]); }}',
-        "000002 91 E0 08 00    8     LDS R30, address"
+        "000002 91 E0 08 00    8     LDS R30, address",
+        "",
+        "Symbol Table",
+        "============",
+        "",
+        "R30: 2"
     ]);
     assertFileContains(".hex", [
         ":020000020000FC",

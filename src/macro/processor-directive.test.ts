@@ -3,9 +3,10 @@ import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { processor } from "./processor.ts";
 import { testLine } from "./testing.ts";
+import { symbolTable } from "../listing/symbol-table.ts";
 
 const testEnvironment = () => {
-    const context = anEmptyContext();
+    const context = anEmptyContext(symbolTable());
     const macroProcessor = processor();
     context.directive("define", macroProcessor.define);
     context.directive("end", macroProcessor.end);

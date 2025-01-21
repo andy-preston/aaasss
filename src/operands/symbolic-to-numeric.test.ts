@@ -2,6 +2,7 @@ import { assert, assertEquals } from "assert";
 import { assertFailureWithError } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
+import { symbolTable } from "../listing/symbol-table.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
@@ -9,7 +10,7 @@ import type { SymbolicOperands } from "./data-types.ts";
 import { symbolicToNumeric } from "./symbolic-to-numeric.ts";
 
 const testEnvironment = () => {
-    const context = anEmptyContext();
+    const context = anEmptyContext(symbolTable());
     return {
         "context": context,
         "operands": symbolicToNumeric(context)

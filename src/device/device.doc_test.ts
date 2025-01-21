@@ -11,7 +11,12 @@ Deno.test("Device demo", () => {
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATTiny24"); }}',
-        "000000 91 E0 04 00    2     LDS R30, 1024"
+        "000000 91 E0 04 00    2     LDS R30, 1024",
+        "",
+        "Symbol Table",
+        "============",
+        "",
+        "R30: 1"
     ]);
     assertFileExists(".hex");
 });

@@ -2,6 +2,7 @@ import type { OutputFile } from "../assembler/output-file.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { FailureMessageTranslator } from "./messages.ts";
+import type { SymbolTable } from "./symbol-table.ts";
 
 const objectWidth = "00 00 00 00".length;
 const addressWidth = 6;
@@ -10,18 +11,23 @@ const lineNumberWidth = 4;
 
 export const listing = (
     outputFile: OutputFile, topFileName: FileName,
-    failureMessages: FailureMessageTranslator
+    failureMessages: FailureMessageTranslator,
+    symbolTable: SymbolTable
 ) => {
     const file = outputFile(topFileName, ".lst");
     let currentName = "";
 
+    const heading = (text: string) => {
+        if (!file.empty()) {
+            file.write("");
+        }
+        file.write(text);
+        file.write("=".repeat(text.length));
+    };
+
     const fileName = (newName: FileName) => {
         if (newName != currentName) {
-            if (currentName != "") {
-                file.write("");
-            }
-            file.write(newName);
-            file.write("=".repeat(newName.length));
+            heading(newName);
             currentName = newName;
         }
     };
@@ -85,9 +91,20 @@ export const listing = (
         body(extractedCode(theLine), extractedText(theLine));
     };
 
+    const close = () => {
+        if (!symbolTable.empty()) {
+            heading("Symbol Table");
+            file.write("");
+            for (const [symbol, count] of symbolTable.list()) {
+                file.write(`${symbol}: ${count}`);
+            }
+        };
+        file.close();
+    };
+
     return {
         "line": line,
-        "close": file.close
+        "close": close
     };
 };
 

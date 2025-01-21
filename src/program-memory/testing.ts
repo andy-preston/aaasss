@@ -1,6 +1,7 @@
 import { deviceProperties } from "../device/properties.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
+import { symbolTable } from "../listing/symbol-table.ts";
 import { lineWithProcessedMacro } from "../macro/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
@@ -11,7 +12,7 @@ import { lineWithTokens } from "../tokens/line-types.ts";
 import { programMemory } from "./program-memory.ts";
 
 export const testEnvironment = () => {
-    const context = anEmptyContext();
+    const context = anEmptyContext(symbolTable());
     const properties = deviceProperties(context);
     return {
         "context": context,

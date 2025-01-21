@@ -13,7 +13,13 @@ Deno.test("Data-direct without reduced core",() => {
         "=================",
         '                      1     {{ device("ATTiny24"); }}',
         "000000 91 E0 04 00    2     LDS R30, 512 * 2",
-        "000002 92 80 10 00    3     STS 1024 * 4, R8"
+        "000002 92 80 10 00    3     STS 1024 * 4, R8",
+        "",
+        "Symbol Table",
+        "============",
+        "",
+        "R30: 1",
+        "R8: 1"
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
     assertFileContains(".hex", [
@@ -41,7 +47,14 @@ Deno.test("Data-direct with reduced core",() => {
         "=================",
         '                      1     {{ device("ATtiny20"); }}',
         "000000 A7 E8          2     LDS R30, 12 * 10",
-        "000001 AF 2E          3     STS 126, R18"
+        "000001 AF 2E          3     STS 126, R18",
+        "",
+        "Symbol Table",
+        "============",
+        "",
+        "R30: 1",
+        "R18: 1"
+
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
     assertFileContains(".hex", [
