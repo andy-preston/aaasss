@@ -8,37 +8,37 @@ import { symbolTable } from "../listing/symbol-table.ts";
 const testEnvironment = () => {
     const context = anEmptyContext(symbolTable());
     const macroProcessor = processor();
-    context.directive("define", macroProcessor.define);
-    context.directive("end", macroProcessor.end);
     context.directive("macro", macroProcessor.macro);
+    context.directive("end", macroProcessor.end);
+    context.directive("useMacro", macroProcessor.useMacro);
     return {
         "context": context,
         "macroProcessor": macroProcessor
     };
 };
 
-Deno.test("The define directive name must be a string", () => {
-    const environment = testEnvironment();
-    const result = environment.context.value("define(47);");
-    assertFailureWithExtra(result, "type_string", "47");
-});
-
 Deno.test("The macro directive name must be a string", () => {
     const environment = testEnvironment();
-    const result = environment.context.value('macro(47);');
+    const result = environment.context.value("macro(47);");
     assertFailureWithExtra(result, "type_string", "47");
 });
 
-Deno.test("The define directive can be called without parameters", () => {
+Deno.test("The useMacro directive name must be a string", () => {
     const environment = testEnvironment();
-    const result = environment.context.value('define("without");');
+    const result = environment.context.value('useMacro(47);');
+    assertFailureWithExtra(result, "type_string", "47");
+});
+
+Deno.test("The macro directive can be called without parameters", () => {
+    const environment = testEnvironment();
+    const result = environment.context.value('macro("without");');
     assertSuccess(result, undefined);
 });
 
-Deno.test("The define directive can be called with parameters", () => {
+Deno.test("The macro directive can be called with parameters", () => {
     const environment = testEnvironment();
     assertSuccess(
-        environment.context.value('define("with", ["a", "b"]);'),
+        environment.context.value('macro("with", ["a", "b"]);'),
         undefined
     );
     environment.macroProcessor.lines(
@@ -50,7 +50,7 @@ Deno.test("The define directive can be called with parameters", () => {
         undefined
     );
     assertSuccess(
-        environment.context.value('macro("with", ["1", "2"]);'),
+        environment.context.value('useMacro("with", ["1", "2"]);'),
         undefined
     );
     const lines = environment.macroProcessor.lines(
@@ -59,29 +59,29 @@ Deno.test("The define directive can be called with parameters", () => {
     assertEquals(lines[1]!.symbolicOperands, ["1", "2"]);
 });
 
-Deno.test("If define parameters are provided for define they must be an array", () => {
+Deno.test("If parameters are provided for macro they must be an array", () => {
     const environment = testEnvironment();
-    const defineResult = environment.context.value(
-        'define("with", {"a": "a", "b": "b"});'
+    const result = environment.context.value(
+        'macro("with", {"a": "a", "b": "b"});'
     );
-    assertFailureWithExtra(defineResult, "type_strings", "object");
+    assertFailureWithExtra(result, "type_strings", "object");
 });
 
 Deno.test("... of strings", () => {
     const environment = testEnvironment();
-    const defineResult = environment.context.value(
-        'define("with", ["a", 2, "b", 3]);'
+    const result = environment.context.value(
+        'macro("with", ["a", 2, "b", 3]);'
     );
     assertFailureWithExtra(
-        defineResult, "type_strings", "1: number, 3: number"
+        result, "type_strings", "1: number, 3: number"
     );
 });
 
-Deno.test("If macro parameters are provided for define they must be an array", () => {
+Deno.test("If macro parameters are provided for useMacro they must be an array", () => {
     const environment = testEnvironment();
 
     environment.context.value(
-        'define("with", ["a", "b"]);'
+        'macro("with", ["a", "b"]);'
     );
     environment.macroProcessor.lines(
         testLine("", "TST", ["a", "b"])
@@ -89,7 +89,7 @@ Deno.test("If macro parameters are provided for define they must be an array", (
     environment.context.value("end();");
 
     const result = environment.context.value(
-        'macro("with", {"a": "a", "b": "b"});'
+        'useMacro("with", {"a": "a", "b": "b"});'
     );
     assertFailureWithExtra(result, "type_macroParams", "object");
 });
@@ -98,7 +98,7 @@ Deno.test("... of strings or numbers", () => {
     const environment = testEnvironment();
 
     environment.context.value(
-        'define("with", ["a", "b"]);'
+        'macro("with", ["a", "b"]);'
     );
     environment.macroProcessor.lines(
         testLine("", "TST", ["a", "b"])
@@ -106,7 +106,7 @@ Deno.test("... of strings or numbers", () => {
     environment.context.value("end();");
 
     const result = environment.context.value(
-        'macro("with", [true, "a", 2, {"c": "c"}]);'
+        'useMacro("with", [true, "a", 2, {"c": "c"}]);'
     );
     assertFailureWithExtra(result, "type_macroParams", "0: boolean, 3: object");
 });

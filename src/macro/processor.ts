@@ -27,7 +27,7 @@ export const processor = () => {
         playback = undefined;
     };
 
-    const define: Directive = (
+    const macroDirective: Directive = (
         name: MacroName, parameters: SymbolicParameters = []
     ) => {
         if (recording != undefined) {
@@ -78,7 +78,7 @@ export const processor = () => {
         }
     };
 
-    const macroDirective: Directive = (
+    const useMacro: Directive = (
         name: MacroName, parameters: ActualParameters
     ) => {
         const checkedName = stringParameter(name);
@@ -101,9 +101,9 @@ export const processor = () => {
     return {
         "reset": reset,
         "leftInIllegalState": leftInIllegalState,
-        "define": define,
-        "end": end,
         "macro": macroDirective,
+        "end": end,
+        "useMacro": useMacro,
         "lines": lines
     };
 };

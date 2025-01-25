@@ -35,7 +35,7 @@ export const coupling = (
 
     const context = anEmptyContext(symbols);
 
-    //context.directive("define", context.define);
+    context.directive("define", context.define);
 
     context.directive("bit", maskToBitNumber);
     context.directive("high", high);
@@ -61,9 +61,9 @@ export const coupling = (
     context.directive("include", sourceFiles.include);
 
     const macroProcessor = processor();
-    context.directive("define", macroProcessor.define);
-    context.directive("end", macroProcessor.end);
     context.directive("macro", macroProcessor.macro);
+    context.directive("end", macroProcessor.end);
+    context.directive("useMacro", macroProcessor.useMacro);
     currentPass.addResetStateCallback(macroProcessor.reset);
 
     const js = javascript(context);
