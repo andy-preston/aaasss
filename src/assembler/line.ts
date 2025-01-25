@@ -1,5 +1,5 @@
 import type { Failure, Failures } from "../failure/failure-or-box.ts";
-import type { MacroName } from "../macro/macro.ts";
+import type { MacroName } from "../macros/data-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import type {
     NumericOperands, OperandTypes, SymbolicOperands
@@ -24,11 +24,6 @@ export const line = (
 
     const hasAssembly = () => theLine.assemblySource.trim() != "";
 
-    const definingMacro = (name: MacroName) => {
-        theLine.macroName = name;
-    }
-    const macroBeingDefined = () => theLine.macroName != "";
-
     const theLine = {
         "failures": failureMap,
         "failed": failed,
@@ -41,8 +36,7 @@ export const line = (
         "hasAssembly": hasAssembly,
         "label": "" as Label,
         "mnemonic": "" as Mnemonic,
-        "definingMacro": definingMacro,
-        "macroBeingDefined": macroBeingDefined,
+        "isRecordingMacro": false,
         "macroName": "" as MacroName,
         "symbolicOperands": [] as SymbolicOperands,
         "numericOperands": [] as NumericOperands,

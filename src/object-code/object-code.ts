@@ -26,7 +26,7 @@ export const objectCode = (
     device: DevicePropertiesInterface,
     pokeBuffer: PokeBuffer
 ) => (line: LineWithOperands) => {
-    if (line.macroBeingDefined()) {
+    if (line.isRecordingMacro) {
         return emptyLine(lineWithPokedBytes(line, []));
     }
 

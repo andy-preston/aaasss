@@ -1,5 +1,5 @@
 import type { MutableLine } from "../assembler/line.ts";
-import { LineWithProcessedMacro } from "../macro/line-types.ts";
+import { LineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericOperands, OperandTypes } from "./data-types.ts";
 
 export type LineWithOperands = Readonly<Pick<

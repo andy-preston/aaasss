@@ -1,13 +1,13 @@
 import { assertEquals } from "assert/equals";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
-import { processor } from "./processor.ts";
-import { testLine } from "./testing.ts";
 import { symbolTable } from "../listing/symbol-table.ts";
+import { macros } from "./macros.ts";
+import { testLine } from "./testing.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext(symbolTable());
-    const macroProcessor = processor();
+    const macroProcessor = macros();
     context.directive("macro", macroProcessor.macro);
     context.directive("end", macroProcessor.end);
     context.directive("useMacro", macroProcessor.useMacro);

@@ -3,7 +3,7 @@ import { assertFailureWithError } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
 import { symbolTable } from "../listing/symbol-table.ts";
-import { lineWithProcessedMacro } from "../macro/line-types.ts";
+import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import type { SymbolicOperands } from "./data-types.ts";
@@ -21,7 +21,7 @@ const testLine = (symbolic: SymbolicOperands) => {
     const withSource = lineWithRawSource("", 0, false, "");
     const withJavascript = lineWithRenderedJavascript(withSource, "");
     const withTokens = lineWithTokens(withJavascript, "", "", symbolic)
-    return lineWithProcessedMacro(withTokens, "");
+    return lineWithProcessedMacro(withTokens, false);
 }
 
 Deno.test("An expression yields a value", () => {

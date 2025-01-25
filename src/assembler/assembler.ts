@@ -2,7 +2,7 @@ import type { IllegalState } from "../failure/illegal-state.ts";
 import type { HexFile } from "../hex-file/hex.ts";
 import type { Javascript } from "../javascript/embedded/embedded.ts";
 import type { Listing } from "../listing/listing.ts";
-import type { MacroProcessor } from "../macro/processor.ts";
+import type { Macros } from "../macros/macros.ts";
 import type { ObjectCode } from "../object-code/object-code.ts";
 import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
@@ -17,7 +17,7 @@ export const assemblyPipeline = (
     lines: SourceOfSource,
     javascript: Javascript["rendered"],
     tokenise: Tokenise,
-    macro: MacroProcessor["lines"],
+    macro: Macros["lines"],
     operands: SymbolicToNumeric,
     code: ObjectCode,
     addressed: ProgramMemory["addressed"],

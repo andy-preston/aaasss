@@ -10,7 +10,7 @@ import { javascript } from "../javascript/embedded/embedded.ts";
 import type { FailureMessageTranslator } from "../listing/messages.ts";
 import { listing } from "../listing/listing.ts";
 import { symbolTable } from "../listing/symbol-table.ts";
-import { processor } from "../macro/processor.ts";
+import { macros } from "../macros/macros.ts";
 import { objectCode } from "../object-code/object-code.ts";
 import { symbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
@@ -60,7 +60,7 @@ export const coupling = (
     const sourceFiles = fileStack(readerMethod, fileName);
     context.directive("include", sourceFiles.include);
 
-    const macroProcessor = processor();
+    const macroProcessor = macros();
     context.directive("macro", macroProcessor.macro);
     context.directive("end", macroProcessor.end);
     context.directive("useMacro", macroProcessor.useMacro);

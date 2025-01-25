@@ -6,13 +6,13 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens, type LineWithTokens } from "../tokens/line-types.ts";
 
 export type LineWithProcessedMacro = Readonly<Pick<
-    ImmutableLine, keyof LineWithTokens | "macroName" | "macroBeingDefined"
+    ImmutableLine, keyof LineWithTokens | "isRecordingMacro"
 >>;
 
 export const lineWithProcessedMacro = (
-    line: LineWithTokens, macroName: string
+    line: LineWithTokens, isRecordingMacro: boolean
 ) => {
-    (line as MutableLine).definingMacro(macroName);
+    (line as MutableLine).isRecordingMacro = isRecordingMacro;
     return line as LineWithProcessedMacro;
 };
 
@@ -30,5 +30,5 @@ export const lineWithExpandedMacro = (
         rendered, label, line.mnemonic, symbolicOperands
     );
     line.failures().forEach(tokenised.withFailure);
-    return lineWithProcessedMacro(tokenised, "");
+    return lineWithProcessedMacro(tokenised, false);
 };

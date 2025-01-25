@@ -3,7 +3,7 @@ import { deviceProperties } from "../device/properties.ts";
 import { assertFailure } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { lineWithProcessedMacro } from "../macro/line-types.ts";
+import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
@@ -30,7 +30,7 @@ const testLine = (
     const raw = lineWithRawSource("", 0, false, "");
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, label, mnemonic, symbolic);
-    const processed = lineWithProcessedMacro(tokenised, "");
+    const processed = lineWithProcessedMacro(tokenised, false);
     return lineWithOperands(processed, numeric, types);
 };
 

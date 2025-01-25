@@ -1,5 +1,5 @@
 import type { Context } from "../javascript/context.ts";
-import type { LineWithProcessedMacro } from "../macro/line-types.ts";
+import type { LineWithProcessedMacro } from "../macros/line-types.ts";
 import { lineWithOperands } from "./line-types.ts";
 import {
     operands,
@@ -47,7 +47,7 @@ export const symbolicToNumeric = (
     };
 
     return (line: LineWithProcessedMacro) =>
-        line.macroBeingDefined() ? dummyOperation(line) : actualOperation(line);
+        line.isRecordingMacro ? dummyOperation(line) : actualOperation(line);
 };
 
 export type SymbolicToNumeric = ReturnType<typeof symbolicToNumeric>;
