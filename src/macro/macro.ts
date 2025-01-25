@@ -6,10 +6,10 @@ import type { LineWithTokens } from "../tokens/line-types.ts";
 import { lineWithExpandedMacro } from "./line-types.ts";
 
 export type MacroName = string;
-export type SymbolicParameters = Array<string>;
+export type DefinedParameters = Array<string>;
 export type ActualParameters = Array<string | number>;
 
-export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
+export const macro = (name: MacroName, defined: DefinedParameters) => {
 
     const lines: Array<LineWithTokens> = [];
     let instance = 0;
@@ -20,12 +20,14 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
     const isLabel = (parameter: SymbolicOperand) =>
         lines.find(line => line.label == parameter) != undefined;
 
-    const mapper = (actual: ActualParameters) => {
-        const mapOperand = (oldOperand: SymbolicOperand) => {
-            const newOperand = isLabel(oldOperand)
-                ? mapLabel(oldOperand)
-                : actual[symbolic.indexOf(oldOperand)];
-            return newOperand == undefined ? oldOperand : `${newOperand}`;
+    const playback = (actual: ActualParameters) => {
+        const mapOperand = (definedOperand: SymbolicOperand) => {
+
+            const actualOperand = isLabel(definedOperand)
+                ? mapLabel(definedOperand)
+                : actual[defined.indexOf(definedOperand)];
+
+             return actualOperand == undefined ? definedOperand : `${actualOperand}`;
         };
 
         return function* (callingLine: LineWithTokens) {
@@ -38,7 +40,7 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
                     mapLabel(line.label),
                     operands<SymbolicOperands>(symbolicOperands)
                 );
-                if (index == 0 && symbolic.length != actual.length) {
+                if (index == 0 && defined.length != actual.length) {
                     expandedLine.withFailure(
                         failure(undefined, "macro_params", `${actual.length}`)
                     );
@@ -51,9 +53,9 @@ export const macro = (name: MacroName, symbolic: SymbolicParameters) => {
     return {
         "push": (line: LineWithTokens) => lines.push(line),
         "empty": () => lines.length == 0,
-        "mapper": mapper
+        "playback": playback
     }
 };
 
 export type Macro = Readonly<ReturnType<typeof macro>>;
-export type MacroMapper = ReturnType<Macro["mapper"]>;
+export type MacroPlayback = ReturnType<Macro["playback"]>;

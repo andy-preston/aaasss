@@ -5,12 +5,12 @@ import type { LineWithTokens } from "../tokens/line-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 import {
     macro,
-    type ActualParameters, type SymbolicParameters,
-    type MacroName, type Macro, type MacroMapper
+    type ActualParameters, type DefinedParameters,
+    type MacroName, type Macro, type MacroPlayback
 } from "./macro.ts";
 
 export const processor = () => {
-    let playback: MacroMapper | undefined;
+    let playback: MacroPlayback | undefined;
 
     let recording: Macro | undefined;
     let recordingName: MacroName;
@@ -28,7 +28,7 @@ export const processor = () => {
     };
 
     const macroDirective: Directive = (
-        name: MacroName, parameters: SymbolicParameters = []
+        name: MacroName, parameters: DefinedParameters = []
     ) => {
         if (recording != undefined) {
             return failure(undefined, "macro_define", undefined);
@@ -92,7 +92,7 @@ export const processor = () => {
         if (checkedParameters.which == "failure") {
             return checkedParameters;
         }
-        playback = macros.get(name)!.mapper(
+        playback = macros.get(name)!.playback(
             checkedParameters.value == "undefined" ? [] : parameters
         );
         return emptyBox();
