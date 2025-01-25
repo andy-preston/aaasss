@@ -41,6 +41,9 @@ export const playback = (macros: MacroList) => {
         withParameters = undefined;
     };
 
+    const parametersMatch = () =>
+        theMacro!.parameters.length != withParameters!.length;
+
     const playback = function* (callingLine: LineWithTokens) {
         const map = labelsAndOperands(theMacro!, named, withParameters!);
         for (const [index, line] of theMacro!.lines.entries()) {
@@ -51,10 +54,10 @@ export const playback = (macros: MacroList) => {
                 map.label(line.label),
                 operands<SymbolicOperands>(symbolicOperands)
             );
-            if (index == 0 && theMacro!.parameters.length != withParameters!.length) {
-                expandedLine.withFailure(
-                    failure(undefined, "macro_params", `${withParameters!.length}`)
-                );
+            if (index == 0 && parametersMatch()) {
+                expandedLine.withFailure(failure(
+                    undefined, "macro_params", `${withParameters!.length}`
+                ));
             }
             yield expandedLine;
         }

@@ -10,6 +10,7 @@ Deno.test("Macro demo", () => {
         "    {{ end(); }}",
         "",
         '    {{ useMacro("aMacro", [1024]); }}',
+        "",
         '    {{ useMacro("aMacro", [2048]); }}',
     ]);
     demo.assemble();
@@ -24,8 +25,11 @@ Deno.test("Macro demo", () => {
         "                      6",
         '                      7     {{ useMacro("aMacro", [1024]); }}',
         "000000 91 E0 04 00    7     LDS R30, address",
-        '                      8     {{ useMacro("aMacro", [2048]); }}',
-        "000002 91 E0 08 00    8     LDS R30, address",
+        '                      7     {{ end(); }}',
+        "                      8",
+        '                      9     {{ useMacro("aMacro", [2048]); }}',
+        "000002 91 E0 08 00    9     LDS R30, address",
+        '                      9     {{ end(); }}',
         "",
         "Symbol Table",
         "============",

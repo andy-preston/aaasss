@@ -1,4 +1,4 @@
-import { assertEquals, assertFalse } from "assert";
+import { assert, assertEquals, assertFalse } from "assert";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import type { LineWithProcessedMacro } from "./line-types.ts";
 import { macros } from "./macros.ts";
@@ -31,15 +31,13 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
 
 Deno.test("Whilst a macro is being defined, saveLine will... save lines", () => {
     const macroProcessor = macros();
-    macroProcessor.macro("plop");
 
-    const testLines = [["testLabel", "TST"], ["", "AND"], ["", "TST"]];
-    for (const [label, mnemonic] of testLines) {
-        const tokenised = testLine(label!, mnemonic!, []);
-        const processed = macroProcessor.lines(tokenised).toArray();
-        assertProcessedLine(processed, true, label!, mnemonic!);
-    }
+    macroProcessor.macro("plop");
+    macroProcessor.lines(testLine("testLabel", "TST", [])).toArray();
+    macroProcessor.lines(testLine("",          "AND", [])).toArray();
+    macroProcessor.lines(testLine("",          "TST", [])).toArray();
     macroProcessor.end();
+    macroProcessor.lines(testLine("",          "", [])).toArray();
 
     const tokenised = testLine("ended", "TST", []);
     assertProcessedLine(
@@ -52,26 +50,33 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const macroProcessor = macros();
 
     macroProcessor.macro("plop");
-    const testLines: Array<[Label, Mnemonic]> = [
-        ["testLabel", "TST"],
-        ["", "AND"],
-        ["", "TST"]
-    ];
-    for (const [label, mnemonic] of testLines) {
-        macroProcessor.lines(testLine(label, mnemonic, [])).toArray();
-    }
+    macroProcessor.lines(testLine("testLabel", "TST", [])).toArray();
+    macroProcessor.lines(testLine("",          "AND", [])).toArray();
+    macroProcessor.lines(testLine("",          "TST", [])).toArray();
     macroProcessor.end();
+    macroProcessor.lines(testLine("",          "", [])).toArray();
 
     macroProcessor.useMacro("plop", []);
-    testLines.unshift(["ended", ""]);
-    let index = 0;
-    const lines = macroProcessor.lines(testLine("ended", "", []));
-    for (const line of lines) {
-        assertFalse(line.isRecordingMacro);
-        assertEquals(line.mnemonic, testLines[index]![1]);
-        index = index + 1;
-    }
-    assertEquals(index, testLines.length);
+    const lines = macroProcessor.lines(testLine("", "", []));
+    assertFalse(lines.next().done);
+
+    const first = lines.next().value!;
+    assertFalse(first.isRecordingMacro)
+    assertEquals(first.mnemonic, "TST");
+
+    const second = lines.next().value!;
+    assertFalse(second.isRecordingMacro)
+    assertEquals(second.mnemonic, "AND");
+
+    const third = lines.next().value!;
+    assertFalse(third.isRecordingMacro)
+    assertEquals(third.mnemonic, "TST");
+
+    const fourth = lines.next().value!;
+    assertFalse(fourth.isRecordingMacro)
+    assertEquals(fourth.mnemonic, "");
+
+    assert(lines.next().done);
 });
 
 Deno.test("on play-back, parameters are substituted", () => {
@@ -85,7 +90,7 @@ Deno.test("on play-back, parameters are substituted", () => {
 
     macroProcessor.useMacro("plop", [4, "test"]);
     const lines = macroProcessor.lines(testLine("", "", []));
-    const _dummy = lines.next().value!;
+    assertFalse(lines.next().done);
 
     const first = lines.next().value!;
     assertEquals(first.mnemonic, "TST");
@@ -111,7 +116,7 @@ Deno.test("It still tries it's best to map mismatched parameters", () => {
 
     macroProcessor.useMacro("plop", ["MATCHED"]);
     const lines = macroProcessor.lines(testLine("", "", []));
-    const _dummy = lines.next().value!;
+    assertFalse(lines.next().done);
 
     const first = lines.next().value!;
     assertEquals(first.mnemonic, "TST");
@@ -137,7 +142,7 @@ Deno.test("Labels are mapped on each successive usage", () => {
 
     macroProcessor.useMacro("plop");
     const lines = macroProcessor.lines(testLine("", "", []));
-    const _dummy = lines.next().value!;
+    assertFalse(lines.next().done);
 
     const first = lines.next().value!;
     assertEquals(first.mnemonic, "JMP");
@@ -164,7 +169,7 @@ Deno.test("External labels remain unmapped", () => {
 
     macroProcessor.useMacro("plop");
     const lines = macroProcessor.lines(testLine("", "", []));
-    const _dummy = lines.next().value!;
+    assertFalse(lines.next().done);
 
     const first = lines.next().value!;
     assertEquals(first.mnemonic, "JMP");
@@ -193,7 +198,7 @@ Deno.test("Multiple macro invocations have higher index in label mappings", () =
         const expectedLabel = `plop$${invocation}$label`;
         macroProcessor.useMacro("plop");
         const lines = macroProcessor.lines(testLine("", "", []));
-        const _dummy = lines.next().value!;
+        assertFalse(lines.next().done);
 
         const first = lines.next().value!;
         assertEquals(first.mnemonic, "JMP");

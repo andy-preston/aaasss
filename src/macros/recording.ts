@@ -8,10 +8,12 @@ import type { MacroList } from "./macros.ts";
 export const recording = (macros: MacroList) => {
     let theMacro: Macro | undefined = undefined;
     let macroName: MacroName = "";
+    let onLastLine = false;
 
     const reset = () => {
         theMacro = undefined;
         macroName = "";
+        onLastLine = false;
     };
 
     const start: Directive = (
@@ -46,15 +48,21 @@ export const recording = (macros: MacroList) => {
             return failure(undefined, "macro_empty", undefined);
         }
         macros.set(macroName, theMacro);
-        reset();
+        onLastLine = true;
         return emptyBox();
     };
 
-    const isRecording = () => theMacro != undefined
+    const isRecording = () => theMacro != undefined;
+
+    const shouldRecordThis = (line: LineWithTokens) =>
+        line.hasAssembly() || onLastLine;
 
     const record = (line: LineWithTokens) => {
-        if (isRecording() && line.hasAssembly()) {
+        if (isRecording() && shouldRecordThis(line)) {
             theMacro!.lines.push(line);
+            if (onLastLine) {
+                reset();
+            }
         }
     };
 

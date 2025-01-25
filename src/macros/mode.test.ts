@@ -33,6 +33,7 @@ Deno.test("Multiple macros can be defined", () => {
     macroProcessor.lines(testLine("", "TST", [])).toArray();
     const firstEnding = macroProcessor.end();
     assertSuccess(firstEnding, undefined);
+    macroProcessor.lines(testLine("", "", [])).toArray();
 
     const secondDefinition = macroProcessor.macro("anotherOne");
     assertSuccess(secondDefinition, undefined);
