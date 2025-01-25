@@ -1,25 +1,25 @@
-import type { Line } from "../assembler/line.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
+import type { ImmutableLine, MutableLine } from "../assembler/line.ts";
+import { LineWithOperands } from "../operands/line-types.ts";
 import type { Code } from "./data-types.ts";
 
 export type LineWithPokedBytes = Readonly<Pick<
-    Line, keyof LineWithOperands | "code"
+    ImmutableLine, keyof LineWithOperands | "code"
 >>;
 
 export const lineWithPokedBytes = (
     line: LineWithOperands, poked: Array<Code>
 ) => {
-    (line as Line).code = poked;
+    (line as MutableLine).code = poked;
     return line as LineWithPokedBytes;
 };
 
 export type LineWithObjectCode = Readonly<Pick<
-    Line, keyof LineWithPokedBytes
+    ImmutableLine, keyof LineWithPokedBytes
 >>;
 
 export const lineWithObjectCode = (line: LineWithPokedBytes, code: Code) => {
     if (code.length > 0) {
-        (line as Line).code.push(code);
+        (line as MutableLine).code.push(code);
     }
     return line as LineWithObjectCode;
 };

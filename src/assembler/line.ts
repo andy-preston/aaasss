@@ -18,7 +18,7 @@ export const line = (
         return theLine;
     };
     const failed = () => failures.length > 0;
-    const mapFailures = function*(): Generator<Failure, void, void> {
+    const failureMap = function*(): Generator<Failure, void, void> {
         yield* failures;
     };
 
@@ -30,7 +30,7 @@ export const line = (
     const macroBeingDefined = () => theLine.macroName != "";
 
     const theLine = {
-        "failures": mapFailures,
+        "failures": failureMap,
         "failed": failed,
         "withFailure": withFailure,
         "fileName": fileName as FileName,
@@ -48,9 +48,10 @@ export const line = (
         "numericOperands": [] as NumericOperands,
         "operandTypes": [] as OperandTypes,
         "address": 0,
-        "code": [] as Array<Code>,
+        "code": [] as Array<Code>
     };
     return theLine;
 };
 
-export type Line = ReturnType<typeof line>;
+export type MutableLine = ReturnType<typeof line>;
+export type ImmutableLine = Readonly<MutableLine>;

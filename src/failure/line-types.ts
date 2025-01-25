@@ -1,5 +1,5 @@
-import { Line } from "../assembler/line.ts";
+import type { ImmutableLine } from "../assembler/line.ts";
 
 export type LineWithFailures = Readonly<Pick<
-    Line, "failures" | "withFailure" | "failed"
+    ImmutableLine, "failures" | "withFailure" | "failed"
 >>;
