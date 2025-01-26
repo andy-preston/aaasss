@@ -74,7 +74,7 @@ export const anEmptyContext = (usageCount: UsageCount) => {
     const define: Directive = (name: string, value: number) => {
         const result = defineInternal(name, value);
         if (result.which != "failure") {
-            usageCount.count(name);
+            usageCount.add(name);
         }
         return result;
     };
