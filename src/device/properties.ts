@@ -1,6 +1,6 @@
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
-import type { Context } from "../javascript/context.ts";
 import type { Mnemonic } from "../source-code/data-types.ts";
+import type { Context } from "../symbol-table/context.ts";
 import { cpuRegisters } from "./registers.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 

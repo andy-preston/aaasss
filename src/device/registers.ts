@@ -1,4 +1,4 @@
-import type { Context } from "../javascript/context.ts";
+import type { Context } from "../symbol-table/context.ts";
 
 export const cpuRegisters = (context: Context) => {
     const choose = (reducedCore: boolean) => {

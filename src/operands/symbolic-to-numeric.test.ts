@@ -1,16 +1,16 @@
 import { assert, assertEquals } from "assert";
 import { assertFailureWithError } from "../failure/testing.ts";
-import { anEmptyContext } from "../javascript/context.ts";
-import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
-import { symbolTable } from "../listing/symbol-table.ts";
+import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
+import { anEmptyContext } from "../symbol-table/context.ts";
+import { usageCount } from "../symbol-table/usage-count.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import type { SymbolicOperands } from "./data-types.ts";
 import { symbolicToNumeric } from "./symbolic-to-numeric.ts";
 
 const testEnvironment = () => {
-    const context = anEmptyContext(symbolTable());
+    const context = anEmptyContext(usageCount());
     return {
         "context": context,
         "operands": symbolicToNumeric(context)

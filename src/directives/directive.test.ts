@@ -1,8 +1,8 @@
 import { assertEquals } from "assert";
-import type { Directive } from "../directives/data-types.ts";
+import type { Directive } from "./data-types.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
-import { testContext } from "./testing.ts";
+import { testContext } from "../symbol-table/testing.ts";
 
 Deno.test("Any directives that are added can be called as functions", () => {
     const context = testContext();

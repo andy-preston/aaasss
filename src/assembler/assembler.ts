@@ -1,6 +1,6 @@
 import type { IllegalState } from "../failure/illegal-state.ts";
 import type { HexFile } from "../hex-file/hex.ts";
-import type { Javascript } from "../javascript/embedded/embedded.ts";
+import type { Javascript } from "../javascript/embedded.ts";
 import type { Listing } from "../listing/listing.ts";
 import type { Macros } from "../macros/macros.ts";
 import type { ObjectCode } from "../object-code/object-code.ts";

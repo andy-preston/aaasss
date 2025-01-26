@@ -1,20 +1,20 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailure } from "../failure/testing.ts";
-import { anEmptyContext } from "../javascript/context.ts";
-import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
+import { anEmptyContext } from "../symbol-table/context.ts";
+import { usageCount } from "../symbol-table/usage-count.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { objectCode } from "./object-code.ts";
 import { pokeBuffer } from "./poke.ts";
-import { symbolTable } from "../listing/symbol-table.ts";
 
 const testEnvironment = () => {
-    const context = anEmptyContext(symbolTable());
+    const context = anEmptyContext(usageCount());
     const properties = deviceProperties(context);
     const poke = pokeBuffer();
     return {

@@ -2,7 +2,7 @@ import type { Directive } from "../directives/data-types.ts";
 import {
     box, emptyBox, failure, isFailureOrBox, type Box, type Failure
 } from "../failure/failure-or-box.ts";
-import { SymbolTable } from "../listing/symbol-table.ts";
+import { UsageCount } from "./usage-count.ts";
 import { returnIfExpression } from "./magic.ts";
 
 type SimpleFunction = (n: number) => number;
@@ -15,7 +15,7 @@ type ContextFields = SimpleFunction | Directive | number;
 
 const trailingSemicolons = /;*$/;
 
-export const anEmptyContext = (symbolTable: SymbolTable) => {
+export const anEmptyContext = (usageCount: UsageCount) => {
 
     const context: Record<string, ContextFields> = {};
 
@@ -64,7 +64,7 @@ export const anEmptyContext = (symbolTable: SymbolTable) => {
             "configurable": false,
             "enumerable": true,
             "get": () => {
-                symbolTable.count(name);
+                usageCount.count(name);
                 return value;
             }
         });
@@ -74,7 +74,7 @@ export const anEmptyContext = (symbolTable: SymbolTable) => {
     const define: Directive = (name: string, value: number) => {
         const result = defineInternal(name, value);
         if (result.which != "failure") {
-            symbolTable.count(name);
+            usageCount.count(name);
         }
         return result;
     };

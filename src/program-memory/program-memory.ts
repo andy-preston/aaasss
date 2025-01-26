@@ -1,9 +1,9 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { box } from "../failure/failure-or-box.ts";
-import type { Context } from "../javascript/context.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
+import type { Context } from "../symbol-table/context.ts";
 import { lineWithAddress } from "./line-types.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;

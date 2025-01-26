@@ -3,12 +3,12 @@ import { deviceChooser } from "../device/chooser.ts";
 import { defaultDeviceFinder, defaultJsonLoader } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { anEmptyContext } from "../javascript/context.ts";
-import { symbolTable } from "../listing/symbol-table.ts";
+import { anEmptyContext } from "../symbol-table/context.ts";
+import { usageCount } from "../symbol-table/usage-count.ts";
 import { dataMemory } from "./data-memory.ts";
 
 const testEnvironment = () => {
-    const context = anEmptyContext(symbolTable());
+    const context = anEmptyContext(usageCount());
     const device = deviceProperties(context);
     const choose = deviceChooser(
         device, context, [defaultDeviceFinder, defaultJsonLoader]

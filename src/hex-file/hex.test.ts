@@ -1,6 +1,6 @@
 import { assert, assertEquals } from "assert";
 import { failure } from "../failure/failure-or-box.ts";
-import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithExpandedMacro } from "../macros/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";

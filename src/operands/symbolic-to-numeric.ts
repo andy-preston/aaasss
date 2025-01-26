@@ -1,5 +1,5 @@
-import type { Context } from "../javascript/context.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
+import type { Context } from "../symbol-table/context.ts";
 import { lineWithOperands } from "./line-types.ts";
 import {
     operands,

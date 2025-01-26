@@ -1,4 +1,5 @@
-export const symbolTable = () => {
+export const usageCount = () => {
+
     const symbols: Map<string, number> = new Map([]);
 
     const reset = () => {
@@ -24,4 +25,4 @@ export const symbolTable = () => {
     };
 };
 
-export type SymbolTable = ReturnType<typeof symbolTable>;
+export type UsageCount = ReturnType<typeof usageCount>;

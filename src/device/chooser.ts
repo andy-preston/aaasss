@@ -1,7 +1,7 @@
 import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
-import type { Context } from "../javascript/context.ts";
+import type { Context } from "../symbol-table/context.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
 import type { DeviceProperties } from "./properties.ts";

@@ -1,4 +1,4 @@
-import { lineWithRenderedJavascript } from "../javascript/embedded/line-types.ts";
+import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";

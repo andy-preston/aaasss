@@ -1,6 +1,6 @@
-import { emptyBox, failure, type Failure } from "../../failure/failure-or-box.ts";
-import type { LineWithRawSource } from "../../source-code/line-types.ts";
-import type { Context } from "../context.ts";
+import { emptyBox, failure, type Failure } from "../failure/failure-or-box.ts";
+import type { LineWithRawSource } from "../source-code/line-types.ts";
+import type { Context } from "../symbol-table/context.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";
 
 const scriptDelimiter = /({{|}})/;
