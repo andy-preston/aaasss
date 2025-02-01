@@ -14,7 +14,7 @@ Deno.test("A label is stored in the context with the current address", () => {
     assertFalse(result.failed(), "Unexpected failure");
     assertEquals(result.failures.length, 0);
 
-    const labelValue = environment.context.value("A_LABEL");
+    const labelValue = environment.expression("A_LABEL");
     assertSuccess(labelValue, "10");
 });
 
@@ -29,7 +29,7 @@ Deno.test("Labels can be defined on multiple passes but must keep the same addre
         assertFalse(result.failed(), "Unexpected failure");
         assertEquals(result.failures.length, 0);
 
-        const labelValue = environment.context.value("A_LABEL");
+        const labelValue = environment.expression("A_LABEL");
         assertSuccess(labelValue, "10");
     }
 });

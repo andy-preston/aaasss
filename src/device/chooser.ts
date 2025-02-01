@@ -1,14 +1,14 @@
-import type { Directive } from "../directives/data-types.ts";
+import type { Directive } from "../directives/directive.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
-import type { Context } from "../symbol-table/context.ts";
+import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
 import type { DeviceProperties } from "./properties.ts";
 
 export const deviceChooser = (
     properties: DeviceProperties,
-    context: Context,
+    symbolTable: SymbolTable,
     fileOperations: DeviceFileOperations
 ) => {
     const [deviceFinder, loadJsonFile] = fileOperations;
@@ -55,7 +55,7 @@ export const deviceChooser = (
                     properties.ramEnd(value as number);
                     break;
                 default:
-                    context.defineInternal(key, value as number);
+                    symbolTable.internalSymbol(key, value as number);
                     break;
             }
         }

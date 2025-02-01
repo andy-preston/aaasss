@@ -1,28 +1,30 @@
 import { assert, assertEquals, assertFalse, assertNotEquals } from "assert";
+import { pass } from "../assembler/pass.ts";
 import { cpuRegisters } from "../device/registers.ts";
 import { assertFailure } from "../failure/testing.ts";
 import { SourceCode } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
-import { anEmptyContext } from "../symbol-table/context.ts";
-import { usageCount } from "../symbol-table/usage-count.ts";
-import { javascript } from "./embedded.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
+import { anEmptyContext } from "./context.ts";
+import { embeddedJs } from "./embedded.ts";
+import { jSExpression } from "./expression.ts";
 
 const testLine = (source: SourceCode) =>
     lineWithRawSource("", 0, false, source);
 
 const testEnvironment = () => {
-    const context = anEmptyContext(usageCount());
-    const registers = cpuRegisters(context);
+    const context = anEmptyContext();
+    const table = symbolTable(context, pass().public);
     return {
-        "context": context,
-        "registers": registers,
-        "js": javascript(context)
+        "registers": cpuRegisters(table),
+        "symbolTable": table,
+        "js": embeddedJs(jSExpression(context))
     };
 };
 
 Deno.test("A symbol will not be reassigned using this.symbol", () => {
     const environment = testEnvironment();
-    environment.context.define("plop", 57);
+    environment.symbolTable.defineDirective("plop", 57);
     // The assignment fails silently.
     // I'm not sure if this is a good thing or a bad thing?
     // But let's treat it that assigning to this.something

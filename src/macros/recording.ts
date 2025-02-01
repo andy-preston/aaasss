@@ -1,4 +1,4 @@
-import type { Directive } from "../directives/data-types.ts";
+import type { Directive } from "../directives/directive.ts";
 import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import { LineWithTokens } from "../tokens/line-types.ts";
@@ -74,3 +74,5 @@ export const recording = (macros: MacroList) => {
         "isRecording": isRecording
     };
 };
+
+export type Recording = ReturnType<typeof recording>;

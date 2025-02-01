@@ -1,19 +1,21 @@
 import { assert, assertEquals } from "assert";
+import { pass } from "../assembler/pass.ts";
 import { assertFailureWithError } from "../failure/testing.ts";
+import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
-import { anEmptyContext } from "../symbol-table/context.ts";
-import { usageCount } from "../symbol-table/usage-count.ts";
+import { anEmptyContext } from "../javascript/context.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import type { SymbolicOperands } from "./data-types.ts";
 import { symbolicToNumeric } from "./symbolic-to-numeric.ts";
 
 const testEnvironment = () => {
-    const context = anEmptyContext(usageCount());
+    const context = anEmptyContext();
     return {
-        "context": context,
-        "operands": symbolicToNumeric(context)
+        "symbolTable": symbolTable(context, pass().public),
+        "operands": symbolicToNumeric(jSExpression(context))
     };
 };
 
@@ -33,7 +35,7 @@ Deno.test("An expression yields a value", () => {
 
 Deno.test("A symbol yields a value", () => {
     const environment = testEnvironment();
-    environment.context.define("R7", 7);
+    environment.symbolTable.internalSymbol("R7", 7);
     const result = environment.operands(testLine(["R7"]));
     assertEquals(result.numericOperands[0], 7);
     //assertEquals(result.operandTypes[0], "register");

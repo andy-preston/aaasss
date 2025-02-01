@@ -1,17 +1,17 @@
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { Mnemonic } from "../source-code/data-types.ts";
-import type { Context } from "../symbol-table/context.ts";
+import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import { cpuRegisters } from "./registers.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
-export const deviceProperties = (context: Context) => {
+export const deviceProperties = (symbolTable: SymbolTable) => {
     let deviceName = "";
     let reducedCore = false;
     let programMemory = 0;
     let ramStart = 0;
     let ramEnd = 0;
     const unsupported = unsupportedInstructions();
-    const registers = cpuRegisters(context);
+    const registers = cpuRegisters(symbolTable);
 
     const name = (): Box<string> | Failure =>
         deviceName == ""

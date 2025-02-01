@@ -1,15 +1,15 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { Directive } from "../directives/data-types.ts";
+import type { Directive } from "../directives/directive.ts";
 import { box } from "../failure/failure-or-box.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
-import type { Context } from "../symbol-table/context.ts";
+import { SymbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithAddress } from "./line-types.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
 
 export const programMemory = (
-    context: Context,
+    table: SymbolTable,
     properties: DevicePropertiesInterface
 ) => {
     let address = 0;
@@ -37,7 +37,7 @@ export const programMemory = (
 
     const addressed = (line: LineWithObjectCode) => {
         if (line.label) {
-            const result = context.define(line.label, address);
+            const result = table.defineDirective(line.label, address);
             if (result.which == "failure") {
                 line.withFailure(result);
             }

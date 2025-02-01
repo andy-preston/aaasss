@@ -1,6 +1,6 @@
 import type { IllegalState } from "../failure/illegal-state.ts";
 import type { HexFile } from "../hex-file/hex.ts";
-import type { Javascript } from "../javascript/embedded.ts";
+import type { EmbeddedJs } from "../javascript/embedded.ts";
 import type { Listing } from "../listing/listing.ts";
 import type { Macros } from "../macros/macros.ts";
 import type { ObjectCode } from "../object-code/object-code.ts";
@@ -15,7 +15,7 @@ import { passes, type Pass, type PassNumber } from "./pass.ts";
 export const assemblyPipeline = (
     pass: Pass,
     lines: SourceOfSource,
-    javascript: Javascript["rendered"],
+    embeddedJs: EmbeddedJs["rendered"],
     tokenise: Tokenise,
     macro: Macros["lines"],
     operands: SymbolicToNumeric,
@@ -37,7 +37,7 @@ export const assemblyPipeline = (
     };
 
     const sourceLine = (line: LineWithRawSource) => {
-        macro(tokenise(javascript(line))).forEach(
+        macro(tokenise(embeddedJs(line))).forEach(
             (expanded) => {
                 output(addressed(code(operands(expanded))));
             }

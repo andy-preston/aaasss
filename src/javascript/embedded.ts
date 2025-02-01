@@ -1,11 +1,11 @@
 import { emptyBox, failure, type Failure } from "../failure/failure-or-box.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
-import type { Context } from "../symbol-table/context.ts";
+import { JsExpression } from "./expression.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";
 
 const scriptDelimiter = /({{|}})/;
 
-export const javascript = (context: Context) => {
+export const embeddedJs = (expression: JsExpression) => {
     const buffer = {
         "javascript": [] as Array<string>,
         "assembler": [] as Array<string>,
@@ -49,7 +49,7 @@ export const javascript = (context: Context) => {
                 } else {
                     const javascriptCode = buffer.javascript.join("\n").trim();
                     buffer.javascript = [];
-                    const result = context.value(javascriptCode);
+                    const result = expression(javascriptCode);
                     if (result.which == "failure") {
                         failed(result);
                     } else {
@@ -84,4 +84,4 @@ export const javascript = (context: Context) => {
     }
 };
 
-export type Javascript = ReturnType<typeof javascript>;
+export type EmbeddedJs = ReturnType<typeof embeddedJs>;

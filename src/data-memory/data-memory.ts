@@ -1,5 +1,5 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { Directive } from "../directives/data-types.ts";
+import type { Directive } from "../directives/directive.ts";
 import { box, failure } from "../failure/failure-or-box.ts";
 
 export const dataMemory = (properties: DevicePropertiesInterface) => {

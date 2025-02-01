@@ -1,7 +1,7 @@
 import type { OutputFile } from "../assembler/output-file.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
-import type { UsageCount } from "../symbol-table/usage-count.ts";
+import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { FailureMessageTranslator } from "./messages.ts";
 
 const objectWidth = "00 00 00 00".length;
@@ -12,7 +12,7 @@ const lineNumberWidth = 4;
 export const listing = (
     outputFile: OutputFile, topFileName: FileName,
     failureMessages: FailureMessageTranslator,
-    usageCount: UsageCount
+    symbolTable: SymbolTable
 ) => {
     const file = outputFile(topFileName, ".lst");
     let currentName = "";
@@ -92,10 +92,10 @@ export const listing = (
     };
 
     const close = () => {
-        if (!usageCount.empty()) {
+        if (!symbolTable.empty()) {
             heading("Symbol Table");
             file.write("");
-            for (const [symbol, count] of usageCount.list()) {
+            for (const [symbol, count] of symbolTable.list()) {
                 file.write(`${symbol}: ${count}`);
             }
         };

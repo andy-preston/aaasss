@@ -4,14 +4,6 @@ import { type Failure } from "../failure/failure-or-box.ts";
 import { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack } from "./file-stack.ts";
 
-// cSpell:words plip wibble
-
-const peculiarErrorMessage = (fileName: string) => {
-    const prefix = "No such file or directory (os error 2)";
-    const suffix = `: readfile '${fileName}': `;
-    return `${prefix}${suffix}${prefix}${suffix}${prefix}`;
-};
-
 Deno.test("Including a file doesn't return anything", () => {
     assertSuccess(
         // This file is irrelevant but we can guarantee it exists
@@ -26,7 +18,10 @@ Deno.test("Including a non existant file returns a failure", () => {
     assertFailure(result, "file_notFound");
     const failure = result as Failure;
     assertInstanceOf(failure.extra, Deno.errors.NotFound);
-    assertEquals(failure.extra.message, peculiarErrorMessage(fileName));
+    assertEquals(
+        failure.extra.message,
+        `No such file or directory (os error 2): readfile '${fileName}'`
+    );
 });
 
 Deno.test("Including an 'irrational' fileName returns a failure", () => {
@@ -38,6 +33,7 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
 });
 
 Deno.test("Reading a file yields multiple lines with the file contents", () => {
+    // cSpell:words plip wibble
     const expectedLines = ["plip", "plop", "wibble", "wobble"];
     const files = fileStack(
         (_path: FileName) => expectedLines,

@@ -1,34 +1,39 @@
-export const usageCount = () => {
+import type { Pass } from "../assembler/pass.ts";
 
-    const symbols: Map<string, number> = new Map([]);
+export const usageCount = (pass: Pass) => {
+    type SymbolMap = Map<string, number>;
 
-    const reset = () => {
-        symbols.clear();
-    };
+    const symbols: Array<SymbolMap> = [new Map([]), new Map([])];
 
-    // * Internally defined symbols don't get counted until their first use -
-    //   making them invisible to the zero-count check.
-    // * User Defined symbols should get a count as soon as they're defined -
-    //   so that they ARE subject to the zero-count check.
+    const mapByPass = () => symbols[pass.ignoreErrors() ? 0 : 1]!;
+
     const add = (symbol: string) => {
-        symbols.set(symbol, 0);
-    }
+        const map = mapByPass();
+        if (!map.has(symbol)) {
+            map.set(symbol, 0);
+        }
+    };
 
     const count = (symbol: string) => {
-        const newCount = symbols.has(symbol)
-            ? symbols.get(symbol)! + 1
+        const map = mapByPass();
+        const newCount = map.has(symbol)
+            ? map.get(symbol)! + 1
             : 1;
-        symbols.set(symbol, newCount);
+        map.set(symbol, newCount);
     };
 
-    const empty = () => symbols.size == 0;
+    const isUsed = (symbol: string) => pass.ignoreErrors()
+        ? true
+        : symbols[0]!.has(symbol) && symbols[0]!.get(symbol)! > 0;
 
-    const list = () => symbols.entries();
+    const empty = () => mapByPass().size == 0;
+
+    const list = () => mapByPass().entries();
 
     return {
-        "reset": reset,
         "add": add,
         "count": count,
+        "isUsed": isUsed,
         "empty": empty,
         "list": list
     };

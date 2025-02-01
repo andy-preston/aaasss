@@ -1,6 +1,6 @@
 import { box, failure } from "../failure/failure-or-box.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
-import type { Directive } from "./data-types.ts";
+import type { Directive } from "./directive.ts";
 
 export const maskToBitNumber: Directive = (mask: unknown) => {
     const parameter = validNumeric(mask, "type_byte");

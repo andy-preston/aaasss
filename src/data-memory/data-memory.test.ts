@@ -3,18 +3,18 @@ import { deviceChooser } from "../device/chooser.ts";
 import { defaultDeviceFinder, defaultJsonLoader } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { anEmptyContext } from "../symbol-table/context.ts";
-import { usageCount } from "../symbol-table/usage-count.ts";
+import { anEmptyContext } from "../javascript/context.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { dataMemory } from "./data-memory.ts";
 
 const testEnvironment = () => {
-    const context = anEmptyContext(usageCount());
-    const device = deviceProperties(context);
+    const currentPass = pass();
+    const table = symbolTable(anEmptyContext(), pass().public);
+    const device = deviceProperties(table);
     const choose = deviceChooser(
-        device, context, [defaultDeviceFinder, defaultJsonLoader]
+        device, table, [defaultDeviceFinder, defaultJsonLoader]
     );
     const memory = dataMemory(device.public);
-    const currentPass = pass();
     currentPass.addResetStateCallback(memory.reset);
     return {
         "pass": currentPass.public,

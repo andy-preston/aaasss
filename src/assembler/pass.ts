@@ -24,7 +24,7 @@ export const pass = () => {
         "public": {
             "start": start,
             "ignoreErrors": () => current == 1,
-            "produceOutput": () => current == 2,
+            "produceOutput": () => current == 2
         },
     };
 };

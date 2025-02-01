@@ -1,5 +1,5 @@
+import { JsExpression } from "../javascript/expression.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
-import type { Context } from "../symbol-table/context.ts";
 import { lineWithOperands } from "./line-types.ts";
 import {
     operands,
@@ -7,9 +7,7 @@ import {
     type NumericOperands, type OperandTypes, type OperandIndex
 } from "./data-types.ts";
 
-export const symbolicToNumeric = (
-    context: Context
-) => {
+export const symbolicToNumeric = (expression: JsExpression) => {
     const indexMapping: Map<SymbolicOperand, NumericOperand> = new Map([
         ["Z+", 0],
         ["Y+", 1]
@@ -28,7 +26,7 @@ export const symbolicToNumeric = (
                 continue;
             }
 
-            const value = context.value(symbolic);
+            const value = expression(symbolic);
             if (value.which == "failure") {
                 line.withFailure(value.onOperand(index as OperandIndex));
                 numericOperands.push(0);

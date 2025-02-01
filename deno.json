@@ -4,7 +4,7 @@
         "run": "deno run -A ./src/cli.ts",
         "check": "deno test --allow-read --ignore=\"**/*doc_test*\" && deno lint",
         "doctest": "deno test --allow-read --allow-write --ignore=\"**/*.test*\"",
-        "getCoverage": "deno test --clean --allow-read --coverage=_coverage",
+        "getCoverage": "deno test --clean --allow-read --allow-write --coverage=_coverage",
         "coverage": {
             "dependencies": ["getCoverage"],
             "command": "deno coverage _coverage"
