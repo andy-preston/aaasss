@@ -2,7 +2,6 @@ import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser } from "../device/chooser.ts";
 import type { DeviceFileOperations } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { directive } from "../directives/directive.ts";
 import { high, low, maskToBitNumber } from "../directives/function-directives.ts";
 import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
@@ -31,38 +30,39 @@ export const coupling = (
     deviceFileOperations: DeviceFileOperations
 ) => {
     const context = anEmptyContext();
-    directive(context, "bit", maskToBitNumber);
-    directive(context, "high", high);
-    directive(context, "low", low);
 
     const currentPass = pass();
 
     const symbols = symbolTable(context, currentPass);
-    directive(context, "define", symbols.defineDirective);
+    symbols.directive("define", symbols.defineDirective);
+
+    symbols.directive("bit", maskToBitNumber);
+    symbols.directive("high", high);
+    symbols.directive("low", low);
 
     const properties = deviceProperties(symbols);
     const chooser = deviceChooser(properties, symbols, deviceFileOperations);
-    directive(context, "device", chooser.device);
+    symbols.directive("device", chooser.device);
 
     const progMem = programMemory(symbols, properties.public);
-    directive(context, "origin", progMem.origin);
+    symbols.directive("origin", progMem.origin);
     currentPass.addResetStateCallback(progMem.reset);
 
     const dataMem = dataMemory(properties.public);
-    directive(context, "alloc", dataMem.alloc);
-    directive(context, "allocStack", dataMem.allocStack);
+    symbols.directive("alloc", dataMem.alloc);
+    symbols.directive("allocStack", dataMem.allocStack);
     currentPass.addResetStateCallback(dataMem.reset);
 
     const poke = pokeBuffer();
-    directive(context, "poke", poke.poke);
+    symbols.directive("poke", poke.poke);
 
     const sourceFiles = fileStack(readerMethod, fileName);
-    directive(context, "include", sourceFiles.include);
+    symbols.directive("include", sourceFiles.include);
 
     const macroProcessor = macros();
-    directive(context, "macro", macroProcessor.macro);
-    directive(context, "end", macroProcessor.end);
-    directive(context, "useMacro", macroProcessor.useMacro);
+    symbols.directive("macro", macroProcessor.macro);
+    symbols.directive("end", macroProcessor.end);
+    symbols.directive("useMacro", macroProcessor.useMacro);
     currentPass.addResetStateCallback(macroProcessor.reset);
 
     const expression = jSExpression(context)

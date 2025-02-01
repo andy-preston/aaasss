@@ -1,17 +1,19 @@
 import { assertEquals } from "assert/equals";
-import { directive } from "../directives/directive.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { macros } from "./macros.ts";
 import { testLine } from "./testing.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
+import { pass } from "../assembler/pass.ts";
 
 const testEnvironment = () => {
     const context = anEmptyContext();
+    const symbols = symbolTable(context, pass());
     const macroProcessor = macros();
-    directive(context, "macro", macroProcessor.macro);
-    directive(context, "end", macroProcessor.end);
-    directive(context, "useMacro", macroProcessor.useMacro);
+    symbols.directive("macro", macroProcessor.macro);
+    symbols.directive("end", macroProcessor.end);
+    symbols.directive("useMacro", macroProcessor.useMacro);
     return {
         "expression": jSExpression(context),
         "macroProcessor": macroProcessor
@@ -50,6 +52,8 @@ Deno.test("The macro directive can be called with parameters", () => {
         environment.expression("end();"),
         undefined
     );
+    environment.macroProcessor.lines(testLine("", "", [])).toArray();
+
     assertSuccess(
         environment.expression('useMacro("with", ["1", "2"]);'),
         undefined
@@ -88,6 +92,7 @@ Deno.test("If macro parameters are provided for useMacro they must be an array",
         testLine("", "TST", ["a", "b"])
     ).toArray();
     environment.expression("end();");
+    environment.macroProcessor.lines(testLine("", "", [])).toArray();
 
     const result = environment.expression(
         'useMacro("with", {"a": "a", "b": "b"});'
@@ -99,15 +104,16 @@ Deno.test("... of strings or numbers", () => {
     const environment = testEnvironment();
 
     environment.expression(
-        'macro("with", ["a", "b"]);'
+        'macro("stringNumber", ["a", "b"]);'
     );
     environment.macroProcessor.lines(
         testLine("", "TST", ["a", "b"])
     ).toArray();
     environment.expression("end();");
+    environment.macroProcessor.lines(testLine("", "", [])).toArray();
 
     const result = environment.expression(
-        'useMacro("with", [true, "a", 2, {"c": "c"}]);'
+        'useMacro("stringNumber", [true, "a", 2, {"c": "c"}]);'
     );
     assertFailureWithExtra(result, "type_macroParams", "0: boolean, 3: object");
 });

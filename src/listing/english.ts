@@ -3,7 +3,7 @@ import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FailureMessage } from "./messages.ts";
 
 export const messages: Record<FailureKind, FailureMessage> = {
-    "context_redefined": (_line: LineWithAddress) => [""],
+    "symbol_redefined": (_line: LineWithAddress) => [""],
     "device_notFound": (_line: LineWithAddress) => [""],
     "device_notSelected": (_line: LineWithAddress) => [""],
     "device_multiple": (_line: LineWithAddress) => [""],

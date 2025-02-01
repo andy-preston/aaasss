@@ -1,14 +1,16 @@
 import { assertEquals } from "assert";
-import { assertFailure, assertSuccess } from "../failure/testing.ts";
+import { pass } from "../assembler/pass.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { anEmptyContext } from "../javascript/context.ts";
 import { jSExpression } from "../javascript/expression.ts";
-import { directive, type Directive } from "./directive.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
+import type { Directive } from "./directive.ts";
 
 export const testEnvironment = () => {
     const context = anEmptyContext();
     return {
-        "context": context,
+        "directive": symbolTable(context, pass()).directive,
         "expression": jSExpression(context)
     };
 };
@@ -20,8 +22,7 @@ Deno.test("Any directives that are added can be called as functions", () => {
         directiveParameter = parameter;
         return emptyBox();
     };
-    directive(environment.context, "testDirective", testDirective);
-
+    environment.directive("testDirective", testDirective);
     environment.expression("testDirective('says hello')");
     assertEquals(directiveParameter, "says hello");
 });
@@ -31,8 +32,7 @@ Deno.test("Directives can return a failure", () => {
     const testDirective: Directive = (_: string) => {
         return failure(undefined, "file_notFound", undefined);
     };
-    directive(environment.context, "testDirective", testDirective);
-
+    environment.directive("testDirective", testDirective);
     const result = environment.expression("testDirective('')");
     assertFailure(result, "file_notFound");
 });
@@ -42,8 +42,7 @@ Deno.test("Directives can return success in the form of a string", () => {
     const testDirective: Directive = (_: string) => {
         return emptyBox();
     };
-    directive(environment.context, "testDirective", testDirective);
-
+    environment.directive("testDirective", testDirective);
     const result = environment.expression("testDirective('')");
     assertSuccess(result, undefined);
 });

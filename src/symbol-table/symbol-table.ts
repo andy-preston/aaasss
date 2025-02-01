@@ -1,46 +1,64 @@
 import type { Pass } from "../assembler/pass.ts";
 import type { Directive } from "../directives/directive.ts";
-import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import { emptyBox } from "../failure/failure-or-box.ts";
 import type { Context } from "../javascript/context.ts";
+import { MacroInvocation } from "../macros/playback.ts";
 import { usageCount } from "./usage-count.ts";
+
+type UserFunction = MacroInvocation;
 
 export const symbolTable = (context: Context, pass: Pass) => {
     const usage = usageCount(pass);
 
-    const internalSymbol = (name: string, value: number) => {
-        if (Object.hasOwn(context, name)) {
-            return context[name] == value
-                ? emptyBox()
-                : failure(undefined, "context_redefined", `${context[name]!}`);
-        }
-        Object.defineProperty(context, name, {
+    const directive = (symbol: string, directive: Directive) => {
+        Object.defineProperty(context, symbol, {
             "configurable": false,
             "enumerable": true,
+            "value": directive,
+            "writable": false
+        });
+        usage.directive(symbol);
+    };
+
+    const countable = (symbol: string, value: number | UserFunction) => {
+        const inUse = usage.add(symbol);
+        if (inUse.which == "failure") {
+            return inUse;
+        }
+        Object.defineProperty(context, symbol, {
+            "configurable": pass.ignoreErrors(),
+            "enumerable": true,
             "get": () => {
-                usage.count(name);
+                usage.count(symbol);
                 return value;
             }
         });
         return emptyBox();
     };
 
-    const userSymbol = (name: string, value: number) => {
-        if (!usage.isUsed(name)) {
-            return failure(undefined, "symbol_notUsed", undefined);
-        }
-        const result = internalSymbol(name, value);
+    const internalSymbol = (symbol: string, value: number) =>
+        countable(symbol, value);
+
+    const userSymbol = (symbol: string, value: number | UserFunction) => {
+        const result = countable(symbol, value);
         if (result.which != "failure") {
-            usage.add(name);
+            usage.add(symbol);
         }
         return result;
     };
 
-    const defineDirective: Directive = (name: string, value: number) =>
-        userSymbol(name, value);
+    const userFunction = (symbol: string, value: UserFunction) =>
+        userSymbol(symbol, value);
+
+    // This is the directive FOR defining symbols
+    // not an imperatively named function TO define directives.
+    const defineDirective: Directive = (symbol: string, value: number) =>
+        userSymbol(symbol, value);
 
     return {
+        "directive": directive,
         "internalSymbol": internalSymbol,
-        "userSymbol": userSymbol,
+        "userFunction": userFunction,
         "defineDirective": defineDirective,
         "count": usage.count,
         "empty": usage.empty,

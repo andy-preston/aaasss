@@ -1,4 +1,4 @@
-import { LineWithTokens } from "../tokens/line-types.ts";
+import type { LineWithTokens } from "../tokens/line-types.ts";
 
 export type MacroName = string;
 

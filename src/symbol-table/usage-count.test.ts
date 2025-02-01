@@ -1,5 +1,6 @@
-import { assert, assertEquals, assertFalse } from "assert";
+import { assertEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
+import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { usageCount } from "./usage-count.ts";
 
 const testEnvironment = () => {
@@ -31,28 +32,18 @@ Deno.test("Each call to count increments the usage", () => {
     });
 });
 
-Deno.test("All symbols appear to be used on the first pass", () => {
-    const environment = testEnvironment();
-    assert(environment.pass.ignoreErrors(), "ignoreErrors was false");
-    environment.usage.add("plop");
-    assert(environment.usage.isUsed("plop"), "isUsed was false");
-});
-
-Deno.test("... will not appear as used on the 2nd if it wasn't counted on the 1st", () => {
+Deno.test("If a symbol was not used on the 1st pass, there will be a warning on the 2nd", () => {
     const environment = testEnvironment();
     environment.usage.add("plop");
     environment.pass.second();
-    assertFalse(environment.pass.ignoreErrors(), "ignoreErrors was true");
-    assertFalse(environment.usage.isUsed("plop"), "isUsed was true");
+    assertFailure(environment.usage.add("plop"), "symbol_notUsed");
 });
 
-Deno.test("... will appear as used on the 2nd if it was counted on the 1st", () => {
+Deno.test("... will appear as used on the 2nd if it was accessed on the 1st", () => {
     const environment = testEnvironment();
     environment.usage.add("plop");
-    assert(environment.pass.ignoreErrors(), "ignoreErrors was false");
     environment.usage.count("plop");
     environment.pass.second();
-    assertFalse(environment.pass.ignoreErrors(), "ignoreErrors was true");
-    assert(environment.usage.isUsed("plop"), "isUsed was false");
+    assertSuccess(environment.usage.add("plop"), undefined);
 });
 

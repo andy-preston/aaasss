@@ -87,6 +87,7 @@ Deno.test("on play-back, parameters are substituted", () => {
     macroProcessor.lines(testLine("", "AND", ["R15"])).toArray();
     macroProcessor.lines(testLine("", "TST", ["p2"])).toArray();
     macroProcessor.end();
+    macroProcessor.lines(testLine("", "",    [])).toArray();
 
     macroProcessor.useMacro("plop", [4, "test"]);
     const lines = macroProcessor.lines(testLine("", "", []));
@@ -113,6 +114,7 @@ Deno.test("It still tries it's best to map mismatched parameters", () => {
     macroProcessor.lines(testLine("", "AND", ["R15"])).toArray();
     macroProcessor.lines(testLine("", "TST", ["wontMatch"])).toArray();
     macroProcessor.end();
+    macroProcessor.lines(testLine("", "",    [])).toArray();
 
     macroProcessor.useMacro("plop", ["MATCHED"]);
     const lines = macroProcessor.lines(testLine("", "", []));
@@ -139,6 +141,7 @@ Deno.test("Labels are mapped on each successive usage", () => {
     macroProcessor.lines(testLine("label", "TST", [])).toArray();
     macroProcessor.lines(testLine("",      "JMP", ["label"])).toArray();
     macroProcessor.end();
+    macroProcessor.lines(testLine("",      "",    [])).toArray();
 
     macroProcessor.useMacro("plop");
     const lines = macroProcessor.lines(testLine("", "", []));
@@ -166,6 +169,7 @@ Deno.test("External labels remain unmapped", () => {
     macroProcessor.lines(testLine("label", "TST", [])).toArray();
     macroProcessor.lines(testLine("",      "JMP", ["externalLabel"])).toArray();
     macroProcessor.end();
+    macroProcessor.lines(testLine("",      "",    [])).toArray();
 
     macroProcessor.useMacro("plop");
     const lines = macroProcessor.lines(testLine("", "", []));
@@ -193,6 +197,7 @@ Deno.test("Multiple macro invocations have higher index in label mappings", () =
     macroProcessor.lines(testLine("label", "TST", [])).toArray();
     macroProcessor.lines(testLine("",      "JMP", ["label"])).toArray();
     macroProcessor.end();
+    macroProcessor.lines(testLine("",      "",    [])).toArray();
 
     for (const invocation of [1, 2, 3]) {
         const expectedLabel = `plop$${invocation}$label`;

@@ -15,10 +15,11 @@ import { pass } from "../assembler/pass.ts";
 
 export const testEnvironment = () => {
     const context = anEmptyContext();
-    const table = symbolTable(context, pass());
+    const currentPass = pass();
+    const table = symbolTable(context, currentPass);
     const properties = deviceProperties(table);
     return {
-        "context": context,
+        "pass": currentPass,
         "expression": jSExpression(context),
         "properties": properties,
         "memory": programMemory(table, properties.public)

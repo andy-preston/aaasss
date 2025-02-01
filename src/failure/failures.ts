@@ -4,7 +4,7 @@ export type TypeFailure = NumericType |
     "type_string" | "type_strings" | "type_bytes" | "type_macroParams" | "type_bitmask";
 
 export type FatalKind = TypeFailure
-    | "context_redefined"
+    | "symbol_redefined"
     | "device_notFound" | "device_notSelected" | "device_multiple"
     | "file_notFound"
     | "js_error" | "js_jsMode" | "js_assemblerMode"

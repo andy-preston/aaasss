@@ -1,7 +1,7 @@
 import type { Directive } from "../directives/directive.ts";
 import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
-import { LineWithTokens } from "../tokens/line-types.ts";
+import type { LineWithTokens } from "../tokens/line-types.ts";
 import { macro, type DefinedParameters, type Macro, type MacroName } from "./data-types.ts";
 import type { MacroList } from "./macros.ts";
 
@@ -47,9 +47,13 @@ export const recording = (macros: MacroList) => {
         if (theMacro.lines.length == 0) {
             return failure(undefined, "macro_empty", undefined);
         }
-        macros.set(macroName, theMacro);
         onLastLine = true;
         return emptyBox();
+    };
+
+    const theLastLine = () => {
+        macros.set(macroName, theMacro!);
+        reset();
     };
 
     const isRecording = () => theMacro != undefined;
@@ -61,7 +65,7 @@ export const recording = (macros: MacroList) => {
         if (isRecording() && shouldRecordThis(line)) {
             theMacro!.lines.push(line);
             if (onLastLine) {
-                reset();
+                theLastLine();
             }
         }
     };
