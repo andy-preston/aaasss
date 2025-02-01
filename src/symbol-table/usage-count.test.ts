@@ -3,8 +3,7 @@ import { pass } from "../assembler/pass.ts";
 import { usageCount } from "./usage-count.ts";
 
 const testEnvironment = () => {
-    const currentPass = pass().public;
-    currentPass.start(1);
+    const currentPass = pass();
     const usage = usageCount(currentPass);
     return {
         "pass": currentPass,
@@ -42,7 +41,7 @@ Deno.test("All symbols appear to be used on the first pass", () => {
 Deno.test("... will not appear as used on the 2nd if it wasn't counted on the 1st", () => {
     const environment = testEnvironment();
     environment.usage.add("plop");
-    environment.pass.start(2);
+    environment.pass.second();
     assertFalse(environment.pass.ignoreErrors(), "ignoreErrors was true");
     assertFalse(environment.usage.isUsed("plop"), "isUsed was true");
 });
@@ -52,7 +51,7 @@ Deno.test("... will appear as used on the 2nd if it was counted on the 1st", () 
     environment.usage.add("plop");
     assert(environment.pass.ignoreErrors(), "ignoreErrors was false");
     environment.usage.count("plop");
-    environment.pass.start(2);
+    environment.pass.second();
     assertFalse(environment.pass.ignoreErrors(), "ignoreErrors was true");
     assert(environment.usage.isUsed("plop"), "isUsed was false");
 });

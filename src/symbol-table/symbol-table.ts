@@ -24,8 +24,10 @@ export const symbolTable = (context: Context, pass: Pass) => {
         return emptyBox();
     };
 
-    // This could also be a macro or a label
     const userSymbol = (name: string, value: number) => {
+        if (!usage.isUsed(name)) {
+            return failure(undefined, "symbol_notUsed", undefined);
+        }
         const result = internalSymbol(name, value);
         if (result.which != "failure") {
             usage.add(name);

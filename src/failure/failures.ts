@@ -3,7 +3,7 @@ import type { NumericType } from "../numeric-values/types.ts";
 export type TypeFailure = NumericType |
     "type_string" | "type_strings" | "type_bytes" | "type_macroParams" | "type_bitmask";
 
-export type FailureKind = TypeFailure
+export type FatalKind = TypeFailure
     | "context_redefined"
     | "device_notFound" | "device_notSelected" | "device_multiple"
     | "file_notFound"
@@ -16,3 +16,9 @@ export type FailureKind = TypeFailure
     | "syntax_invalidLabel"
     | "programMemory_outOfRange" | "programMemory_sizeUnknown"
     | "ram_outOfRange" | "ram_sizeUnknown" | "ram_stackAllocated";
+
+export const nonFatalWarnings = ["symbol_notUsed"] as const;
+
+export type WarningKind = typeof nonFatalWarnings[number];
+
+export type FailureKind = FatalKind | WarningKind;

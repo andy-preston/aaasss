@@ -48,6 +48,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "operand_offsetNotStd": (_line: LineWithAddress) => [
         "An Index offset in the first parameter can only be used on the STD instruction"
     ],
+    "symbol_notUsed": (_line: LineWithAddress) => [""],
     "syntax_invalidLabel": (_line: LineWithAddress) => [
         "A label must only contain alphanumeric characters and underscore"
     ],

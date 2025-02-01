@@ -14,7 +14,7 @@ const testLine = (source: SourceCode) =>
 
 const testEnvironment = () => {
     const context = anEmptyContext();
-    const table = symbolTable(context, pass().public);
+    const table = symbolTable(context, pass());
     return {
         "registers": cpuRegisters(table),
         "symbolTable": table,

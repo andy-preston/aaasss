@@ -15,7 +15,7 @@ import { pass } from "../assembler/pass.ts";
 
 export const testEnvironment = () => {
     const context = anEmptyContext();
-    const table = symbolTable(context, pass().public);
+    const table = symbolTable(context, pass());
     const properties = deviceProperties(table);
     return {
         "context": context,

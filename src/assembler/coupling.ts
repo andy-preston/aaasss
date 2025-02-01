@@ -37,7 +37,7 @@ export const coupling = (
 
     const currentPass = pass();
 
-    const symbols = symbolTable(context, currentPass.public);
+    const symbols = symbolTable(context, currentPass);
     directive(context, "define", symbols.defineDirective);
 
     const properties = deviceProperties(symbols);
@@ -75,7 +75,7 @@ export const coupling = (
     ]);
 
     return assemblyPipeline(
-        currentPass.public,
+        currentPass,
         sourceFiles.lines,
         embedded.rendered,
         tokenise,

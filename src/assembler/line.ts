@@ -1,4 +1,4 @@
-import type { Failure, Failures } from "../failure/failure-or-box.ts";
+import { notFatal, type Failure, type Failures } from "../failure/failure-or-box.ts";
 import type { MacroName } from "../macros/data-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import type {
@@ -12,14 +12,17 @@ export const line = (
     fileName: FileName, lineNumber: LineNumber, lastLine: boolean,
     source: SourceCode
 ) => {
-    const failures: Failures = [];
+    const fatal: Failures = [];
+    const warnings: Failures = [];
     const withFailure = (failure: Failure) => {
+        const failures = notFatal(failure) ? warnings : fatal;
         failures.push(failure);
         return theLine;
     };
-    const failed = () => failures.length > 0;
+    const failed = () => fatal.length > 0;
     const failureMap = function*(): Generator<Failure, void, void> {
-        yield* failures;
+        yield* warnings;
+        yield* fatal;
     };
 
     const hasAssembly = () => theLine.assemblySource.trim() != "";

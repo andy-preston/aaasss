@@ -45,7 +45,9 @@ export const assemblyPipeline = (
     }
 
     const allSource = (passNumber: PassNumber) => {
-        pass.start(passNumber);
+        if (passNumber == 2) {
+            pass.second();
+        }
         lines().forEach(sourceLine);
     };
 

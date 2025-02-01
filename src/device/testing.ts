@@ -6,7 +6,7 @@ import { defaultDeviceFinder, defaultJsonLoader } from "./device-file.ts";
 import { deviceProperties } from "./properties.ts";
 
 export const testEnvironment = () => {
-    const table = symbolTable(anEmptyContext(), pass().public);
+    const table = symbolTable(anEmptyContext(), pass());
     const device = deviceProperties(table);
     return {
         "device": device,

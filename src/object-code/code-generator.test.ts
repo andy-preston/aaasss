@@ -15,7 +15,7 @@ import { objectCode } from "./object-code.ts";
 import { pokeBuffer } from "./poke.ts";
 
 const testEnvironment = () => {
-    const table = symbolTable(anEmptyContext(), pass().public);
+    const table = symbolTable(anEmptyContext(), pass());
     const properties = deviceProperties(table);
     return {
         "properties": properties,

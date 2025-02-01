@@ -1,5 +1,5 @@
-import { OperandIndex } from "../operands/data-types.ts";
-import { FailureKind } from "./failures.ts";
+import type { OperandIndex } from "../operands/data-types.ts";
+import { nonFatalWarnings, type FailureKind } from "./failures.ts";
 
 export const failure = (
     operand: OperandIndex | undefined,
@@ -20,16 +20,21 @@ export const failure = (
     return object;
 };
 
+export type Failure = Readonly<ReturnType<typeof failure>>;
+
+export const notFatal = (check: Failure) =>
+    (nonFatalWarnings as readonly [FailureKind]).includes(check.kind);
+
 export const box = <T>(value: T) => ({
     "which": "box" as const,
     "value": value,
 });
+
+export type Box<T> = Readonly<ReturnType<typeof box<T>>>;
 
 export const emptyBox = () => box(undefined);
 
 export const isFailureOrBox = (it: unknown) =>
     it instanceof Object && Object.hasOwn(it, "which");
 
-export type Failure = Readonly<ReturnType<typeof failure>>;
 export type Failures = Array<Failure>;
-export type Box<T> = Readonly<ReturnType<typeof box<T>>>;

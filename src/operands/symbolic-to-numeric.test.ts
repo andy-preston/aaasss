@@ -14,7 +14,7 @@ import { symbolicToNumeric } from "./symbolic-to-numeric.ts";
 const testEnvironment = () => {
     const context = anEmptyContext();
     return {
-        "symbolTable": symbolTable(context, pass().public),
+        "symbolTable": symbolTable(context, pass()),
         "operands": symbolicToNumeric(jSExpression(context))
     };
 };

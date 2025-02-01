@@ -6,27 +6,23 @@ type ResetStateCallback = () => void;
 
 export const pass = () => {
     const resetCallbacks: Array<ResetStateCallback> = [];
-    let current: PassNumber;
+    let current: PassNumber = 1;
 
     const addResetStateCallback = (callback: ResetStateCallback) => {
         resetCallbacks.push(callback);
     };
 
-    const start = (pass: PassNumber) => {
-        current = pass;
-        if (pass == 2) {
-            resetCallbacks.forEach(resetCallback => resetCallback());
-        }
+    const second = () => {
+        current = 2;
+        resetCallbacks.forEach(resetCallback => resetCallback());
     };
 
     return {
         "addResetStateCallback": addResetStateCallback,
-        "public": {
-            "start": start,
-            "ignoreErrors": () => current == 1,
-            "produceOutput": () => current == 2
-        },
+        "second": second,
+        "ignoreErrors": () => current == 1,
+        "produceOutput": () => current == 2
     };
 };
 
-export type Pass = ReturnType<typeof pass>["public"];
+export type Pass = ReturnType<typeof pass>;
