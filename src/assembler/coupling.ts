@@ -2,7 +2,7 @@ import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser } from "../device/chooser.ts";
 import type { DeviceFileOperations } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { high, low, maskToBitNumber } from "../directives/function-directives.ts";
+import { high, low } from "../directives/function-directives.ts";
 import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { anEmptyContext } from "../javascript/context.ts";
@@ -36,7 +36,6 @@ export const coupling = (
     const symbols = symbolTable(context, currentPass);
     symbols.directive("define", symbols.defineDirective);
 
-    symbols.directive("bit", maskToBitNumber);
     symbols.directive("high", high);
     symbols.directive("low", low);
 
