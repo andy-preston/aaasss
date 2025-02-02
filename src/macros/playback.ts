@@ -1,5 +1,4 @@
-import type { Directive } from "../directives/directive.ts";
-import { parameterList, stringParameter } from "../directives/type-checking.ts";
+import { parameterList } from "../directives/type-checking.ts";
 import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import { operands, type SymbolicOperands } from "../operands/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
@@ -9,7 +8,7 @@ import { lineWithExpandedMacro } from "./line-types.ts";
 import type { MacroList } from "./macros.ts";
 
 export type MacroInvocation = (
-    name: string, ...parameters: ActualParameters
+    ...parameters: ActualParameters
 ) => Box<undefined> | Failure;
 
 export const playback = (macros: MacroList) => {
@@ -17,16 +16,9 @@ export const playback = (macros: MacroList) => {
     let withParameters: ActualParameters | undefined = undefined;
     let named: MacroName = "";
 
-    const directive: Directive = (
+    const useMacroMethod = (
         name: MacroName, parameters: ActualParameters
     ) => {
-        const checkedName = stringParameter(name);
-        if (checkedName.which == "failure") {
-            return checkedName;
-        }
-        if (!macros.has(name)) {
-            return failure(undefined, "macro_notExist", name);
-        }
         const checkedParameters = parameterList(parameters, "type_macroParams");
         if (checkedParameters.which == "failure") {
             return checkedParameters;
@@ -72,7 +64,7 @@ export const playback = (macros: MacroList) => {
 
     return {
         "reset": reset,
-        "directive": directive,
+        "useMacroMethod": useMacroMethod,
         "play": play
     };
 };

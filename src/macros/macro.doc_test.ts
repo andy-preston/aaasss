@@ -9,9 +9,9 @@ Deno.test("Macro demo", () => {
         "    LDS R30, address",
         "    {{ end(); }}",
         "",
-        '    {{ useMacro("aMacro", [1024]); }}',
+        '    {{ aMacro(1024); }}',
         "",
-        '    {{ useMacro("aMacro", [2048]); }}',
+        '    {{ aMacro(2048); }}',
     ]);
     demo.assemble();
     assertFileContains(".lst", [
@@ -23,17 +23,18 @@ Deno.test("Macro demo", () => {
         "                      4     LDS R30, address",
         "                      5     {{ end(); }}",
         "                      6",
-        '                      7     {{ useMacro("aMacro", [1024]); }}',
+        '                      7     {{ aMacro(1024); }}',
         "000000 91 E0 04 00    7     LDS R30, address",
         '                      7     {{ end(); }}',
         "                      8",
-        '                      9     {{ useMacro("aMacro", [2048]); }}',
+        '                      9     {{ aMacro(2048); }}',
         "000002 91 E0 08 00    9     LDS R30, address",
         '                      9     {{ end(); }}',
         "",
         "Symbol Table",
         "============",
         "",
+        "aMacro: 2",
         "R30: 2"
     ]);
     assertFileContains(".hex", [

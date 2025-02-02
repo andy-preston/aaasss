@@ -5,7 +5,10 @@ import type { LineWithTokens } from "../tokens/line-types.ts";
 import { macro, type DefinedParameters, type Macro, type MacroName } from "./data-types.ts";
 import type { MacroList } from "./macros.ts";
 
-export const recording = (macros: MacroList) => {
+export const recording = (
+    macros: MacroList,
+    useMacroMethod: (macroName: string) => void
+) => {
     let theMacro: Macro | undefined = undefined;
     let macroName: MacroName = "";
     let onLastLine = false;
@@ -53,6 +56,7 @@ export const recording = (macros: MacroList) => {
 
     const theLastLine = () => {
         macros.set(macroName, theMacro!);
+        useMacroMethod(macroName);
         reset();
     };
 

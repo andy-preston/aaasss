@@ -59,10 +59,9 @@ export const coupling = (
     const sourceFiles = fileStack(readerMethod, fileName);
     symbols.directive("include", sourceFiles.include);
 
-    const macroProcessor = macros();
+    const macroProcessor = macros(symbols);
     symbols.directive("macro", macroProcessor.macro);
     symbols.directive("end", macroProcessor.end);
-    symbols.directive("useMacro", macroProcessor.useMacro);
     currentPass.addResetStateCallback(macroProcessor.reset);
 
     const expression = jSExpression(context)

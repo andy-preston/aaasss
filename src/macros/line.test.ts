@@ -1,8 +1,7 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import type { Label, Mnemonic } from "../source-code/data-types.ts";
 import type { LineWithProcessedMacro } from "./line-types.ts";
-import { macros } from "./macros.ts";
-import { testLine } from "./testing.ts";
+import { testEnvironment, testLine } from "./testing.ts";
 
 const assertProcessedLine = (
     lines: Array<LineWithProcessedMacro>,
@@ -18,46 +17,46 @@ const assertProcessedLine = (
 };
 
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
-    const macroProcessor = macros();
+    const environment = testEnvironment();
     const testLines = [["testLabel", "TST"], ["", "AND"], ["", "TST"]];
     for (const [label, mnemonic] of testLines) {
         const tokenised = testLine(label!, mnemonic!, []);
         assertProcessedLine(
-            macroProcessor.lines(tokenised).toArray(),
+            environment.macros.lines(tokenised).toArray(),
             false, label!, mnemonic!
         );
     }
 });
 
 Deno.test("Whilst a macro is being defined, saveLine will... save lines", () => {
-    const macroProcessor = macros();
+    const environment = testEnvironment();
 
-    macroProcessor.macro("plop");
-    macroProcessor.lines(testLine("testLabel", "TST", [])).toArray();
-    macroProcessor.lines(testLine("",          "AND", [])).toArray();
-    macroProcessor.lines(testLine("",          "TST", [])).toArray();
-    macroProcessor.end();
-    macroProcessor.lines(testLine("",          "", [])).toArray();
+    environment.macros.macro("plop");
+    environment.macros.lines(testLine("testLabel", "TST", [])).toArray();
+    environment.macros.lines(testLine("",          "AND", [])).toArray();
+    environment.macros.lines(testLine("",          "TST", [])).toArray();
+    environment.macros.end();
+    environment.macros.lines(testLine("",          "", [])).toArray();
 
     const tokenised = testLine("ended", "TST", []);
     assertProcessedLine(
-        macroProcessor.lines(tokenised).toArray(),
+        environment.macros.lines(tokenised).toArray(),
         false, "ended", "TST"
     );
 });
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
-    const macroProcessor = macros();
+    const environment = testEnvironment();
 
-    macroProcessor.macro("plop");
-    macroProcessor.lines(testLine("testLabel", "TST", [])).toArray();
-    macroProcessor.lines(testLine("",          "AND", [])).toArray();
-    macroProcessor.lines(testLine("",          "TST", [])).toArray();
-    macroProcessor.end();
-    macroProcessor.lines(testLine("",          "", [])).toArray();
+    environment.macros.macro("plop");
+    environment.macros.lines(testLine("testLabel", "TST", [])).toArray();
+    environment.macros.lines(testLine("",          "AND", [])).toArray();
+    environment.macros.lines(testLine("",          "TST", [])).toArray();
+    environment.macros.end();
+    environment.macros.lines(testLine("",          "", [])).toArray();
 
-    macroProcessor.useMacro("plop", []);
-    const lines = macroProcessor.lines(testLine("", "", []));
+    environment.jsExpression("plop();")
+    const lines = environment.macros.lines(testLine("", "", []));
     assertFalse(lines.next().done);
 
     const first = lines.next().value!;
@@ -80,17 +79,17 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
 });
 
 Deno.test("on play-back, parameters are substituted", () => {
-    const macroProcessor = macros();
+    const environment = testEnvironment();
 
-    macroProcessor.macro("plop", ["p1", "p2"]);
-    macroProcessor.lines(testLine("", "TST", ["p1"])).toArray();
-    macroProcessor.lines(testLine("", "AND", ["R15"])).toArray();
-    macroProcessor.lines(testLine("", "TST", ["p2"])).toArray();
-    macroProcessor.end();
-    macroProcessor.lines(testLine("", "",    [])).toArray();
+    environment.macros.macro("plop", ["p1", "p2"]);
+    environment.macros.lines(testLine("", "TST", ["p1"])).toArray();
+    environment.macros.lines(testLine("", "AND", ["R15"])).toArray();
+    environment.macros.lines(testLine("", "TST", ["p2"])).toArray();
+    environment.macros.end();
+    environment.macros.lines(testLine("", "",    [])).toArray();
 
-    macroProcessor.useMacro("plop", [4, "test"]);
-    const lines = macroProcessor.lines(testLine("", "", []));
+    environment.jsExpression("plop(4, 'test');");
+    const lines = environment.macros.lines(testLine("", "", []));
     assertFalse(lines.next().done);
 
     const first = lines.next().value!;
@@ -107,17 +106,17 @@ Deno.test("on play-back, parameters are substituted", () => {
 });
 
 Deno.test("It still tries it's best to map mismatched parameters", () => {
-    const macroProcessor = macros();
+    const environment = testEnvironment();
 
-    macroProcessor.macro("plop", ["willMatch", "wontMatch"]);
-    macroProcessor.lines(testLine("", "TST", ["willMatch"])).toArray();
-    macroProcessor.lines(testLine("", "AND", ["R15"])).toArray();
-    macroProcessor.lines(testLine("", "TST", ["wontMatch"])).toArray();
-    macroProcessor.end();
-    macroProcessor.lines(testLine("", "",    [])).toArray();
+    environment.macros.macro("plop", ["willMatch", "wontMatch"]);
+    environment.macros.lines(testLine("", "TST", ["willMatch"])).toArray();
+    environment.macros.lines(testLine("", "AND", ["R15"])).toArray();
+    environment.macros.lines(testLine("", "TST", ["wontMatch"])).toArray();
+    environment.macros.end();
+    environment.macros.lines(testLine("", "",    [])).toArray();
 
-    macroProcessor.useMacro("plop", ["MATCHED"]);
-    const lines = macroProcessor.lines(testLine("", "", []));
+    environment.jsExpression("plop('MATCHED');");
+    const lines = environment.macros.lines(testLine("", "", []));
     assertFalse(lines.next().done);
 
     const first = lines.next().value!;
@@ -134,17 +133,17 @@ Deno.test("It still tries it's best to map mismatched parameters", () => {
 });
 
 Deno.test("Labels are mapped on each successive usage", () => {
-    const macroProcessor = macros();
+    const environment = testEnvironment();
 
-    macroProcessor.macro("plop");
-    macroProcessor.lines(testLine("",      "JMP", ["label"])).toArray();
-    macroProcessor.lines(testLine("label", "TST", [])).toArray();
-    macroProcessor.lines(testLine("",      "JMP", ["label"])).toArray();
-    macroProcessor.end();
-    macroProcessor.lines(testLine("",      "",    [])).toArray();
+    environment.macros.macro("plop");
+    environment.macros.lines(testLine("",      "JMP", ["label"])).toArray();
+    environment.macros.lines(testLine("label", "TST", [])).toArray();
+    environment.macros.lines(testLine("",      "JMP", ["label"])).toArray();
+    environment.macros.end();
+    environment.macros.lines(testLine("",      "",    [])).toArray();
 
-    macroProcessor.useMacro("plop");
-    const lines = macroProcessor.lines(testLine("", "", []));
+    environment.jsExpression("plop();");
+    const lines = environment.macros.lines(testLine("", "", []));
     assertFalse(lines.next().done);
 
     const first = lines.next().value!;
@@ -162,17 +161,17 @@ Deno.test("Labels are mapped on each successive usage", () => {
 });
 
 Deno.test("External labels remain unmapped", () => {
-    const macroProcessor = macros();
+    const environment = testEnvironment();
 
-    macroProcessor.macro("plop");
-    macroProcessor.lines(testLine("",      "JMP", ["externalLabel"])).toArray();
-    macroProcessor.lines(testLine("label", "TST", [])).toArray();
-    macroProcessor.lines(testLine("",      "JMP", ["externalLabel"])).toArray();
-    macroProcessor.end();
-    macroProcessor.lines(testLine("",      "",    [])).toArray();
+    environment.macros.macro("plop");
+    environment.macros.lines(testLine("",      "JMP", ["externalLabel"])).toArray();
+    environment.macros.lines(testLine("label", "TST", [])).toArray();
+    environment.macros.lines(testLine("",      "JMP", ["externalLabel"])).toArray();
+    environment.macros.end();
+    environment.macros.lines(testLine("",      "",    [])).toArray();
 
-    macroProcessor.useMacro("plop");
-    const lines = macroProcessor.lines(testLine("", "", []));
+    environment.jsExpression("plop();");
+    const lines = environment.macros.lines(testLine("", "", []));
     assertFalse(lines.next().done);
 
     const first = lines.next().value!;
@@ -190,19 +189,19 @@ Deno.test("External labels remain unmapped", () => {
 });
 
 Deno.test("Multiple macro invocations have higher index in label mappings", () => {
-    const macroProcessor = macros();
+    const environment = testEnvironment();
 
-    macroProcessor.macro("plop");
-    macroProcessor.lines(testLine("",      "JMP", ["label"])).toArray();
-    macroProcessor.lines(testLine("label", "TST", [])).toArray();
-    macroProcessor.lines(testLine("",      "JMP", ["label"])).toArray();
-    macroProcessor.end();
-    macroProcessor.lines(testLine("",      "",    [])).toArray();
+    environment.macros.macro("plop");
+    environment.macros.lines(testLine("",      "JMP", ["label"])).toArray();
+    environment.macros.lines(testLine("label", "TST", [])).toArray();
+    environment.macros.lines(testLine("",      "JMP", ["label"])).toArray();
+    environment.macros.end();
+    environment.macros.lines(testLine("",      "",    [])).toArray();
 
     for (const invocation of [1, 2, 3]) {
         const expectedLabel = `plop$${invocation}$label`;
-        macroProcessor.useMacro("plop");
-        const lines = macroProcessor.lines(testLine("", "", []));
+        environment.jsExpression("plop();");
+        const lines = environment.macros.lines(testLine("", "", []));
         assertFalse(lines.next().done);
 
         const first = lines.next().value!;
