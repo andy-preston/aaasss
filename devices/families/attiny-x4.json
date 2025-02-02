@@ -5,9 +5,11 @@
             "FlashMore128", "FlashMore8", "ELPM", "SPM.Z"
         ]
     },
+
     "reducedCore": {
         "value": false
     },
+
     "PRR": {
         "value": "20",
         "description": "Power Reduction Register ---------------- IO Address 00"
@@ -28,6 +30,7 @@
         "value": "0",
         "description": "Power Reduction ADC"
     },
+
     "DIDR0": {
         "value": "21",
         "description": "Digital Input Disable 0 ----------------- IO Address 01"
@@ -40,6 +43,7 @@
     "ADC2D": { "value": "2" },
     "ADC1D": { "value": "1" },
     "ADC0D": { "value": "0" },
+
     "ADCSRB": {
         "value": "23",
         "description": "ADC Control and Status B ---------------- IO Address 03"
@@ -56,28 +60,29 @@
         "value": "4",
         "description": "ADC Left Adjust Result"
     },
-    "ADTS2": { "value": "2" },
-    "ADTS1": { "value": "1" },
-    "ADTS0": { "value": "0" },
-    "ADTS_FREE_RUNNING_MODE": {
-        "value": "00",
-        "description": "ADC Auto Trigger Source"
+    "ADTS2": {
+        "value": "2",
+        "description": "ADC Auto Trigger Source bit 2"
     },
-    "ADTS_ANALOG_COMPARATOR":              { "value": "01" },
-    "ADTS_EXTERNAL_INTERRUPT_REQUEST_0":   { "value": "02" },
-    "ADTS_TIMER_COUNTER0_COMPARE_MATCH_A": { "value": "03" },
-    "ADTS_TIMER_COUNTER0_OVERFLOW":        { "value": "04" },
-    "ADTS_TIMER_COUNTER1_COMPARE_MATCH_B": { "value": "05" },
-    "ADTS_TIMER_COUNTER1_OVERFLOW":        { "value": "06" },
-    "ADTS_TIMER_COUNTER1_CAPTURE_EVENT":   { "value": "07" },
+    "ADTS1": {
+        "value": "1",
+        "description": "ADC Auto Trigger Source bit 1"
+    },
+    "ADTS0": {
+        "value": "0",
+        "description": "ADC Auto Trigger Source bit 0"
+    },
+
     "ADCL": {
         "value": "24",
-        "description": "ADC Data -------------------------------- IO Address 04"
+        "description": "ADC Data Low ---------------------------- IO Address 04"
     },
+
     "ADCH": {
         "value": "25",
-        "description": "ADC Data -------------------------------- IO Address 05"
+        "description": "ADC Data High --------------------------- IO Address 05"
     },
+
     "ADCSRA": {
         "value": "26",
         "description": "ADC Control and Status A ---------------- IO Address 06"
@@ -104,30 +109,54 @@
     },
     "ADPS2": {
         "value": "2",
-        "description": "ADC Prescaler Select Bits"
+        "description": "ADC Prescaler Select Bit 2"
     },
-    "ADPS1": { "value": "1" },
-    "ADPS0": { "value": "0" },
-    "ADPS_ADC_PRESCALER_1":   { "value": "00" },
-    "ADPS_ADC_PRESCALER_2":   { "value": "01" },
-    "ADPS_ADC_PRESCALER_4":   { "value": "02" },
-    "ADPS_ADC_PRESCALER_8":   { "value": "03" },
-    "ADPS_ADC_PRESCALER_16":  { "value": "04" },
-    "ADPS_ADC_PRESCALER_32":  { "value": "05" },
-    "ADPS_ADC_PRESCALER_64":  { "value": "06" },
-    "ADPS_ADC_PRESCALER_128": { "value": "07" },
+    "ADPS1": {
+        "value": "1",
+        "description": "ADC Prescaler Select Bit 1"
+    },
+    "ADPS0": {
+        "value": "0",
+        "description": "ADC Prescaler Select Bit 0"
+    },
+
     "ADMUX": {
         "value": "27",
         "description": "ADC Multiplexer Selection --------------- IO Address 07"
     },
-    "REFS1": { "value": "7" },
-    "REFS0": { "value": "6" },
-    "MUX5":  { "value": "5" },
-    "MUX4":  { "value": "4" },
-    "MUX3":  { "value": "3" },
-    "MUX2":  { "value": "2" },
-    "MUX1":  { "value": "1" },
-    "MUX0":  { "value": "0" },
+    "REFS1": {
+        "value": "7",
+        "description": "Reference Selection Bit 1"
+    },
+    "REFS0": {
+        "value": "6",
+        "description": "Reference Selection Bit 0"
+    },
+    "MUX5":  {
+        "value": "5",
+        "description": "Analog Channel and Gain Selection Bit 5"
+    },
+    "MUX4":  {
+        "value": "4",
+        "description": "Analog Channel and Gain Selection Bit 4"
+    },
+    "MUX3":  {
+        "value": "3",
+        "description": "Analog Channel and Gain Selection Bit 3"
+    },
+    "MUX2":  {
+        "value": "2",
+        "description": "Analog Channel and Gain Selection Bit 2"
+    },
+    "MUX1":  {
+        "value": "1",
+        "description": "Analog Channel and Gain Selection Bit 1"
+    },
+    "MUX0":  {
+        "value": "0",
+        "description": "Analog Channel and Gain Selection Bit 0"
+    },
+
     "ACSR": {
         "value": "28",
         "description": "Analog Comparator Control/Status -------- IO Address 08"
@@ -158,12 +187,13 @@
     },
     "ACIS1": {
         "value": "1",
-        "description": "Analog Comparator Interrupt Mode Select bits"
+        "description": "Analog Comparator Interrupt Mode Select bit 1"
     },
-    "ACIS0": { "value": "0" },
-    "ANALOG_COMP_INTERRUPT_ON_TOGGLE":    { "value": "00" },
-    "ANALOG_COMP_INTERRUPT_FALLING_EDGE": { "value": "02" },
-    "ANALOG_COMP_INTERRUPT_RISING_EDGE":  { "value": "03" },
+    "ACIS0": {
+        "value": "0",
+        "description": "Analog Comparator Interrupt Mode Select bit 0"
+    },
+
     "TIFR1": {
         "value": "2B",
         "description": "Timer/Counter Interrupt Flag ------------ IO Address 0B"
@@ -184,6 +214,7 @@
         "value": "0",
         "description": "TC1 Overflow Flag"
     },
+
     "TIMSK1": {
         "value": "2C",
         "description": "Timer/Counter1 Interrupt Mask ----------- IO Address 0C"
@@ -204,6 +235,7 @@
         "value": "0",
         "description": "TC1 Overflow Interrupt Enable"
     },
+
     "USICR": {
         "value": "2D",
         "description": "USI Control ----------------------------- IO Address 0D"
@@ -218,18 +250,20 @@
     },
     "USIWM1": {
         "value": "5",
-        "description": "USI Wire Mode Bits"
+        "description": "USI Wire Mode Bit 1"
     },
-    "USIWM0": { "value": "4" },
-    "USIWM_NORMAL_OPERATION":       { "value": "00" },
-    "USIWM_THREE_WIRE_MODE":        { "value": "10" },
-    "USIWM_TWO_WIRE_MODE":          { "value": "20" },
-    "USIWM_TWO_WIRE_MODE_HELD_LOW": { "value": "30" },
+    "USIWM0": {
+        "value": "4",
+        "description": "USI Wire Mode Bit 0"
+    },
     "USICS1": {
         "value": "3",
-        "description": "USI Clock Source Select Bits"
+        "description": "USI Clock Source Select Bit 1"
     },
-    "USICS0": { "value": "2" },
+    "USICS0": {
+        "value": "2",
+        "description": "USI Clock Source Select Bit 0"
+    },
     "USICLK": {
         "value": "1",
         "description": "Clock Strobe"
@@ -238,6 +272,7 @@
         "value": "0",
         "description": "Toggle Clock Port Pin"
     },
+
     "USISR": {
         "value": "2E",
         "description": "USI Status ------------------------------ IO Address 0E"
@@ -260,19 +295,31 @@
     },
     "USICNT3": {
         "value": "3",
-        "description": "USI Counter Value Bits"
+        "description": "USI Counter Value Bit 3"
     },
-    "USICNT2": { "value": "2" },
-    "USICNT1": { "value": "1" },
-    "USICNT0": { "value": "0" },
+    "USICNT2": {
+        "value": "2",
+        "description": "USI Counter Value Bit 2"
+    },
+    "USICNT1": {
+        "value": "1",
+        "description": "USI Counter Value Bit 1"
+    },
+    "USICNT0": {
+        "value": "0",
+        "description": "USI Counter Value Bit 0"
+    },
+
     "USIDR": {
         "value": "2F",
         "description": "USI Data -------------------------------- IO Address 0F"
     },
+
     "USIBR": {
         "value": "30",
         "description": "USI Buffer ------------------------------ IO Address 10"
     },
+
     "PCMSK0": {
         "value": "32",
         "description": "Pin Change Enable Mask 0 ---------------- IO Address 12"
@@ -285,45 +332,52 @@
     "PCINT2": { "value": "2" },
     "PCINT1": { "value": "1" },
     "PCINT0": { "value": "0" },
+
     "GPIOR0": {
         "value": "33",
         "description": "General Purpose I/O Register 0 ---------- IO Address 13"
     },
+
     "GPIOR1": {
         "value": "34",
         "description": "General Purpose I/O Register 1 ---------- IO Address 14"
     },
+
     "GPIOR2": {
         "value": "35",
         "description": "General Purpose I/O Register 2 ---------- IO Address 15"
     },
+
     "PINB": {
         "value": "36",
-        "description": "----------------------------------------- IO Address 16"
+        "description": "Port B Input ---------------------------- IO Address 16"
     },
     "PINB3": { "value": "3" },
     "PINB2": { "value": "2" },
     "PINB1": { "value": "1" },
     "PINB0": { "value": "0" },
+
     "DDRB": {
         "value": "37",
-        "description": "----------------------------------------- IO Address 17"
+        "description": "Port B DDR ------------------------------ IO Address 17"
     },
     "DDB3": { "value": "3" },
     "DDB2": { "value": "2" },
     "DDB1": { "value": "1" },
     "DDB0": { "value": "0" },
+
     "PORTB": {
         "value": "38",
-        "description": "----------------------------------------- IO Address 18"
+        "description": "Port B Output --------------------------- IO Address 18"
     },
     "PB3": { "value": "3" },
     "PB2": { "value": "2" },
     "PB1": { "value": "1" },
     "PB0": { "value": "0" },
+
     "PINA": {
         "value": "39",
-        "description": "----------------------------------------- IO Address 19"
+        "description": "Port A Input ---------------------------- IO Address 19"
     },
     "PINA7": { "value": "7" },
     "PINA6": { "value": "6" },
@@ -333,9 +387,10 @@
     "PINA2": { "value": "2" },
     "PINA1": { "value": "1" },
     "PINA0": { "value": "0" },
+
     "DDRA": {
         "value": "3A",
-        "description": "----------------------------------------- IO Address 1A"
+        "description": "Port A DDR ------------------------------ IO Address 1A"
     },
     "DDA7": { "value": "7" },
     "DDA6": { "value": "6" },
@@ -345,9 +400,10 @@
     "DDA2": { "value": "2" },
     "DDA1": { "value": "1" },
     "DDA0": { "value": "0" },
+
     "PORTA": {
         "value": "3B",
-        "description": "----------------------------------------- IO Address 1B"
+        "description": "Port A Output --------------------------- IO Address 1B"
     },
     "PA7": { "value": "7" },
     "PA6": { "value": "6" },
@@ -357,18 +413,19 @@
     "PA2": { "value": "2" },
     "PA1": { "value": "1" },
     "PA0": { "value": "0" },
+
     "EECR": {
         "value": "3C",
         "description": "EEPROM Control -------------------------- IO Address 1C"
     },
     "EEPM1": {
         "value": "5",
-        "description": "EEPROM Programming Mode Bits"
+        "description": "EEPROM Programming Mode Bit 1"
     },
-    "EEPM0": { "value": "4" },
-    "EEP_MODE_ERASE_AND_WRITE_IN_ONE_OPERATION": { "value": "0" },
-    "EEP_MODE_ERASE_ONLY":                       { "value": "10" },
-    "EEP_MODE_WRITE_ONLY":                       { "value": "20" },
+    "EEPM0": {
+        "value": "4",
+        "description": "EEPROM Programming Mode Bit 0"
+    },
     "EERIE": {
         "value": "3",
         "description": "EEPROM Ready Interrupt Enable"
@@ -385,18 +442,22 @@
         "value": "0",
         "description": "EEPROM Ready Interrupt Enable"
     },
+
     "EEDR": {
         "value": "3D",
         "description": "EEPROM Data ----------------------------- IO Address 1D"
     },
+
     "EEARL": {
         "value": "3E",
-        "description": "EEPROM Address -------------------------- IO Address 1E"
+        "description": "EEPROM Address Low ---------------------- IO Address 1E"
     },
+
     "EEARH": {
         "value": "3F",
-        "description": "EEPROM Address -------------------------- IO Address 1F"
+        "description": "EEPROM Address High --------------------- IO Address 1F"
     },
+
     "PCMSK1": {
         "value": "40",
         "description": "Pin Change Enable Mask 1 ---------------- IO Address 20"
@@ -405,6 +466,7 @@
     "PCINT10": { "value": "2" },
     "PCINT9":  { "value": "1" },
     "PCINT8":  { "value": "0" },
+
     "WDTCSR": {
         "value": "41",
         "description": "Watchdog Timer Control ------------------ IO Address 21"
@@ -441,16 +503,7 @@
         "value": "0",
         "description": "Watchdog Timer Prescaler Bits"
     },
-    "WDOG_TIMER_PRESCALE_2K":    { "value": "0" },
-    "WDOG_TIMER_PRESCALE_4K":    { "value": "1" },
-    "WDOG_TIMER_PRESCALE_8K":    { "value": "2" },
-    "WDOG_TIMER_PRESCALE_16K":   { "value": "3" },
-    "WDOG_TIMER_PRESCALE_32K":   { "value": "4" },
-    "WDOG_TIMER_PRESCALE_64K":   { "value": "5" },
-    "WDOG_TIMER_PRESCALE_128K":  { "value": "6" },
-    "WDOG_TIMER_PRESCALE_256K":  { "value": "7" },
-    "WDOG_TIMER_PRESCALE_512K":  { "value": "8" },
-    "WDOG_TIMER_PRESCALE_1024K": { "value": "9" },
+
     "TCCR1C": {
         "value": "42",
         "description": "TC1 Control C --------------------------- IO Address 22"
@@ -463,6 +516,7 @@
         "value": "6",
         "description": "Force Output Compare for Channel B"
     },
+
     "GTCCR": {
         "value": "43",
         "description": "General Timer/Counter Control ----------- IO Address 23"
@@ -473,65 +527,80 @@
     },
     "PSR10": {
         "value": "0",
-        "description": "Prescaler Reset Timer/CounterN"
+        "description": "Prescaler 0 Reset Timer/Counter n"
     },
+
     "ICR1L": {
         "value": "44",
         "description": "TC1 Input Capture ----------------------- IO Address 24"
     },
+
     "ICR1H": {
         "value": "45",
         "description": "TC1 Input Capture ----------------------- IO Address 25"
     },
+
     "CLKPR": {
         "value": "46",
         "description": "Clock Prescale -------------------------- IO Address 26"
     },
+
     "CLKPCE": {
         "value": "7",
         "description": "Clock Prescaler Change Enable"
     },
-    "CLKPS3": { "value": "3" },
-    "CLKPS2": { "value": "2" },
-    "CLKPS1": { "value": "1" },
-    "CLKPS0": { "value": "0" },
-    "CPU_CLK_PRESCALE_1":   { "value": "0" },
-    "CPU_CLK_PRESCALE_2":   { "value": "1" },
-    "CPU_CLK_PRESCALE_4":   { "value": "2" },
-    "CPU_CLK_PRESCALE_8":   { "value": "3" },
-    "CPU_CLK_PRESCALE_16":  { "value": "4" },
-    "CPU_CLK_PRESCALE_32":  { "value": "5" },
-    "CPU_CLK_PRESCALE_64":  { "value": "6" },
-    "CPU_CLK_PRESCALE_128": { "value": "7" },
-    "CPU_CLK_PRESCALE_256": { "value": "8" },
+    "CLKPS3": {
+        "value": "3",
+        "description": "Clock Prescaler Select Bit 3"
+    },
+    "CLKPS2": {
+        "value": "2",
+        "description": "Clock Prescaler Select Bit 2"
+    },
+    "CLKPS1": {
+        "value": "1",
+        "description": "Clock Prescaler Select Bit 1"
+    },
+    "CLKPS0": {
+        "value": "0",
+        "description": "Clock Prescaler Select Bit 0"
+    },
+
     "DWDR": {
         "value": "47",
-        "description": "DebugWire Data Register (?) ------------- IO Address 27"
+        "description": "DebugWire Data Register ----------------- IO Address 27"
     },
+
     "OCR1BL": {
         "value": "48",
-        "description": "TC1 Output Compare B -------------------- IO Address 28"
+        "description": "TC1 Output Compare B Low ---------------- IO Address 28"
     },
+
     "OCR1BH": {
         "value": "49",
-        "description": "TC1 Output Compare B -------------------- IO Address 29"
+        "description": "TC1 Output Compare B High --------------- IO Address 29"
     },
+
     "OCR1AL": {
         "value": "4A",
-        "description": "TC1 Output Compare A -------------------- IO Address 2A"
+        "description": "TC1 Output Compare A Low ---------------- IO Address 2A"
     },
+
     "OCR1AH": {
         "value": "4B",
-        "description": "TC1 Output Compare A -------------------- IO Address 2B"
+        "description": "TC1 Output Compare A High --------------- IO Address 2B"
     },
+
     "TCNT1L": {
         "value": "4C",
-        "description": "TC1 Bytes ------------------------------- IO Address 2C"
+        "description": "TC1 Low Byte ---------------------------- IO Address 2C"
     },
+
     "TCNT1H": {
         "value": "4D",
-        "description": "TC1 Bytes ------------------------------- IO Address 2D"
+        "description": "TC1 High Byte --------------------------- IO Address 2D"
     },
+
     "TCCR1B": {
         "value": "4E",
         "description": "TC1 Control B --------------------------- IO Address 2E"
@@ -554,64 +623,85 @@
     },
     "CS12": {
         "value": "2",
-        "description": "Clock Select1 bits"
+        "description": "Clock Select1 Bit 2"
     },
-    "CS11": { "value": "1" },
-    "CS10": { "value": "0" },
-    "TC1_STOPPED_NO_CLOCK":            { "value": "0" },
-    "TC1_RUNNING_NO_PRESCALING":       { "value": "1" },
-    "TC1_RUNNING_CLK_8":               { "value": "2" },
-    "TC1_RUNNING_CLK_64":              { "value": "3" },
-    "TC1_RUNNING_CLK_256":             { "value": "4" },
-    "TC1_RUNNING_CLK_1024":            { "value": "5" },
-    "TC1_RUNNING_EXTCLK_FALLING_EDGE": { "value": "6" },
-    "TC1_RUNNING_EXTCLK_RISING_EDGE":  { "value": "7" },
+    "CS11": {
+        "value": "1",
+        "description": "Clock Select1 Bit 1"
+    },
+    "CS10": {
+        "value": "0",
+        "description": "Clock Select1 Bit 0"
+    },
+
     "TCCR1A": {
         "value": "4F",
         "description": "TC1 Control ----------------------------- IO Address 2F"
     },
     "COM1A1": {
         "value": "7",
-        "description": "Compare Output Mode 1A"
+        "description": "Compare Output Mode 1A Bit 1"
     },
-    "COM1A0": { "value": "6" },
+    "COM1A0": {
+        "value": "6",
+        "description": "Compare Output Mode 1A Bit 0"
+    },
     "COM1B1": {
         "value": "5",
-        "description": "Compare Output Mode 1B"
+        "description": "Compare Output Mode 1B Bit 1"
     },
-    "COM1B0": { "value": "4" },
+    "COM1B0": {
+        "value": "4",
+        "description": "Compare Output Mode 1B Bit 0"
+    },
     "WGM11": {
         "value": "1",
-        "description": "Waveform Generation Mode Bits"
+        "description": "Waveform Generation Mode Bit 1"
     },
-    "WGM10": { "value": "0" },
+    "WGM10": {
+        "value": "0",
+        "description": "Waveform Generation Mode Bit 0"
+    },
+
     "TCCR0A": {
         "value": "50",
         "description": "Timer/Counter Control A ----------------- IO Address 30"
     },
     "COM0A1": {
         "value": "7",
-        "description": "Compare Match Output A Mode"
+        "description": "Compare Match Output A Mode Bit 1"
     },
-    "COM0A0": { "value": "6" },
+    "COM0A0": {
+        "value": "6",
+        "description": "Compare Match Output A Mode Bit 0"
+    },
     "COM0B1": {
         "value": "5",
-        "description": "Compare Match Output B Mode"
+        "description": "Compare Match Output B Mode Bit 1"
     },
-    "COM0B0": { "value": "4" },
+    "COM0B0": {
+        "value": "4",
+        "description": "Compare Match Output B Mode Bit 0"
+    },
     "WGM01": {
         "value": "1",
-        "description": "Waveform Generation Mode Bits"
+        "description": "Waveform Generation Mode Bit 1"
     },
-    "WGM00": { "value": "0" },
+    "WGM00": {
+        "value": "0",
+        "description": "Waveform Generation Mode Bit 0"
+    },
+
     "OSCCAL": {
         "value": "51",
         "description": "Oscillator Calibration Value ------------ IO Address 31"
     },
+
     "TCNT0": {
         "value": "52",
         "description": "Timer/Counter0 -------------------------- IO Address 32"
     },
+
     "TCCR0B": {
         "value": "53",
         "description": "Timer/Counter Control ------------------- IO Address 33"
@@ -630,18 +720,17 @@
     },
     "CS02": {
         "value": "2",
-        "description": "Clock Select1 bits"
+        "description": "Clock Select1 bit 2"
     },
-    "CS01": { "value": "1" },
-    "CS00": { "value": "0" },
-    "TC0_STOPPED_NO_CLOCK":            { "value": "0" },
-    "TC0_RUNNING_NO_PRESCALING":       { "value": "1" },
-    "TC0_RUNNING_CLK_8":               { "value": "2" },
-    "TC0_RUNNING_CLK_64":              { "value": "3" },
-    "TC0_RUNNING_CLK_256":             { "value": "4" },
-    "TC0_RUNNING_CLK_1024":            { "value": "5" },
-    "TC0_RUNNING_EXTCLK_FALLING_EDGE": { "value": "6" },
-    "TC0_RUNNING_EXTCLK_RISING_EDGE":  { "value": "7" },
+    "CS01": {
+        "value": "1",
+        "description": "Clock Select1 bit 1"
+    },
+    "CS00": {
+        "value": "0",
+        "description": "Clock Select1 bit 0"
+    },
+
     "MCUSR": {
         "value": "54",
         "description": "MCU Status ------------------------------ IO Address 34"
@@ -662,6 +751,7 @@
         "value": "0",
         "description": "Power-on reset"
     },
+
     "MCUCR": {
         "value": "55",
         "description": "MCU Control ----------------------------- IO Address 35"
@@ -672,7 +762,7 @@
     },
     "PUD": {
         "value": "6",
-        "description": "Pull-up disable (?)"
+        "description": "Pull-up disable"
     },
     "SE": {
         "value": "5",
@@ -680,9 +770,12 @@
     },
     "SM1": {
         "value": "4",
-        "description": "Sleep Mode Select Bits"
+        "description": "Sleep Mode Select Bit 1"
     },
-    "SM0": { "value": "3" },
+    "SM0": {
+        "value": "3",
+        "description": "Sleep Mode Select Bit 0"
+    },
     "BODSE": {
         "value": "2",
         "description": "BOD Sleep Enable"
@@ -693,27 +786,17 @@
     },
     "ISC00": {
         "value": "0",
-        "description": "Interrupt Sense Control 0 Bit 1"
+        "description": "Interrupt Sense Control 0 Bit 0"
     },
-    "SM_IDLE":                { "value": "0" },
-    "SM_ADC_NOISE_REDUCTION": { "value": "1" },
-    "SM_POWER_DOWN":          { "value": "2" },
-    "SM_STANDBY":             { "value": "3" },
-    "ISC0_LOW_LEVEL_OF_INTX":          { "value": "0" },
-    "ISC0_ANY_LOGICAL_CHANGE_OF_INTX": { "value": "1" },
-    "ISC0_FALLING_EDGE_OF_INTX":       { "value": "2" },
-    "ISC0_RISING_EDGE_OF_INTX":        { "value": "3" },
+
     "OCR0A": {
         "value": "56",
         "description": "TC0 Output Compare A -------------------- IO Address 36"
     },
+
     "SPMCSR": {
         "value": "57",
-        "description": "Store Program Memory Control------ ------ IO Address 37"
-    },
-    "RSIG": {
-        "value": "5",
-        "description": "???????"
+        "description": "Store Program Memory Control ------------ IO Address 37"
     },
     "CTPB": {
         "value": "4",
@@ -735,6 +818,7 @@
         "value": "0",
         "description": "Store Program Memory Enable"
     },
+
     "TIFR0": {
         "value": "58",
         "description": "TC0 Interrupt Flag Register ------------- IO Address 38"
@@ -751,6 +835,7 @@
         "value": "0",
         "description": "Overflow Flag"
     },
+
     "TIMSK0": {
         "value": "59",
         "description": "TC0 Interrupt Mask ---------------------- IO Address 39"
@@ -767,6 +852,7 @@
         "value": "0",
         "description": "Overflow Interrupt Enable"
     },
+
     "GIFR": {
         "value": "5A",
         "description": "General Interrupt Flag register --------- IO ADDRESS 3A"
@@ -777,9 +863,13 @@
     },
     "PCIF1": {
         "value": "5",
-        "description": "Pin Change Interrupt Flags"
+        "description": "Pin Change Interrupt Flag 1"
     },
-    "PCIF0": { "value": "4" },
+    "PCIF0": {
+        "value": "4",
+        "description": "Pin Change Interrupt Flag 0"
+    },
+
     "GIMSK": {
         "value": "5B",
         "description": "General Interrupt Mask Register --------- IO Address 3B"
@@ -790,13 +880,18 @@
     },
     "PCIE1": {
         "value": "5",
-        "description": "Pin Change Interrupt Enables"
+        "description": "Pin Change Interrupt Enable 1"
     },
-    "PCIE0": { "value": "4" },
+    "PCIE0": {
+        "value": "4",
+        "description": "Pin Change Interrupt Enable 0"
+    },
+
     "OCR0B": {
         "value": "5C",
         "description": "TC0 Output Compare B -------------------- IO Address 3C"
     },
+
     "SREG": {
         "value": "5F",
         "description": "Status Register ------------------------- IO Address 3F"

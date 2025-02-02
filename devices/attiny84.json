@@ -5,16 +5,22 @@
             "value": "5D",
             "description": "Stack Pointer ----------------------- IO Address 3D"
         },
+
         "SPH": {
             "value": "5E",
             "description": "Stack Pointer ----------------------- IO Address 3E"
         },
-        "ioEnd":         { "value": "3F"   },
-        "eepromEnd":     { "value": "01FF" },
-        "programEnd":    { "value": "1FFF" },
-        "mappedIoStart": { "value": "0020" },
-        "mappedIoEnd":   { "value": "005F" },
-        "ramStart":      { "value": "0060" },
-        "ramEnd":        { "value": "025F" }
+
+        "eepromEnd":        { "value": "01FF" },
+
+        "programEnd":       { "value": "1FFF" },
+
+        "ioRegistersStart": { "value": "0020" },
+
+        "ioRegistersEnd":   { "value": "005F" },
+
+        "ramStart":         { "value": "0060" },
+
+        "ramEnd":           { "value": "025F" }
     }
 }
