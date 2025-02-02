@@ -179,9 +179,9 @@
             "description": "Pin Change Interrupt Enable Bit 1"
         },
 
-        "eepromEnd":        { "value": "00FF" },
+        "eepromEnd":        { "value": "7F" },
 
-        "programEnd":       { "value": "0FFF" },
+        "programEnd":       { "value": "07FF" },
 
         "ioRegistersStart": { "value": "20" },
 
@@ -189,6 +189,6 @@
 
         "ramStart":         { "value": "60" },
 
-        "ramEnd":           { "value": "15F" }
+        "ramEnd":           { "value": "DF" }
     }
 }

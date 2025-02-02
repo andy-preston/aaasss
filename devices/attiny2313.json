@@ -1,16 +1,112 @@
 {
     "family": "attiny-x313",
     "spec": {
-        "SP": {
-            "value": "",
-            "description": "Stack Pointer ----------------------- IO Address XX"
+        "UCSRC": {
+            "value": "23",
+            "description": "USART Control/Status Register C ----- IO Address 03"
         },
-        "ioEnd":         { "value": ""   },
-        "eepromEnd":     { "value": "" },
-        "programEnd":    { "value": "" },
-        "mappedIoStart": { "value": "" },
-        "mappedIoEnd":   { "value": "" },
-        "ramStart":      { "value": "" },
-        "ramEnd":        { "value": "" }
+        "UMSEL": {
+            "value": "6",
+            "description": "USART Mode Select (asynchronous / synchronous)"
+        },
+        "UPM1": {
+            "value": "5",
+            "description": "USART Parity Mode Bit 1"
+        },
+        "UPM0": {
+            "value": "4",
+            "description": "USART Parity Mode Bit 0"
+        },
+        "USBS": {
+            "value": "3",
+            "description": "USART Stop bits"
+        },
+        "UCSZ1": {
+            "value": "2",
+            "description": "USART Data Size Bit 1"
+        },
+        "UCSZ0": {
+            "value": "1",
+            "description": "USART Data Size Bit 0"
+        },
+        "UCPOL": {
+            "value": "0",
+            "description": "USART Clock Polarity"
+        },
+
+        "PCMSK": {
+            "value": "40",
+            "description": "Pin Change Mask Register ------------ IO Address 20"
+        },
+        "PCINT7": {
+            "value": "7"
+        },
+        "PCINT6": {
+            "value": "6"
+        },
+        "PCINT5": {
+            "value": "5"
+        },
+        "PCINT4": {
+            "value": "4"
+        },
+        "PCINT3": {
+            "value": "3"
+        },
+        "PCINT2": {
+            "value": "2"
+        },
+        "PCINT1": {
+            "value": "1"
+        },
+        "PCINT0": {
+            "value": "0"
+        },
+
+        "EIFR": {
+            "value": "5A",
+            "description": "External Interrupt Flag ------------- IO Address 3A"
+        },
+        "INTF1": {
+            "value": "7",
+            "description": "External Interrupt Flag 1"
+        },
+        "INTF0": {
+            "value": "6",
+            "description": "External Interrupt Flag 0"
+        },
+        "PCIF": {
+            "value": "5",
+            "description": "Pin Change Interrupt Flag"
+        },
+
+        "GIMSK": {
+            "value": "5B",
+            "description": "General Interrupt Mask -------------- IO Address 3B"
+        },
+        "INT1": {
+            "value": "7",
+            "description": "External Interrupt Request 1 Enable"
+        },
+        "INT0": {
+            "value": "6",
+            "description": "Interrupt Request 0 Enable"
+        },
+        "PCIE": {
+            "value": "5",
+            "description": "Pin Change Interrupt Enable"
+        },
+
+        "eepromEnd":        { "value": "7F" },
+
+        "programEnd":       { "value": "07FF" },
+
+        "ioRegistersStart": { "value": "20" },
+
+        "ioRegistersEnd":   { "value": "5F" },
+
+        "ramStart":         { "value": "60" },
+
+        "ramEnd":           { "value": "DF" }
     }
 }
