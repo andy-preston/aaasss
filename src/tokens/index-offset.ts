@@ -1,4 +1,4 @@
-const pattern = /^[X|Y|Z]\+/;
+const pattern = /^[XYZ]\+/;
 
 export const indexRegisterWithPlus = (operand: string) => {
     const match = operand.toUpperCase().match(pattern);
