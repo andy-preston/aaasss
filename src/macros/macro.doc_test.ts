@@ -34,8 +34,8 @@ Deno.test("Macro demo", () => {
         "Symbol Table",
         "============",
         "",
-        "aMacro: 2",
-        "R30: 2"
+        "aMacro (2)",
+        "R30 = 30 (2)"
     ]);
     assertFileContains(".hex", [
         ":020000020000FC",

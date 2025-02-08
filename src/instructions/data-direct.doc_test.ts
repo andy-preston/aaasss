@@ -18,8 +18,8 @@ Deno.test("Data-direct without reduced core",() => {
         "Symbol Table",
         "============",
         "",
-        "R8: 1",
-        "R30: 1"
+        "R8 = 8 (1)",
+        "R30 = 30 (1)"
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
     assertFileContains(".hex", [
@@ -52,8 +52,8 @@ Deno.test("Data-direct with reduced core",() => {
         "Symbol Table",
         "============",
         "",
-        "R18: 1",
-        "R30: 1"
+        "R18 = 18 (1)",
+        "R30 = 30 (1)"
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
     assertFileContains(".hex", [

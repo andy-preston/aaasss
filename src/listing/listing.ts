@@ -102,7 +102,12 @@ export const listing = (
         heading("Symbol Table");
         file.write("");
         for (const symbol of symbols) {
-            file.write(`${symbol}: ${symbolTable.currentCount(symbol)}`);
+            const usage = symbolTable.currentCount(symbol);
+            // This is a bit horrible - we have to get the usage count before
+            // the value because getting the value increments the usage count.
+            const value = symbolTable.value(symbol);
+            const displayValue = value == null ? "" : ` = ${value}`;
+            file.write(`${symbol}${displayValue} (${usage})`);
         }
     }
 

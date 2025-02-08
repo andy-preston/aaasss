@@ -55,6 +55,13 @@ export const symbolTable = (context: Context, pass: Pass) => {
     const defineDirective: Directive = (symbol: string, value: number) =>
         userSymbol(symbol, value);
 
+    const value = (symbol: string) => {
+        const actual = context[symbol];
+        return ["number", "string"].includes(typeof actual)
+            ? actual
+            : null;
+    };
+
     return {
         "directive": directive,
         "internalSymbol": internalSymbol,
@@ -62,6 +69,7 @@ export const symbolTable = (context: Context, pass: Pass) => {
         "defineDirective": defineDirective,
         "count": usage.count,
         "currentCount": usage.current,
+        "value": value,
         "empty": usage.empty,
         "list": usage.list
     };
