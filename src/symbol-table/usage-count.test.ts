@@ -18,7 +18,8 @@ Deno.test("A freshly added symbol has a count of zero", () => {
     environment.usage.add("plop");
     const result = environment.list();
     assertEquals(1, result.length);
-    assertEquals(["plop", 0], result[0]);
+    assertEquals("plop", result[0]);
+    assertEquals(0, environment.usage.current("plop"));
 });
 
 Deno.test("Each call to count increments the usage", () => {
@@ -28,7 +29,8 @@ Deno.test("Each call to count increments the usage", () => {
         environment.usage.count("plop");
         const result = environment.list();
         assertEquals(1, result.length);
-        assertEquals(["plop", expectedCount], result[0]);
+        assertEquals("plop", result[0]);
+        assertEquals(expectedCount, environment.usage.current("plop"));
     });
 });
 

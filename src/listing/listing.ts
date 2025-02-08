@@ -91,13 +91,24 @@ export const listing = (
         body(extractedCode(theLine), extractedText(theLine));
     };
 
+    const sortedSymbolTable = () => {
+        const transform = (key: string) =>
+            key.replace(/^R([0-9])$/, "R0$1").toUpperCase()
+
+        const symbols = symbolTable.list().toArray().sort(
+            (a, b) => transform(a).localeCompare(transform(b))
+        );
+
+        heading("Symbol Table");
+        file.write("");
+        for (const symbol of symbols) {
+            file.write(`${symbol}: ${symbolTable.currentCount(symbol)}`);
+        }
+    }
+
     const close = () => {
         if (!symbolTable.empty()) {
-            heading("Symbol Table");
-            file.write("");
-            for (const [symbol, count] of symbolTable.list()) {
-                file.write(`${symbol}: ${count}`);
-            }
+            sortedSymbolTable();
         };
         file.close();
     };

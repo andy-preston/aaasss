@@ -39,7 +39,7 @@ export const usageCount = (pass: Pass) => {
 
     const empty = () => map().size == 0;
 
-    const list = () => map().entries();
+    const list = () => map().keys();
 
     return {
         "directive": directive,
