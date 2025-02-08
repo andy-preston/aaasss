@@ -3,10 +3,10 @@ import { assert, assertEquals, assertFalse } from "assert";
 import { defaultDeviceFinder, defaultJsonLoader, type DeviceFileOperations } from "../device/device-file.ts";
 import { deviceMocks } from "../device/device-file-mocks.ts";
 import { mockFailureMessages } from "../listing/messages-mock.ts";
-import { fileReaderMock } from "../source-code/file-reader-mock.ts";
+import { FileName } from "../source-code/data-types.ts";
+import { defaultReaderMethod } from "../source-code/file-stack.ts";
 import { coupling } from "./coupling.ts";
 import { extensionSwap, type FileExtension } from "./output-file.ts";
-import { FileName } from "../source-code/data-types.ts";
 
 const topFileName = "/var/tmp/demo.asm";
 
@@ -48,7 +48,6 @@ const cleanup = () => {
 
 export const docTest = () => {
     cleanup();
-    const source = fileReaderMock();
     let deviceFile: DeviceFileOperations =
         [defaultDeviceFinder, defaultJsonLoader];
 
@@ -56,10 +55,19 @@ export const docTest = () => {
         deviceFile = deviceMocks(spec);
     };
 
+    const source = (lines: Array<string>) => {
+        const theFile = Deno.openSync(
+            topFileName,
+            { create: true, write: true, truncate: true }
+        );
+        theFile.writeSync((new TextEncoder()).encode(lines.join("\n")));
+        theFile.close();
+    };
+
     const assemble = () => {
         const assembler = coupling(
             topFileName,
-            source.mockReaderMethod,
+            defaultReaderMethod,
             mockFailureMessages,
             deviceFile
         );
@@ -67,7 +75,7 @@ export const docTest = () => {
     };
 
     return {
-        "source": source.addSourceCode,
+        "source": source,
         "mockUnsupportedDevice": mockDevice,
         "assemble": assemble
     };
