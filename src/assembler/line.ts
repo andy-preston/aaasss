@@ -1,12 +1,9 @@
 import { notFatal, type Failure, type Failures } from "../failure/failure-or-box.ts";
 import type { MacroName } from "../macros/data-types.ts";
 import type { Code } from "../object-code/data-types.ts";
-import type {
-    NumericOperands, OperandTypes, SymbolicOperands
-} from "../operands/data-types.ts";
-import type {
-    FileName, Label, LineNumber, Mnemonic, SourceCode
-} from "../source-code/data-types.ts";
+import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
+import type { FileName, LineNumber, SourceCode } from "../source-code/data-types.ts";
+import type { Label, Mnemonic } from "../tokens/data-types.ts";
 
 export const line = (
     fileName: FileName, lineNumber: LineNumber, lastLine: boolean,

@@ -1,17 +1,17 @@
+import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
+import { anEmptyContext } from "../javascript/context.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
-import type { Label } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
-import { anEmptyContext } from "../javascript/context.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
+import type { Label } from "../tokens/data-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { programMemory } from "./program-memory.ts";
-import { pass } from "../assembler/pass.ts";
 
 export const testEnvironment = () => {
     const context = anEmptyContext();

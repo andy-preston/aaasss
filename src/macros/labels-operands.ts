@@ -1,5 +1,5 @@
 import type { SymbolicOperand } from "../operands/data-types.ts";
-import type { Label } from "../source-code/data-types.ts";
+import type { Label } from "../tokens/data-types.ts";
 import type { ActualParameters, Macro } from "./data-types.ts";
 
 export const labelsAndOperands = (

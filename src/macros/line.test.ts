@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import type { Label, Mnemonic } from "../source-code/data-types.ts";
+import type { Label, Mnemonic } from "../tokens/data-types.ts";
 import type { LineWithProcessedMacro } from "./line-types.ts";
 import { testEnvironment, testLine } from "./testing.ts";
 

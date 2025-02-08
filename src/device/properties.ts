@@ -1,6 +1,6 @@
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
-import type { Mnemonic } from "../source-code/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+import type { Mnemonic } from "../tokens/data-types.ts";
 import { cpuRegisters } from "./registers.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 

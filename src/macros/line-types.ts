@@ -1,8 +1,8 @@
 import type { ImmutableLine, MutableLine } from "../assembler/line.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import type { Label } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
+import type { Label } from "../tokens/data-types.ts";
 import { lineWithTokens, type LineWithTokens } from "../tokens/line-types.ts";
 
 export type LineWithProcessedMacro = Readonly<Pick<
