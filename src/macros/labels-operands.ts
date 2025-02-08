@@ -1,17 +1,14 @@
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import type { Label } from "../source-code/data-types.ts";
-import type { ActualParameters, Macro, MacroName } from "./data-types.ts";
+import type { ActualParameters, Macro } from "./data-types.ts";
 
 export const labelsAndOperands = (
-    macro: Macro, name: MacroName, actual: ActualParameters
+    macro: Macro, prefix: string, actual: ActualParameters
 ) => {
-    const count = macro.useCount();
-
     const isLabel = (parameter: SymbolicOperand) =>
         macro.lines.find(line => line.label == parameter) != undefined;
 
-    const expandedLabel = (label: Label) =>
-        label ? `${name}$${count}$${label}` : "";
+    const expandedLabel = (label: Label) => label ? `${prefix}${label}` : "";
 
     const definedParameterIndex = (parameter: string) =>
         macro.parameters.indexOf(parameter);

@@ -7,17 +7,11 @@ export type ActualParameters = Array<string | number>;
 
 type MacroLines = Array<LineWithTokens>;
 
-export const macro = (parameters: DefinedParameters) => {
-    let used = 0;
-    const useCount = () => {
-        used = used + 1;
-        return used;
-    };
-    return {
-        "useCount": useCount,
-        "lines": [] as MacroLines,
-        "parameters": parameters
-    };
-};
+export const macro = (parameters: DefinedParameters) => ({
+    "lines": [] as MacroLines,
+    "parameters": parameters
+});
 
 export type Macro = ReturnType<typeof macro>;
+
+export type MacroList = Map<MacroName, Macro>;

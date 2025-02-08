@@ -2,8 +2,7 @@ import type { Directive } from "../directives/directive.ts";
 import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
-import { macro, type DefinedParameters, type Macro, type MacroName } from "./data-types.ts";
-import type { MacroList } from "./macros.ts";
+import { macro, type DefinedParameters, type Macro, type MacroList, type MacroName } from "./data-types.ts";
 
 export const recording = (
     macros: MacroList,

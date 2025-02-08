@@ -16,6 +16,7 @@ export const testEnvironment = () => {
     symbols.directive("macro", macroProcessor.macro);
     symbols.directive("end", macroProcessor.end);
     return {
+        "symbolTable": symbols,
         "jsExpression": jSExpression(context),
         "macros": macroProcessor
     };

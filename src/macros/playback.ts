@@ -1,17 +1,17 @@
 import { parameterList } from "../directives/type-checking.ts";
 import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import { operands, type SymbolicOperands } from "../operands/data-types.ts";
+import { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
-import type { ActualParameters, Macro, MacroName } from "./data-types.ts";
+import type { ActualParameters, Macro, MacroList, MacroName } from "./data-types.ts";
 import { labelsAndOperands } from "./labels-operands.ts";
 import { lineWithExpandedMacro } from "./line-types.ts";
-import type { MacroList } from "./macros.ts";
 
 export type MacroInvocation = (
     ...parameters: ActualParameters
 ) => Box<undefined> | Failure;
 
-export const playback = (macros: MacroList) => {
+export const playback = (macros: MacroList, symbolTable: SymbolTable) => {
     let theMacro: Macro | undefined = undefined;
     let withParameters: ActualParameters | undefined = undefined;
     let named: MacroName = "";
@@ -40,8 +40,13 @@ export const playback = (macros: MacroList) => {
     const parametersMatch = () =>
         theMacro!.parameters.length != withParameters!.length;
 
+    const labelPrefix = () => {
+        const count = symbolTable.currentCount(named);
+        return `${named}$${count}$`;
+    };
+
     const playback = function* (callingLine: LineWithTokens) {
-        const map = labelsAndOperands(theMacro!, named, withParameters!);
+        const map = labelsAndOperands(theMacro!, labelPrefix(), withParameters!);
         for (const [index, line] of theMacro!.lines.entries()) {
             const symbolicOperands = line.symbolicOperands.map(map.operand);
             const expandedLine = lineWithExpandedMacro(

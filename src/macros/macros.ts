@@ -1,17 +1,15 @@
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
-import type { ActualParameters, Macro, MacroName } from "./data-types.ts";
+import type { ActualParameters, MacroList } from "./data-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 import { playback } from "./playback.ts";
 import { recording } from "./recording.ts";
 
-export type MacroList = Map<MacroName, Macro>;
-
 export const macros = (symbolTable: SymbolTable) => {
     const macros: MacroList = new Map();
 
-    const player = playback(macros);
+    const player = playback(macros, symbolTable);
 
     const useMacroMethod = (macroName: string) => {
         symbolTable.userFunction(

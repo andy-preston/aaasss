@@ -49,7 +49,6 @@ Deno.test("The parameters in a definition must be strings", () => {
 
 Deno.test("On calling a macro, the parameters must be strings or numbers", () => {
     const environment = testEnvironment();
-
     environment.jsExpression(
         'macro("testMacro", ["a", "b"]);'
     );
@@ -60,7 +59,24 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
     environment.macros.lines(testLine("", "", [])).toArray();
 
     const result = environment.jsExpression(
-        'testMacro(true, "a", 2, {"c": "c"});'
+        'testMacro(true, {"c": "c"});'
     );
-    assertFailureWithExtra(result, "type_macroParams", "0: boolean, 3: object");
+    assertFailureWithExtra(result, "type_macroParams", "0: boolean, 1: object");
+});
+
+Deno.test("Macro parameters are substituted", () => {
+    const environment = testEnvironment();
+    environment.jsExpression(
+        'macro("testMacro", ["a", "b"]);'
+    );
+    environment.macros.lines(
+        testLine("", "TST", ["a", "b"])
+    ).toArray();
+    environment.jsExpression("end();");
+    environment.macros.lines(testLine("", "", [])).toArray();
+
+    environment.jsExpression('testMacro("R15", 2);');
+    const result = environment.macros.lines(testLine("", "", [])).toArray();
+    assertEquals(result[1]!.mnemonic, "TST");
+    assertEquals(result[1]!.symbolicOperands, ["R15", "2"]);
 });

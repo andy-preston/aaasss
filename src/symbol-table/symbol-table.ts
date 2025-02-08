@@ -61,6 +61,7 @@ export const symbolTable = (context: Context, pass: Pass) => {
         "userFunction": userFunction,
         "defineDirective": defineDirective,
         "count": usage.count,
+        "currentCount": usage.current,
         "empty": usage.empty,
         "list": usage.list
     };

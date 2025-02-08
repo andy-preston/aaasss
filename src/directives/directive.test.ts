@@ -9,8 +9,10 @@ import type { Directive } from "./directive.ts";
 
 export const testEnvironment = () => {
     const context = anEmptyContext();
+    const symbols = symbolTable(context, pass());
     return {
-        "directive": symbolTable(context, pass()).directive,
+        "directive": symbols.directive,
+        "define": symbols.defineDirective,
         "expression": jSExpression(context)
     };
 };
@@ -45,4 +47,14 @@ Deno.test("Directives can return success in the form of a string", () => {
     environment.directive("testDirective", testDirective);
     const result = environment.expression("testDirective('')");
     assertSuccess(result, undefined);
+});
+
+Deno.test("You can't create a symbol with the same name as a directive", () => {
+    const environment = testEnvironment();
+    const testDirective: Directive = (_: string) => {
+        return emptyBox();
+    };
+    environment.directive("testDirective", testDirective);
+    const result = environment.define("testDirective", 47);
+    assertFailure(result, "symbol_redefined");
 });

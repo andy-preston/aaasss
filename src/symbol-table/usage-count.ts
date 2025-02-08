@@ -5,13 +5,14 @@ export const usageCount = (pass: Pass) => {
     type SymbolMap = Map<string, number>;
 
     const symbols: Array<SymbolMap> = [new Map([]), new Map([])];
+
+    // We only keep a list of directives to stop them adding symbols that
+    // clash with them.
     const directives: Array<string> = [];
 
-    const directive = (symbol: string) => {
-        directives.push(symbol);
-    };
+    const directive = (symbol: string) => { directives.push(symbol); };
 
-    const mapByPass = () => symbols[pass.ignoreErrors() ? 0 : 1]!;
+    const map = () => symbols[pass.ignoreErrors() ? 0 : 1]!;
 
     const isUsed = (symbol: string) =>
         pass.ignoreErrors()
@@ -21,30 +22,30 @@ export const usageCount = (pass: Pass) => {
             : failure(undefined, "symbol_notUsed", undefined);
 
     const add = (symbol: string) => {
-        const map = mapByPass();
-        if (directives.includes(symbol) || map.has(symbol)) {
+        if (directives.includes(symbol) || map().has(symbol)) {
             return failure(undefined, "symbol_redefined", undefined);
         }
-        map.set(symbol, 0);
+        map().set(symbol, 0);
         return isUsed(symbol);
     };
 
-    const count = (symbol: string) => {
-        const map = mapByPass();
-        const newCount = map.has(symbol)
-            ? map.get(symbol)! + 1
-            : 1;
-        map.set(symbol, newCount);
+    const current = (symbol: string) => {
+        return map().has(symbol) ? map().get(symbol)! : 0;
     };
 
-    const empty = () => mapByPass().size == 0;
+    const count = (symbol: string) => {
+        map().set(symbol, current(symbol) + 1);
+    };
 
-    const list = () => mapByPass().entries();
+    const empty = () => map().size == 0;
+
+    const list = () => map().entries();
 
     return {
         "directive": directive,
         "add": add,
         "count": count,
+        "current": current,
         "empty": empty,
         "list": list
     };
