@@ -1,11 +1,12 @@
 import { assert, assertEquals, assertFalse, assertNotEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
-import { cpuRegisters } from "../device/registers.ts";
+import { deviceProperties } from "../device/properties.ts";
+import { directiveList } from "../directives/directive-list.ts";
 import { assertFailure } from "../failure/testing.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { SourceCode } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { anEmptyContext } from "./context.ts";
 import { embeddedJs } from "./embedded.ts";
 import { jSExpression } from "./expression.ts";
 
@@ -13,12 +14,14 @@ const testLine = (source: SourceCode) =>
     lineWithRawSource("", 0, false, source);
 
 const testEnvironment = () => {
-    const context = anEmptyContext();
-    const table = symbolTable(context, pass());
+    const registers = cpuRegisters();
+    const symbols = symbolTable(
+        directiveList(), deviceProperties().public, registers, pass()
+    );
     return {
-        "registers": cpuRegisters(table),
-        "symbolTable": table,
-        "js": embeddedJs(jSExpression(context))
+        "cpuRegisters": registers,
+        "symbolTable": symbols,
+        "js": embeddedJs(jSExpression(symbols))
     };
 };
 
@@ -39,14 +42,15 @@ Deno.test("A symbol will not be reassigned using this.symbol", () => {
 Deno.test("JS can be delimited with moustaches on the same line", () => {
     const environment = testEnvironment();
     const rendered = environment.js.rendered(testLine(
-        "MOV {{ this.test = 27; return this.test; }}, R2"
+        "MOV {{ const test = 27; return test; }}, R2"
     ));
     assertEquals(rendered.assemblySource, "MOV 27, R2");
 });
 
-Deno.test("JS can use registers from the context", () => {
+Deno.test("JS can use registers as symbols", () => {
     const environment = testEnvironment();
-    environment.registers.choose(false);
+    environment.cpuRegisters.initialise(false);
+    assertEquals(environment.symbolTable.use("R6"), 6);
     const rendered = environment.js.rendered(testLine("MOV {{ R6 }}, R2"));
     assertEquals(rendered.assemblySource, "MOV 6, R2");
 });
@@ -54,9 +58,9 @@ Deno.test("JS can use registers from the context", () => {
 Deno.test("JS can be delimited by moustaches across several lines", () => {
     const environment = testEnvironment();
     const lines = [
-        testLine("some ordinary stuff {{ this.test = 27;"),
-        testLine('this.andThat = "hello";'),
-        testLine("return this.andThat; }} matey!"),
+        testLine("some ordinary stuff {{ const test = 27;"),
+        testLine('const message = "hello";'),
+        testLine("return message; }} matey!"),
     ];
     const rendered = lines.map(environment.js.rendered);
     assertEquals(rendered[0]!.assemblySource, "some ordinary stuff");

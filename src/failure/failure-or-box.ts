@@ -1,5 +1,5 @@
 import type { OperandIndex } from "../operands/data-types.ts";
-import { nonFatalWarnings, type FailureKind } from "./failures.ts";
+import { type FailureKind } from "./failures.ts";
 
 export const failure = (
     operand: OperandIndex | undefined,
@@ -21,9 +21,6 @@ export const failure = (
 };
 
 export type Failure = Readonly<ReturnType<typeof failure>>;
-
-export const notFatal = (check: Failure) =>
-    (nonFatalWarnings as readonly [FailureKind]).includes(check.kind);
 
 export const box = <T>(value: T) => ({
     "which": "box" as const,

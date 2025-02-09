@@ -33,8 +33,8 @@ Deno.test("Data-direct with reduced core",() => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
         "unsupportedInstructions": { "value": [] },
-        "programEnd": { "value": "0100" },
-        "reducedCore": { "value": true }
+        "programMemoryBytes":      { "value": "0100" },
+        "reducedCore":             { "value": true }
     });
     demo.source([
         '    {{ device("ATtiny20"); }}',

@@ -41,7 +41,7 @@ export const playback = (macros: MacroList, symbolTable: SymbolTable) => {
         theMacro!.parameters.length != withParameters!.length;
 
     const labelPrefix = () => {
-        const count = symbolTable.currentCount(named);
+        const count = symbolTable.count(named);
         return `${named}$${count}$`;
     };
 

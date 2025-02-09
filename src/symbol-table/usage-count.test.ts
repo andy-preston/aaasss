@@ -1,51 +1,39 @@
 import { assertEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
-import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { usageCount } from "./usage-count.ts";
+import { deviceProperties } from "../device/properties.ts";
+import { directiveList } from "../directives/directive-list.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
+import { symbolTable } from "./symbol-table.ts";
 
 const testEnvironment = () => {
     const currentPass = pass();
-    const usage = usageCount(currentPass);
+    const symbols = symbolTable(
+        directiveList(), deviceProperties().public, cpuRegisters(), currentPass
+    );
     return {
         "pass": currentPass,
-        "usage": usage,
-        "list": () => usage.list().toArray()
+        "symbols": symbols,
+        "list": () => symbols.list().toArray()
     };
 };
 
 Deno.test("A freshly added symbol has a count of zero", () => {
     const environment = testEnvironment();
-    environment.usage.add("plop");
+    environment.symbols.add("plop", 0);
     const result = environment.list();
     assertEquals(1, result.length);
     assertEquals("plop", result[0]);
-    assertEquals(0, environment.usage.current("plop"));
+    assertEquals(0, environment.symbols.count("plop"));
 });
 
-Deno.test("Each call to count increments the usage", () => {
+Deno.test("Each call to use increments the usage", () => {
     const environment = testEnvironment();
-    environment.usage.add("plop");
+    environment.symbols.add("plop", 0);
     [1, 2, 3, 4].forEach((expectedCount) => {
-        environment.usage.count("plop");
+        environment.symbols.use("plop");
         const result = environment.list();
         assertEquals(1, result.length);
         assertEquals("plop", result[0]);
-        assertEquals(expectedCount, environment.usage.current("plop"));
+        assertEquals(expectedCount, environment.symbols.count("plop"));
     });
 });
-
-Deno.test("If a symbol was not used on the 1st pass, there will be a warning on the 2nd", () => {
-    const environment = testEnvironment();
-    environment.usage.add("plop");
-    environment.pass.second();
-    assertFailure(environment.usage.add("plop"), "symbol_notUsed");
-});
-
-Deno.test("... will appear as used on the 2nd if it was accessed on the 1st", () => {
-    const environment = testEnvironment();
-    environment.usage.add("plop");
-    environment.usage.count("plop");
-    environment.pass.second();
-    assertSuccess(environment.usage.add("plop"), undefined);
-});
-

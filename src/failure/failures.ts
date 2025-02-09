@@ -1,10 +1,11 @@
 import type { NumericType } from "../numeric-values/types.ts";
 
-export type TypeFailure = NumericType |
-    "type_string" | "type_strings" | "type_bytes" | "type_macroParams" | "type_bitmask";
+export type TypeFailure = NumericType
+    | "type_number" | "type_string" | "type_strings"
+    | "type_bytes" | "type_macroParams" | "type_bitmask";
 
-export type FatalKind = TypeFailure
-    | "symbol_redefined"
+export type FailureKind = TypeFailure
+    | "symbol_alreadyExists" | "symbol_nameIsDirective" | "symbol_notFound"
     | "device_notFound" | "device_notSelected" | "device_multiple"
     | "file_notFound"
     | "js_error" | "js_jsMode" | "js_assemblerMode"
@@ -17,8 +18,3 @@ export type FatalKind = TypeFailure
     | "programMemory_outOfRange" | "programMemory_sizeUnknown"
     | "ram_outOfRange" | "ram_sizeUnknown" | "ram_stackAllocated";
 
-export const nonFatalWarnings = ["symbol_notUsed"] as const;
-
-export type WarningKind = typeof nonFatalWarnings[number];
-
-export type FailureKind = FatalKind | WarningKind;

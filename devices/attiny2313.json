@@ -97,16 +97,16 @@
             "description": "Pin Change Interrupt Enable"
         },
 
-        "eepromEnd":        { "value": "7F" },
+        "eepromEnd":          { "value": "7F" },
 
-        "programEnd":       { "value": "07FF" },
+        "programMemoryBytes": { "value": "07FF" },
 
-        "ioRegistersStart": { "value": "20" },
+        "ioRegistersStart":   { "value": "20" },
 
-        "ioRegistersEnd":   { "value": "5F" },
+        "ioRegistersEnd":     { "value": "5F" },
 
-        "ramStart":         { "value": "60" },
+        "ramStart":           { "value": "60" },
 
-        "ramEnd":           { "value": "DF" }
+        "ramEnd":             { "value": "DF" }
     }
 }

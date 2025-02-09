@@ -1,6 +1,6 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { Directive } from "../directives/directive.ts";
-import { box } from "../failure/failure-or-box.ts";
+import type { Directive } from "../directives/data-types.ts";
+import { box, emptyBox, failure } from "../failure/failure-or-box.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import { SymbolTable } from "../symbol-table/symbol-table.ts";
@@ -9,13 +9,25 @@ import { lineWithAddress } from "./line-types.ts";
 const bytesToWords = (byteCount: number): number => byteCount / 2;
 
 export const programMemory = (
-    table: SymbolTable,
-    properties: DevicePropertiesInterface
+    symbolTable: SymbolTable, device: DevicePropertiesInterface
 ) => {
     let address = 0;
 
     const reset = () => {
         address = 0;
+    }
+
+    const pastEnd = (newAddress: number) => {
+        const bytes = device.numeric("programMemoryBytes");
+        if (bytes.which == "failure") {
+            return bytes.kind == "device_notSelected"
+                ? failure(undefined, "programMemory_sizeUnknown", undefined)
+                : bytes;
+        }
+        const words = bytes.value / 2
+        return newAddress > words
+            ? failure(undefined, "programMemory_outOfRange", `${words}`)
+            : emptyBox();
     }
 
     const origin: Directive = (newAddress: number) => {
@@ -27,9 +39,9 @@ export const programMemory = (
             address = 0;
             return box(`${address}`);
         }
-        const pastEnd = properties.programMemoryEnd(newAddress);
-        if (pastEnd.which == "failure") {
-            return pastEnd;
+        const tooBig = pastEnd(newAddress);
+        if (tooBig.which == "failure") {
+            return tooBig;
         }
         address = newAddress;
         return box(`${address}`);
@@ -37,7 +49,7 @@ export const programMemory = (
 
     const addressed = (line: LineWithObjectCode) => {
         if (line.label) {
-            const result = table.defineDirective(line.label, address);
+            const result = symbolTable.add(line.label, address);
             if (result.which == "failure") {
                 line.withFailure(result);
             }
@@ -49,6 +61,7 @@ export const programMemory = (
             (accumulated, codeBlock) => accumulated + codeBlock.length,
             0
         )) + address;
+
         const step = origin(newAddress);
         if (step.which == "failure") {
             newLine.withFailure(step);

@@ -1,6 +1,6 @@
 import { box } from "../failure/failure-or-box.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
-import type { Directive } from "./directive.ts";
+import type { Directive } from "./data-types.ts";
 
 export const low: Directive = (word: unknown) => {
     const parameter = validNumeric(word, "type_word");

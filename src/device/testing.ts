@@ -1,18 +1,14 @@
-import { pass } from "../assembler/pass.ts";
-import { anEmptyContext } from "../javascript/context.ts";
-import { symbolTable } from "../symbol-table/symbol-table.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { deviceChooser } from "./chooser.ts";
 import { defaultDeviceFinder, defaultJsonLoader } from "./device-file.ts";
 import { deviceProperties } from "./properties.ts";
 
 export const testEnvironment = () => {
-    const table = symbolTable(anEmptyContext(), pass());
-    const device = deviceProperties(table);
+    const device = deviceProperties();
     return {
-        "device": device,
-        "properties": device.public,
+        "deviceProperties": device,
         "chooser": deviceChooser(
-            device, table, [defaultDeviceFinder, defaultJsonLoader]
+            device, cpuRegisters(), [defaultDeviceFinder, defaultJsonLoader]
         )
     };
 }

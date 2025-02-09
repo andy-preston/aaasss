@@ -1,8 +1,8 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { Directive } from "../directives/directive.ts";
+import type { Directive } from "../directives/data-types.ts";
 import { box, failure } from "../failure/failure-or-box.ts";
 
-export const dataMemory = (properties: DevicePropertiesInterface) => {
+export const dataMemory = (device: DevicePropertiesInterface) => {
     let stack = 0;
     let allocated = 0;
 
@@ -14,6 +14,18 @@ export const dataMemory = (properties: DevicePropertiesInterface) => {
         allocated = 0;
     };
 
+    const ramAddress = (plusBytes: number) => {
+        const ramStart = device.numeric("ramStart");
+        const ramEnd = device.numeric("ramEnd");
+        if (ramStart.which == "failure" || ramEnd.which == "failure") {
+            return failure(undefined, "ram_sizeUnknown", "");
+        }
+        const address = ramStart.value + plusBytes;
+        return address > ramEnd.value
+            ? failure(undefined, "ram_outOfRange", `${address}`)
+            : box(address);
+    };
+
     const allocStack: Directive = (bytes: number) => {
         // It's entirely optional to allocate space for a stack.
         // but you can if you're worried that your RAM allocations might eat up
@@ -21,7 +33,7 @@ export const dataMemory = (properties: DevicePropertiesInterface) => {
         if (stack != 0) {
             return failure(undefined, "ram_stackAllocated", `${stack}`);
         }
-        const check = properties.ramAddress(newAllocationSize(bytes));
+        const check = ramAddress(newAllocationSize(bytes));
         if (check.which == "failure") {
             return check;
         }
@@ -30,11 +42,11 @@ export const dataMemory = (properties: DevicePropertiesInterface) => {
     };
 
     const alloc: Directive = (bytes: number) => {
-        const startAddress = properties.ramAddress(allocated);
+        const startAddress = ramAddress(allocated);
         if (startAddress.which == "failure") {
             return startAddress;
         }
-        const check = properties.ramAddress(newAllocationSize(bytes));
+        const check = ramAddress(newAllocationSize(bytes));
         if (check.which == "failure") {
             return check;
         }

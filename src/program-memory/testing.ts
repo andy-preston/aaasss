@@ -1,12 +1,13 @@
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { anEmptyContext } from "../javascript/context.ts";
+import { directiveList } from "../directives/directive-list.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import type { Label } from "../tokens/data-types.ts";
@@ -14,15 +15,17 @@ import { lineWithTokens } from "../tokens/line-types.ts";
 import { programMemory } from "./program-memory.ts";
 
 export const testEnvironment = () => {
-    const context = anEmptyContext();
     const currentPass = pass();
-    const table = symbolTable(context, currentPass);
-    const properties = deviceProperties(table);
+    const device = deviceProperties();
+    const symbols = symbolTable(
+        directiveList(), device.public, cpuRegisters() ,currentPass
+    );
     return {
         "pass": currentPass,
-        "expression": jSExpression(context),
-        "properties": properties,
-        "memory": programMemory(table, properties.public)
+        "symbols": symbols,
+        "device": device,
+        "memory": programMemory(symbols, device.public),
+        "expression": jSExpression(symbols)
     };
 };
 

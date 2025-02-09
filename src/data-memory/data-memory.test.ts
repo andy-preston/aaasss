@@ -1,24 +1,16 @@
 import { pass } from "../assembler/pass.ts";
-import { deviceChooser } from "../device/chooser.ts";
-import { defaultDeviceFinder, defaultJsonLoader } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { anEmptyContext } from "../javascript/context.ts";
-import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { dataMemory } from "./data-memory.ts";
 
 const testEnvironment = () => {
     const currentPass = pass();
-    const table = symbolTable(anEmptyContext(), currentPass);
-    const device = deviceProperties(table);
-    const choose = deviceChooser(
-        device, table, [defaultDeviceFinder, defaultJsonLoader]
-    );
+    const device = deviceProperties();
     const memory = dataMemory(device.public);
-    currentPass.addResetStateCallback(memory.reset);
+    currentPass.resetStateCallback(memory.reset);
     return {
         "pass": currentPass,
-        "choose": choose.choose,
+        "device": device,
         "dataMemory": memory
     };
 };
@@ -32,7 +24,9 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
 
 Deno.test("A stack allocation can't be beyond available SRAM", () => {
     const environment = testEnvironment();
-    environment.choose("dummy", { "ramEnd": 20 });
+    environment.device.property("deviceName", "test");
+    environment.device.property("ramStart", 0);
+    environment.device.property("ramEnd", 20);
     environment.pass.second();
     const allocation = environment.dataMemory.allocStack(23);
     assertFailure(allocation, "ram_outOfRange");
@@ -40,7 +34,9 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
 
 Deno.test("A memory allocation can't be beyond available SRAM", () => {
     const environment = testEnvironment();
-    environment.choose("dummy", { "ramEnd": 20 });
+    environment.device.property("deviceName", "test");
+    environment.device.property("ramStart", 0);
+    environment.device.property("ramEnd", 20);
     environment.pass.second();
     const allocation = environment.dataMemory.allocStack(23);
     assertFailure(allocation, "ram_outOfRange");
@@ -48,7 +44,9 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
 
 Deno.test("Memory allocations start at the top of SRAM and work down", () => {
     const environment = testEnvironment();
-    environment.choose("dummy", { "ramEnd": 100 });
+    environment.device.property("deviceName", "test");
+    environment.device.property("ramStart", 0);
+    environment.device.property("ramEnd", 100);
     environment.pass.second();
     assertSuccess(environment.dataMemory.alloc(25), "0");
     assertSuccess(environment.dataMemory.alloc(25), "25");
@@ -57,7 +55,9 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
 
 Deno.test("Stack and memory allocations both decrease the available SRAM", () => {
     const environment = testEnvironment();
-    environment.choose("dummy", { "ramEnd": 50 });
+    environment.device.property("deviceName", "test");
+    environment.device.property("ramStart", 0);
+    environment.device.property("ramEnd", 50);
     environment.pass.second();
     assertSuccess(environment.dataMemory.alloc(25), "0");
     environment.dataMemory.allocStack(25);
@@ -67,7 +67,9 @@ Deno.test("Stack and memory allocations both decrease the available SRAM", () =>
 
 Deno.test("Allocations don't get repeated on the second pass", () => {
     const environment = testEnvironment();
-    environment.choose("dummy", { "ramEnd": 50 });
+    environment.device.property("deviceName", "test");
+    environment.device.property("ramStart", 0);
+    environment.device.property("ramEnd", 50);
     assertSuccess(environment.dataMemory.alloc(25), "0");
     assertSuccess(environment.dataMemory.alloc(25), "25");
     environment.pass.second();

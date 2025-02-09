@@ -5,7 +5,6 @@ import { deviceProperties } from "../device/properties.ts";
 import { high, low } from "../directives/function-directives.ts";
 import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
-import { anEmptyContext } from "../javascript/context.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { embeddedJs } from "../javascript/embedded.ts";
 import type { FailureMessageTranslator } from "../listing/messages.ts";
@@ -22,6 +21,8 @@ import { tokenise } from "../tokens/tokenise.ts";
 import { assemblyPipeline } from "./assembler.ts";
 import { outputFile } from "./output-file.ts";
 import { pass } from "./pass.ts";
+import { directiveList } from "../directives/directive-list.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
 
 export const coupling = (
     fileName: FileName,
@@ -29,43 +30,50 @@ export const coupling = (
     failureMessageTranslator: FailureMessageTranslator,
     deviceFileOperations: DeviceFileOperations
 ) => {
-    const context = anEmptyContext();
-
     const currentPass = pass();
 
-    const symbols = symbolTable(context, currentPass);
-    symbols.directive("define", symbols.defineDirective);
+    const directives = directiveList();
+    directives.includes("high", high);
+    directives.includes("low", low);
 
-    symbols.directive("high", high);
-    symbols.directive("low", low);
+    const registers = cpuRegisters();
 
-    const properties = deviceProperties(symbols);
-    const chooser = deviceChooser(properties, symbols, deviceFileOperations);
-    symbols.directive("device", chooser.device);
+    const device = deviceProperties();
 
-    const progMem = programMemory(symbols, properties.public);
-    symbols.directive("origin", progMem.origin);
-    currentPass.addResetStateCallback(progMem.reset);
+    const chooser = deviceChooser(
+        device, registers, deviceFileOperations
+    );
+    directives.includes("device", chooser.device);
 
-    const dataMem = dataMemory(properties.public);
-    symbols.directive("alloc", dataMem.alloc);
-    symbols.directive("allocStack", dataMem.allocStack);
-    currentPass.addResetStateCallback(dataMem.reset);
+    const symbols = symbolTable(
+        directives, device.public, registers, currentPass
+    );
+    directives.includes("define", symbols.defineDirective);
+    currentPass.resetStateCallback(symbols.reset);
+
+    const progMem = programMemory(symbols, device.public);
+    directives.includes("origin", progMem.origin);
+    currentPass.resetStateCallback(progMem.reset);
+
+    const dataMem = dataMemory(device.public);
+    directives.includes("alloc", dataMem.alloc);
+    directives.includes("allocStack", dataMem.allocStack);
+    currentPass.resetStateCallback(dataMem.reset);
 
     const poke = pokeBuffer();
-    symbols.directive("poke", poke.poke);
+    directives.includes("poke", poke.poke);
 
     const sourceFiles = fileStack(readerMethod, fileName);
-    symbols.directive("include", sourceFiles.include);
+    directives.includes("include", sourceFiles.include);
 
     const macroProcessor = macros(symbols);
-    symbols.directive("macro", macroProcessor.macro);
-    symbols.directive("end", macroProcessor.end);
-    currentPass.addResetStateCallback(macroProcessor.reset);
+    directives.includes("macro", macroProcessor.macro);
+    directives.includes("end", macroProcessor.end);
+    currentPass.resetStateCallback(macroProcessor.reset);
 
-    const expression = jSExpression(context)
+    const expression = jSExpression(symbols);
     const embedded = embeddedJs(expression);
-    currentPass.addResetStateCallback(embedded.reset);
+    currentPass.resetStateCallback(embedded.reset);
 
     const illegalState = illegalStateFailures([
         macroProcessor.leftInIllegalState,
@@ -79,7 +87,7 @@ export const coupling = (
         tokenise,
         macroProcessor.lines,
         symbolicToNumeric(expression),
-        objectCode(properties.public, poke),
+        objectCode(device.public, poke),
         progMem.addressed,
         listing(outputFile, fileName, failureMessageTranslator, symbols),
         hexFile(outputFile, fileName),

@@ -4,7 +4,7 @@ Deno.test("DES example code",() => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
         "unsupportedInstructions": { "value": [] },
-        "programEnd": { "value": "0100" }
+        "programMemoryBytes":      { "value": "0100" }
     });
     demo.source([
         '    {{ device("testing"); }}',

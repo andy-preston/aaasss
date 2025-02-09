@@ -1,14 +1,14 @@
-import type { Directive } from "../directives/directive.ts";
+import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
-import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
 import type { DeviceProperties } from "./properties.ts";
 
 export const deviceChooser = (
-    properties: DeviceProperties,
-    symbolTable: SymbolTable,
+    deviceProperties: DeviceProperties,
+    cpuRegisters: CpuRegisters,
     fileOperations: DeviceFileOperations
 ) => {
     const [deviceFinder, loadJsonFile] = fileOperations;
@@ -26,43 +26,34 @@ export const deviceChooser = (
         deviceName: string,
         fullSpec: FullSpec
     ): Box<undefined> | Failure => {
-        const previousName = properties.name();
+        const previousName = deviceProperties.public.rawValue("deviceName");
         if (previousName == deviceName) {
             return emptyBox();
         }
-        if (previousName != "") {
+        if (previousName != undefined) {
             return failure(undefined, "device_multiple", undefined);
         }
-        properties.setName(deviceName);
+        deviceProperties.property("deviceName", deviceName);
         for (const [key, value] of Object.entries(fullSpec)) {
             switch (key) {
                 case "unsupportedInstructions":
-                    properties.unsupportedInstructions(
+                    deviceProperties.unsupportedInstructions(
                         value as Array<string>
                     );
                     break;
                 case "reducedCore":
-                    properties.reducedCore(value as boolean);
-                    properties.registers(value as boolean);
-                    break;
-                case "programEnd":
-                    properties.programMemoryBytes(value as number);
-                    break;
-                case "ramStart":
-                    properties.ramStart(value as number);
-                    break;
-                case "ramEnd":
-                    properties.ramEnd(value as number);
+                    deviceProperties.reducedCore(value as boolean);
+                    cpuRegisters.initialise(value as boolean);
                     break;
                 default:
-                    symbolTable.internalSymbol(key, value as number);
+                    deviceProperties.property(key, value as number);
                     break;
             }
         }
         return emptyBox();
     };
 
-    const device: Directive = (name: string) => {
+    const deviceDirective: Directive = (name: string) => {
         const fullSpec: FullSpec = {};
 
         const loadSpec = (spec: RawItems) => {
@@ -99,6 +90,6 @@ export const deviceChooser = (
 
     return {
         "choose": choose,
-        "device": device
+        "device": deviceDirective
     };
 };

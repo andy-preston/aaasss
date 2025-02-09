@@ -1,4 +1,4 @@
-import type { Directive } from "../directives/directive.ts";
+import type { Directive } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { box, emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";

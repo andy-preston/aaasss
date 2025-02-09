@@ -1,10 +1,10 @@
-import { SymbolTable } from "../symbol-table/symbol-table.ts";
+export const cpuRegisters = () => {
+    const registers: Map<string, number> = new Map([]);
 
-export const cpuRegisters = (symbolTable: SymbolTable) => {
-    const choose = (reducedCore: boolean) => {
+    const initialise = (reducedCore: boolean) => {
         let register = reducedCore ? 16 : 0;
         while (register < 32) {
-            symbolTable.internalSymbol(`R${register}`, register++);
+            registers.set(`R${register}`, register++);
         }
         const specialRegisters: Array<[string, number]> = [
             ["X", 26],
@@ -18,12 +18,14 @@ export const cpuRegisters = (symbolTable: SymbolTable) => {
             ["ZH", 31],
         ];
         for (const [name, value] of specialRegisters) {
-            symbolTable.internalSymbol(name, value);
+            registers.set(name, value);
         }
     };
 
     return {
-        "choose": choose,
+        "initialise": initialise,
+        "has": (symbolName: string) => registers.has(symbolName),
+        "value": (symbolName: string) => registers.get(symbolName)!
     };
 };
 

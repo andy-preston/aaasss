@@ -8,7 +8,7 @@ export const pass = () => {
     const resetCallbacks: Array<ResetStateCallback> = [];
     let current: PassNumber = 1;
 
-    const addResetStateCallback = (callback: ResetStateCallback) => {
+    const resetStateCallback = (callback: ResetStateCallback) => {
         resetCallbacks.push(callback);
     };
 
@@ -18,7 +18,7 @@ export const pass = () => {
     };
 
     return {
-        "addResetStateCallback": addResetStateCallback,
+        "resetStateCallback": resetStateCallback,
         "second": second,
         "ignoreErrors": () => current == 1,
         "produceOutput": () => current == 2

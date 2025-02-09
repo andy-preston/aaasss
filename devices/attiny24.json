@@ -6,16 +6,16 @@
             "description": "Stack Pointer ----------------------- IO Address 3D"
         },
 
-        "eepromEnd":        { "value": "007F" },
+        "eepromEnd":          { "value": "007F" },
 
-        "programEnd":       { "value": "07FF" },
+        "programMemoryBytes": { "value": "07FF" },
 
-        "ioRegistersStart": { "value": "0020" },
+        "ioRegistersStart":   { "value": "0020" },
 
-        "ioRegistersEnd":   { "value": "005F" },
+        "ioRegistersEnd":     { "value": "005F" },
 
-        "ramStart":         { "value": "0060" },
+        "ramStart":           { "value": "0060" },
 
-        "ramEnd":           { "value": "00DF" }
+        "ramEnd":             { "value": "00DF" }
     }
 }

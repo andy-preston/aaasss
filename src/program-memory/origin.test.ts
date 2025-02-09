@@ -1,11 +1,11 @@
 import { assertEquals } from "assert";
-import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
+import { assertFailure, assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { testEnvironment } from "./testing.ts";
 
 Deno.test("A device must be selected before program memory can be set", () => {
     const environment = testEnvironment();
     const result = environment.memory.origin(10);
-    assertFailureWithExtra(result, "programMemory_sizeUnknown", "10");
+    assertFailure(result, "programMemory_sizeUnknown");
 });
 
 Deno.test("Origin addresses can't be less than zero", () => {
@@ -22,23 +22,25 @@ Deno.test("Origin addresses can't be strange type", () => {
 
 Deno.test("Device name is used to determine if properties have been set", () => {
     const environment = testEnvironment();
-    environment.properties.programMemoryBytes(100);
+    environment.device.property("programMemoryBytes", 100);
     const result = environment.memory.origin(10);
-    assertFailureWithExtra(result, "programMemory_sizeUnknown", "10");
+    assertFailure(result, "programMemory_sizeUnknown");
 });
 
 Deno.test("Origin addresses must be progmem size when a device is chosen", () => {
     const environment = testEnvironment();
-    environment.properties.setName("testing");
-    environment.properties.programMemoryBytes(100);
+    environment.device.property("deviceName", "test");
+    const bytes = 100;
+    const words = bytes / 2;
+    environment.device.property("programMemoryBytes", bytes);
     const result = environment.memory.origin(92);
-    assertFailureWithExtra(result, "programMemory_outOfRange", "92");
+    assertFailureWithExtra(result, "programMemory_outOfRange", `${words}`);
 });
 
 Deno.test("Origin directive sets current address", () => {
     const environment = testEnvironment();
-    environment.properties.setName("testing");
-    environment.properties.programMemoryBytes(100);
+    environment.device.property("deviceName", "test");
+    environment.device.property("programMemoryBytes", 100);
 
     const first = environment.memory.origin(23);
     assertSuccess(first, "23");

@@ -12,7 +12,7 @@ export const macros = (symbolTable: SymbolTable) => {
     const player = playback(macros, symbolTable);
 
     const useMacroMethod = (macroName: string) => {
-        symbolTable.userFunction(
+        symbolTable.add(
             macroName,
             (...parameters: ActualParameters) =>
                 player.useMacroMethod(macroName, parameters)

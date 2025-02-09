@@ -1,13 +1,28 @@
 import { box, failure, isFailureOrBox, type Box, type Failure } from "../failure/failure-or-box.ts";
-import { Context } from "./context.ts";
+import { SymbolTable } from "../symbol-table/symbol-table.ts";
 import { returnIfExpression } from "./magic.ts";
 
 const trailingSemicolons = /;*$/;
 
-export const jSExpression = (context: Context) => {
+export const jSExpression = (symbolTable: SymbolTable) => {
+    const executionContext = new Proxy({}, {
+        has(_target: object, symbolName: string) {
+            const result =
+                symbolName in globalThis || typeof symbolName != "string"
+                    ? false
+                    : symbolTable.has(symbolName);
+            return result;
+        },
+        get(_target: object, symbolName: string) {
+            return typeof symbolName == "string"
+                ? symbolTable.use(symbolName)
+                : undefined;
+        }
+    });
+
     const functionCall = (functionBody: string) => {
         try {
-            return new Function(functionBody).call(context);
+            return new Function(functionBody).call(executionContext);
         } catch (error) {
             if (error instanceof Error) {
                 return failure(undefined, "js_error", error);

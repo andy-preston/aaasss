@@ -11,16 +11,16 @@
             "description": "Stack Pointer ----------------------- IO Address 3E"
         },
 
-        "eepromEnd":        { "value": "01FF" },
+        "eepromEnd":          { "value": "01FF" },
 
-        "programEnd":       { "value": "1FFF" },
+        "programMemoryBytes": { "value": "1FFF" },
 
-        "ioRegistersStart": { "value": "0020" },
+        "ioRegistersStart":   { "value": "0020" },
 
-        "ioRegistersEnd":   { "value": "005F" },
+        "ioRegistersEnd":     { "value": "005F" },
 
-        "ramStart":         { "value": "0060" },
+        "ramStart":           { "value": "0060" },
 
-        "ramEnd":           { "value": "025F" }
+        "ramEnd":             { "value": "025F" }
     }
 }

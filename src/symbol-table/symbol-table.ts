@@ -1,77 +1,106 @@
 import type { Pass } from "../assembler/pass.ts";
-import type { Directive } from "../directives/directive.ts";
-import { emptyBox } from "../failure/failure-or-box.ts";
-import type { Context } from "../javascript/context.ts";
-import { MacroInvocation } from "../macros/playback.ts";
-import { usageCount } from "./usage-count.ts";
+import type { DevicePropertiesInterface } from "../device/properties.ts";
+import type { Directive } from "../directives/data-types.ts";
+import type { DirectiveList } from "../directives/directive-list.ts";
+import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import type { MacroInvocation } from "../macros/playback.ts";
+import type { CpuRegisters } from "../registers/cpu-registers.ts";
 
 type UserFunction = MacroInvocation;
 
-export const symbolTable = (context: Context, pass: Pass) => {
-    const usage = usageCount(pass);
+export const symbolTable = (
+    directiveList: DirectiveList,
+    deviceProperties: DevicePropertiesInterface,
+    cpuRegisters: CpuRegisters,
+    pass: Pass
+) => {
+    type UsageCount = number;
+    type SymbolValue = number | string | UserFunction;
+    type MapEntry = [UsageCount, SymbolValue];
+    type SymbolMap = Map<string, MapEntry>;
 
-    const directive = (symbol: string, directive: Directive) => {
-        Object.defineProperty(context, symbol, {
-            "configurable": false,
-            "enumerable": true,
-            "value": directive,
-            "writable": false
-        });
-        usage.directive(symbol);
-    };
+    const symbols: SymbolMap = new Map([]);
 
-    const countable = (symbol: string, value: number | UserFunction) => {
-        const inUse = usage.add(symbol);
-        if (inUse.which == "failure") {
-            return inUse;
+    const has = (symbolName: string) =>
+        symbols.has(symbolName) ||
+        directiveList.has(symbolName) ||
+        deviceProperties.has(symbolName) ||
+        cpuRegisters.has(symbolName);
+
+    const add = (symbolName: string, value: SymbolValue) => {
+        if (directiveList.has(symbolName)) {
+            return failure(undefined, "symbol_nameIsDirective", undefined);
         }
-        Object.defineProperty(context, symbol, {
-            "configurable": pass.ignoreErrors(),
-            "enumerable": true,
-            "get": () => {
-                usage.count(symbol);
-                return value;
+        if (deviceProperties.has(symbolName)) {
+            return failure(undefined, "symbol_alreadyExists", undefined);
+        }
+        if (symbols.has(symbolName) && !pass.ignoreErrors()) {
+            const [_usageCount, oldValue] = symbols.get(symbolName)!;
+            if (value != oldValue) {
+                return failure(undefined, "symbol_alreadyExists", `${oldValue}`);
             }
-        });
+        }
+        if (!symbols.has(symbolName)) {
+            symbols.set(symbolName, [0, value]);
+        }
         return emptyBox();
     };
 
-    const internalSymbol = (symbol: string, value: number) =>
-        countable(symbol, value);
+    const use = (symbolName: string) => {
+        const valueAndUsage = (): MapEntry =>
+            symbols.has(symbolName)
+                ? symbols.get(symbolName)!
+                : deviceProperties.has(symbolName)
+                ? [0, deviceProperties.rawValue(symbolName) as number]
+                : cpuRegisters.has(symbolName)
+                ? [0, cpuRegisters.value(symbolName)!]
+                : [0, 0];
 
-    const userSymbol = (symbol: string, value: number | UserFunction) => {
-        const result = countable(symbol, value);
-        if (result.which != "failure") {
-            usage.add(symbol);
+        if (directiveList.has(symbolName)) {
+            return directiveList.use(symbolName);
         }
-        return result;
+        const [usageCount, value] = valueAndUsage();
+        symbols.set(symbolName, [usageCount + 1, value]);
+        return value;
     };
 
-    const userFunction = (symbol: string, value: UserFunction) =>
-        userSymbol(symbol, value);
+    const reset = () => {
+        for (const [symbolName, [_usageCount, value]] of symbols) {
+            symbols.set(symbolName, [0, value]);
+        }
+    };
 
-    // This is the directive FOR defining symbols
-    // not an imperatively named function TO define directives.
-    const defineDirective: Directive = (symbol: string, value: number) =>
-        userSymbol(symbol, value);
-
-    const value = (symbol: string) => {
-        const actual = context[symbol];
-        return ["number", "string"].includes(typeof actual)
-            ? actual
+    const value = (symbolName: string) => {
+        const [_usageCount, value] = symbols.get(symbolName)!;
+        return ["string", "number"].includes(typeof value)
+            ? `${value}`
             : null;
     };
 
+    const count = (symbolName: string) => {
+        const theSymbol = symbols.get(symbolName);
+        if (theSymbol == undefined) {
+            return 0;
+        }
+        const [usageCount, _value] = theSymbol;
+        return usageCount;
+    }
+
+    // This is the directive FOR defining symbols
+    // not an imperatively named function TO define directives.
+    const defineDirective: Directive = (symbolName: string, value: number) =>
+        add(symbolName, value);
+
     return {
-        "directive": directive,
-        "internalSymbol": internalSymbol,
-        "userFunction": userFunction,
-        "defineDirective": defineDirective,
-        "count": usage.count,
-        "currentCount": usage.current,
+        "has": has,
+        "add": add,
+        "use": use,
         "value": value,
-        "empty": usage.empty,
-        "list": usage.list
+        "count": count,
+        "reset": reset,
+        "empty": () => symbols.size == 0,
+        "list": () => symbols.keys(),
+        "defineDirective": defineDirective,
     };
 };
 

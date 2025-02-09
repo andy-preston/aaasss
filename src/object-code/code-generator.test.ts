@@ -1,25 +1,21 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { assertFailure } from "../failure/testing.ts";
-import { anEmptyContext } from "../javascript/context.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
-import { symbolTable } from "../symbol-table/symbol-table.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { objectCode } from "./object-code.ts";
 import { pokeBuffer } from "./poke.ts";
 
 const testEnvironment = () => {
-    const table = symbolTable(anEmptyContext(), pass());
-    const properties = deviceProperties(table);
+    const device = deviceProperties();
     return {
-        "properties": properties,
-        "objectCode": objectCode(properties.public, pokeBuffer())
+        "device": device,
+        "objectCode": objectCode(device.public, pokeBuffer())
     };
 };
 
@@ -57,8 +53,8 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
 
 Deno.test("Lines with unsupported instructions fail", () => {
     const environment = testEnvironment();
-    environment.properties.setName("testDevice");
-    environment.properties.unsupportedInstructions(["DES"]);
+    environment.device.property("deviceName", "test");
+    environment.device.unsupportedInstructions(["DES"]);
     const line = testLine("", "DES", [], [], []);
     const result = environment.objectCode(line);
     assert(result.failed());
@@ -71,7 +67,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
 
 Deno.test("Lines with unknown instructions fail", () => {
     const environment = testEnvironment();
-    environment.properties.setName("testDevice");
+    environment.device.property("deviceName", "test");
     const line = testLine("", "NOT_REAL", [], [], []);
     const result = environment.objectCode(line);
     assert(result.failed());
@@ -84,7 +80,7 @@ Deno.test("Lines with unknown instructions fail", () => {
 
 Deno.test("Lines with real/supported instructions produce code", () => {
     const environment = testEnvironment();
-    environment.properties.setName("testDevice");
+    environment.device.property("deviceName", "test");
     const line = testLine("", "DES", ["15"], [15], ["number"]);
     const result = environment.objectCode(line);
     assertFalse(result.failed(), "Unexpected failure");
