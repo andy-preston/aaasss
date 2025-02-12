@@ -22,7 +22,7 @@ export const recording = (
         name: MacroName, parameters: DefinedParameters = []
     ) => {
         if (theMacro != undefined) {
-            return failure(undefined, "macro_define", macroName);
+            return failure(undefined, "macro_multiDefine", macroName);
         }
         const checkedName = stringParameter(name);
         if (checkedName.which == "failure") {

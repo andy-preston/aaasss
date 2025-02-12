@@ -5,7 +5,7 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
     const environment = testEnvironment();
     environment.macros.macro("plop");
     const result = environment.macros.leftInIllegalState();
-    assertFailure(result, "macro_define");
+    assertFailure(result, "macro_noEnd");
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
@@ -13,7 +13,7 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
     const firstDefinition = environment.macros.macro("aMacro");
     assertSuccess(firstDefinition, undefined);
     const secondDefinition = environment.macros.macro("anotherOne");
-    assertFailure(secondDefinition, "macro_define");
+    assertFailure(secondDefinition, "macro_multiDefine");
 });
 
 Deno.test("You can't end a definition without any lines in the macro", () => {

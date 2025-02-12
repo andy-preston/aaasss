@@ -31,7 +31,7 @@ export const macros = (symbolTable: SymbolTable) => {
     };
 
     const leftInIllegalState = () => recorder.isRecording()
-        ? failure(undefined, "macro_define", undefined)
+        ? failure(undefined, "macro_noEnd", undefined)
         : emptyBox();
 
     const reset = () => {

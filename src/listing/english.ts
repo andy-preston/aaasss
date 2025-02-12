@@ -14,8 +14,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "js_jsMode": (_line: LineWithAddress) => [
         "\"{{\" when already in js mode"
     ],
-    "macro_define": (_line: LineWithAddress) => [
-        "Previous macro definition was not closed"
+    "macro_noEnd": (_line: LineWithAddress) => [
+        "Macro definition was not closed"
+    ],
+    "macro_multiDefine": (_line: LineWithAddress) => [
+        "You can't define a macro whilst you're still defining the previous one"
     ],
     "macro_empty": (_line: LineWithAddress) => [
         "Macro hasn't got any lines!"
