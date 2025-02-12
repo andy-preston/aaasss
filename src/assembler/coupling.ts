@@ -3,6 +3,7 @@ import { deviceChooser } from "../device/chooser.ts";
 import type { DeviceFileOperations } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { high, low } from "../directives/function-directives.ts";
+import { directiveList } from "../directives/directive-list.ts";
 import { illegalStateFailures } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { jSExpression } from "../javascript/expression.ts";
@@ -14,6 +15,7 @@ import { objectCode } from "../object-code/object-code.ts";
 import { pokeBuffer } from "../object-code/poke.ts";
 import { symbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import { fileStack, type ReaderMethod } from "../source-code/file-stack.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
@@ -21,8 +23,6 @@ import { tokenise } from "../tokens/tokenise.ts";
 import { assemblyPipeline } from "./assembler.ts";
 import { outputFile } from "./output-file.ts";
 import { pass } from "./pass.ts";
-import { directiveList } from "../directives/directive-list.ts";
-import { cpuRegisters } from "../registers/cpu-registers.ts";
 
 export const coupling = (
     fileName: FileName,
