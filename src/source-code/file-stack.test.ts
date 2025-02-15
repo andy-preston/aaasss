@@ -95,26 +95,32 @@ Deno.test("An included file is inserted into the source stream", () => {
     ], lines.toArray().map(line => line.rawSource));
 });
 
-Deno.test("Source can be injected in the stream from a (e.g. macros)", () => {
+Deno.test("Imaginary files (e.g. macros) can be included", () => {
     const mockReader = (path: FileName) =>
         [1, 2, 3].map(line => `${path} ${line}`);
 
     const files = fileStack(mockReader, "top.file");
     const lines = files.lines();
-    assertEquals("top.file 1", lines.next().value!.rawSource);
 
-    const macroPlayback = function* (): FileLineIterator {
-        yield [1, "one", false];
-        yield [2, "two", false];
-        yield [3, "three", false];
+    const firstLine = lines.next().value!;
+    assertEquals(firstLine.lineNumber, 1);
+    assertEquals(firstLine.rawSource, "top.file 1");
+
+    const imaginaryFile = function* (): FileLineIterator {
+        yield ["one", false];
+        yield ["two", false];
+        yield ["three", false];
     }
-    files.push("aMacro", macroPlayback());
+    files.pushImaginary(imaginaryFile());
 
-    assertEquals([
-        "one",
-        "two",
-        "three",
-        "top.file 2",
-        "top.file 3",
-    ], lines.toArray().map(line => line.rawSource));
+    const expected = [
+        [1, "one"], [1, "two"], [1, "three"],
+        [2, "top.file 2"], [3, "top.file 3"],
+    ];
+
+    for (const [index, line] of lines.toArray().entries()) {
+        assertEquals(line.fileName, "top.file");
+        assertEquals(line.lineNumber, expected[index]![0]);
+        assertEquals(line.rawSource, expected[index]![1]);
+    }
 });

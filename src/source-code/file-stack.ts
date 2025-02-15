@@ -4,11 +4,10 @@ import { box, emptyBox, failure, type Box, type Failure } from "../failure/failu
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource, type LineWithRawSource } from "./line-types.ts";
 
-export type FileLineIterator =
-    Generator<[LineNumber, SourceCode, boolean], void, unknown>;
+export type FileLineIterator = Generator<[SourceCode, boolean], void, unknown>;
 
 type StackEntry = {
-    "name": FileName;
+    "fileName": FileName;
     "iterator": FileLineIterator;
 };
 
@@ -21,6 +20,7 @@ export type ReaderMethod = typeof defaultReaderMethod;
 
 export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     const fileStack: Array<StackEntry> = [];
+    let lineNumber: LineNumber = 0;
 
     const fileContents = (fileName: FileName): Box<Array<string>> | Failure => {
         try {
@@ -34,11 +34,13 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         }
     };
 
-    const fileLineByLine = function*(lines: Array<string>): FileLineIterator  {
+    const fileLineByLine = function*(lines: Array<string>): FileLineIterator {
         for (const [index, text] of lines.entries()) {
-            const lineNumber = index + 1;
+            // Real files provide a line number here!
+            // but imaginary files just reuse this one without incrementing
+            lineNumber = index + 1;
             const lastLine = fileStack.length == 1 && lineNumber == lines.length;
-            yield [lineNumber, text, lastLine];
+            yield [text, lastLine];
         }
     };
 
@@ -51,12 +53,21 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         if (contents.which == "failure") {
             return contents;
         }
-        push(fileName, fileLineByLine(contents.value));
+        fileStack.push({
+            "fileName": fileName,
+            "iterator": fileLineByLine(contents.value)
+        });
         return emptyBox();
     };
 
-    const push = (fileName: FileName, iterator: FileLineIterator) => {
-        fileStack.push({ "name": fileName, "iterator": iterator });
+    const currentFile = () => fileStack.at(-1);
+
+    const pushImaginary = (iterator: FileLineIterator) => {
+        const current = currentFile()!;
+        fileStack.push({
+            "fileName": current.fileName,
+            "iterator": iterator
+        });
     };
 
     const lines: SourceOfSource = function* () {
@@ -70,21 +81,20 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             if (next.done) {
                 fileStack.pop();
             } else {
-                const [lineNumber, rawSource, lastLine] = next.value;
+                const [rawSource, lastLine] = next.value;
                 yield lineWithRawSource(
-                    file.name, lineNumber, lastLine, rawSource
+                    file.fileName, lineNumber, lastLine, rawSource
                 );
             }
             // Another file could have been pushed by an include directive
-            // "whilst we weren't watching". Always read from the file that's
-            // on the top of the stack.
-            file = fileStack.at(-1);
+            // "whilst we weren't watching".
+            file = currentFile();
         }
     };
 
     return {
         "include": include,
-        "push": push,
+        "pushImaginary": pushImaginary,
         "lines": lines,
     };
 };

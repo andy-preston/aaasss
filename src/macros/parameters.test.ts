@@ -16,6 +16,9 @@ Deno.test("The macro doesn't have to have parameters", () => {
 
 Deno.test("The macro can have parameters", () => {
     const environment = testEnvironment();
+    const lines = environment.fileStack.lines();
+    lines.next();
+
     assertSuccess(
         environment.jsExpression('macro("withParams", ["a", "b"]);'),
         undefined
@@ -31,7 +34,7 @@ Deno.test("The macro can have parameters", () => {
         environment.jsExpression('withParams("1", "2");'),
         undefined
     );
-    const result = environment.fileStack.lines().next().value;
+    const result = lines.next().value;
     assertEquals(result!.rawSource, "TST 1, 2");
 });
 
@@ -64,6 +67,9 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
 
 Deno.test("Macro parameters are substituted", () => {
     const environment = testEnvironment();
+    const lines = environment.fileStack.lines();
+    lines.next();
+
     environment.jsExpression(
         'macro("testMacro", ["a", "b"]);'
     );
@@ -80,6 +86,6 @@ Deno.test("Macro parameters are substituted", () => {
     environment.jsExpression(
         'testMacro("R15", 2);'
     );
-    const result = environment.fileStack.lines().next().value;
+    const result = lines.next().value;
     assertEquals(result!.rawSource, "TST R15, 2");
 });

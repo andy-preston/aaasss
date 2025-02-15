@@ -16,6 +16,7 @@ export const playback = (
     function* imaginaryFile(
         macroName: string, theMacro: Macro, withParameters: ActualParameters
     ): FileLineIterator {
+
         const labelPrefix = () => {
             const count = symbolTable.count(macroName);
             return `${macroName}$${count}$`;
@@ -23,7 +24,7 @@ export const playback = (
 
         const map = labelsAndOperands(theMacro, labelPrefix(), withParameters!);
 
-        for (const [index, line] of theMacro.lines.entries()) {
+        for (const line of theMacro.lines) {
             const mangledSourceCode: Array<string> = [];
             if (line.label) {
                 mangledSourceCode.push(`${map.label(line.label)}:`);
@@ -35,7 +36,7 @@ export const playback = (
             if (symbolicOperands.length > 0) {
                 mangledSourceCode.push(symbolicOperands.join(", "));
             }
-            yield [index + 1, mangledSourceCode.join(" "), false];
+            yield [mangledSourceCode.join(" "), false];
         }
     };
 
@@ -52,7 +53,7 @@ export const playback = (
                 undefined, "macro_params", `${theMacro.parameters.length}`
             );
         }
-        fileStack.push(name, imaginaryFile(
+        fileStack.pushImaginary(imaginaryFile(
             macroName,
             theMacro,
             checkedParameters.value == "undefined" ? [] : actualParameters
