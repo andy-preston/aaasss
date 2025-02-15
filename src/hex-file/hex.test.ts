@@ -1,7 +1,7 @@
 import { assert, assertEquals } from "assert";
 import { failure } from "../failure/failure-or-box.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
-import { lineWithExpandedMacro } from "../macros/line-types.ts";
+import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
@@ -14,7 +14,7 @@ const testLine = (test: TestBlock) => {
     const withRaw = lineWithRawSource("", 0, false, "");
     const withRendered = lineWithRenderedJavascript(withRaw, "");
     const withTokens = lineWithTokens(withRendered, "", "", []);
-    const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", []);
+    const withMacro = lineWithProcessedMacro(withTokens, false);
     const withOperands = lineWithOperands(withMacro, [], []);
     const withPoked = lineWithPokedBytes(withOperands, []);
     const withObject = lineWithObjectCode(withPoked, test[1]);
@@ -25,7 +25,7 @@ const testLineWithFailure = () => {
     const withRaw = lineWithRawSource("", 0, false, "");
     const withRendered = lineWithRenderedJavascript(withRaw, "");
     const withTokens = lineWithTokens(withRendered, "", "", []);
-    const withMacro = lineWithExpandedMacro(withTokens, withTokens, "", []);
+    const withMacro = lineWithProcessedMacro(withTokens, false);
     const withOperands = lineWithOperands(withMacro, [], []);
     const withPoked = lineWithPokedBytes(withOperands, []);
     const withObject = lineWithObjectCode(withPoked, []);

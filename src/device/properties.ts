@@ -44,7 +44,6 @@ export const deviceProperties = () => {
             ? failure(undefined, "mnemonic_notSupported", undefined)
             : box(false);
 
-
     const setReducedCore = (value: boolean) => {
         reducedCore = value;
     };

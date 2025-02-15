@@ -66,7 +66,7 @@ export const coupling = (
     const sourceFiles = fileStack(readerMethod, fileName);
     directives.includes("include", sourceFiles.include);
 
-    const macroProcessor = macros(symbols);
+    const macroProcessor = macros(symbols, sourceFiles);
     directives.includes("macro", macroProcessor.macro);
     directives.includes("end", macroProcessor.end);
     currentPass.resetStateCallback(macroProcessor.reset);

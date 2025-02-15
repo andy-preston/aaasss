@@ -15,17 +15,16 @@ Deno.test("Labels in macros are expanded on each invocation", () => {
     environment.jsExpression("end();");
     environment.macros.lines(testLine("", "", [])).toArray();
 
-    environment.jsExpression('testMacro();');
-    const result1 = environment.macros.lines(testLine("", "", [])).toArray();
-    assertEquals(result1[1]!.mnemonic, "JMP");
-    assertEquals(result1[1]!.symbolicOperands, ["testMacro$1$nextLine"]);
-    assertEquals(result1[2]!.label, "testMacro$1$nextLine");
+    const lines = environment.fileStack.lines();
+    lines.next();
 
     environment.jsExpression('testMacro();');
-    const result2 = environment.macros.lines(testLine("", "", [])).toArray();
-    assertEquals(result2[1]!.mnemonic, "JMP");
-    assertEquals(result2[1]!.symbolicOperands, ["testMacro$2$nextLine"]);
-    assertEquals(result2[2]!.label, "testMacro$2$nextLine");
+    assertEquals(lines.next().value!.rawSource, "JMP testMacro$1$nextLine");
+    assertEquals(lines.next().value!.rawSource, "testMacro$1$nextLine: NOP");
+
+    environment.jsExpression('testMacro();');
+    assertEquals(lines.next().value!.rawSource, "JMP testMacro$2$nextLine");
+    assertEquals(lines.next().value!.rawSource, "testMacro$2$nextLine: NOP");
 });
 
 Deno.test("But labels from outside the macro are left as is", () => {
@@ -40,8 +39,9 @@ Deno.test("But labels from outside the macro are left as is", () => {
     environment.jsExpression("end();");
     environment.macros.lines(testLine("", "", [])).toArray();
 
+    const lines = environment.fileStack.lines();
+    lines.next();
+
     environment.jsExpression('testMacro();');
-    const result = environment.macros.lines(testLine("", "", [])).toArray();
-    assertEquals(result[1]!.mnemonic, "JMP");
-    assertEquals(result[1]!.symbolicOperands, ["anotherLine"]);
+    assertEquals(lines.next().value!.rawSource, "JMP anotherLine");
 });

@@ -5,6 +5,8 @@ import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
+import { fileReaderMock } from "../source-code/file-reader-mock.ts";
+import { fileStack } from "../source-code/file-stack.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
@@ -16,12 +18,16 @@ export const testEnvironment = () => {
     const symbols = symbolTable(
         directives, deviceProperties().public, cpuRegisters() ,pass()
     );
-    const macroProcessor = macros(symbols);
+    const reader = fileReaderMock();
+    reader.addSourceCode(["", ""]);
+    const files = fileStack(reader.mockReaderMethod, "testing.asm");
+    const macroProcessor = macros(symbols, files);
     directives.includes("macro", macroProcessor.macro);
     directives.includes("end", macroProcessor.end);
     return {
         "symbolTable": symbols,
         "jsExpression": jSExpression(symbols),
+        "fileStack": files,
         "macros": macroProcessor
     };
 };

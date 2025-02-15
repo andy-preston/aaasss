@@ -1,4 +1,5 @@
-import { assert, assertEquals, assertFalse } from "assert";
+import { assertEquals } from "assert";
+import { assertFailureWithExtra } from "../failure/testing.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
 import type { LineWithProcessedMacro } from "./line-types.ts";
 import { testEnvironment, testLine } from "./testing.ts";
@@ -47,6 +48,8 @@ Deno.test("Whilst a macro is being defined, saveLine will... save lines", () => 
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const environment = testEnvironment();
+    const lines = environment.fileStack.lines();
+    lines.next();
 
     environment.macros.macro("plop");
     environment.macros.lines(testLine("testLabel", "TST", [])).toArray();
@@ -55,31 +58,16 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     environment.macros.end();
     environment.macros.lines(testLine("",          "", [])).toArray();
 
-    environment.jsExpression("plop();")
-    const lines = environment.macros.lines(testLine("", "", []));
-    assertFalse(lines.next().done);
-
-    const first = lines.next().value!;
-    assertFalse(first.isRecordingMacro)
-    assertEquals(first.mnemonic, "TST");
-
-    const second = lines.next().value!;
-    assertFalse(second.isRecordingMacro)
-    assertEquals(second.mnemonic, "AND");
-
-    const third = lines.next().value!;
-    assertFalse(third.isRecordingMacro)
-    assertEquals(third.mnemonic, "TST");
-
-    const fourth = lines.next().value!;
-    assertFalse(fourth.isRecordingMacro)
-    assertEquals(fourth.mnemonic, "");
-
-    assert(lines.next().done);
+    environment.jsExpression("plop();");
+    assertEquals(lines.next().value!.rawSource, "plop$1$testLabel: TST");
+    assertEquals(lines.next().value!.rawSource,                   "AND");
+    assertEquals(lines.next().value!.rawSource,                   "TST");
 });
 
 Deno.test("on play-back, parameters are substituted", () => {
     const environment = testEnvironment();
+    const lines = environment.fileStack.lines();
+    lines.next();
 
     environment.macros.macro("plop", ["p1", "p2"]);
     environment.macros.lines(testLine("", "TST", ["p1"])).toArray();
@@ -89,51 +77,33 @@ Deno.test("on play-back, parameters are substituted", () => {
     environment.macros.lines(testLine("", "",    [])).toArray();
 
     environment.jsExpression("plop(4, 'test');");
-    const lines = environment.macros.lines(testLine("", "", []));
-    assertFalse(lines.next().done);
-
-    const first = lines.next().value!;
-    assertEquals(first.mnemonic, "TST");
-    assertEquals(first.symbolicOperands, ["4"]);
-
-    const second = lines.next().value!;
-    assertEquals(second.mnemonic, "AND");
-    assertEquals(second.symbolicOperands, ["R15"]);
-
-    const third = lines.next().value!;
-    assertEquals(third.mnemonic, "TST");
-    assertEquals(third.symbolicOperands, ["test"]);
+    assertEquals(lines.next().value!.rawSource, "TST 4");
+    assertEquals(lines.next().value!.rawSource, "AND R15");
+    assertEquals(lines.next().value!.rawSource, "TST test");
 });
 
-Deno.test("It still tries it's best to map mismatched parameters", () => {
+Deno.test("Parameter count mismatches result in a failure", () => {
     const environment = testEnvironment();
+    const lines = environment.fileStack.lines();
+    lines.next();
 
-    environment.macros.macro("plop", ["willMatch", "wontMatch"]);
-    environment.macros.lines(testLine("", "TST", ["willMatch"])).toArray();
-    environment.macros.lines(testLine("", "AND", ["R15"])).toArray();
-    environment.macros.lines(testLine("", "TST", ["wontMatch"])).toArray();
+    const expectedParameters = ["p1", "p2"]
+    environment.macros.macro("plop", expectedParameters);
+    environment.macros.lines(testLine("", "TST", ["p1", "p2"])).toArray();
     environment.macros.end();
     environment.macros.lines(testLine("", "",    [])).toArray();
 
-    environment.jsExpression("plop('MATCHED');");
-    const lines = environment.macros.lines(testLine("", "", []));
-    assertFalse(lines.next().done);
-
-    const first = lines.next().value!;
-    assertEquals(first.mnemonic, "TST");
-    assertEquals(first.symbolicOperands, ["MATCHED"]);
-
-    const second = lines.next().value!;
-    assertEquals(second.mnemonic, "AND");
-    assertEquals(second.symbolicOperands, ["R15"]);
-
-    const third = lines.next().value!;
-    assertEquals(third.mnemonic, "TST");
-    assertEquals(third.symbolicOperands, ["wontMatch"]);
+    assertFailureWithExtra(
+        environment.jsExpression("plop('MATCHED');"),
+        "macro_params",
+        `${expectedParameters.length}`
+    );
 });
 
 Deno.test("Labels are mapped on each successive usage", () => {
     const environment = testEnvironment();
+    const lines = environment.fileStack.lines();
+    lines.next();
 
     environment.macros.macro("plop");
     environment.macros.lines(testLine("",      "JMP", ["label"])).toArray();
@@ -143,25 +113,15 @@ Deno.test("Labels are mapped on each successive usage", () => {
     environment.macros.lines(testLine("",      "",    [])).toArray();
 
     environment.jsExpression("plop();");
-    const lines = environment.macros.lines(testLine("", "", []));
-    assertFalse(lines.next().done);
-
-    const first = lines.next().value!;
-    assertEquals(first.mnemonic, "JMP");
-    assertEquals(first.symbolicOperands, ["plop$1$label"]);
-
-    const second = lines.next().value!;
-    assertEquals(second.label, "plop$1$label");
-    assertEquals(second.mnemonic, "TST");
-    assertEquals(second.symbolicOperands, []);
-
-    const third = lines.next().value!;
-    assertEquals(third.mnemonic, "JMP");
-    assertEquals(third.symbolicOperands, ["plop$1$label"]);
+    assertEquals(lines.next().value!.rawSource, "JMP plop$1$label");
+    assertEquals(lines.next().value!.rawSource, "plop$1$label: TST");
+    assertEquals(lines.next().value!.rawSource, "JMP plop$1$label");
 });
 
 Deno.test("External labels remain unmapped", () => {
     const environment = testEnvironment();
+    const lines = environment.fileStack.lines();
+    lines.next();
 
     environment.macros.macro("plop");
     environment.macros.lines(testLine("",      "JMP", ["externalLabel"])).toArray();
@@ -171,25 +131,15 @@ Deno.test("External labels remain unmapped", () => {
     environment.macros.lines(testLine("",      "",    [])).toArray();
 
     environment.jsExpression("plop();");
-    const lines = environment.macros.lines(testLine("", "", []));
-    assertFalse(lines.next().done);
-
-    const first = lines.next().value!;
-    assertEquals(first.mnemonic, "JMP");
-    assertEquals(first.symbolicOperands, ["externalLabel"]);
-
-    const second = lines.next().value!;
-    assertEquals(second.label, "plop$1$label");
-    assertEquals(second.mnemonic, "TST");
-    assertEquals(second.symbolicOperands, []);
-
-    const third = lines.next().value!;
-    assertEquals(third.mnemonic, "JMP");
-    assertEquals(third.symbolicOperands, ["externalLabel"]);
+    assertEquals(lines.next().value!.rawSource, "JMP externalLabel");
+    assertEquals(lines.next().value!.rawSource, "plop$1$label: TST");
+    assertEquals(lines.next().value!.rawSource, "JMP externalLabel");
 });
 
 Deno.test("Multiple macro invocations have higher index in label mappings", () => {
     const environment = testEnvironment();
+    const lines = environment.fileStack.lines();
+    lines.next();
 
     environment.macros.macro("plop");
     environment.macros.lines(testLine("",      "JMP", ["label"])).toArray();
@@ -199,22 +149,10 @@ Deno.test("Multiple macro invocations have higher index in label mappings", () =
     environment.macros.lines(testLine("",      "",    [])).toArray();
 
     for (const invocation of [1, 2, 3]) {
-        const expectedLabel = `plop$${invocation}$label`;
         environment.jsExpression("plop();");
-        const lines = environment.macros.lines(testLine("", "", []));
-        assertFalse(lines.next().done);
-
-        const first = lines.next().value!;
-        assertEquals(first.mnemonic, "JMP");
-        assertEquals(first.symbolicOperands, [expectedLabel]);
-
-        const second = lines.next().value!;
-        assertEquals(second.label, expectedLabel);
-        assertEquals(second.mnemonic, "TST");
-        assertEquals(second.symbolicOperands, []);
-
-        const third = lines.next().value!;
-        assertEquals(third.mnemonic, "JMP");
-        assertEquals(third.symbolicOperands, [expectedLabel]);
+        const expectedLabel = `plop$${invocation}$label`;
+        assertEquals(lines.next().value!.rawSource, `JMP ${expectedLabel}`);
+        assertEquals(lines.next().value!.rawSource, `${expectedLabel}: TST`);
+        assertEquals(lines.next().value!.rawSource, `JMP ${expectedLabel}`);
     }
 });

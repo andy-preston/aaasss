@@ -4,7 +4,7 @@ import { box, emptyBox, failure, type Box, type Failure } from "../failure/failu
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource, type LineWithRawSource } from "./line-types.ts";
 
-type FileLineIterator =
+export type FileLineIterator =
     Generator<[LineNumber, SourceCode, boolean], void, unknown>;
 
 type StackEntry = {
@@ -51,11 +51,12 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         if (contents.which == "failure") {
             return contents;
         }
-        fileStack.push({
-            "name": fileName,
-            "iterator": fileLineByLine(contents.value)
-        });
+        push(fileName, fileLineByLine(contents.value));
         return emptyBox();
+    };
+
+    const push = (fileName: FileName, iterator: FileLineIterator) => {
+        fileStack.push({ "name": fileName, "iterator": iterator });
     };
 
     const lines: SourceOfSource = function* () {
@@ -83,6 +84,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
 
     return {
         "include": include,
+        "push": push,
         "lines": lines,
     };
 };

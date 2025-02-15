@@ -2,7 +2,7 @@ import { assert, assertFalse, assertEquals, assertInstanceOf } from "assert";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { type Failure } from "../failure/failure-or-box.ts";
 import { FileName } from "./data-types.ts";
-import { defaultReaderMethod, fileStack } from "./file-stack.ts";
+import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
 Deno.test("Including a file doesn't return anything", () => {
     assertSuccess(
@@ -75,4 +75,46 @@ Deno.test("The last line of the top source file is flagged as such", () => {
     for (const line of files.lines()) {
         assertEquals(line.lastLine, line.rawSource == "last");
     }
+});
+
+Deno.test("An included file is inserted into the source stream", () => {
+    const mockReader = (path: FileName) =>
+        [1, 2, 3].map(line => `${path} ${line}`);
+
+    const files = fileStack(mockReader, "top.file");
+    const lines = files.lines();
+
+    assertEquals("top.file 1", lines.next().value!.rawSource);
+    files.include("plop.txt");
+    assertEquals([
+        "plop.txt 1",
+        "plop.txt 2",
+        "plop.txt 3",
+        "top.file 2",
+        "top.file 3",
+    ], lines.toArray().map(line => line.rawSource));
+});
+
+Deno.test("Source can be injected in the stream from a (e.g. macros)", () => {
+    const mockReader = (path: FileName) =>
+        [1, 2, 3].map(line => `${path} ${line}`);
+
+    const files = fileStack(mockReader, "top.file");
+    const lines = files.lines();
+    assertEquals("top.file 1", lines.next().value!.rawSource);
+
+    const macroPlayback = function* (): FileLineIterator {
+        yield [1, "one", false];
+        yield [2, "two", false];
+        yield [3, "three", false];
+    }
+    files.push("aMacro", macroPlayback());
+
+    assertEquals([
+        "one",
+        "two",
+        "three",
+        "top.file 2",
+        "top.file 3",
+    ], lines.toArray().map(line => line.rawSource));
 });

@@ -31,10 +31,8 @@ Deno.test("The macro can have parameters", () => {
         environment.jsExpression('withParams("1", "2");'),
         undefined
     );
-    const lines = environment.macros.lines(
-        testLine("", "", [])
-    ).toArray();
-    assertEquals(lines[1]!.symbolicOperands, ["1", "2"]);
+    const result = environment.fileStack.lines().next().value;
+    assertEquals(result!.rawSource, "TST 1, 2");
 });
 
 Deno.test("The parameters in a definition must be strings", () => {
@@ -72,11 +70,16 @@ Deno.test("Macro parameters are substituted", () => {
     environment.macros.lines(
         testLine("", "TST", ["a", "b"])
     ).toArray();
-    environment.jsExpression("end();");
-    environment.macros.lines(testLine("", "", [])).toArray();
+    environment.jsExpression(
+        "end();"
+    );
+    environment.macros.lines(
+        testLine("", "", [])
+    ).toArray();
 
-    environment.jsExpression('testMacro("R15", 2);');
-    const result = environment.macros.lines(testLine("", "", [])).toArray();
-    assertEquals(result[1]!.mnemonic, "TST");
-    assertEquals(result[1]!.symbolicOperands, ["R15", "2"]);
+    environment.jsExpression(
+        'testMacro("R15", 2);'
+    );
+    const result = environment.fileStack.lines().next().value;
+    assertEquals(result!.rawSource, "TST R15, 2");
 });
