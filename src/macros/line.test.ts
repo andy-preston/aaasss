@@ -1,7 +1,8 @@
-import { assert, assertEquals } from "assert";
+import { assert, assertEquals, assertNotEquals } from "assert";
 import type { Directive } from "../directives/data-types.ts";
 import { assertSuccess } from "../failure/testing.ts";
 import { testEnvironment, testLine, testLineWithSource } from "./testing.ts";
+import { failure } from "../failure/failure-or-box.ts";
 
 const testLines: Array<[string, string]> = [
     ["testLabel", "TST"],
@@ -70,6 +71,30 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
         assert(lineSourceCode.includes(label));
         assert(lineSourceCode.includes(mnemonic));
     }
+});
+
+Deno.test("Lines with failures are not recorded in the macro", () => {
+    const environment = testEnvironment();
+
+    environment.macros.macro("testMacro");
+    const skipFirstLine = environment.macros.lines(testLine("", 0, "", "", []));
+    assert(skipFirstLine.isRecordingMacro);
+
+    const failingLine = testLineWithSource("I have failed!", "", "", []);
+    failingLine.withFailure(failure(undefined, "type_positive", "negative"));
+    environment.macros.lines(failingLine);
+    environment.macros.lines(testLineWithSource("OK!", "", "", []));
+    environment.macros.end();
+    const testMacro = environment.symbolTable.use("testMacro") as Directive;
+
+    assertSuccess(testMacro(), undefined);
+    let count = 0;
+    for (const line of environment.mockFileStack.lines()) {
+        count = count + 1;
+        assertNotEquals(line.rawSource, "I have failed!");
+        assertEquals(line.rawSource, "OK!");
+    }
+    assertEquals(count, 1);
 });
 
 Deno.test("Lines that are being replayed have a macro name and count", () => {

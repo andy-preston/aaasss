@@ -62,7 +62,7 @@ export const recording = (macros: MacroList) => {
     const recorded = (line: LineWithTokens) => {
         if (skipFirstLine) {
             skipFirstLine = false;
-        } else {
+        } else if (!line.failed()) {
             theMacro!.lines.push(line);
         }
         return lineWithProcessedMacro(line, true);
