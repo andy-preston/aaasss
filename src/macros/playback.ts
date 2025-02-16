@@ -1,32 +1,17 @@
 import { parameterList } from "../directives/type-checking.ts";
-import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
-import { SymbolicOperand } from "../operands/data-types.ts";
-import { FileLineIterator, FileStack } from "../source-code/file-stack.ts";
-import { SymbolTable } from "../symbol-table/symbol-table.ts";
-import { Label } from "../tokens/data-types.ts";
-import { LineWithTokens } from "../tokens/line-types.ts";
-import type { ActualParameters, Macro, MacroList, MacroName } from "./data-types.ts";
-import { LineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
+import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import type { SymbolicOperand } from "../operands/data-types.ts";
+import type { Label } from "../tokens/data-types.ts";
+import type { LineWithTokens } from "../tokens/line-types.ts";
+import type { ActualParameters, MacroList, MacroName } from "./data-types.ts";
+import { lineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
 
-export type MacroInvocation = (
-    ...parameters: ActualParameters
-) => Box<undefined> | Failure;
 
-export const playback = (
-    macros: MacroList, symbolTable: SymbolTable, fileStack: FileStack
-) => {
+export const playback = (macros: MacroList) => {
+
     const parameterMap: Map<MacroName, ActualParameters> = new Map([]);
 
-    function* imaginaryFile(
-        macroName: string, theMacro: Macro
-    ): FileLineIterator {
-        const macroCount = symbolTable.count(macroName);
-        for (const line of theMacro.lines) {
-            yield [line.rawSource, macroName, macroCount, false];
-        }
-    }
-
-    const useMacroMethod = (
+    const parameterSetup = (
         macroName: MacroName, actualParameters: ActualParameters
     ) => {
         const checkedParameters = parameterList(actualParameters, "type_macroParams");
@@ -43,7 +28,6 @@ export const playback = (
             macroName,
             checkedParameters.value == "undefined" ? [] : actualParameters
         );
-        fileStack.pushImaginary(imaginaryFile(macroName, theMacro));
         return emptyBox();
     };
 
@@ -74,13 +58,14 @@ export const playback = (
         });
     };
 
-    const remapped = (line: LineWithProcessedMacro) =>
-        line.macroName == "" ? line : lineWithRemappedMacro(
+    const remapped = (line: LineWithTokens) => line.macroName == ""
+        ? lineWithProcessedMacro(line, false)
+        : lineWithRemappedMacro(
             line, remappedLabel(line), remappedParameters(line)
         );
 
     return {
-        "useMacroMethod": useMacroMethod,
+        "parameterSetup": parameterSetup,
         "remapped": remapped
     };
 };

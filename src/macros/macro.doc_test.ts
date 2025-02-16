@@ -56,6 +56,8 @@ Deno.test("A macro can be called from inside another macro", () => {
         '    {{ innerMacro(2048); }}',
         "    {{ end(); }}",
         "",
+        "    {{ outerMacro() }}"
+
     ]);
     demo.assemble();
     assertFileContains(".lst", [
@@ -67,18 +69,22 @@ Deno.test("A macro can be called from inside another macro", () => {
         "                      4     LDS R30, address",
         "                      5     {{ end(); }}",
         "                      6",
-        '                      7     {{ macro("outerMacro", ["address"]); }}',
+        '                      7     {{ macro("outerMacro"); }}',
         "                      8     {{ innerMacro(1024); }}",
-        "                      8     LDS R30, address",
         "                      9     {{ innerMacro(2048); }}",
-        "                      9     LDS R30, address",
         "                     10     {{ end(); }}",
         "                     11",
+        "                     12     {{ outerMacro() }}",
+        "                     12     {{ innerMacro(1024); }}",
+        "000000 91 E0 04 00   12     LDS R30, address",
+        "                     12     {{ innerMacro(2048); }}",
+        "000002 91 E0 08 00   12     LDS R30, address",
         "",
         "Symbol Table",
         "============",
         "",
-        "innerMacro (2)",
+        "innerMacro (4)",
+        "outerMacro (1)",
         "R30 = 30 (2)"
     ]);
     assertFileContains(".hex", [

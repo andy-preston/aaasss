@@ -1,3 +1,4 @@
+import type { Box, Failure } from "../failure/failure-or-box.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 
 export type MacroName = string;
@@ -15,3 +16,7 @@ export const macro = (parameters: DefinedParameters) => ({
 export type Macro = ReturnType<typeof macro>;
 
 export type MacroList = Map<MacroName, Macro>;
+
+export type MacroInvocation = (
+    ...parameters: ActualParameters
+) => Box<undefined> | Failure;

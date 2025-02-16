@@ -90,5 +90,3 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
         }
     }
 });
-
-});

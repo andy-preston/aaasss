@@ -3,7 +3,7 @@ import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { Directive } from "../directives/data-types.ts";
 import type { DirectiveList } from "../directives/directive-list.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
-import type { MacroInvocation } from "../macros/playback.ts";
+import type { MacroInvocation } from "../macros/data-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 
 type UserFunction = MacroInvocation;

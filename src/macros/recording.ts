@@ -5,17 +5,21 @@ import type { LineWithTokens } from "../tokens/line-types.ts";
 import { macro, type DefinedParameters, type Macro, type MacroList, type MacroName } from "./data-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 
-export const recording = (
-    macros: MacroList,
-    useMacroMethod: (macroName: string) => void
-) => {
+type UseMacroMethod = (macroName: string) => void;
+
+export const recording = (macros: MacroList) => {
     let theMacro: Macro | undefined = undefined;
     let macroName: MacroName = "";
     let skipFirstLine = false;
+    let useMacroMethod: UseMacroMethod | undefined
 
     const reset = () => {
         theMacro = undefined;
         macroName = "";
+    };
+
+    const useMacroMethodAttachment = (method: UseMacroMethod) => {
+        useMacroMethod = method;
     };
 
     const start: Directive = (
@@ -48,7 +52,7 @@ export const recording = (
             return failure(undefined, "macro_end", undefined);
         }
         macros.set(macroName, theMacro!);
-        useMacroMethod(macroName);
+        useMacroMethod!(macroName);
         reset();
         return emptyBox();
     };
@@ -56,14 +60,12 @@ export const recording = (
     const isRecording = () => theMacro != undefined;
 
     const recorded = (line: LineWithTokens) => {
-        if (isRecording()) {
-            if (skipFirstLine) {
-                skipFirstLine = false;
-            } else {
-                theMacro!.lines.push(line);
-            }
+        if (skipFirstLine) {
+            skipFirstLine = false;
+        } else {
+            theMacro!.lines.push(line);
         }
-        return lineWithProcessedMacro(line, isRecording());
+        return lineWithProcessedMacro(line, true);
     };
 
     const leftInIllegalState = () => isRecording()
@@ -74,6 +76,8 @@ export const recording = (
         "reset": reset,
         "start": start,
         "end": end,
+        "isRecording": isRecording,
+        "useMacroMethod": useMacroMethodAttachment,
         "recorded": recorded,
         "leftInIllegalState": leftInIllegalState
     };

@@ -16,11 +16,10 @@ export const lineWithProcessedMacro = (
 };
 
 export const lineWithRemappedMacro = (
-    line: LineWithProcessedMacro,
-    label: Label, symbolicOperands: Array<string>
+    line: LineWithTokens, label: Label, symbolicOperands: Array<string>
 ) => {
     (line as MutableLine).label = label;
     (line as MutableLine).symbolicOperands =
         operands<SymbolicOperands>(symbolicOperands);
-    return line as LineWithProcessedMacro;
+    return lineWithProcessedMacro(line, false);
 };
