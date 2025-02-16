@@ -6,9 +6,7 @@ import type { LineWithTokens } from "../tokens/line-types.ts";
 import type { ActualParameters, MacroList, MacroName } from "./data-types.ts";
 import { lineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
 
-
-export const playback = (macros: MacroList) => {
-
+export const remapping = (macros: MacroList) => {
     const parameterMap: Map<MacroName, ActualParameters> = new Map([]);
 
     const parameterSetup = (
@@ -70,4 +68,4 @@ export const playback = (macros: MacroList) => {
     };
 };
 
-export type Playback = ReturnType<typeof playback>;
+export type Remapping = ReturnType<typeof remapping>;
