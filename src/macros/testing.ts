@@ -6,6 +6,7 @@ import { emptyBox } from "../failure/failure-or-box.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
+import { SourceCode } from "../source-code/data-types.ts";
 import type { FileLineIterator, SourceOfSource } from "../source-code/file-stack.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
@@ -55,11 +56,16 @@ export const testLine = (
     macroName: string, macroCount: number,
     label: Label, mnemonic: Mnemonic, operands: SymbolicOperands
 ) => {
-    const sourceLabel = label ? `${label}: ` : "";
-    const mockSource = `${sourceLabel}${mnemonic} ${operands.join(", ")}`;
-    const raw = lineWithRawSource(
-        "", 0, mockSource, macroName, macroCount, false
-    );
+    const raw = lineWithRawSource("", 0, "", macroName, macroCount, false);
+    const rendered = lineWithRenderedJavascript(raw, "");
+    return lineWithTokens(rendered, label, mnemonic, operands);
+};
+
+export const testLineWithSource = (
+    sourceCode: SourceCode,
+    label: Label, mnemonic: Mnemonic, operands: SymbolicOperands
+) => {
+    const raw = lineWithRawSource("", 0, sourceCode, "", 0, false);
     const rendered = lineWithRenderedJavascript(raw, "");
     return lineWithTokens(rendered, label, mnemonic, operands);
 };

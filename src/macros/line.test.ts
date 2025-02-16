@@ -1,7 +1,7 @@
 import { assert, assertEquals } from "assert";
 import type { Directive } from "../directives/data-types.ts";
 import { assertSuccess } from "../failure/testing.ts";
-import { testEnvironment, testLine } from "./testing.ts";
+import { testEnvironment, testLine, testLineWithSource } from "./testing.ts";
 
 const testLines: Array<[string, string]> = [
     ["testLabel", "TST"],
@@ -54,8 +54,10 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const skipFirstLine = environment.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     for (const [label, mnemonic] of testLines) {
+        const reconstructedLabel = label ? `${label}: ` : "";
+        const reconstructedSource = `${reconstructedLabel}${mnemonic}`;
         environment.macros.lines(
-            testLine("", 0, label, mnemonic, [])
+            testLineWithSource(reconstructedSource, label, mnemonic, [])
         );
     }
     environment.macros.end();
