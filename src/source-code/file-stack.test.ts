@@ -107,9 +107,9 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
     assertEquals(firstLine.rawSource, "top.file 1");
 
     const imaginaryFile = function* (): FileLineIterator {
-        yield ["one", false];
-        yield ["two", false];
-        yield ["three", false];
+        yield ["one", "", 0, false];
+        yield ["two", "", 0, false];
+        yield ["three", "", 0, false];
     }
     files.pushImaginary(imaginaryFile());
 

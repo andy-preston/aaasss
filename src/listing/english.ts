@@ -20,9 +20,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "macro_multiDefine": (_line: LineWithAddress) => [
         "You can't define a macro whilst you're still defining the previous one"
     ],
-    "macro_empty": (_line: LineWithAddress) => [
-        "Macro hasn't got any lines!"
-    ],
     "macro_end": (_line: LineWithAddress) => [
         "Can't end macro definition when a macro is not being defined"
     ],

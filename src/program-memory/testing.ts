@@ -30,7 +30,7 @@ export const testEnvironment = () => {
 };
 
 export const testLine = (label: Label, pokes: Array<Code>, code: Code) => {
-    const raw = lineWithRawSource("", 0, false, "");
+    const raw = lineWithRawSource("", 0, "", "", 0, false);
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, label, "", []);
     const processed = lineWithProcessedMacro(tokenised, false);

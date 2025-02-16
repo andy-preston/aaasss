@@ -3,6 +3,7 @@ import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import { macro, type DefinedParameters, type Macro, type MacroList, type MacroName } from "./data-types.ts";
+import { lineWithProcessedMacro } from "./line-types.ts";
 
 export const recording = (
     macros: MacroList,
@@ -10,12 +11,11 @@ export const recording = (
 ) => {
     let theMacro: Macro | undefined = undefined;
     let macroName: MacroName = "";
-    let onLastLine = false;
+    let skipFirstLine = false;
 
     const reset = () => {
         theMacro = undefined;
         macroName = "";
-        onLastLine = false;
     };
 
     const start: Directive = (
@@ -39,6 +39,7 @@ export const recording = (
         theMacro = macro(
             checkedParameters.value == "undefined" ? [] : parameters
         );
+        skipFirstLine = true;
         return emptyBox();
     };
 
@@ -46,39 +47,35 @@ export const recording = (
         if (theMacro == undefined) {
             return failure(undefined, "macro_end", undefined);
         }
-        if (theMacro.lines.length == 0) {
-            return failure(undefined, "macro_empty", undefined);
-        }
-        onLastLine = true;
-        return emptyBox();
-    };
-
-    const theLastLine = () => {
         macros.set(macroName, theMacro!);
         useMacroMethod(macroName);
         reset();
+        return emptyBox();
     };
 
     const isRecording = () => theMacro != undefined;
 
-    const shouldRecordThis = (line: LineWithTokens) =>
-        line.hasAssembly() || onLastLine;
-
-    const record = (line: LineWithTokens) => {
-        if (isRecording() && shouldRecordThis(line)) {
-            theMacro!.lines.push(line);
-            if (onLastLine) {
-                theLastLine();
+    const recorded = (line: LineWithTokens) => {
+        if (isRecording()) {
+            if (skipFirstLine) {
+                skipFirstLine = false;
+            } else {
+                theMacro!.lines.push(line);
             }
         }
+        return lineWithProcessedMacro(line, isRecording());
     };
+
+    const leftInIllegalState = () => isRecording()
+        ? failure(undefined, "macro_noEnd", undefined)
+        : emptyBox();
 
     return {
         "reset": reset,
         "start": start,
         "end": end,
-        "record": record,
-        "isRecording": isRecording
+        "recorded": recorded,
+        "leftInIllegalState": leftInIllegalState
     };
 };
 

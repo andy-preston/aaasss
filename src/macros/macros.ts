@@ -1,9 +1,7 @@
-import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import { FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import type { ActualParameters, MacroList } from "./data-types.ts";
-import { lineWithProcessedMacro } from "./line-types.ts";
 import { playback } from "./playback.ts";
 import { recording } from "./recording.ts";
 
@@ -15,20 +13,15 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     const useMacroMethod = (macroName: string) => {
         symbolTable.add(
             macroName,
-            (...parameters: ActualParameters) => player(macroName, parameters)
+            (...parameters: ActualParameters) =>
+                player.useMacroMethod(macroName, parameters)
         );
     };
 
     const recorder = recording(macros, useMacroMethod);
 
-    const lines = function* (line: LineWithTokens) {
-        recorder.record(line);
-        yield lineWithProcessedMacro(line, recorder.isRecording());
-    };
-
-    const leftInIllegalState = () => recorder.isRecording()
-        ? failure(undefined, "macro_noEnd", undefined)
-        : emptyBox();
+    const lines = (line: LineWithTokens) =>
+        player.remapped(recorder.recorded(line));
 
     const reset = () => {
         macros.clear();
@@ -37,7 +30,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
 
     return {
         "reset": reset,
-        "leftInIllegalState": leftInIllegalState,
+        "leftInIllegalState": recorder.leftInIllegalState,
         "macro": recorder.start,
         "end": recorder.end,
         "lines": lines

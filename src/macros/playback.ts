@@ -1,9 +1,12 @@
 import { parameterList } from "../directives/type-checking.ts";
 import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { SymbolicOperand } from "../operands/data-types.ts";
 import { FileLineIterator, FileStack } from "../source-code/file-stack.ts";
 import { SymbolTable } from "../symbol-table/symbol-table.ts";
+import { Label } from "../tokens/data-types.ts";
+import { LineWithTokens } from "../tokens/line-types.ts";
 import type { ActualParameters, Macro, MacroList, MacroName } from "./data-types.ts";
-import { labelsAndOperands } from "./labels-operands.ts";
+import { LineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
 
 export type MacroInvocation = (
     ...parameters: ActualParameters
@@ -12,33 +15,16 @@ export type MacroInvocation = (
 export const playback = (
     macros: MacroList, symbolTable: SymbolTable, fileStack: FileStack
 ) => {
+    const parameterMap: Map<MacroName, ActualParameters> = new Map([]);
 
     function* imaginaryFile(
-        macroName: string, theMacro: Macro, withParameters: ActualParameters
+        macroName: string, theMacro: Macro
     ): FileLineIterator {
-
-        const labelPrefix = () => {
-            const count = symbolTable.count(macroName);
-            return `${macroName}$${count}$`;
-        };
-
-        const map = labelsAndOperands(theMacro, labelPrefix(), withParameters!);
-
+        const macroCount = symbolTable.count(macroName);
         for (const line of theMacro.lines) {
-            const mangledSourceCode: Array<string> = [];
-            if (line.label) {
-                mangledSourceCode.push(`${map.label(line.label)}:`);
-            }
-            if (line.mnemonic) {
-                mangledSourceCode.push(line.mnemonic);
-            }
-            const symbolicOperands = line.symbolicOperands.map(map.operand);
-            if (symbolicOperands.length > 0) {
-                mangledSourceCode.push(symbolicOperands.join(", "));
-            }
-            yield [mangledSourceCode.join(" "), false];
+            yield [line.rawSource, macroName, macroCount, false];
         }
-    };
+    }
 
     const useMacroMethod = (
         macroName: MacroName, actualParameters: ActualParameters
@@ -53,15 +39,50 @@ export const playback = (
                 undefined, "macro_params", `${theMacro.parameters.length}`
             );
         }
-        fileStack.pushImaginary(imaginaryFile(
+        parameterMap.set(
             macroName,
-            theMacro,
             checkedParameters.value == "undefined" ? [] : actualParameters
-        ));
+        );
+        fileStack.pushImaginary(imaginaryFile(macroName, theMacro));
         return emptyBox();
     };
 
-    return useMacroMethod;
+    const expandedLabel = (line: LineWithTokens, label: Label) =>
+        `${line.macroName}$${line.macroCount}$${label}`;
+
+    const remappedLabel = (line: LineWithTokens) =>
+        line.label ? expandedLabel(line, line.label) : "";
+
+    const remappedParameters = (line: LineWithTokens) => {
+        const theMacro = macros.get(line.macroName)!;
+        const actualParameters = parameterMap.get(line.macroName)!;
+
+        const isLabel = (parameter: SymbolicOperand) =>
+            theMacro.lines.find(
+                line => line.label == parameter
+            ) != undefined;
+
+        return line.symbolicOperands.map(symbolicOperand => {
+            if (isLabel(symbolicOperand)) {
+                return expandedLabel(line, symbolicOperand);
+            }
+            const parameterIndex = theMacro.parameters.indexOf(symbolicOperand);
+            if (parameterIndex >= 0) {
+                return `${actualParameters[parameterIndex]}`;
+            }
+            return symbolicOperand;
+        });
+    };
+
+    const remapped = (line: LineWithProcessedMacro) =>
+        line.macroName == "" ? line : lineWithRemappedMacro(
+            line, remappedLabel(line), remappedParameters(line)
+        );
+
+    return {
+        "useMacroMethod": useMacroMethod,
+        "remapped": remapped
+    };
 };
 
 export type Playback = ReturnType<typeof playback>;

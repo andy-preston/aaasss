@@ -29,4 +29,3 @@ Deno.test("... or index register names", () => {
     const tokenised = tokenise(line);
     assertEquals(tokenised.symbolicOperands, ["X", "23"]);
 });
-

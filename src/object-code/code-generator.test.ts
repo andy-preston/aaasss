@@ -21,18 +21,19 @@ const testEnvironment = () => {
 
 const testLine = (
     label: Label, mnemonic: Mnemonic,
-    symbolic: SymbolicOperands, numeric: NumericOperands, types: OperandTypes
+    symbolic: SymbolicOperands, numeric: NumericOperands, types: OperandTypes,
+    isRecordingMacro: boolean,
 ) => {
-    const raw = lineWithRawSource("", 0, false, "");
+    const raw = lineWithRawSource("", 0, "", "", 0, false);
     const rendered = lineWithRenderedJavascript(raw, "");
     const tokenised = lineWithTokens(rendered, label, mnemonic, symbolic);
-    const processed = lineWithProcessedMacro(tokenised, false);
+    const processed = lineWithProcessedMacro(tokenised, isRecordingMacro);
     return lineWithOperands(processed, numeric, types);
 };
 
 Deno.test("Lines with no mnemonic don't bother generating code", () => {
     const environment = testEnvironment();
-    const line = testLine("", "", [], [], []);
+    const line = testLine("", "", [], [], [], false);
     const result = environment.objectCode(line);
     assertFalse(result.failed());
     assertEquals(result.failures.length, 0);
@@ -41,7 +42,7 @@ Deno.test("Lines with no mnemonic don't bother generating code", () => {
 
 Deno.test("Attempting to generate code with no device selected fails", () => {
     const environment = testEnvironment();
-    const line = testLine("", "DES", [], [], []);
+    const line = testLine("", "DES", [], [], [], false);
     const result = environment.objectCode(line);
     assert(result.failed());
     result.failures().forEach((failure, index) => {
@@ -55,7 +56,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
     const environment = testEnvironment();
     environment.device.property("deviceName", "test");
     environment.device.unsupportedInstructions(["DES"]);
-    const line = testLine("", "DES", [], [], []);
+    const line = testLine("", "DES", [], [], [], false);
     const result = environment.objectCode(line);
     assert(result.failed());
     result.failures().forEach((failure, index) => {
@@ -68,7 +69,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
 Deno.test("Lines with unknown instructions fail", () => {
     const environment = testEnvironment();
     environment.device.property("deviceName", "test");
-    const line = testLine("", "NOT_REAL", [], [], []);
+    const line = testLine("", "NOT_REAL", [], [], [], false);
     const result = environment.objectCode(line);
     assert(result.failed());
     result.failures().forEach((failure, index) => {
@@ -81,8 +82,17 @@ Deno.test("Lines with unknown instructions fail", () => {
 Deno.test("Lines with real/supported instructions produce code", () => {
     const environment = testEnvironment();
     environment.device.property("deviceName", "test");
-    const line = testLine("", "DES", ["15"], [15], ["number"]);
+    const line = testLine("", "DES", ["15"], [15], ["number"], false);
     const result = environment.objectCode(line);
     assertFalse(result.failed(), "Unexpected failure");
     assertEquals(result.code,[[0x94, 0xfb]]);
+});
+
+Deno.test("If a line has `isRecordingMacro == true`, no code is generated", () => {
+    const environment = testEnvironment();
+    environment.device.property("deviceName", "test");
+    const line = testLine("", "DES", ["15"], [15], ["number"], true);
+    const result = environment.objectCode(line);
+    assertFalse(result.failed(), "Unexpected failure");
+    assertEquals(result.code,[]);
 });

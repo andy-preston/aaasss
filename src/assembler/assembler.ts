@@ -8,7 +8,6 @@ import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { SourceOfSource } from "../source-code/file-stack.ts";
-import type { LineWithRawSource } from "../source-code/line-types.ts";
 import type { Tokenise } from "../tokens/tokenise.ts";
 import { passes, type Pass, type PassNumber } from "./pass.ts";
 
@@ -36,19 +35,13 @@ export const assemblyPipeline = (
         hex.line(line);
     };
 
-    const sourceLine = (line: LineWithRawSource) => {
-        macro(tokenise(embeddedJs(line))).forEach(
-            (expanded) => {
-                output(addressed(code(operands(expanded))));
-            }
-        );
-    }
-
     const allSource = (passNumber: PassNumber) => {
         if (passNumber == 2) {
             pass.second();
         }
-        lines().forEach(sourceLine);
+        lines().forEach(line =>
+            output(addressed(code(operands(macro(tokenise(embeddedJs(line)))))))
+        );
     };
 
     return () => {

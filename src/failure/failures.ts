@@ -10,7 +10,7 @@ export type FailureKind = TypeFailure
     | "file_notFound"
     | "js_error" | "js_jsMode" | "js_assemblerMode"
     | "macro_multiDefine" | "macro_noEnd" | "macro_end" | "macro_params"
-        | "macro_empty" | "macro_name" | "macro_notExist"
+        | "macro_name" | "macro_notExist"
     | "mnemonic_supportedUnknown" | "mnemonic_notSupported" | "mnemonic_unknown"
     | "operand_wrongCount" | "operand_blank" | "operand_wrongType"
         | "operand_offsetX" | "operand_offsetNotLdd" | "operand_offsetNotStd"

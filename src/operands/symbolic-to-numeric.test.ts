@@ -24,7 +24,7 @@ const testEnvironment = () => {
 };
 
 const testLine = (symbolic: SymbolicOperands) => {
-    const withSource = lineWithRawSource("", 0, false, "");
+    const withSource = lineWithRawSource("", 0, "", "", 0, false);
     const withJavascript = lineWithRenderedJavascript(withSource, "");
     const withTokens = lineWithTokens(withJavascript, "", "", symbolic)
     return lineWithProcessedMacro(withTokens, false);

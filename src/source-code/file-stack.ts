@@ -4,7 +4,8 @@ import { box, emptyBox, failure, type Box, type Failure } from "../failure/failu
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource, type LineWithRawSource } from "./line-types.ts";
 
-export type FileLineIterator = Generator<[SourceCode, boolean], void, unknown>;
+export type FileLineIterator =
+    Generator<[SourceCode, string, number, boolean], void, unknown>;
 
 type StackEntry = {
     "fileName": FileName;
@@ -40,7 +41,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             // but imaginary files just reuse this one without incrementing
             lineNumber = index + 1;
             const lastLine = fileStack.length == 1 && lineNumber == lines.length;
-            yield [text, lastLine];
+            yield [text, "", 0, lastLine];
         }
     };
 
@@ -73,7 +74,9 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     const lines: SourceOfSource = function* () {
         const topFile = include(topFileName);
         if (topFile.which == "failure") {
-            yield lineWithRawSource(topFileName, 0, false, "").withFailure(topFile);
+            yield lineWithRawSource(
+                topFileName, 0, "", "", 0, false
+            ).withFailure(topFile);
         }
         let file = fileStack[0];
         while (file != undefined) {
@@ -81,9 +84,10 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             if (next.done) {
                 fileStack.pop();
             } else {
-                const [rawSource, lastLine] = next.value;
+                const [rawSource, macroName, macroCount, lastLine] = next.value;
                 yield lineWithRawSource(
-                    file.fileName, lineNumber, lastLine, rawSource
+                    file.fileName, lineNumber, rawSource,
+                    macroName, macroCount, lastLine
                 );
             }
             // Another file could have been pushed by an include directive

@@ -11,7 +11,7 @@ import { embeddedJs } from "./embedded.ts";
 import { jSExpression } from "./expression.ts";
 
 const testLine = (source: SourceCode) =>
-    lineWithRawSource("", 0, false, source);
+    lineWithRawSource("", 0, source, "", 0, false);
 
 const testEnvironment = () => {
     const registers = cpuRegisters();
