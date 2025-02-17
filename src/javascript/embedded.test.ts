@@ -31,7 +31,7 @@ Deno.test("A symbol assignment does not pollute the `this` context object", () =
         "{{ plop = 27; this.plop; }}"
     ));
     assertNotEquals(rendered.assemblySource, "27");
-    assertEquals(rendered.assemblySource, "0");
+    assertEquals(rendered.assemblySource, "");
 });
 
 Deno.test("A symbol will not be reassigned using `this.symbol`", () => {

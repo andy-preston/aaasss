@@ -69,7 +69,10 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
 
 Deno.test("A symbol is returned and counted if it's a device property", () => {
     const environment = testEnvironment();
+    environment.deviceProperties.property("deviceName", "someDevice");
     environment.deviceProperties.property("test", 57);
+    assertSuccess(environment.deviceProperties.public.value("test"), 57);
+
     const result = environment.symbolTable.use("test");
     assertEquals(result, 57);
     assertEquals(environment.symbolTable.count("test"), 1);

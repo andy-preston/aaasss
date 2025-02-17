@@ -18,7 +18,7 @@ export const programMemory = (
     }
 
     const pastEnd = (newAddress: number) => {
-        const bytes = device.numeric("programMemoryBytes");
+        const bytes = device.numericValue("programMemoryBytes");
         if (bytes.which == "failure") {
             return bytes.kind == "device_notSelected"
                 ? failure(undefined, "programMemory_sizeUnknown", undefined)

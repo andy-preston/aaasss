@@ -47,15 +47,23 @@ export const symbolTable = (
     };
 
     const use = (symbolName: string) => {
-        const valueAndUsage = (): MapEntry =>
-            symbols.has(symbolName)
-                ? symbols.get(symbolName)!
-                : deviceProperties.has(symbolName)
-                ? [0, deviceProperties.rawValue(symbolName) as number]
-                : cpuRegisters.has(symbolName)
-                ? [0, cpuRegisters.value(symbolName)!]
-                : [0, 0];
 
+        const valueAndUsage = (): MapEntry => {
+            // If a symbol has already been used, it's in the symbol table
+            // with a usage count
+            if (symbols.has(symbolName)) {
+                return symbols.get(symbolName)!;
+            }
+            // Otherwise, it's definitely going to be in a property
+            const property = deviceProperties.value(symbolName);
+            if (property.which == "box") {
+                return [0, property.value];
+            }
+            // or definitely a CPU register
+            return [0, cpuRegisters.value(symbolName)!]
+        };
+
+        // Directives don't get counted.
         if (directiveList.has(symbolName)) {
             return directiveList.use(symbolName);
         }

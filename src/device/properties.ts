@@ -15,22 +15,32 @@ export const deviceProperties = () => {
 
     const has = (symbolName: string) => symbols.has(symbolName);
 
-    const rawValue = (symbolName: string) => symbols.get(symbolName);
+    const value = (symbolName: string) => {
+        if (!symbols.has("deviceName")) {
+            return failure(undefined, "device_notSelected", symbolName);
+        }
+        if (!symbols.has(symbolName)) {
+            return failure(
+                undefined,
+                "symbol_notFound",
+                `${symbols.get("deviceName")}/${symbolName}`
+            );
+        }
+        return box(symbols.get(symbolName)!);
+    };
 
-    const value = (symbolName: string) => !symbols.has("deviceName")
-        ? failure(undefined, "device_notSelected", undefined)
-        : symbols.has(symbolName)
-        ? box(symbols.get(symbolName))
-        : failure(undefined, "symbol_notFound", symbolName)
-
-    const numeric = (symbolName: string) => {
-        const result = value(symbolName);
-        return result.which == "failure"
-            ? result
-            : typeof result.value == "number"
-            ? result as Box<number>
-            : failure(undefined, "type_number", symbolName);
-    }
+    const numericValue = (symbolName: string) => {
+        const theValue = value(symbolName);
+        if (theValue.which == "failure") {
+            return theValue;
+        }
+        const typeOf = typeof theValue.value;
+        return typeOf != "number" ? failure(
+            undefined,
+            "type_number",
+            `${symbols.get("deviceName")}/${symbolName} = ${typeOf}`
+        ) : box(theValue.value as number);
+    };
 
     const hasReducedCore = (): Box<boolean> | Failure =>
         symbols.has("deviceName")
@@ -55,8 +65,7 @@ export const deviceProperties = () => {
         "public": {
             "has": has,
             "value": value,
-            "numeric": numeric,
-            "rawValue": rawValue,
+            "numericValue": numericValue,
             "hasReducedCore": hasReducedCore,
             "isUnsupported": isUnsupported,
         },

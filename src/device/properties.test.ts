@@ -24,7 +24,7 @@ Deno.test("Returns default Answer(s) once a device name is selected", () => {
     assertSuccess(unsupported, false);
 });
 
-Deno.test("Returns selected Answer(s) once 'rules' are selected", () => {
+Deno.test("Returns device properties once device type is selected", () => {
     const environment = testEnvironment();
     environment.deviceProperties.property("deviceName", "test");
     const name = environment.deviceProperties.public.value("deviceName");

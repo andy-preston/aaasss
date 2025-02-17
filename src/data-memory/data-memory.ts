@@ -15,8 +15,8 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
     };
 
     const ramAddress = (plusBytes: number) => {
-        const ramStart = device.numeric("ramStart");
-        const ramEnd = device.numeric("ramEnd");
+        const ramStart = device.numericValue("ramStart");
+        const ramEnd = device.numericValue("ramEnd");
         if (ramStart.which == "failure" || ramEnd.which == "failure") {
             return failure(undefined, "ram_sizeUnknown", "");
         }

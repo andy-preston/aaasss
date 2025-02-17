@@ -26,11 +26,13 @@ export const deviceChooser = (
         deviceName: string,
         fullSpec: FullSpec
     ): Box<undefined> | Failure => {
-        const previousName = deviceProperties.public.rawValue("deviceName");
-        if (previousName == deviceName) {
+        const previousName = deviceProperties.public.value("deviceName");
+        if (previousName.which == "box" && previousName.value == deviceName) {
             return emptyBox();
         }
-        if (previousName != undefined) {
+        const chosenAlready = previousName.which != "failure"
+            || previousName.kind != "device_notSelected";
+        if (chosenAlready) {
             return failure(undefined, "device_multiple", undefined);
         }
         deviceProperties.property("deviceName", deviceName);
