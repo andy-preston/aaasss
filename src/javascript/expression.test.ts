@@ -16,15 +16,17 @@ const testEnvironment = () => {
     };
 };
 
-Deno.test("Simple expressions do not require a `return`", () => {
+Deno.test("The last expression in the code is returned", () => {
     const environment = testEnvironment();
-    assertSuccess(environment.expression("20 / 2"), "10");
+    assertSuccess(environment.expression("5 + 7"), "12");
 });
 
-Deno.test("...but you can include one if you want", () => {
+Deno.test("Javascript can contain strings", () => {
     const environment = testEnvironment();
-    assertSuccess(environment.expression("return 20 / 2"), "10");
+    assertSuccess(environment.expression("'single quoted'"), "single quoted");
+    assertSuccess(environment.expression('"double quoted"'), "double quoted");
 });
+
 
 Deno.test("If the result is undefined, `value` returns empty string", () => {
     const environment = testEnvironment();
@@ -38,15 +40,14 @@ Deno.test("A plain assignment will not return a value", () => {
 
 Deno.test("Javascript can contain newlines", () => {
     const environment = testEnvironment();
-    const js = "const test1 = 4;\nconst test2 = 6;\n return test1 + test2;";
+    const js = "const test1 = 4;\nconst test2 = 6;\ntest1 + test2;";
     assertSuccess(environment.expression(js), "10");
 });
 
 Deno.test("Javascript can get value from the symbol table", () => {
     const environment = testEnvironment();
     environment.symbols.add("plop", 23);
-    const js = "plop";
-    const result = environment.expression(js);
+    const result = environment.expression("plop");
     assertSuccess(result, "23");
 });
 

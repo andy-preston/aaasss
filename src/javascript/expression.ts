@@ -1,10 +1,10 @@
 import { box, failure, isFailureOrBox, type Box, type Failure } from "../failure/failure-or-box.ts";
 import { SymbolTable } from "../symbol-table/symbol-table.ts";
-import { returnIfExpression } from "./magic.ts";
 
 const trailingSemicolons = /;*$/;
 
 export const jSExpression = (symbolTable: SymbolTable) => {
+
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
             const result =
@@ -31,19 +31,23 @@ export const jSExpression = (symbolTable: SymbolTable) => {
         }
     };
 
+    const boxed = (value: unknown) =>
+        value == undefined ? box("") : box(`${value}`.trim());
+
+    const reBox = (result: Failure | Box<unknown>) =>
+        result.which == "failure" ? result : boxed(result.value);
+
     return (jsSource: string): Box<string> | Failure => {
-        const trimmed = jsSource.trim().replace(trailingSemicolons, "").trim();
-        if (trimmed == "") {
+        const clean = jsSource
+            .replaceAll("\n", " ").replaceAll('"', '\\\"')
+            .trim().replace(trailingSemicolons, "").trim();
+        if (clean == "") {
             return box("");
         }
         const result = functionCall(
-            `with (this) { ${returnIfExpression(trimmed)}; }`
+            `with (this) { return eval("${clean}"); }`
         );
-        return result == undefined
-            ? box("")
-            : isFailureOrBox(result)
-            ? result as Box<string> | Failure
-            : box(`${result}`.trim());
+        return isFailureOrBox(result) ? reBox(result) : boxed(result);
     };
 };
 

@@ -25,7 +25,16 @@ const testEnvironment = () => {
     };
 };
 
-Deno.test("A symbol will not be reassigned using this.symbol", () => {
+Deno.test("A symbol assignment does not pollute the `this` context object", () => {
+    const environment = testEnvironment();
+    const rendered = environment.js.rendered(testLine(
+        "{{ plop = 27; this.plop; }}"
+    ));
+    assertNotEquals(rendered.assemblySource, "27");
+    assertEquals(rendered.assemblySource, "0");
+});
+
+Deno.test("A symbol will not be reassigned using `this.symbol`", () => {
     const environment = testEnvironment();
     environment.symbolTable.defineDirective("plop", 57);
     // The assignment fails silently.
@@ -33,7 +42,7 @@ Deno.test("A symbol will not be reassigned using this.symbol", () => {
     // But let's treat it that assigning to this.something
     // is just not in the specification.
     const rendered = environment.js.rendered(testLine(
-        "{{ this.plop = 27; return this.plop; }}"
+        "{{ this.plop = 27; this.plop; }}"
     ));
     assertNotEquals(rendered.assemblySource, "27");
     assertEquals(rendered.assemblySource, "57");
@@ -42,7 +51,7 @@ Deno.test("A symbol will not be reassigned using this.symbol", () => {
 Deno.test("JS can be delimited with moustaches on the same line", () => {
     const environment = testEnvironment();
     const rendered = environment.js.rendered(testLine(
-        "MOV {{ const test = 27; return test; }}, R2"
+        "MOV {{ const test = 27; test; }}, R2"
     ));
     assertEquals(rendered.assemblySource, "MOV 27, R2");
 });
@@ -60,7 +69,7 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
     const lines = [
         testLine("some ordinary stuff {{ const test = 27;"),
         testLine('const message = "hello";'),
-        testLine("return message; }} matey!"),
+        testLine("message; }} matey!"),
     ];
     const rendered = lines.map(environment.js.rendered);
     assertEquals(rendered[0]!.assemblySource, "some ordinary stuff");

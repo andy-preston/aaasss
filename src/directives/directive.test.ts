@@ -43,14 +43,14 @@ Deno.test("Directives can return a failure", () => {
     assertFailure(result, "file_notFound");
 });
 
-Deno.test("Directives can return success in the form of a string", () => {
+Deno.test("Directives can return success in the form of an empty box", () => {
     const environment = testEnvironment();
     const testDirective: Directive = (_: string) => {
         return emptyBox();
     };
     environment.directiveList.includes("testDirective", testDirective);
     const result = environment.expression("testDirective('')");
-    assertSuccess(result, undefined);
+    assertSuccess(result, "");
 });
 
 Deno.test("You can't create a symbol with the same name as a directive", () => {
