@@ -15,6 +15,8 @@ export const deviceProperties = () => {
 
     const has = (symbolName: string) => symbols.has(symbolName);
 
+    const deviceName = () => symbols.get("deviceName");
+
     const value = (symbolName: string) => {
         if (!symbols.has("deviceName")) {
             return failure(undefined, "device_notSelected", [symbolName]);
@@ -62,6 +64,7 @@ export const deviceProperties = () => {
         "property": property,
         "reducedCore": setReducedCore,
         "unsupportedInstructions": unsupported.choose,
+        "deviceName": deviceName,
         "public": {
             "has": has,
             "value": value,
