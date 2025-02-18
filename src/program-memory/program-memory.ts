@@ -26,7 +26,7 @@ export const programMemory = (
         }
         const words = bytes.value / 2
         return newAddress > words
-            ? failure(undefined, "programMemory_outOfRange", `${words}`)
+            ? failure(undefined, "programMemory_outOfRange", [`${words}`])
             : emptyBox();
     }
 

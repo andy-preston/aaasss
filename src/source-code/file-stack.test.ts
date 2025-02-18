@@ -29,7 +29,7 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
         [1, 2, 3] as unknown as string
     );
     assertFailure(result, "type_string");
-    assertEquals((result as Failure).extra, "1,2,3");
+    assertEquals((result as Failure).extra, ["1,2,3"]);
 });
 
 Deno.test("Reading a file yields multiple lines with the file contents", () => {

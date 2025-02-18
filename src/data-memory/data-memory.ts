@@ -18,11 +18,11 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
         const ramStart = device.numericValue("ramStart");
         const ramEnd = device.numericValue("ramEnd");
         if (ramStart.which == "failure" || ramEnd.which == "failure") {
-            return failure(undefined, "ram_sizeUnknown", "");
+            return failure(undefined, "ram_sizeUnknown", undefined);
         }
         const address = ramStart.value + plusBytes;
         return address > ramEnd.value
-            ? failure(undefined, "ram_outOfRange", `${address}`)
+            ? failure(undefined, "ram_outOfRange", [`${address}`])
             : box(address);
     };
 
@@ -31,7 +31,7 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
         // but you can if you're worried that your RAM allocations might eat up
         // all the space.
         if (stack != 0) {
-            return failure(undefined, "ram_stackAllocated", `${stack}`);
+            return failure(undefined, "ram_stackAllocated", [`${stack}`]);
         }
         const check = ramAddress(newAllocationSize(bytes));
         if (check.which == "failure") {

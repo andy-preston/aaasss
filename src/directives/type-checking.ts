@@ -3,7 +3,7 @@ import { box, failure, type Box, type Failure } from "../failure/failure-or-box.
 export const stringParameter = (value: unknown): Box<string> | Failure => {
     const asString = `${value}`;
     return typeof value == "string"
-        ? box(asString) : failure(undefined, "type_string", asString);
+        ? box(asString) : failure(undefined, "type_string", [asString]);
 };
 
 export const parameterList = (
@@ -15,7 +15,7 @@ export const parameterList = (
     }
 
     if (!Array.isArray(parameters)) {
-        return failure(undefined, failureName, typeof parameters)
+        return failure(undefined, failureName, [typeof parameters])
     }
 
     const legalTypes = failureName == "type_strings"
@@ -28,6 +28,6 @@ export const parameterList = (
         }
     }
     return failed.length > 0
-        ? failure(undefined, failureName, failed.join(", "))
+        ? failure(undefined, failureName, [failed.join(", ")])
         : box("array");
 };

@@ -18,7 +18,7 @@ export const validScaledOperands = (
     ) => {
         const numeric = line.numericOperands[index]!;
         if (line.operandTypes[index] != operandType) {
-            line.withFailure(failure(index, "operand_wrongType", operandType));
+            line.withFailure(failure(index, "operand_wrongType", [operandType]));
             return 0;
         }
         const valid = validNumeric(numeric, numericType);
@@ -40,7 +40,7 @@ export const validScaledOperands = (
     const failed = line.numericOperands.length != requiredCount;
     if (failed) {
         line.withFailure(
-            failure(undefined, "operand_wrongCount", `${requiredCount}`)
+            failure(undefined, "operand_wrongCount", [`${requiredCount}`])
         );
     }
     return failed ? dummy : real;

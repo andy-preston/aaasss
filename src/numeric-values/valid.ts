@@ -22,6 +22,6 @@ export const validNumeric = (
         && value >= min
         && (max == undefined || value <= max)
         ? box(value as number)
-        : failure(undefined, numericType, asString);
+        : failure(undefined, numericType, [asString]);
 };
 

@@ -24,7 +24,7 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
         line.withFailure(failure(
-            undefined, "operand_wrongCount", `${operandsList.length}`
+            undefined, "operand_wrongCount", [`${operandsList.length}`]
         ));
     }
 
@@ -35,17 +35,17 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
             fullOperands.push(operand);
         } else if (indexing == "X+") {
             line.withFailure(failure(
-                fullOperands.length as OperandIndex, "operand_offsetX", ""
+                fullOperands.length as OperandIndex, "operand_offsetX", undefined
             ));
             fullOperands.push(operand);
         } else if (fullOperands.length == 0 && mnemonic != "STD") {
             line.withFailure(failure(
-                fullOperands.length as OperandIndex, "operand_offsetNotStd", ""
+                fullOperands.length as OperandIndex, "operand_offsetNotStd", undefined
             ));
             fullOperands.push(operand);
         } else if (fullOperands.length == 1 && mnemonic != "LDD") {
             line.withFailure(failure(
-                fullOperands.length as OperandIndex, "operand_offsetNotLdd", ""
+                fullOperands.length as OperandIndex, "operand_offsetNotLdd", undefined
             ));
             fullOperands.push(operand);
         } else {
@@ -56,7 +56,7 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
 
     for (const [index, operand] of fullOperands.entries()) {
         if (operand == "") {
-            line.withFailure(failure(index as OperandIndex, "operand_blank", ""));
+            line.withFailure(failure(index as OperandIndex, "operand_blank", undefined));
         }
     }
 

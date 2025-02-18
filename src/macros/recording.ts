@@ -26,14 +26,14 @@ export const recording = (macros: MacroList) => {
         name: MacroName, parameters: DefinedParameters = []
     ) => {
         if (theMacro != undefined) {
-            return failure(undefined, "macro_multiDefine", macroName);
+            return failure(undefined, "macro_multiDefine", [macroName]);
         }
         const checkedName = stringParameter(name);
         if (checkedName.which == "failure") {
             return checkedName;
         }
         if (macros.has(name)) {
-            return failure(undefined, "macro_name", name);
+            return failure(undefined, "macro_name", [name]);
         }
         const checkedParameters = parameterList(parameters, "type_strings");
         if (checkedParameters.which == "failure") {

@@ -4,7 +4,7 @@ import { type FailureKind } from "./failures.ts";
 export const failure = (
     operand: OperandIndex | undefined,
     kind: FailureKind,
-    extra: Error | string | undefined
+    extra: Error | Array<string> | undefined
 ) => {
     const onOperand = (index: OperandIndex) => {
         object.operand = index;

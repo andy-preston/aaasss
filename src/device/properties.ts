@@ -17,13 +17,13 @@ export const deviceProperties = () => {
 
     const value = (symbolName: string) => {
         if (!symbols.has("deviceName")) {
-            return failure(undefined, "device_notSelected", symbolName);
+            return failure(undefined, "device_notSelected", [symbolName]);
         }
         if (!symbols.has(symbolName)) {
             return failure(
                 undefined,
                 "symbol_notFound",
-                `${symbols.get("deviceName")}/${symbolName}`
+                [`${symbols.get("deviceName")}/${symbolName}`]
             );
         }
         return box(symbols.get(symbolName)!);
@@ -38,7 +38,7 @@ export const deviceProperties = () => {
         return typeOf != "number" ? failure(
             undefined,
             "type_number",
-            `${symbols.get("deviceName")}/${symbolName} = ${typeOf}`
+            [`${symbols.get("deviceName")}/${symbolName} = ${typeOf}`]
         ) : box(theValue.value as number);
     };
 

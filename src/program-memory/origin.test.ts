@@ -11,13 +11,13 @@ Deno.test("A device must be selected before program memory can be set", () => {
 Deno.test("Origin addresses can't be less than zero", () => {
     const environment = testEnvironment();
     const result = environment.memory.origin(-1);
-    assertFailureWithExtra(result, "type_positive", "-1");
+    assertFailureWithExtra(result, "type_positive", ["-1"]);
 });
 
 Deno.test("Origin addresses can't be strange type", () => {
     const environment = testEnvironment();
     const result = environment.memory.origin("nothing" as unknown as number);
-    assertFailureWithExtra(result, "type_positive", "nothing");
+    assertFailureWithExtra(result, "type_positive", ["nothing"]);
 });
 
 Deno.test("Device name is used to determine if properties have been set", () => {
@@ -34,7 +34,7 @@ Deno.test("Origin addresses must be progmem size when a device is chosen", () =>
     const words = bytes / 2;
     environment.device.property("programMemoryBytes", bytes);
     const result = environment.memory.origin(92);
-    assertFailureWithExtra(result, "programMemory_outOfRange", `${words}`);
+    assertFailureWithExtra(result, "programMemory_outOfRange", [`${words}`]);
 });
 
 Deno.test("Origin directive sets current address", () => {

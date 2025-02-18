@@ -37,7 +37,7 @@ export const symbolTable = (
         if (symbols.has(symbolName) && !pass.ignoreErrors()) {
             const [_usageCount, oldValue] = symbols.get(symbolName)!;
             if (value != oldValue) {
-                return failure(undefined, "symbol_alreadyExists", `${oldValue}`);
+                return failure(undefined, "symbol_alreadyExists", [`${oldValue}`]);
             }
         }
         if (!symbols.has(symbolName)) {

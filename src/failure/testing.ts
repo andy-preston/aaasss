@@ -25,7 +25,7 @@ export const assertFailure = <Boxed>(
 export const assertFailureWithExtra = <Boxed>(
     actual: Box<Boxed> | Failure,
     expectedKind: FailureKind,
-    expectedExtra: string
+    expectedExtra: Array<string>
 ) => {
     if (actual.which != "failure") {
         throw new AssertionError(`Should be failure not box (${actual.value})`);

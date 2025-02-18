@@ -26,7 +26,7 @@ Deno.test("No instruction has three (or more) operands", () => {
     assert(tokenised.failed());
     tokenised.failures().forEach((failure, index) => {
         assertEquals(index, 0);
-        assertFailureWithExtra(failure, "operand_wrongCount", "3");
+        assertFailureWithExtra(failure, "operand_wrongCount", ["3"]);
     });
 });
 

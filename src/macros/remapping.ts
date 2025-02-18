@@ -19,7 +19,7 @@ export const remapping = (macros: MacroList) => {
         const theMacro = macros.get(macroName)!;
         if (theMacro.parameters.length != actualParameters.length) {
             return failure(
-                undefined, "macro_params", `${theMacro.parameters.length}`
+                undefined, "macro_params", [`${theMacro.parameters.length}`]
             );
         }
         parameterMap.set(
