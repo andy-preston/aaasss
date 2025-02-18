@@ -23,23 +23,23 @@ export const recording = (macros: MacroList) => {
     };
 
     const start: Directive = (
-        name: MacroName, parameters: DefinedParameters = []
+        newName: MacroName, parameters: DefinedParameters = []
     ) => {
         if (theMacro != undefined) {
             return failure(undefined, "macro_multiDefine", [macroName]);
         }
-        const checkedName = stringParameter(name);
+        const checkedName = stringParameter(newName);
         if (checkedName.which == "failure") {
             return checkedName;
         }
-        if (macros.has(name)) {
-            return failure(undefined, "macro_name", [name]);
+        if (macros.has(newName)) {
+            return failure(undefined, "macro_name", [newName]);
         }
         const checkedParameters = parameterList(parameters, "type_strings");
         if (checkedParameters.which == "failure") {
             return checkedParameters;
         }
-        macroName = name;
+        macroName = newName;
         theMacro = macro(
             checkedParameters.value == "undefined" ? [] : parameters
         );
