@@ -1,5 +1,5 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import { NumericType } from "../numeric-values/types.ts";
+import type { NumericType } from "../numeric-values/types.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
@@ -42,7 +42,7 @@ export const dataDirect = (
             options(hasReducedCore());
 
         const operands = validScaledOperands(line, 2);
-        const register = operands("number", registerType, registerIndex);
+        const register = operands("register", registerType, registerIndex);
         const address = operands("number", addressType, addressIndex);
         const code = template(`${prefix}${operationBit}${suffix}`, [
             ["d", register],

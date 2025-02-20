@@ -14,12 +14,14 @@ import { deviceProperties } from "../device/properties.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 
 const testEnvironment = () => {
+    const registers = cpuRegisters();
     const symbols = symbolTable(
-        directiveList(), deviceProperties().public, cpuRegisters() ,pass()
+        directiveList(), deviceProperties().public, registers, pass()
     );
     return {
+        "cpuRegisters": registers,
         "symbolTable": symbols,
-        "operands": symbolicToNumeric(jSExpression(symbols))
+        "operands": symbolicToNumeric(symbols, jSExpression(symbols))
     };
 };
 
@@ -39,12 +41,11 @@ Deno.test("An expression yields a value", () => {
 
 Deno.test("A symbol yields a value", () => {
     const environment = testEnvironment();
-    environment.symbolTable.add("R7", 7);
+    environment.cpuRegisters.initialise(false);
     assertEquals(environment.symbolTable.use("R7"), 7);
     const result = environment.operands(testLine(["R7"]));
     assertEquals(result.numericOperands[0], 7);
-    //assertEquals(result.operandTypes[0], "register");
-    assertEquals(result.operandTypes[0], "number");
+    assertEquals(result.operandTypes[0], "register");
 });
 
 Deno.test("An index offset operand returns special values not related to the symbol table", () => {

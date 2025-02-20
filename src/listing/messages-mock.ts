@@ -5,16 +5,9 @@ export const mockFailureMessages = (
     failure: Failure, _line: LineWithObjectCode
 ) => {
     const result: Array<string> = [failure.kind];
-
-    if (failure.extra instanceof Error) {
-        result.push(failure.extra.name);
-        result.push(failure.extra.message);
-        return result;
-    }
-
-    if (failure.extra != undefined) {
-        result.push(failure.extra);
-    }
-
-    return result;
+    return failure.extra instanceof Error
+        ? result.concat([failure.extra.name, failure.extra.message])
+        : failure.extra != undefined
+        ? result.concat(failure.extra)
+        : result;
 };

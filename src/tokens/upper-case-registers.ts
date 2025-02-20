@@ -6,4 +6,4 @@ const isRegister = (operand: string) =>
         || operand.match(indexRegisterName) != null;
 
 export const upperCaseRegisters = (operand: string) =>
-    isRegister(operand) ? operand.toUpperCase() : operand
+    isRegister(operand) ? operand.toUpperCase() : operand;

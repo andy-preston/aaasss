@@ -21,15 +21,25 @@ export const symbolTable = (
 
     const symbols: SymbolMap = new Map([]);
 
-    const has = (symbolName: string) =>
+    const isRegister = (symbolName: string) => cpuRegisters.has(symbolName);
+
+    const hasSymbol = (symbolName: string) =>
         symbols.has(symbolName) ||
         directiveList.has(symbolName) ||
-        deviceProperties.has(symbolName) ||
-        cpuRegisters.has(symbolName);
+        deviceProperties.has(symbolName);
+
+    const has = (symbolName: string) =>
+        hasSymbol(symbolName) || isRegister(symbolName);
+
+    const hasButNotRegister = (symbolName: string) =>
+        hasSymbol(symbolName) && !isRegister(symbolName);
 
     const add = (symbolName: string, value: SymbolValue) => {
         if (directiveList.has(symbolName)) {
             return failure(undefined, "symbol_nameIsDirective", undefined);
+        }
+        if (isRegister(symbolName)) {
+            return failure(undefined, "symbol_nameIsRegister", undefined);
         }
         if (deviceProperties.has(symbolName)) {
             return failure(undefined, "symbol_alreadyExists", undefined);
@@ -100,6 +110,8 @@ export const symbolTable = (
         add(symbolName, value);
 
     return {
+        "isRegister": isRegister,
+        "hasButNotRegister": hasButNotRegister,
         "has": has,
         "add": add,
         "use": use,

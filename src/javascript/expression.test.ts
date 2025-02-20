@@ -7,11 +7,13 @@ import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { jSExpression } from "./expression.ts";
 
 const testEnvironment = () => {
+    const registers = cpuRegisters();
     const symbols = symbolTable(
-        directiveList(), deviceProperties().public, cpuRegisters(), pass()
+        directiveList(), deviceProperties().public, registers, pass()
     );
     return {
         "symbols": symbols,
+        "cpuRegisters": registers,
         "expression": jSExpression(symbols)
     };
 };
@@ -26,7 +28,6 @@ Deno.test("Javascript can contain strings", () => {
     assertSuccess(environment.expression("'single quoted'"), "single quoted");
     assertSuccess(environment.expression('"double quoted"'), "double quoted");
 });
-
 
 Deno.test("If the result is undefined, `value` returns empty string", () => {
     const environment = testEnvironment();
@@ -49,6 +50,15 @@ Deno.test("Javascript can get value from the symbol table", () => {
     environment.symbols.add("plop", 23);
     const result = environment.expression("plop");
     assertSuccess(result, "23");
+});
+
+Deno.test("...but not any of the registers", () => {
+    const environment = testEnvironment();
+    environment.cpuRegisters.initialise(false);
+    const result = environment.expression("R7 + 5");
+    assertFailureWithError(
+        result, "js_error", ReferenceError, "R7 is not defined"
+    );
 });
 
 Deno.test("An unknown variable gives a reference error", () => {

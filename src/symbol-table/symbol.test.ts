@@ -60,6 +60,24 @@ Deno.test("A symbol is returned but not counted if it's a directive", () => {
     assertEquals(environment.symbolTable.count("test"), 0);
 });
 
+Deno.test("A symbol can't be defined with the same name as a register", () => {
+    const environment = testEnvironment();
+    environment.cpuRegisters.initialise(false);
+    const result = environment.define("R8", 8);
+    assertFailure(result, "symbol_nameIsRegister");
+});
+
+Deno.test("A symbol is returned and counted if it's a register", () => {
+    const environment = testEnvironment();
+    environment.cpuRegisters.initialise(false);
+
+    const result = environment.symbolTable.use("R3");
+    assertEquals(result, 3);
+    assertEquals(environment.symbolTable.count("R3"), 1);
+    environment.symbolTable.use("R3");
+    assertEquals(environment.symbolTable.count("R3"), 2);
+});
+
 Deno.test("A symbol can't be defined with the same name as a device property", () => {
     const environment = testEnvironment();
     environment.deviceProperties.property("test", 57);

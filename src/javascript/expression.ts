@@ -10,7 +10,7 @@ export const jSExpression = (symbolTable: SymbolTable) => {
             const result =
                 symbolName in globalThis || typeof symbolName != "string"
                     ? false
-                    : symbolTable.has(symbolName);
+                    : symbolTable.hasButNotRegister(symbolName);
             return result;
         },
         get(_target: object, symbolName: string) {

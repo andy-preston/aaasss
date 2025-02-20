@@ -56,6 +56,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
     ],
     "symbol_alreadyExists": (_line: LineWithAddress) => [""],
     "symbol_nameIsDirective": (_line: LineWithAddress) => [""],
+    "symbol_nameIsRegister": (_line: LineWithAddress) => [""],
     "symbol_notFound": (_line: LineWithAddress) => [""],
     "syntax_invalidLabel": (_line: LineWithAddress) => [
         "A label must only contain alphanumeric characters and underscore"

@@ -56,14 +56,6 @@ Deno.test("JS can be delimited with moustaches on the same line", () => {
     assertEquals(rendered.assemblySource, "MOV 27, R2");
 });
 
-Deno.test("JS can use registers as symbols", () => {
-    const environment = testEnvironment();
-    environment.cpuRegisters.initialise(false);
-    assertEquals(environment.symbolTable.use("R6"), 6);
-    const rendered = environment.js.rendered(testLine("MOV {{ R6 }}, R2"));
-    assertEquals(rendered.assemblySource, "MOV 6, R2");
-});
-
 Deno.test("JS can be delimited by moustaches across several lines", () => {
     const environment = testEnvironment();
     const lines = [

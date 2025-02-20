@@ -86,7 +86,7 @@ export const coupling = (
         embedded.rendered,
         tokenise,
         macroProcessor.lines,
-        symbolicToNumeric(expression),
+        symbolicToNumeric(symbols, expression),
         objectCode(device.public, poke),
         progMem.addressed,
         listing(outputFile, fileName, failureMessageTranslator, symbols),

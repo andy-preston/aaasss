@@ -172,7 +172,6 @@ Deno.test("serial-send Demo", () => {
         "                     55 get_next_char:",
         "                     56     lpm R20, Z+",
         "                        operand_offsetNotLdd",
-        "",
         "                        mnemonic_unknown",
         '                     57     cpi R20, char(" ")',
         "                        js_error",
