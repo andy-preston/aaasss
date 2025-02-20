@@ -1,3 +1,4 @@
+import { box, type Box, type Failure } from "../failure/failure-or-box.ts";
 import { JsExpression } from "../javascript/expression.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
 import { lineWithOperands } from "./line-types.ts";
@@ -16,26 +17,32 @@ export const symbolicToNumeric = (expression: JsExpression) => {
     const dummyOperation = (line: LineWithProcessedMacro) =>
         lineWithOperands(line, [], []);
 
+    const valueAndType = (
+        symbolic: SymbolicOperand
+    ): [Box<number> | Failure, OperandType] => {
+        if (indexMapping.has(symbolic)) {
+            return [box(indexMapping.get(symbolic)!), "index_offset"];
+        }
+        const numeric = expression(symbolic);
+        return numeric.which == "failure"
+            ? [numeric, "failure"]
+            : numeric.value == ""
+            ? [box(0), "number"] // why is blank zero? should be "blank"
+            : [box(parseInt(numeric.value)), "number"]
+    };
+
     const actualOperation = (line: LineWithProcessedMacro) => {
         const numericOperands: Array<NumericOperand> = [];
         const operandTypes: Array<OperandType> = [];
         for (const [index, symbolic] of line.symbolicOperands.entries()) {
-            if (indexMapping.has(symbolic)) {
-                numericOperands.push(indexMapping.get(symbolic)!);
-                operandTypes.push("index_offset");
-                continue;
-            }
-
-            const value = expression(symbolic);
-            if (value.which == "failure") {
-                line.withFailure(value.onOperand(index as OperandIndex));
+            const [numeric, operandType] = valueAndType(symbolic);
+            operandTypes.push(operandType);
+            if (numeric.which == "failure") {
                 numericOperands.push(0);
-                operandTypes.push("failure");
-                continue;
+                line.withFailure(numeric.onOperand(index as OperandIndex));
+            } else {
+                numericOperands.push(numeric.value);
             }
-
-            numericOperands.push(value.value == "" ? 0 : parseInt(value.value));
-            operandTypes.push("number");
         }
         return lineWithOperands(
             line,
