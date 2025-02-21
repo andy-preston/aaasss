@@ -9,7 +9,7 @@ import { symbolTable } from "../symbol-table/symbol-table.ts";
 import type { Directive } from "./data-types.ts";
 import { directiveList } from "./directive-list.ts";
 
-export const testEnvironment = () => {
+export const systemUnderTest = () => {
     const directives = directiveList()
     const symbols = symbolTable(
         directives, deviceProperties().public, cpuRegisters(), pass()
@@ -22,43 +22,43 @@ export const testEnvironment = () => {
 };
 
 Deno.test("Any directives that are added can be called as functions", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     let directiveParameter = "";
     const testDirective: Directive = (parameter: string)=> {
         directiveParameter = parameter;
         return emptyBox();
     };
-    environment.directiveList.includes("testDirective", testDirective);
-    environment.expression("testDirective('says hello')");
+    system.directiveList.includes("testDirective", testDirective);
+    system.expression("testDirective('says hello')");
     assertEquals(directiveParameter, "says hello");
 });
 
 Deno.test("Directives can return a failure", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     const testDirective: Directive = (_: string) => {
         return failure(undefined, "file_notFound", undefined);
     };
-    environment.directiveList.includes("testDirective", testDirective);
-    const result = environment.expression("testDirective('')");
+    system.directiveList.includes("testDirective", testDirective);
+    const result = system.expression("testDirective('')");
     assertFailure(result, "file_notFound");
 });
 
 Deno.test("Directives can return success in the form of an empty box", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     const testDirective: Directive = (_: string) => {
         return emptyBox();
     };
-    environment.directiveList.includes("testDirective", testDirective);
-    const result = environment.expression("testDirective('')");
+    system.directiveList.includes("testDirective", testDirective);
+    const result = system.expression("testDirective('')");
     assertSuccess(result, "");
 });
 
 Deno.test("You can't create a symbol with the same name as a directive", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     const testDirective: Directive = (_: string) => {
         return emptyBox();
     };
-    environment.directiveList.includes("testDirective", testDirective);
-    const result = environment.define("testDirective", 47);
+    system.directiveList.includes("testDirective", testDirective);
+    const result = system.define("testDirective", 47);
     assertFailure(result, "symbol_nameIsDirective");
 });

@@ -34,7 +34,7 @@ const testLineWithFailure = () => {
     );
 }
 
-const testEnvironment = () => {
+const systemUnderTest = () => {
     const lines: Array<string> = [];
     const mockOutputFile = (_fileName: string, _extension: string) => ({
         "write": (text: string) => lines.push(text),
@@ -77,19 +77,19 @@ const testCode: Array<TestBlock> = [
 ];
 
 Deno.test("If there are any failures, no hex is produced", () => {
-    const environment = testEnvironment();
-    environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
-    environment.hex.line(testLineWithFailure());
-    environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
-    environment.hex.save();
-    assertEquals(environment.mockFileContents, []);
+    const system = systemUnderTest();
+    system.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
+    system.hex.line(testLineWithFailure());
+    system.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
+    system.hex.save();
+    assertEquals(system.mockFileContents, []);
 });
 
 Deno.test("If no lines have code, no hex is produced", () => {
-    const environment = testEnvironment();
-    environment.hex.line(testLine([0x000000, []]));
-    environment.hex.save();
-    assertEquals(environment.mockFileContents, []);
+    const system = systemUnderTest();
+    system.hex.line(testLine([0x000000, []]));
+    system.hex.save();
+    assertEquals(system.mockFileContents, []);
 });
 
 Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
@@ -99,99 +99,99 @@ Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
         ":06001000E9F70C94140056",
         ":00000001FF"
     ];
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     for (const test of testCode) {
-        environment.hex.line(testLine(test));
+        system.hex.line(testLine(test));
     }
-    environment.hex.save();
-    for (const [index, line] of environment.mockFileContents.entries()) {
+    system.hex.save();
+    for (const [index, line] of system.mockFileContents.entries()) {
         assertEquals(line, expectedResults[index]);
     }
 });
 
 Deno.test("Every file starts with an extended segment address of zero", () => {
-    const environment = testEnvironment();
-    environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
-    environment.hex.save();
-    assertEquals(environment.mockFileContents[0], ":020000020000FC");
+    const system = systemUnderTest();
+    system.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
+    system.hex.save();
+    assertEquals(system.mockFileContents[0], ":020000020000FC");
 });
 
 Deno.test("Every file ends with an end-of-file marker", () => {
-    const environment = testEnvironment();
-    environment.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
-    environment.hex.save();
-    assertEquals(environment.mockFileContents.pop(), ":00000001FF");
+    const system = systemUnderTest();
+    system.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
+    system.hex.save();
+    assertEquals(system.mockFileContents.pop(), ":00000001FF");
 });
 
 Deno.test("Each record begins with a start code", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     for (const test of testCode) {
-        environment.hex.line(testLine(test));
+        system.hex.line(testLine(test));
     }
-    environment.hex.save();
-    for (const line of environment.mockFileContents) {
+    system.hex.save();
+    for (const line of system.mockFileContents) {
         assert(line.startsWith(":"));
     }
 });
 
 Deno.test("Each record contains a maximum of 0x10 bytes", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     for (const test of testCode) {
-        environment.hex.line(testLine(test));
+        system.hex.line(testLine(test));
     }
-    environment.hex.save();
-    const firstRecord = environment.mockFileContents[1]!;
+    system.hex.save();
+    const firstRecord = system.mockFileContents[1]!;
     assertEquals(firstRecord.substring(1, 3), "10");
     assertEquals(firstRecord.length, recordLength(16));
 });
 
 Deno.test("The remainder of the bytes form the last record", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     for (const test of testCode) {
-        environment.hex.line(testLine(test));
+        system.hex.line(testLine(test));
     }
-    environment.hex.save();
-    const lastRecord = environment.mockFileContents[2]!;
+    system.hex.save();
+    const lastRecord = system.mockFileContents[2]!;
     assertEquals(lastRecord.substring(1, 3), "06");
     assertEquals(lastRecord.length, recordLength(6));
 });
 
 Deno.test("If the address jumps out of sequence, a new record starts", () => {
-    const environment = testEnvironment();
-    environment.hex.line(testLine([0x000000, [0x02, 0x01]]));
-    environment.hex.line(testLine([0x000001, [0x04, 0x03]]));
-    environment.hex.line(testLine([0x000010, [0x06, 0x05]]));
-    environment.hex.line(testLine([0x000011, [0x08, 0x07]]));
-    environment.hex.save();
+    const system = systemUnderTest();
+    system.hex.line(testLine([0x000000, [0x02, 0x01]]));
+    system.hex.line(testLine([0x000001, [0x04, 0x03]]));
+    system.hex.line(testLine([0x000010, [0x06, 0x05]]));
+    system.hex.line(testLine([0x000011, [0x08, 0x07]]));
+    system.hex.save();
     assertEquals(
-        environment.mockFileContents[1],
+        system.mockFileContents[1],
         ":04" + "0000" + "00" + "01020304" + "F2"
     );
     assertEquals(
-        environment.mockFileContents[2],
+        system.mockFileContents[2],
         ":04" + "0020" + "00" + "05060708" + "C2"
     );
 });
 
 Deno.test("Long strings of bytes are stored in multiple records", () => {
-    const environment = testEnvironment();
-    environment.hex.line(testLine([0x000000, [1, 0, 3, 2]]));
-    environment.hex.line(testLine([0x000002, [5, 4, 7, 6]]));
-    environment.hex.line(testLine([0x000004, [9, 8, 11, 10]]));
-    environment.hex.line(testLine([0x000006, [13, 12, 15, 14]]));
+    const system = systemUnderTest();
+    system.hex.line(testLine([0x000000, [1, 0, 3, 2]]));
+    system.hex.line(testLine([0x000002, [5, 4, 7, 6]]));
+    system.hex.line(testLine([0x000004, [9, 8, 11, 10]]));
+    system.hex.line(testLine([0x000006, [13, 12, 15, 14]]));
 
-    environment.hex.line(testLine([0x000008, [14, 15, 12, 13]]));
-    environment.hex.line(testLine([0x00000a, [10, 11, 8, 9]]));
-    environment.hex.line(testLine([0x00000c, [6, 7, 4, 5]]));
-    environment.hex.line(testLine([0x00000e, [2, 3, 0, 1]]));
+    system.hex.line(testLine([0x000008, [14, 15, 12, 13]]));
+    system.hex.line(testLine([0x00000a, [10, 11, 8, 9]]));
+    system.hex.line(testLine([0x00000c, [6, 7, 4, 5]]));
+    system.hex.line(testLine([0x00000e, [2, 3, 0, 1]]));
 
-    environment.hex.line(testLine([0x000010, [0x45, 0x48, 0x4C, 0x4C]]));
-    environment.hex.line(testLine([0x000012, [0x20, 0x4F, 0x4F, 0x48]]));
-    environment.hex.line(testLine([0x000014, [0x4B, 0x4E, 0x20, 0x59]]));
-    environment.hex.line(testLine([0x000016, [0x4F, 0x54, 0x4B, 0x4E]]));
-    environment.hex.line(testLine([0x000018, [0x21, 0x53]]));
-    environment.hex.save();
-    assertEquals(environment.mockFileContents[1], [
+    system.hex.line(testLine([0x000010, [0x45, 0x48, 0x4C, 0x4C]]));
+    system.hex.line(testLine([0x000012, [0x20, 0x4F, 0x4F, 0x48]]));
+    system.hex.line(testLine([0x000014, [0x4B, 0x4E, 0x20, 0x59]]));
+    system.hex.line(testLine([0x000016, [0x4F, 0x54, 0x4B, 0x4E]]));
+    system.hex.line(testLine([0x000018, [0x21, 0x53]]));
+    system.hex.save();
+    assertEquals(system.mockFileContents[1], [
         ":10", "0000", "00",
             "00", "01", "02", "03",
             "04", "05", "06", "07",
@@ -199,7 +199,7 @@ Deno.test("Long strings of bytes are stored in multiple records", () => {
             "0C", "0D", "0E", "0F",
         "78"
     ].join(""));
-    assertEquals(environment.mockFileContents[2], [
+    assertEquals(system.mockFileContents[2], [
         ":10", "0010", "00",
             "0F", "0E", "0D", "0C",
             "0B", "0A", "09", "08",
@@ -207,7 +207,7 @@ Deno.test("Long strings of bytes are stored in multiple records", () => {
             "03", "02", "01", "00",
         "68"
     ].join(""));
-    assertEquals(environment.mockFileContents[3], [
+    assertEquals(system.mockFileContents[3], [
         ":10", "0020", "00",
             "48", "45", "4C", "4C",
             "4F", "20", "48", "4F",
@@ -215,7 +215,7 @@ Deno.test("Long strings of bytes are stored in multiple records", () => {
             "54", "4F", "4E", "4B",
         "57"
     ].join(""));
-    assertEquals(environment.mockFileContents[4], [
+    assertEquals(system.mockFileContents[4], [
         ":02", "0030", "00",
             "53", "21",
         "5A"

@@ -13,7 +13,7 @@ import { symbolicToNumeric } from "./symbolic-to-numeric.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 
-const testEnvironment = () => {
+const systemUnderTest = () => {
     const registers = cpuRegisters();
     const symbols = symbolTable(
         directiveList(), deviceProperties().public, registers, pass()
@@ -33,32 +33,32 @@ const testLine = (symbolic: SymbolicOperands) => {
 }
 
 Deno.test("An expression yields a value", () => {
-    const environment = testEnvironment();
-    const result = environment.operands(testLine(["20 / 2"]));
+    const system = systemUnderTest();
+    const result = system.operands(testLine(["20 / 2"]));
     assertEquals(result.numericOperands[0], 10);
     assertEquals(result.operandTypes[0], "number");
 });
 
 Deno.test("A symbol yields a value", () => {
-    const environment = testEnvironment();
-    environment.cpuRegisters.initialise(false);
-    assertEquals(environment.symbolTable.use("R7"), 7);
-    const result = environment.operands(testLine(["R7"]));
+    const system = systemUnderTest();
+    system.cpuRegisters.initialise(false);
+    assertEquals(system.symbolTable.use("R7"), 7);
+    const result = system.operands(testLine(["R7"]));
     assertEquals(result.numericOperands[0], 7);
     assertEquals(result.operandTypes[0], "register");
 });
 
 Deno.test("An index offset operand returns special values not related to the symbol table", () => {
-    const environment = testEnvironment();
-    const result = environment.operands(testLine(["Z+", "Y+"]));
+    const system = systemUnderTest();
+    const result = system.operands(testLine(["Z+", "Y+"]));
     assertEquals(result.numericOperands[0], 0);
     assertEquals(result.numericOperands[1], 1);
     assertEquals(result.operandTypes, ["index_offset", "index_offset"]);
 });
 
 Deno.test("An uninitialised symbol yields a failure", () => {
-    const environment = testEnvironment();
-    const result = environment.operands(testLine(["notDefined"]));
+    const system = systemUnderTest();
+    const result = system.operands(testLine(["notDefined"]));
     assert(result.failed());
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);

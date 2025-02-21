@@ -1,7 +1,7 @@
 import { assert, assertEquals, assertNotEquals } from "assert";
 import type { Directive } from "../directives/data-types.ts";
 import { assertSuccess } from "../failure/testing.ts";
-import { testEnvironment, testLine, testLineWithSource } from "./testing.ts";
+import { systemUnderTest, testLine, testLineWithSource } from "./testing.ts";
 import { failure } from "../failure/failure-or-box.ts";
 
 const testLines: Array<[string, string]> = [
@@ -15,9 +15,9 @@ const noPlaybackName = "";
 const noPlaybackCount = 0;
 
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     for (const [label, mnemonic] of testLines) {
-        const line = environment.macros.lines(
+        const line = system.macros.lines(
             testLine("", 0, label, mnemonic, [])
         );
         assertEquals(line.isRecordingMacro, false);
@@ -29,19 +29,19 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
 });
 
 Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
 
-    environment.macros.macro("testMacro");
+    system.macros.macro("testMacro");
     for (const [label, mnemonic] of testLines) {
-        const line = environment.macros.lines(
+        const line = system.macros.lines(
             testLine("", 0, label, mnemonic, [])
         );
         assertEquals(line.isRecordingMacro, true);
     }
 
-    environment.macros.end();
+    system.macros.end();
     for (const [label, mnemonic] of testLines) {
-        const line = environment.macros.lines(
+        const line = system.macros.lines(
             testLine("", 0, label, mnemonic, [])
         );
         assertEquals(line.isRecordingMacro, false);
@@ -49,23 +49,23 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
 });
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
 
-    environment.macros.macro("testMacro");
-    const skipFirstLine = environment.macros.lines(testLine("", 0, "", "", []));
+    system.macros.macro("testMacro");
+    const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     for (const [label, mnemonic] of testLines) {
         const reconstructedLabel = label ? `${label}: ` : "";
         const reconstructedSource = `${reconstructedLabel}${mnemonic}`;
-        environment.macros.lines(
+        system.macros.lines(
             testLineWithSource(reconstructedSource, label, mnemonic, [])
         );
     }
-    environment.macros.end();
-    const testMacro = environment.symbolTable.use("testMacro") as Directive;
+    system.macros.end();
+    const testMacro = system.symbolTable.use("testMacro") as Directive;
 
     assertSuccess(testMacro(), undefined);
-    const lines = environment.mockFileStack.lines();
+    const lines = system.mockFileStack.lines();
     for (const [label, mnemonic] of testLines) {
         const lineSourceCode = lines.next().value!.rawSource;
         assert(lineSourceCode.includes(label));
@@ -74,22 +74,22 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
 });
 
 Deno.test("Lines with failures are not recorded in the macro", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
 
-    environment.macros.macro("testMacro");
-    const skipFirstLine = environment.macros.lines(testLine("", 0, "", "", []));
+    system.macros.macro("testMacro");
+    const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
 
     const failingLine = testLineWithSource("I have failed!", "", "", []);
     failingLine.withFailure(failure(undefined, "type_positive", ["negative"]));
-    environment.macros.lines(failingLine);
-    environment.macros.lines(testLineWithSource("OK!", "", "", []));
-    environment.macros.end();
-    const testMacro = environment.symbolTable.use("testMacro") as Directive;
+    system.macros.lines(failingLine);
+    system.macros.lines(testLineWithSource("OK!", "", "", []));
+    system.macros.end();
+    const testMacro = system.symbolTable.use("testMacro") as Directive;
 
     assertSuccess(testMacro(), undefined);
     let count = 0;
-    for (const line of environment.mockFileStack.lines()) {
+    for (const line of system.mockFileStack.lines()) {
         count = count + 1;
         assertNotEquals(line.rawSource, "I have failed!");
         assertEquals(line.rawSource, "OK!");
@@ -98,20 +98,20 @@ Deno.test("Lines with failures are not recorded in the macro", () => {
 });
 
 Deno.test("Lines that are being replayed have a macro name and count", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
 
-    environment.macros.macro("testMacro");
+    system.macros.macro("testMacro");
     for (const [label, mnemonic] of testLines) {
-        environment.macros.lines(
+        system.macros.lines(
             testLine("", 0, label, mnemonic, [])
         );
     }
-    environment.macros.end();
+    system.macros.end();
 
     for (const expectedCount of [1, 2, 3]) {
-        const testMacro = environment.symbolTable.use("testMacro") as Directive;
+        const testMacro = system.symbolTable.use("testMacro") as Directive;
         assertSuccess(testMacro(), undefined);
-        for (const line of environment.mockFileStack.lines()) {
+        for (const line of system.mockFileStack.lines()) {
             assertEquals(line.macroName, "testMacro");
             assertEquals(line.macroCount, expectedCount);
         }

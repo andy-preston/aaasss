@@ -11,7 +11,7 @@ import { lineWithTokens } from "../tokens/line-types.ts";
 import { objectCode } from "./object-code.ts";
 import { pokeBuffer } from "./poke.ts";
 
-const testEnvironment = () => {
+const systemUnderTest = () => {
     const device = deviceProperties();
     return {
         "device": device,
@@ -32,18 +32,18 @@ const testLine = (
 };
 
 Deno.test("Lines with no mnemonic don't bother generating code", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     const line = testLine("", "", [], [], [], false);
-    const result = environment.objectCode(line);
+    const result = system.objectCode(line);
     assertFalse(result.failed());
     assertEquals(result.failures.length, 0);
     assertEquals(result.code.length, 0);
 });
 
 Deno.test("Attempting to generate code with no device selected fails", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     const line = testLine("", "DES", [], [], [], false);
-    const result = environment.objectCode(line);
+    const result = system.objectCode(line);
     assert(result.failed());
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -53,11 +53,11 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
 });
 
 Deno.test("Lines with unsupported instructions fail", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.unsupportedInstructions(["DES"]);
+    const system = systemUnderTest();
+    system.device.property("deviceName", "test");
+    system.device.unsupportedInstructions(["DES"]);
     const line = testLine("", "DES", [], [], [], false);
-    const result = environment.objectCode(line);
+    const result = system.objectCode(line);
     assert(result.failed());
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -67,10 +67,10 @@ Deno.test("Lines with unsupported instructions fail", () => {
 });
 
 Deno.test("Lines with unknown instructions fail", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
+    const system = systemUnderTest();
+    system.device.property("deviceName", "test");
     const line = testLine("", "NOT_REAL", [], [], [], false);
-    const result = environment.objectCode(line);
+    const result = system.objectCode(line);
     assert(result.failed());
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -80,19 +80,19 @@ Deno.test("Lines with unknown instructions fail", () => {
 });
 
 Deno.test("Lines with real/supported instructions produce code", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
+    const system = systemUnderTest();
+    system.device.property("deviceName", "test");
     const line = testLine("", "DES", ["15"], [15], ["number"], false);
-    const result = environment.objectCode(line);
+    const result = system.objectCode(line);
     assertFalse(result.failed(), "Unexpected failure");
     assertEquals(result.code,[[0x94, 0xfb]]);
 });
 
 Deno.test("If a line has `isRecordingMacro == true`, no code is generated", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
+    const system = systemUnderTest();
+    system.device.property("deviceName", "test");
     const line = testLine("", "DES", ["15"], [15], ["number"], true);
-    const result = environment.objectCode(line);
+    const result = system.objectCode(line);
     assertFalse(result.failed(), "Unexpected failure");
     assertEquals(result.code,[]);
 });

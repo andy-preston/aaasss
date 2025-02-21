@@ -13,7 +13,7 @@ import { jSExpression } from "./expression.ts";
 const testLine = (source: SourceCode) =>
     lineWithRawSource("", 0, source, "", 0, false);
 
-const testEnvironment = () => {
+const systemUnderTest = () => {
     const registers = cpuRegisters();
     const symbols = symbolTable(
         directiveList(), deviceProperties().public, registers, pass()
@@ -26,8 +26,8 @@ const testEnvironment = () => {
 };
 
 Deno.test("A symbol assignment does not pollute the `this` context object", () => {
-    const environment = testEnvironment();
-    const rendered = environment.js.rendered(testLine(
+    const system = systemUnderTest();
+    const rendered = system.js.rendered(testLine(
         "{{ plop = 27; this.plop; }}"
     ));
     assertNotEquals(rendered.assemblySource, "27");
@@ -35,13 +35,9 @@ Deno.test("A symbol assignment does not pollute the `this` context object", () =
 });
 
 Deno.test("A symbol will not be reassigned using `this.symbol`", () => {
-    const environment = testEnvironment();
-    environment.symbolTable.defineDirective("plop", 57);
-    // The assignment fails silently.
-    // I'm not sure if this is a good thing or a bad thing?
-    // But let's treat it that assigning to this.something
-    // is just not in the specification.
-    const rendered = environment.js.rendered(testLine(
+    const system = systemUnderTest();
+    system.symbolTable.defineDirective("plop", 57);
+    const rendered = system.js.rendered(testLine(
         "{{ this.plop = 27; this.plop; }}"
     ));
     assertNotEquals(rendered.assemblySource, "27");
@@ -49,29 +45,29 @@ Deno.test("A symbol will not be reassigned using `this.symbol`", () => {
 });
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {
-    const environment = testEnvironment();
-    const rendered = environment.js.rendered(testLine(
+    const system = systemUnderTest();
+    const rendered = system.js.rendered(testLine(
         "MOV {{ const test = 27; test; }}, R2"
     ));
     assertEquals(rendered.assemblySource, "MOV 27, R2");
 });
 
 Deno.test("JS can be delimited by moustaches across several lines", () => {
-    const environment = testEnvironment();
+    const system = systemUnderTest();
     const lines = [
         testLine("some ordinary stuff {{ const test = 27;"),
         testLine('const message = "hello";'),
         testLine("message; }} matey!"),
     ];
-    const rendered = lines.map(environment.js.rendered);
+    const rendered = lines.map(system.js.rendered);
     assertEquals(rendered[0]!.assemblySource, "some ordinary stuff");
     assertEquals(rendered[1]!.assemblySource, "");
     assertEquals(rendered[2]!.assemblySource, "hello matey!");
 });
 
 Deno.test("Multiple opening moustaches are illegal", () => {
-    const environment = testEnvironment();
-    const rendered = environment.js.rendered(testLine("{{ {{ }}"));
+    const system = systemUnderTest();
+    const rendered = system.js.rendered(testLine("{{ {{ }}"));
     assert(rendered.failed());
     rendered.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -80,8 +76,8 @@ Deno.test("Multiple opening moustaches are illegal", () => {
 });
 
 Deno.test("Multiple closing moustaches are illegal", () => {
-    const environment = testEnvironment();
-    const rendered = environment.js.rendered(testLine("{{ }} }}"));
+    const system = systemUnderTest();
+    const rendered = system.js.rendered(testLine("{{ }} }}"));
     assert(rendered.failed());
     rendered.failures().forEach((failure, index) => {
         assertEquals(index, 0);
@@ -90,10 +86,10 @@ Deno.test("Multiple closing moustaches are illegal", () => {
 });
 
 Deno.test("Omitting a closing moustache is illegal", () => {
-    const environment = testEnvironment();
-    const rendered = environment.js.rendered(testLine("{{"));
+    const system = systemUnderTest();
+    const rendered = system.js.rendered(testLine("{{"));
     assertFalse(rendered.failed());
     assertEquals(rendered.failures.length, 0);
-    const illegal = environment.js.leftInIllegalState();
+    const illegal = system.js.leftInIllegalState();
     assertFailure(illegal, "js_jsMode");
 });

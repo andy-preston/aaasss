@@ -38,7 +38,7 @@ const mockFileStack = () => {
     };
 };
 
-export const testEnvironment = () => {
+export const systemUnderTest = () => {
     const directives = directiveList();
     const symbols = symbolTable(
         directives, deviceProperties().public, cpuRegisters(), pass()
