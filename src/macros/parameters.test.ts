@@ -39,7 +39,7 @@ Deno.test("The parameters in a definition must be strings", () => {
     assertFailureWithExtra(
         environment.macros.macro("testMacro", ["a", 2, "b", 3]),
         "type_strings",
-        ["1: number, 3: number"]
+        ["1: number", "3: number"]
     );
 });
 
@@ -50,7 +50,9 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
 
     const testMacro = environment.symbolTable.use("testMacro") as Directive;
     const result = testMacro(true, {"c": "c"});
-    assertFailureWithExtra(result, "type_macroParams", ["0: boolean, 1: object"]);
+    assertFailureWithExtra(
+        result, "type_macroParams", ["0: boolean", "1: object"]
+    );
 });
 
 Deno.test("Parameter count mismatches result in a failure", () => {

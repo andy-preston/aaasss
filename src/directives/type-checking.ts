@@ -28,6 +28,6 @@ export const parameterList = (
         }
     }
     return failed.length > 0
-        ? failure(undefined, failureName, [failed.join(", ")])
+        ? failure(undefined, failureName, failed)
         : box("array");
 };

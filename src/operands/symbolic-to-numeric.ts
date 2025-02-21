@@ -40,6 +40,7 @@ export const symbolicToNumeric = (
     const actualOperation = (line: LineWithProcessedMacro) => {
         const numericOperands: Array<NumericOperand> = [];
         const operandTypes: Array<OperandType> = [];
+
         for (const [index, symbolic] of line.symbolicOperands.entries()) {
             const [numeric, operandType] = valueAndType(symbolic);
             operandTypes.push(operandType);

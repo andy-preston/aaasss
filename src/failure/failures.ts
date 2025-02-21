@@ -6,6 +6,7 @@ export type TypeFailure = NumericType
 
 export type FailureKind = TypeFailure
     | "device_notFound" | "device_notSelected" | "device_multiple"
+        | "device_internalFormat"
     | "file_notFound"
     | "js_error" | "js_jsMode" | "js_assemblerMode"
     | "macro_multiDefine" | "macro_noEnd" | "macro_end" | "macro_params"

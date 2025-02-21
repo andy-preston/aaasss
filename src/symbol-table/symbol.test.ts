@@ -80,7 +80,7 @@ Deno.test("A symbol is returned and counted if it's a register", () => {
 
 Deno.test("A symbol can't be defined with the same name as a device property", () => {
     const environment = testEnvironment();
-    environment.deviceProperties.property("test", 57);
+    environment.deviceProperties.property("test", "57");
     const result = environment.define("test", 57);
     assertFailure(result, "symbol_alreadyExists");
 })
@@ -88,11 +88,11 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
 Deno.test("A symbol is returned and counted if it's a device property", () => {
     const environment = testEnvironment();
     environment.deviceProperties.property("deviceName", "someDevice");
-    environment.deviceProperties.property("test", 57);
-    assertSuccess(environment.deviceProperties.public.value("test"), 57);
+    environment.deviceProperties.property("test", "57");
+    assertSuccess(environment.deviceProperties.public.value("test"), "57");
 
     const result = environment.symbolTable.use("test");
-    assertEquals(result, 57);
+    assertEquals(result, "57");
     assertEquals(environment.symbolTable.count("test"), 1);
     environment.symbolTable.use("test");
     assertEquals(environment.symbolTable.count("test"), 2);
@@ -100,7 +100,7 @@ Deno.test("A symbol is returned and counted if it's a device property", () => {
 
 Deno.test("Device properties don't 'become' symbols until they're used", () => {
     const environment = testEnvironment();
-    environment.deviceProperties.property("test", 57);
+    environment.deviceProperties.property("test", "57");
     assertEquals(environment.symbolTable.count("test"), 0);
 });
 

@@ -58,6 +58,8 @@
         "outputter",
         "PORTA",
         "PORTB",
+        "PORTC",
+        "PORTD",
         "Prescale",
         "Prescaler",
         "PROGMEM",

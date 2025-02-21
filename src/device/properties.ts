@@ -7,9 +7,9 @@ export const deviceProperties = () => {
 
     const unsupported = unsupportedInstructions();
 
-    const symbols: Map<string, number | string> = new Map([]);
+    const symbols: Map<string, string> = new Map([]);
 
-    const property = (symbolName: string, value: number | string) => {
+    const property = (symbolName: string, value: string) => {
         symbols.set(symbolName, value);
     };
 
@@ -22,11 +22,10 @@ export const deviceProperties = () => {
             return failure(undefined, "device_notSelected", [symbolName]);
         }
         if (!symbols.has(symbolName)) {
-            return failure(
-                undefined,
-                "symbol_notFound",
-                [`${symbols.get("deviceName")}/${symbolName}`]
-            );
+            return failure(undefined, "symbol_notFound", [
+                symbols.get("deviceName") as string,
+                symbolName
+            ]);
         }
         return box(symbols.get(symbolName)!);
     };
@@ -36,12 +35,14 @@ export const deviceProperties = () => {
         if (theValue.which == "failure") {
             return theValue;
         }
-        const typeOf = typeof theValue.value;
-        return typeOf != "number" ? failure(
-            undefined,
-            "type_number",
-            [`${symbols.get("deviceName")}/${symbolName} = ${typeOf}`]
-        ) : box(theValue.value as number);
+        if (!theValue.value.match(/^[0-9A-F]*$/)) {
+            return failure(undefined, "device_internalFormat", [
+                symbols.get("deviceName")!,
+                symbolName,
+                theValue.value
+            ]);
+        }
+        return box(parseInt(theValue.value, 16));
     };
 
     const hasReducedCore = (): Box<boolean> | Failure =>

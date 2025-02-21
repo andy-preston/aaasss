@@ -4,6 +4,7 @@ import type { FailureMessage } from "./messages.ts";
 
 export const messages: Record<FailureKind, FailureMessage> = {
     "device_multiple": (_line: LineWithAddress) => [""],
+    "device_internalFormat": (_line: LineWithAddress) => [""],
     "device_notFound": (_line: LineWithAddress) => [""],
     "device_notSelected": (_line: LineWithAddress) => [""],
     "file_notFound": (_line: LineWithAddress) => [""],

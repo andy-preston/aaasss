@@ -5,7 +5,7 @@ import { testEnvironment, testLine } from "./testing.ts";
 Deno.test("A label is stored in the symbol table with the current address", () => {
     const environment = testEnvironment();
     environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", 1024);
+    environment.device.property("programMemoryBytes", "FF");
     environment.memory.origin(10);
 
     const line = testLine("A_LABEL", [], []);
@@ -18,7 +18,7 @@ Deno.test("A label is stored in the symbol table with the current address", () =
 Deno.test("Labels can only be redefined if their value doesn't change", () => {
     const environment = testEnvironment();
     environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", 1024);
+    environment.device.property("programMemoryBytes", "FF");
     const line = testLine("A_LABEL", [], []);
 
     environment.memory.origin(10);
@@ -39,7 +39,7 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
 Deno.test("Labels are available to javascript", () => {
     const environment = testEnvironment();
     environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", 1024);
+    environment.device.property("programMemoryBytes", "FF");
     environment.pass.second();
 
     environment.memory.origin(10);

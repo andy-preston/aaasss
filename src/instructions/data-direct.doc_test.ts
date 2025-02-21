@@ -4,8 +4,8 @@ Deno.test("Data-direct without reduced core",() => {
     const demo = docTest();
     demo.source([
         '    {{ device("ATTiny24"); }}',
-        "    LDS R30, 512 * 2",
-        "    STS 1024 * 4, R8",
+        "    LDS R30, 512 * 2", // LDS register, data-memory address
+        "    STS 1024 * 4, R8", // STS data-memory address, register
     ]);
     demo.assemble();
     assertFileContains(".lst", [

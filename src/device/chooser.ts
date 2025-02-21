@@ -46,7 +46,7 @@ export const deviceChooser = (
                     cpuRegisters.initialise(value as boolean);
                     break;
                 default:
-                    deviceProperties.property(key, value as number);
+                    deviceProperties.property(key, `${value}`);
                     break;
             }
         }
