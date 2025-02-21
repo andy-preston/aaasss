@@ -15,7 +15,7 @@ export const embeddedJs = (expression: JsExpression) => {
 
     let current: BufferName = "assembler";
 
-    const reset = () => {
+    const resetState = () => {
         buffer.javascript = [];
         buffer.assembler = [];
         current = "assembler";
@@ -78,7 +78,7 @@ export const embeddedJs = (expression: JsExpression) => {
     };
 
     return {
-        "reset": reset,
+        "resetState": resetState,
         "leftInIllegalState": leftInIllegalState,
         "rendered": rendered
     }

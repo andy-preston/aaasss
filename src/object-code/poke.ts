@@ -5,7 +5,7 @@ import type { Code } from "./data-types.ts";
 export const pokeBuffer = () => {
     let theBuffer: Array<Code> = [];
 
-    const poke: Directive = (data: Array<number> | string) => {
+    const pokeDirective: Directive = (data: Array<number> | string) => {
         const bytes: Array<number> = typeof data == "string"
             ? Array.from(new TextEncoder().encode(data))
             : data;
@@ -36,7 +36,7 @@ export const pokeBuffer = () => {
     };
 
     return {
-        "poke": poke,
+        "pokeDirective": pokeDirective,
         "contents": contents
     };
 };

@@ -9,7 +9,7 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
     const newAllocationSize = (plusBytes: number) =>
         stack + allocated + plusBytes;
 
-    const reset = () => {
+    const resetState = () => {
         stack = 0;
         allocated = 0;
     };
@@ -26,7 +26,7 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
             : box(address);
     };
 
-    const allocStack: Directive = (bytes: number) => {
+    const allocStackDirective: Directive = (bytes: number) => {
         // It's entirely optional to allocate space for a stack.
         // but you can if you're worried that your RAM allocations might eat up
         // all the space.
@@ -41,7 +41,7 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
         return box(`${bytes}`);
     };
 
-    const alloc: Directive = (bytes: number) => {
+    const allocDirective: Directive = (bytes: number) => {
         const startAddress = ramAddress(allocated);
         if (startAddress.which == "failure") {
             return startAddress;
@@ -55,9 +55,9 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
     };
 
     return {
-        "reset": reset,
-        "allocStack": allocStack,
-        "alloc": alloc
+        "resetState": resetState,
+        "allocStackDirective": allocStackDirective,
+        "allocDirective": allocDirective
     };
 };
 

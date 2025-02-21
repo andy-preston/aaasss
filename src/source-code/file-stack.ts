@@ -45,7 +45,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         }
     };
 
-    const include: Directive = (fileName: FileName) => {
+    const includeDirective: Directive = (fileName: FileName) => {
         const check = stringParameter(fileName);
         if (check.which == "failure") {
             return check;
@@ -72,7 +72,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     };
 
     const lines: SourceOfSource = function* () {
-        const topFile = include(topFileName);
+        const topFile = includeDirective(topFileName);
         if (topFile.which == "failure") {
             yield lineWithRawSource(
                 topFileName, 0, "", "", 0, false
@@ -97,7 +97,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     };
 
     return {
-        "include": include,
+        "includeDirective": includeDirective,
         "pushImaginary": pushImaginary,
         "lines": lines,
     };

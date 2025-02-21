@@ -1,16 +1,28 @@
 import type { Box, Failure } from "../failure/failure-or-box.ts";
+import { LineWithFailures } from "./line-types.ts";
 
-type IllegalStateCallback = () => Box<undefined> | Failure;
+export type IllegalStateCallback = () => Box<undefined> | Failure;
 
-export const illegalStateFailures = (
-    callbacks: Array<IllegalStateCallback>
-) => (
-    addFailures: (failures: Failure) => unknown
-) => callbacks.forEach((callback) => {
-    const state = callback();
-    if (state.which == "failure") {
-        addFailures(state);
+export const illegalStateFailures = () => {
+    const callbacks: Array<IllegalStateCallback> = [];
+
+    const useCallback = (callback: IllegalStateCallback) => {
+        callbacks.push(callback);
     }
-});
+
+    const check = (line: LineWithFailures) => {
+        callbacks.forEach((callback) => {
+            const state = callback();
+            if (state.which == "failure") {
+                line.withFailure(state);
+            }
+        });
+    };
+
+    return {
+        "useCallback": useCallback,
+        "check": check
+    }
+};
 
 export type IllegalState = ReturnType<typeof illegalStateFailures>;

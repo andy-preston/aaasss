@@ -82,7 +82,7 @@ export const symbolTable = (
         return value;
     };
 
-    const reset = () => {
+    const resetState = () => {
         for (const [symbolName, [_usageCount, value]] of symbols) {
             symbols.set(symbolName, [0, value]);
         }
@@ -117,7 +117,7 @@ export const symbolTable = (
         "use": use,
         "value": value,
         "count": count,
-        "reset": reset,
+        "resetState": resetState,
         "empty": () => symbols.size == 0,
         "list": () => symbols.keys(),
         "defineDirective": defineDirective,

@@ -16,7 +16,7 @@ import { macros } from "./macros.ts";
 
 const mockFileStack = () => {
     let lineIterator: FileLineIterator | undefined;
-    const include: Directive = () => emptyBox();
+    const includeDirective: Directive = () => emptyBox();
     const pushImaginary = (iterator: FileLineIterator) => {
         lineIterator = iterator;
     };
@@ -32,7 +32,7 @@ const mockFileStack = () => {
         }
     };
     return {
-        "include": include,
+        "includeDirective": includeDirective,
         "pushImaginary": pushImaginary,
         "lines": lines
     };

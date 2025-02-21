@@ -29,7 +29,7 @@ export const assemblyPipeline = (
             return;
         }
         if (line.lastLine) {
-            illegalState(line.withFailure);
+            illegalState.check(line);
         }
         listing.line(line);
         hex.line(line);

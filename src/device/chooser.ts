@@ -90,6 +90,6 @@ export const deviceChooser = (
 
     return {
         "choose": choose,
-        "device": deviceDirective
+        "deviceDirective": deviceDirective
     };
 };

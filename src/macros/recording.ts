@@ -13,7 +13,7 @@ export const recording = (macros: MacroList) => {
     let skipFirstLine = false;
     let useMacroMethod: UseMacroMethod | undefined
 
-    const reset = () => {
+    const resetState = () => {
         theMacro = undefined;
         macroName = "";
     };
@@ -22,7 +22,7 @@ export const recording = (macros: MacroList) => {
         useMacroMethod = method;
     };
 
-    const start: Directive = (
+    const macroDirective: Directive = (
         newName: MacroName, parameters: DefinedParameters = []
     ) => {
         if (theMacro != undefined) {
@@ -47,13 +47,13 @@ export const recording = (macros: MacroList) => {
         return emptyBox();
     };
 
-    const end: Directive = () => {
+    const endDirective: Directive = () => {
         if (theMacro == undefined) {
             return failure(undefined, "macro_end", undefined);
         }
         macros.set(macroName, theMacro!);
         useMacroMethod!(macroName);
-        reset();
+        resetState();
         return emptyBox();
     };
 
@@ -73,9 +73,9 @@ export const recording = (macros: MacroList) => {
         : emptyBox();
 
     return {
-        "reset": reset,
-        "start": start,
-        "end": end,
+        "resetState": resetState,
+        "macroDirective": macroDirective,
+        "endDirective": endDirective,
         "isRecording": isRecording,
         "useMacroMethod": useMacroMethodAttachment,
         "recorded": recorded,

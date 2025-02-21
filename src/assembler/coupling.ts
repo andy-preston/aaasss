@@ -2,9 +2,10 @@ import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser } from "../device/chooser.ts";
 import type { DeviceFileOperations } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { high, low } from "../directives/function-directives.ts";
+import { functionDirectives } from "../directives/function-directives.ts";
+import type { Directive } from "../directives/data-types.ts";
 import { directiveList } from "../directives/directive-list.ts";
-import { illegalStateFailures } from "../failure/illegal-state.ts";
+import { illegalStateFailures, type IllegalStateCallback } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { embeddedJs } from "../javascript/embedded.ts";
@@ -22,7 +23,7 @@ import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { tokenise } from "../tokens/tokenise.ts";
 import { assemblyPipeline } from "./assembler.ts";
 import { outputFile } from "./output-file.ts";
-import { pass } from "./pass.ts";
+import { pass, type ResetStateCallback } from "./pass.ts";
 
 export const coupling = (
     fileName: FileName,
@@ -31,66 +32,54 @@ export const coupling = (
     deviceFileOperations: DeviceFileOperations
 ) => {
     const currentPass = pass();
-
     const directives = directiveList();
-    directives.includes("high", high);
-    directives.includes("low", low);
+    const illegalState = illegalStateFailures();
 
-    const registers = cpuRegisters();
+    const link = <ComponentType extends object>(component: ComponentType) => {
+        for (const property in component) {
+            if (property == "resetState") {
+                currentPass.resetStateCallback(
+                    component[property] as ResetStateCallback
+                );
+            }
+            if (property.endsWith("Directive")) {
+                directives.includes(
+                    property.replace("Directive", ""),
+                    component[property] as Directive
+                );
+            }
+            if (property == "leftInIllegalState") {
+                illegalState.useCallback(
+                    component[property] as IllegalStateCallback
+                );
+            }
+        }
+        return component;
+    }
 
-    const device = deviceProperties();
-
-    const chooser = deviceChooser(
-        device, registers, deviceFileOperations
-    );
-    directives.includes("device", chooser.device);
-
-    const symbols = symbolTable(
+    link(functionDirectives);
+    const registers = link(cpuRegisters());
+    const device = link(deviceProperties());
+    link(deviceChooser(device, registers, deviceFileOperations));
+    const symbols = link(symbolTable(
         directives, device.public, registers, currentPass
-    );
-    directives.includes("define", symbols.defineDirective);
-    currentPass.resetStateCallback(symbols.reset);
-
-    const progMem = programMemory(symbols, device.public);
-    directives.includes("origin", progMem.origin);
-    currentPass.resetStateCallback(progMem.reset);
-
-    const dataMem = dataMemory(device.public);
-    directives.includes("alloc", dataMem.alloc);
-    directives.includes("allocStack", dataMem.allocStack);
-    currentPass.resetStateCallback(dataMem.reset);
-
-    const poke = pokeBuffer();
-    directives.includes("poke", poke.poke);
-
-    const sourceFiles = fileStack(readerMethod, fileName);
-    directives.includes("include", sourceFiles.include);
-
-    const macroProcessor = macros(symbols, sourceFiles);
-    directives.includes("macro", macroProcessor.macro);
-    directives.includes("end", macroProcessor.end);
-    currentPass.resetStateCallback(macroProcessor.reset);
-
-    const expression = jSExpression(symbols);
-    const embedded = embeddedJs(expression);
-    currentPass.resetStateCallback(embedded.reset);
-
-    const illegalState = illegalStateFailures([
-        macroProcessor.leftInIllegalState,
-        embedded.leftInIllegalState
-    ]);
+    ));
+    link(dataMemory(device.public));
+    const poke = link(pokeBuffer());
+    const sourceFiles = link(fileStack(readerMethod, fileName));
+    const expression = link(jSExpression(symbols));
 
     return assemblyPipeline(
         currentPass,
         sourceFiles.lines,
-        embedded.rendered,
+        link(embeddedJs(expression)).rendered,
         tokenise,
-        macroProcessor.lines,
-        symbolicToNumeric(symbols, expression),
-        objectCode(device.public, poke),
-        progMem.addressed,
-        listing(outputFile, fileName, failureMessageTranslator, symbols),
-        hexFile(outputFile, fileName),
+        link(macros(symbols, sourceFiles)).lines,
+        link(symbolicToNumeric(symbols, expression)),
+        link(objectCode(device.public, poke)),
+        link(programMemory(symbols, device.public)).addressed,
+        link(listing(outputFile, fileName, failureMessageTranslator, symbols)),
+        link(hexFile(outputFile, fileName)),
         illegalState
     );
 };

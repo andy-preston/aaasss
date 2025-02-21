@@ -13,7 +13,7 @@ export const programMemory = (
 ) => {
     let address = 0;
 
-    const reset = () => {
+    const resetState = () => {
         address = 0;
     }
 
@@ -30,7 +30,7 @@ export const programMemory = (
             : emptyBox();
     }
 
-    const origin: Directive = (newAddress: number) => {
+    const originDirective: Directive = (newAddress: number) => {
         const check = validNumeric(newAddress, "type_positive");
         if (check.which == "failure") {
             return check;
@@ -62,7 +62,7 @@ export const programMemory = (
             0
         )) + address;
 
-        const step = origin(newAddress);
+        const step = originDirective(newAddress);
         if (step.which == "failure") {
             newLine.withFailure(step);
         }
@@ -71,12 +71,12 @@ export const programMemory = (
     };
 
     return {
-        "reset": reset,
+        "resetState": resetState,
         // "address" isn't used in the code but it's extremely simple and it's
         // being there makes tests SO much simpler. I'm not sure if that is
         // haram or not but I'm keeping it, at least for now.
         "address": () => address,
-        "origin": origin,
+        "originDirective": originDirective,
         "addressed": addressed
     };
 };

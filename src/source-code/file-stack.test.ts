@@ -7,14 +7,14 @@ import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-st
 Deno.test("Including a file doesn't return anything", () => {
     assertSuccess(
         // This file is irrelevant but we can guarantee it exists
-        fileStack(defaultReaderMethod, "").include("deno.json"),
+        fileStack(defaultReaderMethod, "").includeDirective("deno.json"),
         undefined
     );
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
     const fileName = "does-not-exist.test";
-    const result = fileStack(defaultReaderMethod, "").include(fileName);
+    const result = fileStack(defaultReaderMethod, "").includeDirective(fileName);
     assertFailure(result, "file_notFound");
     const failure = result as Failure;
     assertInstanceOf(failure.extra, Deno.errors.NotFound);
@@ -25,7 +25,7 @@ Deno.test("Including a non existant file returns a failure", () => {
 });
 
 Deno.test("Including an 'irrational' fileName returns a failure", () => {
-    const result = fileStack(defaultReaderMethod, "").include(
+    const result = fileStack(defaultReaderMethod, "").includeDirective(
         [1, 2, 3] as unknown as string
     );
     assertFailure(result, "type_string");
@@ -85,7 +85,7 @@ Deno.test("An included file is inserted into the source stream", () => {
     const lines = files.lines();
 
     assertEquals("top.file 1", lines.next().value!.rawSource);
-    files.include("plop.txt");
+    files.includeDirective("plop.txt");
     assertEquals([
         "plop.txt 1",
         "plop.txt 2",

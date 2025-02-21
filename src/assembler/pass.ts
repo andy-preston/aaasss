@@ -2,7 +2,7 @@ export const passes = [1, 2] as const;
 
 export type PassNumber = typeof passes[number];
 
-type ResetStateCallback = () => void;
+export type ResetStateCallback = () => void;
 
 export const pass = () => {
     const resetCallbacks: Array<ResetStateCallback> = [];

@@ -38,16 +38,16 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         ? record.recorded(line)
         : remap.remapped(line);
 
-    const reset = () => {
+    const resetState = () => {
         macros.clear();
-        record.reset();
+        record.resetState();
     };
 
     return {
-        "reset": reset,
+        "resetState": resetState,
         "leftInIllegalState": record.leftInIllegalState,
-        "macro": record.start,
-        "end": record.end,
+        "macroDirective": record.macroDirective,
+        "endDirective": record.endDirective,
         "lines": lines
     };
 };
