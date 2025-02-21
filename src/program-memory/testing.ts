@@ -14,7 +14,7 @@ import type { Label } from "../tokens/data-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { programMemory } from "./program-memory.ts";
 
-export const testEnvironment = () => {
+export const systemUnderTest = () => {
     const currentPass = pass();
     const device = deviceProperties();
     const symbols = symbolTable(
@@ -22,10 +22,10 @@ export const testEnvironment = () => {
     );
     return {
         "pass": currentPass,
-        "symbols": symbols,
-        "device": device,
-        "memory": programMemory(symbols, device.public),
-        "expression": jSExpression(symbols)
+        "symbolTable": symbols,
+        "deviceProperties": device,
+        "programMemory": programMemory(symbols, device.public),
+        "jsExpression": jSExpression(symbols)
     };
 };
 

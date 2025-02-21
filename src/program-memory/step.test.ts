@@ -1,87 +1,92 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { assertFailure } from "../failure/testing.ts";
-import { testEnvironment, testLine } from "./testing.ts";
+import { systemUnderTest, testLine } from "./testing.ts";
 
 Deno.test("If a line has no code the address remains unchanged", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", "FF");
-    assertEquals(0, environment.memory.address());
-    environment.memory.addressed(testLine("", [], []));
-    assertEquals(0, environment.memory.address());
+    const system = systemUnderTest();
+    system.deviceProperties.property("deviceName", "test");
+    system.deviceProperties.property("programMemoryBytes", "FF");
+    assertEquals(0, system.programMemory.address());
+    system.programMemory.addressed(testLine("", [], []));
+    assertEquals(0, system.programMemory.address());
 });
 
 Deno.test("The program counter advances by the number of words poked", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", "FF");
-    assertEquals(0, environment.memory.address());
-    environment.memory.addressed(testLine(
+    const system = systemUnderTest();
+    system.deviceProperties.property("deviceName", "test");
+    system.deviceProperties.property("programMemoryBytes", "FF");
+    assertEquals(0, system.programMemory.address());
+    system.programMemory.addressed(testLine(
         "",
         [[1, 2, 3, 4], [5, 6]],
         []
     ));
-    assertEquals(3, environment.memory.address());
+    assertEquals(3, system.programMemory.address());
 });
 
 Deno.test("... or by the number of words of code", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", "FF");
-    assertEquals(0, environment.memory.address());
-    environment.memory.addressed(testLine("", [], [1, 2]));
-    assertEquals(1, environment.memory.address());
+    const system = systemUnderTest();
+    system.deviceProperties.property("deviceName", "test");
+    system.deviceProperties.property("programMemoryBytes", "FF");
+    assertEquals(0, system.programMemory.address());
+    system.programMemory.addressed(testLine("", [], [1, 2]));
+    assertEquals(1, system.programMemory.address());
 });
 
 Deno.test("... or both", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", "FF");
-    assertEquals(0, environment.memory.address());
-    environment.memory.addressed(testLine("",
+    const system = systemUnderTest();
+    system.deviceProperties.property("deviceName", "test");
+    system.deviceProperties.property("programMemoryBytes", "FF");
+    assertEquals(0, system.programMemory.address());
+    system.programMemory.addressed(testLine("",
         [[1, 2, 3, 4], [5, 6]],
         [1, 2]
     ));
-    const result = environment.memory.address();
+    const result = system.programMemory.address();
     assertEquals(4, result);
 });
 
 Deno.test("Insufficient program memory causes generation to fail", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", "00");
+    const system = systemUnderTest();
+    system.deviceProperties.property("deviceName", "test");
+    system.deviceProperties.property("programMemoryBytes", "00");
+    const preFailureAddress = system.programMemory.address();
+
     const line = testLine("", [[1, 2, 3, 4]], [1, 2]);
-    const result = environment.memory.addressed(line);
-    assert(result.failed(), "Didn't fail!");
+    const result = system.programMemory.addressed(line);
+    assert(result.failed());
+
     result.failures().forEach((failure, index) => {
         assertEquals(index, 0);
         assertFailure(failure, "programMemory_outOfRange");
     });
-    // But, look, code is still generated
+    // Code is still generated
     assertEquals(result.code, [[1, 2, 3, 4], [1, 2]]);
-    //assertEquals(environment.programMemory.address(), 1);
+    // But the address doesn't advance
+    assertEquals(system.programMemory.address(), preFailureAddress);
 });
 
 Deno.test("Advancing beyond the end of program memory causes failure", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", "06");
+    const system = systemUnderTest();
+    system.deviceProperties.property("deviceName", "test");
+    system.deviceProperties.property("programMemoryBytes", "06");
 
     const firstLine = testLine("", [[1, 2, 3, 4]], [1, 2]);
-    const firstResult = environment.memory.addressed(firstLine);
-    assertFalse(firstResult.failed(), "Unexpected failure");
+    const firstResult = system.programMemory.addressed(firstLine);
+    assertFalse(firstResult.failed());
     assertEquals(firstResult.failures.length, 0);
     assertEquals(firstResult.code, [[1, 2, 3, 4], [1, 2]]);
-    //assertEquals(environment.programMemory.address(), 1);
+    const preFailureAddress = system.programMemory.address();
 
     const secondLine = testLine("", [[1, 2, 3, 4]], [1, 2]);
-    const secondResult = environment.memory.addressed(secondLine);
+    const secondResult = system.programMemory.addressed(secondLine);
     assert(secondResult.failed(), "Didn't fail!");
     secondResult.failures().forEach((failure, index) => {
         assertEquals(index, 0);
         assertFailure(failure, "programMemory_outOfRange");
     });
-    // But, look, code is still generated
+    // Code is still generated
     assertEquals(firstResult.code, [[1, 2, 3, 4], [1, 2]]);
-    //assertEquals(environment.programMemory.address(), 2);
+    // But the address doesn't advance
+    assertEquals(system.programMemory.address(), preFailureAddress);
 });

@@ -1,48 +1,48 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { assertSuccess } from "../failure/testing.ts";
-import { testEnvironment, testLine } from "./testing.ts";
+import { systemUnderTest, testLine } from "./testing.ts";
 
 Deno.test("A label is stored in the symbol table with the current address", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", "FF");
-    environment.memory.origin(10);
+    const system = systemUnderTest();
+    system.deviceProperties.property("deviceName", "test");
+    system.deviceProperties.property("programMemoryBytes", "FF");
+    system.programMemory.origin(10);
 
     const line = testLine("A_LABEL", [], []);
-    const result = environment.memory.addressed(line);
+    const result = system.programMemory.addressed(line);
     assertFalse(result.failed(), "Unexpected failure");
     assertEquals(result.failures.length, 0);
-    assertEquals(environment.symbols.use("A_LABEL"), 10);
+    assertEquals(system.symbolTable.use("A_LABEL"), 10);
 });
 
 Deno.test("Labels can only be redefined if their value doesn't change", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", "FF");
+    const system = systemUnderTest();
+    system.deviceProperties.property("deviceName", "test");
+    system.deviceProperties.property("programMemoryBytes", "FF");
     const line = testLine("A_LABEL", [], []);
 
-    environment.memory.origin(10);
-    environment.memory.addressed(line);
+    system.programMemory.origin(10);
+    system.programMemory.addressed(line);
 
-    environment.pass.second();
-    environment.memory.origin(10);
-    const result1 = environment.memory.addressed(line);
+    system.pass.second();
+    system.programMemory.origin(10);
+    const result1 = system.programMemory.addressed(line);
     assertFalse(result1.failed(), "Unexpected failure");
-    assertEquals(environment.symbols.use("A_LABEL"), 10);
+    assertEquals(system.symbolTable.use("A_LABEL"), 10);
 
-    environment.memory.origin(20);
-    const result2 = environment.memory.addressed(line);
+    system.programMemory.origin(20);
+    const result2 = system.programMemory.addressed(line);
     assert(result2.failed(), "Unexpected success");
-    assertEquals(environment.symbols.use("A_LABEL"), 10);
+    assertEquals(system.symbolTable.use("A_LABEL"), 10);
 });
 
 Deno.test("Labels are available to javascript", () => {
-    const environment = testEnvironment();
-    environment.device.property("deviceName", "test");
-    environment.device.property("programMemoryBytes", "FF");
-    environment.pass.second();
+    const system = systemUnderTest();
+    system.deviceProperties.property("deviceName", "test");
+    system.deviceProperties.property("programMemoryBytes", "FF");
+    system.pass.second();
 
-    environment.memory.origin(10);
-    environment.memory.addressed(testLine("A_LABEL", [], []));
-    assertSuccess(environment.expression("A_LABEL"), "10");
+    system.programMemory.origin(10);
+    system.programMemory.addressed(testLine("A_LABEL", [], []));
+    assertSuccess(system.jsExpression("A_LABEL"), "10");
 });
