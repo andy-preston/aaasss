@@ -2,9 +2,10 @@ import type { Pass } from "../assembler/pass.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { Directive } from "../directives/data-types.ts";
 import type { DirectiveList } from "../directives/directive-list.ts";
+import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
-import { FileName, LineNumber } from "../source-code/data-types.ts";
+import type { FileName, LineNumber } from "../source-code/data-types.ts";
 import type { SymbolValue } from "./data-types.ts";
 
 export const symbolTable = (
@@ -117,7 +118,7 @@ export const symbolTable = (
     }
 
     const defineDirective: Directive = (symbolName: string, value: number) =>
-        add(symbolName, value, "", 0);
+        add(symbolName, value, currentFileName(), currentLineNumber());
 
     return {
         "has": has,

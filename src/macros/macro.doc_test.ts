@@ -32,7 +32,7 @@ Deno.test("Macro demo", () => {
         "Symbol Table",
         "============",
         "",
-        "aMacro (2)",
+        "aMacro (2) /var/tmp/demo.asm:5",
         "R30 = 30 (2)"
     ]);
     assertFileContains(".hex", [
@@ -83,8 +83,8 @@ Deno.test("A macro can be called from inside another macro", () => {
         "Symbol Table",
         "============",
         "",
-        "innerMacro (4)",
-        "outerMacro (1)",
+        "innerMacro (4) /var/tmp/demo.asm:5",
+        "outerMacro (1) /var/tmp/demo.asm:10",
         "R30 = 30 (2)"
     ]);
     assertFileContains(".hex", [

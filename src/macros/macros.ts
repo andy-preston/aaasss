@@ -1,5 +1,6 @@
+import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
 import { emptyBox } from "../failure/failure-or-box.ts";
-import { FileLineIterator, FileStack } from "../source-code/file-stack.ts";
+import type { FileLineIterator, FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import type { ActualParameters, MacroList } from "./data-types.ts";
@@ -31,8 +32,8 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
                 }
                 return emptyBox();
             },
-            "",
-            0
+            currentFileName(),
+            currentLineNumber()
         );
     });
 

@@ -1,3 +1,4 @@
+import { saveGlobalLineForDirectives } from "../directives/global-line.ts";
 import { emptyBox, failure, type Failure } from "../failure/failure-or-box.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
 import { JsExpression } from "./expression.ts";
@@ -26,6 +27,8 @@ export const embeddedJs = (expression: JsExpression) => {
         : emptyBox();
 
     const rendered = (line: LineWithRawSource) => {
+        saveGlobalLineForDirectives(line);
+
         let itFailed = false;
 
         const failed = (failure: Failure) => {
