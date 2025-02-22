@@ -1,6 +1,7 @@
 import { box, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { JsExpression } from "../javascript/expression.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
+import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithOperands } from "./line-types.ts";
 import {
@@ -10,7 +11,9 @@ import {
 } from "./data-types.ts";
 
 export const symbolicToNumeric = (
-    symbolTable: SymbolTable, jsExpression: JsExpression
+    symbolTable: SymbolTable,
+    cpuRegisters: CpuRegisters,
+    jsExpression: JsExpression
 ) => {
     const indexMapping: Map<SymbolicOperand, NumericOperand> = new Map([
         ["Z+", 0],
@@ -26,7 +29,7 @@ export const symbolicToNumeric = (
         if (indexMapping.has(symbolic)) {
             return [box(indexMapping.get(symbolic)!), "index_offset"];
         }
-        if (symbolTable.isRegister(symbolic)) {
+        if (cpuRegisters.has(symbolic)) {
             return [box(symbolTable.use(symbolic) as number), "register"];
         }
         const numeric = jsExpression(symbolic);

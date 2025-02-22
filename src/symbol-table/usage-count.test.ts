@@ -13,7 +13,7 @@ const systemUnderTest = () => {
     return {
         "pass": currentPass,
         "symbols": symbols,
-        "list": () => symbols.list().toArray()
+        "list": () => symbols.list()
     };
 };
 
@@ -22,8 +22,9 @@ Deno.test("A freshly added symbol has a count of zero", () => {
     system.symbols.add("plop", 0);
     const result = system.list();
     assertEquals(1, result.length);
-    assertEquals("plop", result[0]);
-    assertEquals(0, system.symbols.count("plop"));
+    const [symbolName, [usageCount, _symbolValue]] = result[0]!;
+    assertEquals(symbolName, "plop");
+    assertEquals(usageCount, 0);
 });
 
 Deno.test("Each call to use increments the usage", () => {
@@ -33,7 +34,8 @@ Deno.test("Each call to use increments the usage", () => {
         system.symbols.use("plop");
         const result = system.list();
         assertEquals(1, result.length);
-        assertEquals("plop", result[0]);
-        assertEquals(expectedCount, system.symbols.count("plop"));
+        const [symbolName, [usageCount, _symbolValue]] = result[0]!;
+        assertEquals(symbolName, "plop");
+        assertEquals(usageCount, expectedCount);
     });
 });

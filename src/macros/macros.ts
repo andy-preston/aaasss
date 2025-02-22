@@ -12,9 +12,9 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     const record = recording(macros);
 
     function* imaginaryFile(macroName: string): FileLineIterator {
-        const macroCount = symbolTable.count(macroName);
+        const [macroCount, _symbolValue] = symbolTable.value(macroName);
         for (const line of macros.get(macroName)!.lines) {
-            yield [line.rawSource, macroName, macroCount, false];
+            yield [line.rawSource, macroName, macroCount!, false];
         }
     }
 

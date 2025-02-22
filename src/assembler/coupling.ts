@@ -75,7 +75,7 @@ export const coupling = (
         link(embeddedJs(expression)).rendered,
         tokenise,
         link(macros(symbols, sourceFiles)).lines,
-        link(symbolicToNumeric(symbols, expression)),
+        link(symbolicToNumeric(symbols, registers, expression)),
         link(objectCode(device.public, poke)),
         link(programMemory(symbols, device.public)).addressed,
         link(listing(outputFile, fileName, failureMessageTranslator, symbols)),

@@ -21,7 +21,7 @@ const systemUnderTest = () => {
     return {
         "cpuRegisters": registers,
         "symbolTable": symbols,
-        "operands": symbolicToNumeric(symbols, jSExpression(symbols))
+        "operands": symbolicToNumeric(symbols, registers, jSExpression(symbols))
     };
 };
 

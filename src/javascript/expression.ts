@@ -7,11 +7,9 @@ export const jSExpression = (symbolTable: SymbolTable) => {
 
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
-            const result =
-                symbolName in globalThis || typeof symbolName != "string"
-                    ? false
-                    : symbolTable.hasButNotRegister(symbolName);
-            return result;
+            return symbolName in globalThis || typeof symbolName != "string"
+                ? false
+                : symbolTable.has(symbolName, "notRegisters");
         },
         get(_target: object, symbolName: string) {
             return typeof symbolName == "string"

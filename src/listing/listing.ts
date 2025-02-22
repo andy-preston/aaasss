@@ -92,27 +92,30 @@ export const listing = (
     };
 
     const sortedSymbolTable = () => {
+        const symbolList = symbolTable.list();
+        if (symbolList.length == 0) {
+            return;
+        }
+
         const transform = (key: string) =>
             key.replace(/^R([0-9])$/, "R0$1").toUpperCase()
 
-        const symbols = symbolTable.list().toArray().sort(
-            (a, b) => transform(a).localeCompare(transform(b))
+        const symbols = symbolList.sort(
+            (a, b) => transform(a[0]).localeCompare(transform(b[0]))
         );
 
         heading("Symbol Table");
         file.write("");
-        for (const symbolName of symbols) {
-            const usage = symbolTable.count(symbolName);
-            const value = symbolTable.value(symbolName);
-            const displayValue = value == null ? "" : ` = ${value}`;
-            file.write(`${symbolName}${displayValue} (${usage})`);
+        for (const [symbolName, [usageCount, symbolValue]] of symbols) {
+            const formatted = ["string", "number"].includes(typeof symbolValue)
+                ? ` = ${symbolValue}`
+                : "";
+            file.write(`${symbolName}${formatted} (${usageCount})`);
         }
     }
 
     const close = () => {
-        if (!symbolTable.empty()) {
-            sortedSymbolTable();
-        };
+        sortedSymbolTable();
         file.close();
     };
 
