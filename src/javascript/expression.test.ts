@@ -47,7 +47,7 @@ Deno.test("Javascript can contain newlines", () => {
 
 Deno.test("Javascript can get value from the symbol table", () => {
     const system = systemUnderTest();
-    system.symbols.add("plop", 23);
+    system.symbols.add("plop", 23, "mock.asm", 10);
     const result = system.expression("plop");
     assertSuccess(result, "23");
 });

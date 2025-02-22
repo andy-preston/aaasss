@@ -19,23 +19,27 @@ const systemUnderTest = () => {
 
 Deno.test("A freshly added symbol has a count of zero", () => {
     const system = systemUnderTest();
-    system.symbols.add("plop", 0);
+    system.symbols.add("plop", 23, "file-name.asm", 10);
     const result = system.list();
     assertEquals(1, result.length);
-    const [symbolName, [usageCount, _symbolValue]] = result[0]!;
+    const [symbolName, usageCount, symbolValue, definition] = result[0]!;
     assertEquals(symbolName, "plop");
     assertEquals(usageCount, 0);
+    assertEquals(symbolValue, 23);
+    assertEquals(definition, "file-name.asm:10")
 });
 
 Deno.test("Each call to use increments the usage", () => {
     const system = systemUnderTest();
-    system.symbols.add("plop", 0);
+    system.symbols.add("plop", 23, "file-name.asm", 10);
     [1, 2, 3, 4].forEach((expectedCount) => {
         system.symbols.use("plop");
         const result = system.list();
         assertEquals(1, result.length);
-        const [symbolName, [usageCount, _symbolValue]] = result[0]!;
+        const [symbolName, usageCount, symbolValue, definition] = result[0]!;
         assertEquals(symbolName, "plop");
         assertEquals(usageCount, expectedCount);
+        assertEquals(symbolValue, 23);
+        assertEquals(definition, "file-name.asm:10")
     });
 });

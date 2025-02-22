@@ -57,8 +57,7 @@ Deno.test("A symbol is returned but not counted if it's a directive", () => {
     );
     const result1 = environment.symbolTable.use("test");
     assertEquals(result1, environment.symbolTable.defineDirective);
-    const [usageCount, _symbolValue] = environment.symbolTable.value("test");
-    assertEquals(usageCount, 0);
+    assertEquals(environment.symbolTable.count("test"), 0);
 });
 
 Deno.test("A symbol can't be defined with the same name as a register", () => {
@@ -74,9 +73,7 @@ Deno.test("A symbol is returned and counted if it's a register", () => {
     for (const expectedCount of [1, 2, 3]) {
         const result = environment.symbolTable.use("R3");
         assertEquals(result, 3);
-        const [usageCount, symbolValue] = environment.symbolTable.value("R3");
-        assertEquals(symbolValue, result);
-        assertEquals(usageCount, expectedCount);
+        assertEquals(environment.symbolTable.count("R3"), expectedCount);
     }
 });
 
@@ -95,18 +92,14 @@ Deno.test("A symbol is returned and counted if it's a device property", () => {
     for (const expectedCount of [1, 2, 3]) {
         const result = environment.symbolTable.use("test");
         assertEquals(result, "57");
-        const [usageCount, symbolValue] = environment.symbolTable.value("test");
-        assertEquals(symbolValue, result);
-        assertEquals(usageCount, expectedCount);
+        assertEquals(environment.symbolTable.count("test"), expectedCount);
     }
 });
 
 Deno.test("Device properties don't 'become' symbols until they're used", () => {
     const environment = testEnvironment();
     environment.deviceProperties.property("test", "57");
-    const [usageCount, symbolValue] = environment.symbolTable.value("test");
-    assertEquals(symbolValue, undefined);
-    assertEquals(usageCount, 0);
+    assertEquals(environment.symbolTable.count("test"), 0);
 });
 
 Deno.test("A symbol is returned and counted if it's a CPU register", () => {
@@ -115,16 +108,12 @@ Deno.test("A symbol is returned and counted if it's a CPU register", () => {
     for (const expectedCount of [1, 2, 3]) {
         const result = environment.symbolTable.use("R15");
         assertEquals(result, 15);
-        const [usageCount, symbolValue] = environment.symbolTable.value("R15");
-        assertEquals(symbolValue, result);
-        assertEquals(usageCount, expectedCount);
+        assertEquals(environment.symbolTable.count("R15"), expectedCount);
     }
 });
 
 Deno.test("CPU registers don't 'become' symbols until they're used", () => {
     const environment = testEnvironment();
     environment.cpuRegisters.initialise(false);
-    const [usageCount, symbolValue] = environment.symbolTable.value("R15");
-    assertEquals(symbolValue, undefined);
-    assertEquals(usageCount, 0);
+    assertEquals(environment.symbolTable.count("R15"), 0);
 });

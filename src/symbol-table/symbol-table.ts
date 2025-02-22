@@ -4,8 +4,8 @@ import type { Directive } from "../directives/data-types.ts";
 import type { DirectiveList } from "../directives/directive-list.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
-import type { MapEntry, SymbolValue } from "./data-types.ts";
-
+import { FileName, LineNumber } from "../source-code/data-types.ts";
+import type { SymbolValue } from "./data-types.ts";
 
 export const symbolTable = (
     directiveList: DirectiveList,
@@ -13,13 +13,15 @@ export const symbolTable = (
     cpuRegisters: CpuRegisters,
     pass: Pass
 ) => {
-    const symbols: Map<string, MapEntry> = new Map([]);
+    const values: Map<string, SymbolValue> = new Map([]);
+    const counts: Map<string, number> = new Map([]);
+    const definitions: Map<string, string> = new Map([]);
 
     const has = (
         symbolName: string, option: "withRegisters" | "notRegisters"
     ) => {
         const isRegister = cpuRegisters.has(symbolName);
-        const hasSymbol = symbols.has(symbolName) ||
+        const hasSymbol = values.has(symbolName) ||
             directiveList.has(symbolName) || deviceProperties.has(symbolName);
         return hasSymbol && (
             (option == "withRegisters" && isRegister) ||
@@ -27,7 +29,10 @@ export const symbolTable = (
         );
     };
 
-    const add = (symbolName: string, value: SymbolValue) => {
+    const add = (
+        symbolName: string, value: SymbolValue,
+        fileName: FileName, lineNumber: LineNumber
+    ) => {
         if (directiveList.has(symbolName)) {
             return failure(undefined, "symbol_nameIsDirective", undefined);
         }
@@ -40,63 +45,87 @@ export const symbolTable = (
             return failure(undefined, "symbol_alreadyExists", undefined);
         }
 
-        if (symbols.has(symbolName) && !pass.ignoreErrors()) {
-            const [_usageCount, oldValue] = symbols.get(symbolName)!;
+        if (values.has(symbolName) && !pass.ignoreErrors()) {
+            const oldValue = values.get(symbolName);
             if (value != oldValue) {
                 return failure(undefined, "symbol_alreadyExists", [`${oldValue}`]);
             }
         }
 
-        if (!symbols.has(symbolName)) {
-            symbols.set(symbolName, [0, value]);
-        }
+        values.set(symbolName, value);
+        counts.set(symbolName, 0);
+        definitions.set(symbolName, fileName ? `${fileName}:${lineNumber}` : "");
         return emptyBox();
     };
 
-    const countedSymbol = (symbolName: string): MapEntry => {
-        if (symbols.has(symbolName)) {
-            return symbols.get(symbolName)!;
-        }
-
-        const property = deviceProperties.value(symbolName);
-        if (property.which == "box") {
-            return [0, property.value];
-        }
-
-        return [0, cpuRegisters.value(symbolName)!]
+    const count = (symbolName: string) => {
+        const result = counts.get(symbolName);
+        return result == undefined ? 0 : result;
     };
+
+    const increment = (symbolName: string) => {
+        counts.set(symbolName, count(symbolName) + 1);
+    }
 
     const use = (symbolName: string) => {
         if (directiveList.has(symbolName)) {
             return directiveList.use(symbolName);
         }
 
-        const [usageCount, value] = countedSymbol(symbolName);
-        symbols.set(symbolName, [usageCount + 1, value]);
-        return value;
+        if (values.has(symbolName)) {
+            increment(symbolName);
+            return values.get(symbolName)!;
+        }
+
+        const property = deviceProperties.value(symbolName);
+        if (property.which == "box") {
+            increment(symbolName);
+            return property.value;
+        }
+
+        increment(symbolName);
+        return cpuRegisters.value(symbolName);
     };
 
     const resetState = () => {
-        for (const [symbolName, [_usageCount, value]] of symbols) {
-            symbols.set(symbolName, [0, value]);
-        }
+        counts.clear();
     };
 
     const value = (symbolName: string) => {
-        const theSymbol = symbols.get(symbolName);
-        return theSymbol == undefined ? [0, undefined] : theSymbol;
+        if (values.has(symbolName)) {
+            return values.get(symbolName)!;
+        }
+
+        const property = deviceProperties.value(symbolName);
+        if (property.which == "box") {
+            return property.value;
+        }
+
+        return cpuRegisters.value(symbolName);
+    };
+
+    const list = () => {
+        const asArray: Array<[string, number, SymbolValue, string]> = [];
+        counts.forEach((count: number, symbolName: string) => {
+            const definition = definitions.get(symbolName);
+            asArray.push([
+                symbolName, count, value(symbolName),
+                definition == undefined ? "" : definition
+            ]);
+        });
+        return asArray;
     }
 
     const defineDirective: Directive = (symbolName: string, value: number) =>
-        add(symbolName, value);
+        add(symbolName, value, "", 0);
 
     return {
         "has": has,
         "add": add,
         "use": use,
-        "value": value,
+        "count": count,
+        "list": list,
         "resetState": resetState,
-        "list": () => symbols.entries().toArray(),
         "defineDirective": defineDirective,
     };
 };

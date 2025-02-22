@@ -8,6 +8,7 @@ const objectWidth = "00 00 00 00".length;
 const addressWidth = 6;
 const codeWidth = objectWidth + addressWidth + 1;
 const lineNumberWidth = 4;
+const displayableValues = ["number", "string"];
 
 export const listing = (
     outputFile: OutputFile, topFileName: FileName,
@@ -106,13 +107,15 @@ export const listing = (
 
         heading("Symbol Table");
         file.write("");
-        for (const [symbolName, [usageCount, symbolValue]] of symbols) {
-            const formatted = ["string", "number"].includes(typeof symbolValue)
+        symbols.forEach(([symbolName, usageCount, symbolValue, definition]) => {
+            const formatted = displayableValues.includes(typeof symbolValue)
                 ? ` = ${symbolValue}`
                 : "";
-            file.write(`${symbolName}${formatted} (${usageCount})`);
-        }
-    }
+            file.write(
+                `${symbolName}${formatted} (${usageCount}) ${definition}`.trim()
+            );
+        });
+    };
 
     const close = () => {
         sortedSymbolTable();

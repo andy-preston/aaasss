@@ -12,7 +12,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     const record = recording(macros);
 
     function* imaginaryFile(macroName: string): FileLineIterator {
-        const [macroCount, _symbolValue] = symbolTable.value(macroName);
+        const macroCount = symbolTable.count(macroName);
         for (const line of macros.get(macroName)!.lines) {
             yield [line.rawSource, macroName, macroCount!, false];
         }
@@ -30,7 +30,9 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
                     fileStack.pushImaginary(imaginaryFile(macroName));
                 }
                 return emptyBox();
-            }
+            },
+            "",
+            0
         );
     });
 

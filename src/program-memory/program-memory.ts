@@ -49,7 +49,9 @@ export const programMemory = (
 
     const addressed = (line: LineWithObjectCode) => {
         if (line.label) {
-            const result = symbolTable.add(line.label, address);
+            const result = symbolTable.add(
+                line.label, address, line.fileName, line.lineNumber
+            );
             if (result.which == "failure") {
                 line.withFailure(result);
             }
