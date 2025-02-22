@@ -2,13 +2,11 @@ import type { OutputFile } from "../assembler/output-file.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+import { codeWidth, extractedCode, type ExtractedCode } from "./code.ts";
 import type { FailureMessageTranslator } from "./messages.ts";
+import { sortedSymbolTable } from "./symbols.ts";
+import { extractedText, type ExtractedText } from "./text.ts";
 
-const objectWidth = "00 00 00 00".length;
-const addressWidth = 6;
-const codeWidth = objectWidth + addressWidth + 1;
-const lineNumberWidth = 4;
-const displayableValues = ["number", "string"];
 
 export const listing = (
     outputFile: OutputFile, topFileName: FileName,
@@ -33,43 +31,12 @@ export const listing = (
         }
     };
 
-    const extractedCode = function* (theLine: LineWithAddress) {
-        let address = theLine.address;
-        for (const block of theLine.code) {
-            const addressHex = address
-                .toString(16)
-                .toUpperCase()
-                .padStart(addressWidth, "0");
-            const object = block
-                .map(byte => byte.toString(16).padStart(2, "0"))
-                .join(" ")
-                .toUpperCase()
-                .padEnd(objectWidth, " ");
-            yield `${addressHex} ${object}`;
-            address = address + (block.length / 2);
-        }
-        return "";
-    };
-
-    type ExtractedCode = ReturnType<typeof extractedCode>;
-
-    const extractedText = function* (theLine: LineWithAddress) {
-        const textLine = (lineNumber: string, theText: string) =>
-            `${lineNumber}`.padStart(lineNumberWidth, " ") + ` ${theText}`;
-
-        yield textLine(
-            `${theLine.lineNumber}`,
-            theLine.rawSource || theLine.assemblySource
+    const messagesForLine = (line: LineWithAddress) =>
+        line.failures().reduce(
+            (messages, failure) =>
+                messages.concat(failureMessages(failure, line)),
+            [] as Array<string>
         );
-        for (const failure of theLine.failures()) {
-            for (const message of failureMessages(failure, theLine)) {
-                yield textLine("", message);
-            }
-        }
-        return "";
-    };
-
-    type ExtractedText = ReturnType<typeof extractedText>;
 
     const body = (code: ExtractedCode, text: ExtractedText) => {
         const pad = (text: string | undefined, width: number) =>
@@ -81,44 +48,25 @@ export const listing = (
             if (nextCode.done && nextText.done) {
                 return;
             }
-            file.write(
-                `${pad(nextCode.value, codeWidth)} ${pad(nextText.value, 0)}`.trimEnd()
-            );
+            const codeColumn = pad(nextCode.value, codeWidth);
+            const textColumn = pad(nextText.value, 0);
+            file.write(`${codeColumn} ${textColumn}`.trimEnd());
         }
     };
 
     const line = (theLine: LineWithAddress) => {
         fileName(theLine.fileName);
-        body(extractedCode(theLine), extractedText(theLine));
-    };
-
-    const sortedSymbolTable = () => {
-        const symbolList = symbolTable.list();
-        if (symbolList.length == 0) {
-            return;
-        }
-
-        const transform = (key: string) =>
-            key.replace(/^R([0-9])$/, "R0$1").toUpperCase()
-
-        const symbols = symbolList.sort(
-            (a, b) => transform(a[0]).localeCompare(transform(b[0]))
-        );
-
-        heading("Symbol Table");
-        file.write("");
-        symbols.forEach(([symbolName, usageCount, symbolValue, definition]) => {
-            const formatted = displayableValues.includes(typeof symbolValue)
-                ? ` = ${symbolValue}`
-                : "";
-            file.write(
-                `${symbolName}${formatted} (${usageCount}) ${definition}`.trim()
-            );
-        });
+        const messages = messagesForLine(theLine);
+        body(extractedCode(theLine), extractedText(theLine, messages));
     };
 
     const close = () => {
-        sortedSymbolTable();
+        const symbols = sortedSymbolTable(symbolTable);
+        if (symbols.length > 0) {
+            heading("Symbol Table");
+            file.write("");
+            symbols.forEach(symbol => file.write(symbol));
+        };
         file.close();
     };
 
