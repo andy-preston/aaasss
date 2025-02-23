@@ -1,10 +1,12 @@
 import type { OperandIndex } from "../operands/data-types.ts";
 import { type FailureKind } from "./failures.ts";
 
+type Extra = Error | Array<string> | undefined;
+
 export const failure = (
     operand: OperandIndex | undefined,
     kind: FailureKind,
-    extra: Error | Array<string> | undefined
+    extra: Extra
 ) => {
     const onOperand = (index: OperandIndex) => {
         object.operand = index;

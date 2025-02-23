@@ -2,7 +2,7 @@ import type { NumericType } from "../numeric-values/types.ts";
 
 export type TypeFailure = NumericType
     | "type_number" | "type_string" | "type_strings"
-    | "type_bytes" | "type_macroParams" | "type_bitmask";
+    | "type_bytes" | "type_macroParams";
 
 export type FailureKind = TypeFailure
     | "device_notFound" | "device_notSelected" | "device_multiple"

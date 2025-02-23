@@ -86,6 +86,7 @@ Deno.test("The required numeric type must match the actual type", () => {
     const testData: Record<NumericType, NumericOperand> = {
         "type_16BitDataAddress": 0xcafe,
         "type_7BitDataAddress": 0x4e,
+        "type_bitIndex": 3,
         "type_word": 0xf00d,
         "type_byte": 0xda,
         "type_nybble": 8,
@@ -107,6 +108,7 @@ Deno.test("If numeric types don't match the line fails", () => {
     const testData: Record<NumericType, NumericOperand> = {
         "type_16BitDataAddress": 0xdeadbeef,
         "type_7BitDataAddress": 0x80,
+        "type_bitIndex": 9,
         "type_byte": 0xcafe,
         "type_nybble": 0xab,
         "type_positive": -10,

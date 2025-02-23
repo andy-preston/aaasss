@@ -64,7 +64,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
     ],
     "type_16BitDataAddress": (_line: LineWithAddress) => [""],
     "type_7BitDataAddress": (_line: LineWithAddress) => [""],
-    "type_bitmask": (_line: LineWithAddress) => [""],
+    "type_bitIndex": (_line: LineWithAddress) => [""],
     "type_byte":  (_line: LineWithAddress) => [""],
     "type_bytes": (_line: LineWithAddress) => [
         "Should be a string or an array of byte values"
