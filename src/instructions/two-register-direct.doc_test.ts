@@ -30,7 +30,7 @@ Deno.test("Two register direct demo",() => {
     assertFileContains(".lst", [
         "/var/tmp/demo.asm",
         "=================",
-        '                      1     {{ device("testing"); }}',
+        '                      1     {{ device("ATMega 328"); }}',
         "000000 1C 12          2     ADC R1, R2",
         "000001 0C 34          3     ADD R3, R4",
         "000002 20 78          4     AND R7, R8",
@@ -89,7 +89,7 @@ Deno.test("Many chips do not support 8-bit multiply",() => {
     assertFileContains(".lst", [
         "/var/tmp/demo.asm",
         "=================",
-        '                      1     {{ device("AT Tiny 24"); }}',
+        '                      1     {{ device("ATTiny 24"); }}',
         "                      2     MUL R0, R1",
         "                        mnemonic_notSupported",
         "",
