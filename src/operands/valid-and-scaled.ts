@@ -1,7 +1,10 @@
 import { failure } from "../failure/failure-or-box.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
-import type { NumericOperand, OperandIndex, OperandType } from "./data-types.ts";
+import {
+    operands,
+    type NumericOperand, type NumericOperands, type OperandIndex, type OperandType
+} from "./data-types.ts";
 import type { LineWithOperands } from "./line-types.ts";
 
 type Scaler = (value: NumericOperand) => NumericOperand;
@@ -10,38 +13,47 @@ const scalers: Map<NumericType, Scaler> = new Map([
     ["type_registerImmediate", (value) => value - 16],
 ]);
 
+type Requirement = [OperandType, NumericType, OperandIndex];
+
+const dummyMapper = (_requirement: Requirement) => 0 as NumericOperand;
+
 export const validScaledOperands = (
-    line: LineWithOperands, requiredCount: number
-) => {
-    const real = (
-        operandType: OperandType, numericType: NumericType, index: OperandIndex
-    ) => {
-        const numeric = line.numericOperands[index]!;
-        if (line.operandTypes[index] != operandType) {
-            line.withFailure(failure(index, "operand_wrongType", [operandType]));
+    line: LineWithOperands, requirements: Array<Requirement>
+): NumericOperands => {
+    const realMapper = (requirement: Requirement): NumericOperand => {
+        const [operandType, numericType, operandIndex] = requirement;
+
+        const numeric = line.numericOperands[operandIndex]!;
+
+        if (line.operandTypes[operandIndex] != operandType) {
+            line.withFailure(failure(
+                operandIndex, "operand_wrongType", [operandType])
+            );
             return 0;
         }
+
         const valid = validNumeric(numeric, numericType);
         if (valid.which == "failure") {
-            line.withFailure(valid.onOperand(index));
+            line.withFailure(valid.onOperand(operandIndex));
             return 0;
         }
+
         if (scalers.has(numericType)) {
             const scale = scalers.get(numericType)!;
             return scale(numeric);
         }
+
         return numeric;
     };
 
-    const dummy = (
-        _operandType: OperandType, _numericType: NumericType, _index: OperandIndex
-    ) => 0;
-
-    const failed = line.numericOperands.length != requiredCount;
+    const failed = line.numericOperands.length != requirements.length;
     if (failed) {
-        line.withFailure(
-            failure(undefined, "operand_wrongCount", [`${requiredCount}`])
-        );
+        line.withFailure(failure(
+            undefined, "operand_wrongCount", [`${requirements.length}`]
+        ));
     }
-    return failed ? dummy : real;
+
+    return operands<NumericOperands>(
+        requirements.map(failed ? dummyMapper : realMapper)
+    );
 };

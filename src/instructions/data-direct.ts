@@ -41,12 +41,14 @@ export const dataDirect = (
         const [registerType, addressType, prefix, suffix] =
             options(hasReducedCore());
 
-        const operands = validScaledOperands(line, 2);
-        const register = operands("register", registerType, registerIndex);
-        const address = operands("number", addressType, addressIndex);
+        const [register, address] = validScaledOperands(line, [
+            ["register", registerType, registerIndex],
+            ["number", addressType, addressIndex],
+        ]);
+
         const code = template(`${prefix}${operationBit}${suffix}`, [
-            ["d", register],
-            ["k", address]
+            ["d", register!],
+            ["k", address!]
         ]);
         return lineWithObjectCode(line, code);
     };
