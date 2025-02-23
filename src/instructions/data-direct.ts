@@ -3,7 +3,7 @@ import type { NumericType } from "../numeric-values/types.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands } from "../operands/valid-and-scaled.ts";
+import { validScaledOperands } from "../operands/valid-scaled.ts";
 import type { OperandIndex } from "../operands/data-types.ts";
 
 const mapping: Map<string, [string, OperandIndex, OperandIndex]> = new Map([

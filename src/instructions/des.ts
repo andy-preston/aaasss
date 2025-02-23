@@ -3,7 +3,7 @@ import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands } from "../operands/valid-and-scaled.ts";
+import { validScaledOperands } from "../operands/valid-scaled.ts";
 
 export const des = (
     line: LineWithPokedBytes
