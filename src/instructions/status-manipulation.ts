@@ -2,7 +2,7 @@ import type { DevicePropertiesInterface } from "../device/properties.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands } from "../operands/valid-scaled.ts";
+import { Requirements, validScaledOperands } from "../operands/valid-scaled.ts";
 
 const mapping: Map<string, [string, number?]> = new Map([
     ["BCLR", ["1", undefined]],
@@ -31,9 +31,13 @@ export const statusManipulation = (
     const codeGenerator = (_device: DevicePropertiesInterface) => {
         const [operationBit, impliedOperand] = mapping.get(line.mnemonic)!;
 
-        const [operand] = impliedOperand == undefined
-            ? validScaledOperands(line, [["number", "type_bitIndex", 0]])
-            : [impliedOperand!];
+        const operandsRequired: Requirements = impliedOperand == undefined
+            ? [["number", "type_bitIndex", 0]]
+            : [];
+        const actualOperands = validScaledOperands(line, operandsRequired);
+        const operand = impliedOperand == undefined
+            ? actualOperands[0]
+            : impliedOperand;
 
         const code = template(`1001_0100 ${operationBit}sss_1000`, [
             ["s", operand!]
