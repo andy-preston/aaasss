@@ -15,10 +15,12 @@ const scalers: Map<NumericType, Scaler> = new Map([
 
 type Requirement = [OperandType, NumericType, OperandIndex];
 
+export type Requirements = Array<Requirement>;
+
 const dummyMapper = (_requirement: Requirement) => 0 as NumericOperand;
 
 export const validScaledOperands = (
-    line: LineWithOperands, requirements: Array<Requirement>
+    line: LineWithOperands, requirements: Requirements
 ): NumericOperands => {
     const realMapper = (requirement: Requirement): NumericOperand => {
         const [operandType, numericType, operandIndex] = requirement;

@@ -15,13 +15,12 @@ const minMax: Record<NumericType, [number, number | undefined]> = {
 export const validNumeric = (
     value: unknown, numericType: NumericType
 ): Box<number> | Failure => {
-    const asString = `${value}`;
     const [min, max] = minMax[numericType];
     return typeof value == "number"
         && Number.parseInt(`${value}`) == value
         && value >= min
         && (max == undefined || value <= max)
         ? box(value as number)
-        : failure(undefined, numericType, [asString]);
+        : failure(undefined, numericType, [`${value}`, `${min}`, `${max}`]);
 };
 
