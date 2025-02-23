@@ -1,6 +1,6 @@
 import { failure } from "../failure/failure-or-box.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import { addressingModeList } from "./addressing-mode-list.ts";
+import { instructionEncoderList } from "./instruction-encoder-list.ts";
 import { lineWithObjectCode, type LineWithPokedBytes, type LineWithObjectCode, lineWithPokedBytes } from "./line-types.ts";
 import { PokeBuffer } from "./poke.ts";
 import { LineWithOperands } from "../operands/line-types.ts";
@@ -11,7 +11,7 @@ export type EncodedInstruction =
 const addressingMode = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
-    for (const addressingMode of addressingModeList) {
+    for (const addressingMode of instructionEncoderList) {
         const codeGenerator = addressingMode(line)
         if (codeGenerator != undefined) {
             return codeGenerator;
