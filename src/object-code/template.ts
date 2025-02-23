@@ -1,4 +1,5 @@
 import type { Code } from "../object-code/data-types.ts";
+import { NumericOperand } from "../operands/data-types.ts";
 
 type BinaryDigit = "0" | "1";
 type Binary = Array<BinaryDigit>;
@@ -28,7 +29,7 @@ type TemplateOperand =
     | "q";
 
 type TemplateDigit = TemplateOperand | BinaryDigit;
-type Substitution = [TemplateOperand, number];
+type Substitution = [TemplateOperand, NumericOperand];
 type Substitutions = Array<Substitution>;
 
 const substitutionMap = (substitutions: Substitutions) => {
