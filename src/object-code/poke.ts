@@ -15,6 +15,8 @@ export const pokeBuffer = () => {
             "bad": []
         };
 
+        const badBytes = () => grouped.bad.map(byte => `${byte}`);
+
         for (const byte of bytes) {
             grouped[byte < 0 || byte > 0xff ? "bad" : "good"].push(byte);
         }
@@ -25,7 +27,7 @@ export const pokeBuffer = () => {
             theBuffer.push(grouped.good.splice(0, 4) as unknown as Code);
         }
         return grouped.bad.length > 0
-            ? failure(undefined, "type_bytes", [grouped.bad.join(", ")])
+            ? failure(undefined, "type_bytes", badBytes())
             : emptyBox();
     };
 

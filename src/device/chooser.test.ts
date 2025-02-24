@@ -10,28 +10,28 @@ Deno.test("You can choose any device that has a definition file", () => {
 });
 
 Deno.test("Choosing multiple devices results in failure", () => {
+    const firstName = "AT-Tiny 84";
+    const secondName = "AT-Tiny 2313";
     const system = systemUnderTest();
-    assertSuccess(
-        system.chooser.deviceDirective("AT-Tiny 84"),
-        undefined
-    );
+    assertSuccess(system.chooser.deviceDirective(firstName), undefined);
     assertFailureWithExtra(
-        system.chooser.deviceDirective("AT-Tiny 2313"),
+        system.chooser.deviceDirective(secondName),
         "device_multiple",
-        ["AT-Tiny 84"]
+        [firstName, secondName]
     );
 });
 
 Deno.test("Choosing the same device by different names is also a failure", () => {
+    // If we think about conditional assembly - having multiple names
+    // IN THE SOURCE for the same device is just plain confusing.
+    const firstName = "AT-Tiny 84";
+    const secondName = "at tiny 84";
     const system = systemUnderTest();
-    assertSuccess(
-        system.chooser.deviceDirective("AT-Tiny 84"),
-        undefined
-    );
+    assertSuccess(system.chooser.deviceDirective(firstName), undefined);
     assertFailureWithExtra(
-        system.chooser.deviceDirective("at tiny 84"),
+        system.chooser.deviceDirective(secondName),
         "device_multiple",
-        ["AT-Tiny 84"]
+        [firstName, secondName]
     );
 });
 

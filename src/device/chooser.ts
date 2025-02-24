@@ -31,7 +31,9 @@ export const deviceChooser = (
             return emptyBox();
         }
         if (previousName != undefined) {
-            return failure(undefined, "device_multiple", [`${previousName}`]);
+            return failure(
+                undefined, "device_multiple", [previousName, deviceName]
+            );
         }
         deviceProperties.property("deviceName", deviceName);
         for (const [key, value] of Object.entries(fullSpec)) {
