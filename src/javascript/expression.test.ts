@@ -80,3 +80,13 @@ Deno.test("Syntax errors are returned as errors too", () => {
         "Unexpected identifier 'is'"
     );
 });
+
+Deno.test("A symbol will not be assigned using `this.symbol`", () => {
+    const system = systemUnderTest();
+    assertFailureWithError(
+        system.expression("this.plop = 27"),
+        "js_error",
+        ReferenceError,
+        "this_assignment"
+    );
+});

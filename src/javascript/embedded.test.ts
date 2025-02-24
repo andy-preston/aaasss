@@ -34,16 +34,6 @@ Deno.test("A symbol assignment does not pollute the `this` context object", () =
     assertEquals(rendered.assemblySource, "");
 });
 
-Deno.test("A symbol will not be reassigned using `this.symbol`", () => {
-    const system = systemUnderTest();
-    system.symbolTable.defineDirective("plop", 57);
-    const rendered = system.js.rendered(testLine(
-        "{{ this.plop = 27; this.plop; }}"
-    ));
-    assertNotEquals(rendered.assemblySource, "27");
-    assertEquals(rendered.assemblySource, "57");
-});
-
 Deno.test("JS can be delimited with moustaches on the same line", () => {
     const system = systemUnderTest();
     const rendered = system.js.rendered(testLine(

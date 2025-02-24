@@ -15,6 +15,9 @@ export const jSExpression = (symbolTable: SymbolTable) => {
             return typeof symbolName == "string"
                 ? symbolTable.use(symbolName)
                 : undefined;
+        },
+        set() {
+            throw new ReferenceError("this_assignment");
         }
     });
 
