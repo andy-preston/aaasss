@@ -1,9 +1,13 @@
+import { Directive } from "../directives/data-types.ts";
 import { box, failure, isFailureOrBox, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { MacroInvocation } from "../macros/data-types.ts";
 import { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 const trailingSemicolons = /;*$/;
 
 export const jSExpression = (symbolTable: SymbolTable) => {
+
+    const untypedFunction = (fun: MacroInvocation | Directive) => fun;
 
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
@@ -12,9 +16,10 @@ export const jSExpression = (symbolTable: SymbolTable) => {
                 : symbolTable.has(symbolName, "notRegisters");
         },
         get(_target: object, symbolName: string) {
-            return typeof symbolName == "string"
-                ? symbolTable.use(symbolName)
-                : undefined;
+            const symbol = symbolTable.use(symbolName);
+            return symbol.type == "function"
+                ? untypedFunction(symbol.value)
+                : symbol.value
         },
         set() {
             throw new ReferenceError("this_assignment");

@@ -6,7 +6,7 @@ import { currentFileName, currentLineNumber } from "../directives/global-line.ts
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { FileName, LineNumber } from "../source-code/data-types.ts";
-import type { SymbolValue } from "./data-types.ts";
+import type { SymbolResult, SymbolValue } from "./data-types.ts";
 
 export const symbolTable = (
     directiveList: DirectiveList,
@@ -68,7 +68,7 @@ export const symbolTable = (
         counts.set(symbolName, count(symbolName) + 1);
     }
 
-    const use = (symbolName: string) => {
+    const fromLists = (symbolName: string): SymbolValue | Directive => {
         if (directiveList.has(symbolName)) {
             return directiveList.use(symbolName);
         }
@@ -86,6 +86,15 @@ export const symbolTable = (
 
         increment(symbolName);
         return cpuRegisters.value(symbolName);
+    };
+
+    const use = (symbolName: string): SymbolResult => {
+        const value = fromLists(symbolName);
+        return typeof value == "number"
+            ? { "type": "number", "value": value }
+            : typeof value == "string"
+            ? { "type": "string", "value": value }
+            : { "type": "function", "value": value }
     };
 
     const resetState = () => {

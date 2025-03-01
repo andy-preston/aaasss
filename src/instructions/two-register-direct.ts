@@ -1,5 +1,5 @@
-import { DevicePropertiesInterface } from "../device/properties.ts";
-import { lineWithObjectCode, LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { DevicePropertiesInterface } from "../device/properties.ts";
+import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands, type Requirements } from "../operands/valid-scaled.ts";

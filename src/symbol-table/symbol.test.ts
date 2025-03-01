@@ -27,13 +27,17 @@ export const systemUnderTest = () => {
 Deno.test("A symbol can be defined and accessed", () => {
     const system = systemUnderTest();
     assertSuccess(system.define("plop", 57), undefined);
-    assertEquals(system.symbolTable.use("plop"), 57);
+    assertEquals(system.symbolTable.use("plop"), {
+        "type": "number", "value": 57
+    });
 });
 
 Deno.test("A symbol can only be redefined if it's value has not changed", () => {
     const system = systemUnderTest();
     assertSuccess(system.define("plop", 57), undefined);
-    assertEquals(system.symbolTable.use("plop"), 57);
+    assertEquals(system.symbolTable.use("plop"), {
+        "type": "number", "value": 57
+    });
     system.pass.second();
     assertSuccess(system.define("plop", 57), undefined);
     assertFailure(system.define("plop", 75), "symbol_alreadyExists");
@@ -56,7 +60,9 @@ Deno.test("A symbol is returned but not counted if it's a directive", () => {
         "test", system.symbolTable.defineDirective
     );
     const result1 = system.symbolTable.use("test");
-    assertEquals(result1, system.symbolTable.defineDirective);
+    assertEquals(result1, {
+        "type": "function", "value": system.symbolTable.defineDirective
+    });
     assertEquals(system.symbolTable.count("test"), 0);
 });
 
@@ -72,7 +78,9 @@ Deno.test("A symbol is returned and counted if it's a register", () => {
     system.cpuRegisters.initialise(false);
     for (const expectedCount of [1, 2, 3]) {
         const result = system.symbolTable.use("R3");
-        assertEquals(result, 3);
+        assertEquals(result, {
+            "type": "number", "value": 3
+        });
         assertEquals(system.symbolTable.count("R3"), expectedCount);
     }
 });
@@ -91,7 +99,9 @@ Deno.test("A symbol is returned and counted if it's a device property", () => {
     assertSuccess(system.deviceProperties.public.value("test"), "57");
     for (const expectedCount of [1, 2, 3]) {
         const result = system.symbolTable.use("test");
-        assertEquals(result, "57");
+        assertEquals(result, {
+            "type": "string", "value": "57"
+        });
         assertEquals(system.symbolTable.count("test"), expectedCount);
     }
 });
@@ -107,7 +117,9 @@ Deno.test("A symbol is returned and counted if it's a CPU register", () => {
     system.cpuRegisters.initialise(false);
     for (const expectedCount of [1, 2, 3]) {
         const result = system.symbolTable.use("R15");
-        assertEquals(result, 15);
+        assertEquals(result, {
+            "type": "number", "value": 15
+        });
         assertEquals(system.symbolTable.count("R15"), expectedCount);
     }
 });

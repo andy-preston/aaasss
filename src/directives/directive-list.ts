@@ -9,7 +9,7 @@ export const directiveList = () => {
 
     const has = (symbolName: string) => list.has(symbolName);
 
-    const use = (symbolName: string) => list.get(symbolName);
+    const use = (symbolName: string) => list.get(symbolName)!;
 
     return {
         "includes": includes,

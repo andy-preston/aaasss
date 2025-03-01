@@ -30,7 +30,7 @@ export const symbolicToNumeric = (
             return [box(indexMapping.get(symbolic)!), "index_offset"];
         }
         if (cpuRegisters.has(symbolic)) {
-            return [box(symbolTable.use(symbolic) as number), "register"];
+            return [box(symbolTable.use(symbolic).value as number), "register"];
         }
         const numeric = jsExpression(symbolic);
         return numeric.which == "failure"

@@ -1,4 +1,5 @@
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { FailureKind } from "../failure/failures.ts";
 
 export const stringParameter = (value: unknown): Box<string> | Failure => {
     const asString = `${value}`;
@@ -6,28 +7,35 @@ export const stringParameter = (value: unknown): Box<string> | Failure => {
         ? box(asString) : failure(undefined, "type_string", [asString]);
 };
 
+type Expected = Extract<FailureKind, "type_strings" | "type_macroParams">;
+
+const legalTypes: Record<Expected, Array<string>> = {
+    "type_strings": ["string"],
+    "type_macroParams": ["string", "number"],
+};
+
+type Thingy = "undefined" | "array";
+
 export const parameterList = (
     parameters: unknown,
-    failureName: "type_strings" | "type_macroParams"
-): Box<string> | Failure => {
+    expected: Expected
+): Box<Thingy> | Failure => {
     if (parameters == undefined) {
         return box("undefined");
     }
 
     if (!Array.isArray(parameters)) {
-        return failure(undefined, failureName, [typeof parameters])
+        return failure(undefined, expected, [typeof parameters])
     }
 
-    const legalTypes = failureName == "type_strings"
-        ? ["string"] : ["string", "number"];
     const failed: Array<string> = [];
     for (const [index, parameter] of parameters.entries()) {
         const typeOf = typeof parameter;
-        if (!legalTypes.includes(typeOf)) {
+        if (!legalTypes[expected].includes(typeOf)) {
             failed.push(`${index}: ${typeOf}`);
         }
     }
     return failed.length > 0
-        ? failure(undefined, failureName, failed)
+        ? failure(undefined, expected, failed)
         : box("array");
 };

@@ -12,7 +12,9 @@ export const remapping = (macros: MacroList) => {
     const parameterSetup = (
         macroName: MacroName, actualParameters: ActualParameters
     ) => {
-        const checkedParameters = parameterList(actualParameters, "type_macroParams");
+        const checkedParameters = parameterList(
+            actualParameters, "type_macroParams"
+        );
         if (checkedParameters.which == "failure") {
             return checkedParameters;
         }

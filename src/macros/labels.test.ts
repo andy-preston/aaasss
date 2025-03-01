@@ -14,7 +14,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     assertFalse(lineWithLabel.failed());
     assertSuccess(system.macros.endDirective(), undefined);
 
-    const testMacro = system.symbolTable.use("testMacro") as Directive;
+    const testMacro = system.symbolTable.use("testMacro").value as Directive;
     assertSuccess(testMacro(), undefined);
     const mockCount = 2;
 
@@ -35,7 +35,7 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     assertFalse(lineWithLabel.failed());
     assertSuccess(system.macros.endDirective(), undefined);
 
-    const testMacro = system.symbolTable.use("testMacro") as Directive;
+    const testMacro = system.symbolTable.use("testMacro").value as Directive;
     assertSuccess(testMacro(), undefined);
     const mockCount = 2;
     const line = system.macros.lines(
@@ -51,7 +51,7 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
     assert(skipFirstLine.isRecordingMacro);
     assertSuccess(system.macros.endDirective(), undefined);
 
-    const testMacro = system.symbolTable.use("testMacro") as Directive;
+    const testMacro = system.symbolTable.use("testMacro").value as Directive;
     assertSuccess(testMacro(), undefined);
     const mockCount = 2;
     const line = system.macros.lines(
