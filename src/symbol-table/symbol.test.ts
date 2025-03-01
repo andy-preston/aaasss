@@ -61,7 +61,7 @@ Deno.test("A symbol is returned but not counted if it's a directive", () => {
     );
     const result1 = system.symbolTable.use("test");
     assertEquals(result1, {
-        "type": "function", "value": system.symbolTable.defineDirective
+        "type": "directive", "value": system.symbolTable.defineDirective
     });
     assertEquals(system.symbolTable.count("test"), 0);
 });

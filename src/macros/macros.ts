@@ -20,18 +20,20 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     }
 
     record.useMacroMethod((macroName: string) => {
+        const method = (...actualParameters: ActualParameters) => {
+            const setup = remap.parameterSetup(macroName, actualParameters);
+            if (setup.which == "failure") {
+                return setup;
+            }
+            if (!record.isRecording()) {
+                fileStack.pushImaginary(imaginaryFile(macroName));
+            }
+            return emptyBox();
+        };
+
         symbolTable.add(
             macroName,
-            (...actualParameters: ActualParameters) => {
-                const setup = remap.parameterSetup(macroName, actualParameters);
-                if (setup.which == "failure") {
-                    return setup;
-                }
-                if (!record.isRecording()) {
-                    fileStack.pushImaginary(imaginaryFile(macroName));
-                }
-                return emptyBox();
-            },
+            { "type": "macro", "value": method },
             currentFileName(),
             currentLineNumber()
         );

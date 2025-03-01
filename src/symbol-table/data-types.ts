@@ -13,13 +13,17 @@ type StringSymbol = {
     "value": string
 };
 
-type FunctionSymbol = {
-    "type": "function",
-    "value": Directive | MacroInvocation
-}
+export type DirectiveSymbol = {
+    "type": "directive",
+    "value": Directive
+};
 
-export type SymbolValue = number | string | Directive | MacroInvocation;
+export type MacroSymbol = {
+    "type": "macro",
+    "value": MacroInvocation
+};
 
-export type SymbolResult = NumberSymbol | StringSymbol | FunctionSymbol;
+export type SymbolValue = NumberSymbol | StringSymbol
+    | DirectiveSymbol | MacroSymbol;
 
 export type MapEntry = [UsageCount, SymbolValue];
