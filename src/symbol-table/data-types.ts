@@ -1,6 +1,6 @@
-import { MacroInvocation } from "../macros/data-types.ts";
+import { ActualParametersDirective } from "../directives/data-types.ts";
 
-export type UserFunction = MacroInvocation;
+export type UserFunction = ActualParametersDirective["method"];
 
 export type UsageCount = number;
 

@@ -1,6 +1,5 @@
 import type { Directive } from "../directives/data-types.ts";
-import { stringParameter } from "../directives/type-checking.ts";
-import { box, emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource, type LineWithRawSource } from "./line-types.ts";
 
@@ -45,20 +44,19 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         }
     };
 
-    const includeDirective: Directive = (fileName: FileName) => {
-        const check = stringParameter(fileName);
-        if (check.which == "failure") {
-            return check;
+    const includeDirective: Directive = {
+        "parametersType": "string",
+        "method": (fileName: FileName) => {
+            const contents = fileContents(fileName);
+            if (contents.which == "failure") {
+                return contents;
+            }
+            fileStack.push({
+                "fileName": fileName,
+                "iterator": fileLineByLine(contents.value)
+            });
+            return box("");
         }
-        const contents = fileContents(fileName);
-        if (contents.which == "failure") {
-            return contents;
-        }
-        fileStack.push({
-            "fileName": fileName,
-            "iterator": fileLineByLine(contents.value)
-        });
-        return emptyBox();
     };
 
     const currentFile = () => fileStack.at(-1);
@@ -72,7 +70,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     };
 
     const lines: SourceOfSource = function* () {
-        const topFile = includeDirective(topFileName);
+        const topFile = includeDirective.method(topFileName);
         if (topFile.which == "failure") {
             yield lineWithRawSource(
                 topFileName, 0, "", "", 0, false

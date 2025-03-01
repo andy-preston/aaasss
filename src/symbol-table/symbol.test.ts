@@ -15,7 +15,6 @@ export const systemUnderTest = () => {
         directives, device.public, registers, currentPass
     );
     return {
-        "define": symbols.defineDirective,
         "symbolTable": symbols,
         "directiveList": directives,
         "deviceProperties": device,
@@ -26,17 +25,29 @@ export const systemUnderTest = () => {
 
 Deno.test("A symbol can be defined and accessed", () => {
     const system = systemUnderTest();
-    assertSuccess(system.define("plop", 57), undefined);
+    assertSuccess(
+        system.symbolTable.defineDirective.method("plop", 57),
+        undefined
+    );
     assertEquals(system.symbolTable.use("plop"), 57);
 });
 
 Deno.test("A symbol can only be redefined if it's value has not changed", () => {
     const system = systemUnderTest();
-    assertSuccess(system.define("plop", 57), undefined);
+    assertSuccess(
+        system.symbolTable.defineDirective.method("plop", 57),
+        undefined
+    );
     assertEquals(system.symbolTable.use("plop"), 57);
     system.pass.second();
-    assertSuccess(system.define("plop", 57), undefined);
-    assertFailure(system.define("plop", 75), "symbol_alreadyExists");
+    assertSuccess(
+        system.symbolTable.defineDirective.method("plop", 57),
+        undefined
+    );
+    assertFailure(
+        system.symbolTable.defineDirective.method("plop", 75),
+        "symbol_alreadyExists"
+    );
 });
 
 Deno.test("A symbol can't be defined with the same name as a directive", () => {
@@ -45,7 +56,7 @@ Deno.test("A symbol can't be defined with the same name as a directive", () => {
         // Just using the define directive because "it's handy"
         "test", system.symbolTable.defineDirective
     );
-    const result = system.define("test", 57);
+    const result = system.symbolTable.defineDirective.method("test", 57);
     assertFailure(result, "symbol_nameIsDirective");
 });
 
@@ -56,14 +67,14 @@ Deno.test("A symbol is returned but not counted if it's a directive", () => {
         "test", system.symbolTable.defineDirective
     );
     const result1 = system.symbolTable.use("test");
-    assertEquals(result1, system.symbolTable.defineDirective);
+    assertEquals(typeof result1, "function");
     assertEquals(system.symbolTable.count("test"), 0);
 });
 
 Deno.test("A symbol can't be defined with the same name as a register", () => {
     const system = systemUnderTest();
     system.cpuRegisters.initialise(false);
-    const result = system.define("R8", 8);
+    const result = system.symbolTable.defineDirective.method("R8", 8);
     assertFailure(result, "symbol_nameIsRegister");
 });
 
@@ -80,7 +91,7 @@ Deno.test("A symbol is returned and counted if it's a register", () => {
 Deno.test("A symbol can't be defined with the same name as a device property", () => {
     const system = systemUnderTest();
     system.deviceProperties.property("test", "57");
-    const result = system.define("test", 57);
+    const result = system.symbolTable.defineDirective.method("test", 57);
     assertFailure(result, "symbol_alreadyExists");
 })
 

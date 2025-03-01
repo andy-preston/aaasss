@@ -1,6 +1,5 @@
 import type { Directive } from "../directives/data-types.ts";
-import { stringParameter } from "../directives/type-checking.ts";
-import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
@@ -25,10 +24,10 @@ export const deviceChooser = (
     const choose = (
         deviceName: string,
         fullSpec: FullSpec
-    ): Box<undefined> | Failure => {
+    ): Box<string> | Failure => {
         const previousName = deviceProperties.deviceName();
         if (previousName == deviceName) {
-            return emptyBox();
+            return box("");
         }
         if (previousName != undefined) {
             return failure(
@@ -52,42 +51,41 @@ export const deviceChooser = (
                     break;
             }
         }
-        return emptyBox();
+        return box("");
     };
 
-    const deviceDirective: Directive = (name: string) => {
-        const fullSpec: FullSpec = {};
+    const deviceDirective: Directive = {
+        "parametersType": "string",
+        "method": (name: string) => {
+            const fullSpec: FullSpec = {};
 
-        const loadSpec = (spec: RawItems) => {
-            for (const [key, item] of Object.entries(spec)) {
-                if (Object.hasOwn(fullSpec, key)) {
-                    throw new Error(
-                        `${key} declared multiple times in ${name} spec`
-                    );
+            const loadSpec = (spec: RawItems) => {
+                for (const [key, item] of Object.entries(spec)) {
+                    if (Object.hasOwn(fullSpec, key)) {
+                        throw new Error(
+                            `${key} declared multiple times in ${name} spec`
+                        );
+                    }
+                    fullSpec[key] = typeof item.value == "string"
+                        ? hexNumber(item.value)
+                        : item.value;
                 }
-                fullSpec[key] = typeof item.value == "string"
-                    ? hexNumber(item.value)
-                    : item.value;
-            }
-        };
+            };
 
-        const check = stringParameter(name);
-        if (check.which == "failure") {
-            return check;
+            const baseName = deviceFinder(name);
+            if (baseName.which == "failure") {
+                return baseName;
+            }
+            const baseSpec = loadJsonFile(baseName.value) as DeviceSpec;
+            const familySpec = (
+                "family" in baseSpec
+                    ? loadJsonFile(`./devices/families/${baseSpec.family}.json`)
+                    : {}
+            ) as RawItems;
+            loadSpec(baseSpec.spec);
+            loadSpec(familySpec);
+            return choose(name, fullSpec);
         }
-        const baseName = deviceFinder(name);
-        if (baseName.which == "failure") {
-            return baseName;
-        }
-        const baseSpec = loadJsonFile(baseName.value) as DeviceSpec;
-        const familySpec = (
-            "family" in baseSpec
-                ? loadJsonFile(`./devices/families/${baseSpec.family}.json`)
-                : {}
-        ) as RawItems;
-        loadSpec(baseSpec.spec);
-        loadSpec(familySpec);
-        return choose(name, fullSpec);
     };
 
     return {

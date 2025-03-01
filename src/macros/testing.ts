@@ -2,7 +2,7 @@ import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import type { Directive } from "../directives/data-types.ts";
 import { directiveList } from "../directives/directive-list.ts";
-import { emptyBox } from "../failure/failure-or-box.ts";
+import { box } from "../failure/failure-or-box.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -16,7 +16,10 @@ import { macros } from "./macros.ts";
 
 const mockFileStack = () => {
     let lineIterator: FileLineIterator | undefined;
-    const includeDirective: Directive = () => emptyBox();
+    const includeDirective: Directive = {
+        "parametersType": "string",
+        "method": (_fileName: string) => box("")
+    };
     const pushImaginary = (iterator: FileLineIterator) => {
         lineIterator = iterator;
     };

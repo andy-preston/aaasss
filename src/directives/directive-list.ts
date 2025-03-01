@@ -1,4 +1,5 @@
 import type { Directive } from "./data-types.ts";
+import { javascriptDirectives } from "./runners.ts";
 
 export const directiveList = () => {
     const list: Map<string, Directive> = new Map([]);
@@ -9,7 +10,10 @@ export const directiveList = () => {
 
     const has = (symbolName: string) => list.has(symbolName);
 
-    const use = (symbolName: string) => list.get(symbolName);
+    const use = (symbolName: string) => {
+        const directive = list.get(symbolName)!;
+        return javascriptDirectives[directive.parametersType];
+    };
 
     return {
         "includes": includes,

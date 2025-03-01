@@ -26,32 +26,38 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
             : box(address);
     };
 
-    const allocStackDirective: Directive = (bytes: number) => {
-        // It's entirely optional to allocate space for a stack.
-        // but you can if you're worried that your RAM allocations might eat up
-        // all the space.
-        if (stack != 0) {
-            return failure(undefined, "ram_stackAllocated", [`${stack}`]);
+    const allocStackDirective: Directive = {
+        "parametersType": "number",
+        "method": (bytes: number) => {
+            // It's entirely optional to allocate space for a stack.
+            // but you can if you're worried that your RAM allocations might eat up
+            // all the space.
+            if (stack != 0) {
+                return failure(undefined, "ram_stackAllocated", [`${stack}`]);
+            }
+            const check = ramAddress(newAllocationSize(bytes));
+            if (check.which == "failure") {
+                return check;
+            }
+            stack = bytes;
+            return box(`${bytes}`);
         }
-        const check = ramAddress(newAllocationSize(bytes));
-        if (check.which == "failure") {
-            return check;
-        }
-        stack = bytes;
-        return box(`${bytes}`);
     };
 
-    const allocDirective: Directive = (bytes: number) => {
-        const startAddress = ramAddress(allocated);
-        if (startAddress.which == "failure") {
-            return startAddress;
+    const allocDirective: Directive = {
+        "parametersType": "number",
+        "method": (bytes: number) => {
+            const startAddress = ramAddress(allocated);
+            if (startAddress.which == "failure") {
+                return startAddress;
+            }
+            const check = ramAddress(newAllocationSize(bytes));
+            if (check.which == "failure") {
+                return check;
+            }
+            allocated = allocated + bytes;
+            return box(`${startAddress.value}`);
         }
-        const check = ramAddress(newAllocationSize(bytes));
-        if (check.which == "failure") {
-            return check;
-        }
-        allocated = allocated + bytes;
-        return box(`${startAddress.value}`);
     };
 
     return {

@@ -5,16 +5,18 @@ import { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
 Deno.test("Including a file doesn't return anything", () => {
+    const files = fileStack(defaultReaderMethod, "");
     assertSuccess(
         // This file is irrelevant but we can guarantee it exists
-        fileStack(defaultReaderMethod, "").includeDirective("deno.json"),
+        files.includeDirective.method("deno.json"),
         undefined
     );
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
     const fileName = "does-not-exist.test";
-    const result = fileStack(defaultReaderMethod, "").includeDirective(fileName);
+    const files = fileStack(defaultReaderMethod, "");
+    const result = files.includeDirective.method(fileName);
     assertFailure(result, "file_notFound");
     const failure = result as Failure;
     assertInstanceOf(failure.extra, Deno.errors.NotFound);
@@ -25,7 +27,8 @@ Deno.test("Including a non existant file returns a failure", () => {
 });
 
 Deno.test("Including an 'irrational' fileName returns a failure", () => {
-    const result = fileStack(defaultReaderMethod, "").includeDirective(
+    const files = fileStack(defaultReaderMethod, "");
+    const result = files.includeDirective.method(
         [1, 2, 3] as unknown as string
     );
     assertFailure(result, "type_string");
@@ -85,7 +88,7 @@ Deno.test("An included file is inserted into the source stream", () => {
     const lines = files.lines();
 
     assertEquals("top.file 1", lines.next().value!.rawSource);
-    files.includeDirective("plop.txt");
+    files.includeDirective.method("plop.txt");
     assertEquals([
         "plop.txt 1",
         "plop.txt 2",

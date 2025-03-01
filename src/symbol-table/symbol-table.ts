@@ -3,7 +3,7 @@ import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { Directive } from "../directives/data-types.ts";
 import type { DirectiveList } from "../directives/directive-list.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import { box, failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { FileName, LineNumber } from "../source-code/data-types.ts";
 import type { SymbolValue } from "./data-types.ts";
@@ -56,7 +56,7 @@ export const symbolTable = (
         values.set(symbolName, value);
         counts.set(symbolName, 0);
         definitions.set(symbolName, fileName ? `${fileName}:${lineNumber}` : "");
-        return emptyBox();
+        return box("");
     };
 
     const count = (symbolName: string) => {
@@ -117,8 +117,11 @@ export const symbolTable = (
         return asArray;
     }
 
-    const defineDirective: Directive = (symbolName: string, value: number) =>
-        add(symbolName, value, currentFileName(), currentLineNumber());
+    const defineDirective: Directive = {
+        "parametersType": "value",
+        "method": (symbolName: string, value: number) =>
+            add(symbolName, value, currentFileName(), currentLineNumber())
+    };
 
     return {
         "has": has,

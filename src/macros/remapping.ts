@@ -1,9 +1,8 @@
-import { parameterList } from "../directives/type-checking.ts";
-import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import { emptyBox } from "../failure/failure-or-box.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
-import type { ActualParameters, MacroList, MacroName } from "./data-types.ts";
+import type { MacroList, MacroName } from "./data-types.ts";
 import { lineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
 
 export const remapping = (macros: MacroList) => {
@@ -12,19 +11,17 @@ export const remapping = (macros: MacroList) => {
     const parameterSetup = (
         macroName: MacroName, actualParameters: ActualParameters
     ) => {
-        const checkedParameters = parameterList(actualParameters, "type_macroParams");
-        if (checkedParameters.which == "failure") {
-            return checkedParameters;
-        }
         const theMacro = macros.get(macroName)!;
-        if (theMacro.parameters.length != actualParameters.length) {
-            return failure(
-                undefined, "macro_params", [`${theMacro.parameters.length}`]
-            );
+        const validation = validParameters.actualParameters(
+            actualParameters, theMacro.parameters.length
+        );
+        if (validation.which == "failure") {
+            return validation;
         }
+
         parameterMap.set(
             macroName,
-            checkedParameters.value == "undefined" ? [] : actualParameters
+            typedParameters.actualParameters(actualParameters)
         );
         return emptyBox();
     };

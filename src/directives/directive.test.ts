@@ -1,7 +1,7 @@
 import { assertEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import { box, failure } from "../failure/failure-or-box.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -24,9 +24,12 @@ export const systemUnderTest = () => {
 Deno.test("Any directives that are added can be called as functions", () => {
     const system = systemUnderTest();
     let directiveParameter = "";
-    const testDirective: Directive = (parameter: string)=> {
-        directiveParameter = parameter;
-        return emptyBox();
+    const testDirective: Directive = {
+        "parametersType": "string",
+        "method": (parameter: string) => {
+            directiveParameter = parameter;
+            return box("");
+        }
     };
     system.directiveList.includes("testDirective", testDirective);
     system.expression("testDirective('says hello')");
@@ -35,18 +38,24 @@ Deno.test("Any directives that are added can be called as functions", () => {
 
 Deno.test("Directives can return a failure", () => {
     const system = systemUnderTest();
-    const testDirective: Directive = (_: string) => {
-        return failure(undefined, "file_notFound", undefined);
+    const testDirective: Directive = {
+        "parametersType": "string",
+        "method": (_: string) => {
+            return failure(undefined, "file_notFound", undefined);
+        }
     };
     system.directiveList.includes("testDirective", testDirective);
     const result = system.expression("testDirective('')");
     assertFailure(result, "file_notFound");
 });
 
-Deno.test("Directives can return success in the form of an empty box", () => {
+Deno.test("Directives can return success in the form of a boxed string", () => {
     const system = systemUnderTest();
-    const testDirective: Directive = (_: string) => {
-        return emptyBox();
+    const testDirective: Directive = {
+        "parametersType": "string",
+        "method": (_: string) => {
+            return box("");
+        }
     };
     system.directiveList.includes("testDirective", testDirective);
     const result = system.expression("testDirective('')");
@@ -55,10 +64,13 @@ Deno.test("Directives can return success in the form of an empty box", () => {
 
 Deno.test("You can't create a symbol with the same name as a directive", () => {
     const system = systemUnderTest();
-    const testDirective: Directive = (_: string) => {
-        return emptyBox();
+    const testDirective: Directive = {
+        "parametersType": "string",
+        "method": (_: string) => {
+            return box("");
+        }
     };
     system.directiveList.includes("testDirective", testDirective);
-    const result = system.define("testDirective", 47);
+    const result = system.define.method("testDirective", 47);
     assertFailure(result, "symbol_nameIsDirective");
 });

@@ -5,26 +5,28 @@ import { systemUnderTest, testLine } from "./testing.ts";
 
 Deno.test("The macro directive name must be a string", () => {
     const system = systemUnderTest();
-    const result = system.macros.macroDirective(47);
+    const result = system.macros.macroDirective.method(
+        47 as unknown as string, []
+    );
     assertFailureWithExtra(result, "type_string", ["47"]);
 });
 
 Deno.test("The macro doesn't have to have parameters", () => {
     const system = systemUnderTest();
-    const result = system.macros.macroDirective("testMacro");
+    const result = system.macros.macroDirective.method("testMacro", []);
     assertSuccess(result, undefined);
 });
 
 Deno.test("If a macro has parameters, they are substituted", () => {
     const system = systemUnderTest();
     assertSuccess(
-        system.macros.macroDirective("testMacro", ["a", "b"]),
+        system.macros.macroDirective.method("testMacro", ["a", "b"]),
         undefined
     );
-    assertSuccess(system.macros.endDirective(), undefined);
+    assertSuccess(system.macros.endDirective.method(), undefined);
 
     const testMacro = system.symbolTable.use("testMacro") as Directive;
-    assertSuccess(testMacro("1", "2"), undefined);
+    assertSuccess(testMacro.method("1", "2"), undefined);
 
     const result = system.macros.lines(
         testLine("testMacro", 1, "", "TST", ["a", "b"])
@@ -37,7 +39,7 @@ Deno.test("If a macro has parameters, they are substituted", () => {
 Deno.test("The parameters in a definition must be strings", () => {
     const system = systemUnderTest();
     assertFailureWithExtra(
-        system.macros.macroDirective("testMacro", ["a", 2, "b", 3]),
+        system.macros.macroDirective.method("testMacro", ["a", 2, "b", 3]),
         "type_strings",
         ["1: number", "3: number"]
     );
@@ -46,12 +48,12 @@ Deno.test("The parameters in a definition must be strings", () => {
 Deno.test("On calling a macro, the parameters must be strings or numbers", () => {
     const system = systemUnderTest();
     assertSuccess(
-        system.macros.macroDirective("testMacro", ["a", "b"]), undefined
+        system.macros.macroDirective.method("testMacro", ["a", "b"]), undefined
     );
-    assertSuccess(system.macros.endDirective(), undefined);
+    assertSuccess(system.macros.endDirective.method(), undefined);
 
     const testMacro = system.symbolTable.use("testMacro") as Directive;
-    const result = testMacro(true, {"c": "c"});
+    const result = testMacro.method(true, {"c": "c"});
     assertFailureWithExtra(
         result, "type_macroParams", ["0: boolean", "1: object"]
     );
@@ -60,12 +62,12 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
 Deno.test("Parameter count mismatches result in a failure", () => {
     const system = systemUnderTest();
     assertSuccess(
-        system.macros.macroDirective("testMacro", ["a", "b", "c"]),
+        system.macros.macroDirective.method("testMacro", ["a", "b", "c"]),
         undefined
     );
-    assertSuccess(system.macros.endDirective(), undefined);
+    assertSuccess(system.macros.endDirective.method(), undefined);
 
     const testMacro = system.symbolTable.use("testMacro") as Directive;
-    const result = testMacro(1, 2);
+    const result = testMacro.method(1, 2);
     assertFailureWithExtra(result, "macro_params", ["3"]);
 });
