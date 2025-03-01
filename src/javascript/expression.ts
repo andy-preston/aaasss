@@ -1,13 +1,10 @@
 import { box, failure, isFailureOrBox, type Box, type Failure } from "../failure/failure-or-box.ts";
-import type { DirectiveSymbol, MacroSymbol } from "../symbol-table/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+import { typeBridge } from "./type-bridge.ts";
 
 const trailingSemicolons = /;*$/;
 
 export const jSExpression = (symbolTable: SymbolTable) => {
-
-    const untypedFunction = (symbol: DirectiveSymbol | MacroSymbol) =>
-        symbol.value;
 
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
@@ -16,11 +13,7 @@ export const jSExpression = (symbolTable: SymbolTable) => {
                 : symbolTable.has(symbolName, "notRegisters");
         },
         get(_target: object, symbolName: string) {
-            const symbol = symbolTable.use(symbolName);
-            return symbol.type == "string"
-                || symbol.type == "number"
-                ? symbol.value
-                : untypedFunction(symbol);
+            return typeBridge(symbolTable.use(symbolName));
         },
         set() {
             throw new ReferenceError("this_assignment");
