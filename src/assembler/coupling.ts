@@ -2,8 +2,8 @@ import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser } from "../device/chooser.ts";
 import type { DeviceFileOperations } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
+import type { DirectiveSymbol } from "../directives/data-types.ts";
 import { functionDirectives } from "../directives/function-directives.ts";
-import type { Directive } from "../directives/data-types.ts";
 import { directiveList } from "../directives/directive-list.ts";
 import { illegalStateFailures, type IllegalStateCallback } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
@@ -45,7 +45,7 @@ export const coupling = (
             if (property.endsWith("Directive")) {
                 directives.includes(
                     property.replace("Directive", ""),
-                    component[property] as Directive
+                    component[property] as DirectiveSymbol
                 );
             }
             if (property == "leftInIllegalState") {

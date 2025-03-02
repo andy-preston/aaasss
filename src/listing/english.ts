@@ -51,6 +51,9 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "parameter_firstName": (_line: LineWithAddress) => [
         "The first parameter should be a name"
     ],
+    "parameter_types": (_line: LineWithAddress) => [
+        "The types of the parameters don't match the requirements"
+    ],
     "programMemory_outOfRange": (_line: LineWithAddress) => [""],
     "programMemory_sizeUnknown": (_line: LineWithAddress) => [""],
     "ram_outOfRange": (_line: LineWithAddress) => [""],
