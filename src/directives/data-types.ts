@@ -2,6 +2,8 @@ import type { Box, Failure } from "../failure/failure-or-box.ts";
 
 export type DirectiveResult = Box<string|undefined> | Failure;
 
+export type JavaScriptFunction = (...parameters: unknown[]) => DirectiveResult;
+
 export type FunctionDefineDirective = {
     "type": "functionDefineDirective",
     "body": (functionName: string, parameters: Array<string>) => DirectiveResult
@@ -19,4 +21,3 @@ export type ObsoleteDirective = {
 
 export type DirectiveSymbol = ObsoleteDirective
     | FunctionDefineDirective | FunctionUseDirective;
-

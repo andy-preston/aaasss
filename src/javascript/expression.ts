@@ -1,10 +1,21 @@
+import type { DirectiveSymbol } from "../directives/data-types.ts";
+import { directiveFunction } from "../directives/directive-function.ts";
 import { box, failure, isFailureOrBox, type Box, type Failure } from "../failure/failure-or-box.ts";
+import type { SymbolValue } from "../symbol-table/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import { typeBridge } from "./type-bridge.ts";
 
 const trailingSemicolons = /;*$/;
+const discreteTypes = ["string", "number", "directive"];
 
 export const jSExpression = (symbolTable: SymbolTable) => {
+    const typeBridge = (symbolName: string, symbol: SymbolValue) => {
+        return discreteTypes.includes(symbol.type)
+            ? symbol.body
+            : symbol.type.endsWith("Directive")
+            ? directiveFunction(symbolName, symbol as DirectiveSymbol)
+            : undefined;
+    };
+
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
             return symbolName in globalThis || typeof symbolName != "string"

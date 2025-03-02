@@ -1,17 +1,10 @@
-import type { DirectiveResult, FunctionDefineDirective, FunctionUseDirective } from "../directives/data-types.ts";
 import { failure } from "../failure/failure-or-box.ts";
-import type { SymbolValue } from "../symbol-table/data-types.ts";
-
-
-type JavaScriptFunction = (...parameters: unknown[]) => DirectiveResult;
+import type { FunctionDefineDirective, FunctionUseDirective, JavaScriptFunction } from "./data-types.ts";
 
 const allStrings = (untyped: unknown[]): Array<string> =>
     untyped.map(element => `${element}`);
 
-const javaScriptType = (untyped: unknown) => typeof untyped;
-type JavaScriptType = ReturnType<typeof javaScriptType>;
-
-const functionDefineDirective = (
+export const functionDefineDirective = (
     directive: FunctionDefineDirective
 ): JavaScriptFunction => (...parameters: unknown[]) => {
     if (parameters.length == 0) {
@@ -35,7 +28,7 @@ const functionDefineDirective = (
         );
 };
 
-const functionUseDirective = (
+export const functionUseDirective = (
     symbolName: string, directive: FunctionUseDirective
 ): JavaScriptFunction => (...parameters: unknown[]) => {
     const wrongTypes: Array<string> = [];
@@ -50,13 +43,4 @@ const functionUseDirective = (
         : failure (
             undefined, "parameter_types", ["string, number"].concat(wrongTypes)
         );
-};
-
-export const typeBridge = (symbolName: string, symbol: SymbolValue) => {
-    return symbol.type == "string" || symbol.type == "number"
-    || symbol.type == "directive"
-    ? symbol.body
-    : symbol.type == "functionDefineDirective"
-    ? functionDefineDirective(symbol)
-    : functionUseDirective(symbolName, symbol);
 };
