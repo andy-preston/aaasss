@@ -1,4 +1,4 @@
-import type { Directive } from "../directives/data-types.ts";
+import type { ObsoleteDirective } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
@@ -55,7 +55,7 @@ export const deviceChooser = (
         return emptyBox();
     };
 
-    const deviceDirective: Directive = (name: string) => {
+    const deviceDirective: ObsoleteDirective = (name: string) => {
         const fullSpec: FullSpec = {};
 
         const loadSpec = (spec: RawItems) => {

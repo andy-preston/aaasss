@@ -1,4 +1,4 @@
-import type { Directive } from "../directives/data-types.ts";
+import type { ObsoleteDirective } from "../directives/data-types.ts";
 import { stringParameter } from "../directives/type-checking.ts";
 import { box, emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
@@ -45,7 +45,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         }
     };
 
-    const includeDirective: Directive = (fileName: FileName) => {
+    const includeDirective: ObsoleteDirective = (fileName: FileName) => {
         const check = stringParameter(fileName);
         if (check.which == "failure") {
             return check;

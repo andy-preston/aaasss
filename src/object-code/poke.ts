@@ -1,11 +1,11 @@
-import type { Directive } from "../directives/data-types.ts";
+import type { ObsoleteDirective } from "../directives/data-types.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { Code } from "./data-types.ts";
 
 export const pokeBuffer = () => {
     let theBuffer: Array<Code> = [];
 
-    const pokeDirective: Directive = (data: Array<number> | string) => {
+    const pokeDirective: ObsoleteDirective = (data: Array<number> | string) => {
         const bytes: Array<number> = typeof data == "string"
             ? Array.from(new TextEncoder().encode(data))
             : data;

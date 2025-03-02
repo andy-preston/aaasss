@@ -1,56 +1,60 @@
-import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { emptyBox } from "../failure/failure-or-box.ts";
+import { FunctionDirective } from "../directives/data-types.ts";
+import { box, failure } from "../failure/failure-or-box.ts";
 import type { FileLineIterator, FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
-import type { ActualParameters, MacroList } from "./data-types.ts";
+import type { MacroList, MacroParameters } from "./data-types.ts";
 import { recording } from "./recording.ts";
 import { remapping } from "./remapping.ts";
 
 export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
-    const macros: MacroList = new Map();
-    const remap = remapping(macros);
-    const record = recording(macros);
+    const macroList: MacroList = new Map();
 
     function* imaginaryFile(macroName: string): FileLineIterator {
         const macroCount = symbolTable.count(macroName);
-        for (const line of macros.get(macroName)!.lines) {
+        for (const line of macroList.get(macroName)!.lines) {
             yield [line.rawSource, macroName, macroCount!, false];
         }
     }
 
-    record.useMacroMethod((macroName: string) => {
-        const method = (...actualParameters: ActualParameters) => {
-            const setup = remap.parameterSetup(macroName, actualParameters);
-            if (setup.which == "failure") {
-                return setup;
-            }
-            if (!record.isRecording()) {
-                fileStack.pushImaginary(imaginaryFile(macroName));
-            }
-            return emptyBox();
-        };
+    const remap = remapping(macroList);
 
-        symbolTable.add(
-            macroName,
-            { "type": "macro", "value": method },
-            currentFileName(),
-            currentLineNumber()
-        );
-    });
+    const useMacroDirective: FunctionDirective = (
+        macroName: string, parameters: MacroParameters
+    ) => {
+        const macro = macroList.get(macroName)!;
+        if (parameters.length != macro.parameters.length) {
+            return failure(
+                undefined, "macro_params", [`${macro.parameters.length}`]
+            );
+        }
+
+        const setup = remap.parameterSetup(macroName, macro, parameters);
+        if (setup.which == "failure") {
+            return setup;
+        }
+
+        if (!record.isRecording()) {
+            fileStack.pushImaginary(imaginaryFile(macroName));
+        }
+        return box("");
+    };
+
+    const record = recording(macroList, symbolTable, useMacroDirective);
 
     const lines = (line: LineWithTokens) => record.isRecording()
         ? record.recorded(line)
         : remap.remapped(line);
 
     const resetState = () => {
-        macros.clear();
+        macroList.clear();
         record.resetState();
     };
 
     return {
         "resetState": resetState,
         "leftInIllegalState": record.leftInIllegalState,
+        "useMacroDirective": useMacroDirective,
         "macroDirective": record.macroDirective,
         "endDirective": record.endDirective,
         "lines": lines

@@ -1,5 +1,5 @@
 import { assertEquals, assertFalse } from "assert";
-import type { Directive } from "../directives/data-types.ts";
+import type { Directive, FunctionDirective } from "../directives/data-types.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest, testLine } from "./testing.ts";
 
@@ -11,7 +11,7 @@ Deno.test("The macro directive name must be a string", () => {
 
 Deno.test("The macro doesn't have to have parameters", () => {
     const system = systemUnderTest();
-    const result = system.macros.macroDirective("testMacro");
+    const result = system.macros.macroDirective("testMacro", []);
     assertSuccess(result, undefined);
 });
 
@@ -24,7 +24,7 @@ Deno.test("If a macro has parameters, they are substituted", () => {
     assertSuccess(system.macros.endDirective(), undefined);
 
     const testMacro = system.symbolTable.use("testMacro").value as Directive;
-    assertSuccess(testMacro("1", "2"), undefined);
+    assertSuccess(testMacro("testMacro", ["1", "2"]), "");
 
     const result = system.macros.lines(
         testLine("testMacro", 1, "", "TST", ["a", "b"])
@@ -65,7 +65,9 @@ Deno.test("Parameter count mismatches result in a failure", () => {
     );
     assertSuccess(system.macros.endDirective(), undefined);
 
-    const testMacro = system.symbolTable.use("testMacro").value as Directive;
-    const result = testMacro(1, 2);
+    const testMacro = system.symbolTable.use(
+        "testMacro"
+    ).value as FunctionDirective;
+    const result = testMacro("testMacro", ["1", "2"]);
     assertFailureWithExtra(result, "macro_params", ["3"]);
 });

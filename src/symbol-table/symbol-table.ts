@@ -1,9 +1,9 @@
 import type { Pass } from "../assembler/pass.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { Directive } from "../directives/data-types.ts";
+import type { ObsoleteDirective } from "../directives/data-types.ts";
 import type { DirectiveList } from "../directives/directive-list.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import { Box, emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { FileName, LineNumber } from "../source-code/data-types.ts";
 import { SymbolValue } from "./data-types.ts";
@@ -14,11 +14,11 @@ export const symbolTable = (
     cpuRegisters: CpuRegisters,
     pass: Pass
 ) => {
-    const values: Map<string, SymbolValue> = new Map([]);
+    const values: Map<string, SymbolValue> = new Map();
 
-    const counts: Map<string, number> = new Map([]);
+    const counts: Map<string, number> = new Map();
 
-    const definitionLocations: Map<string, string> = new Map([]);
+    const definitionLocations: Map<string, string> = new Map();
 
     const has = (
         symbolName: string, option: "withRegisters" | "notRegisters"
@@ -67,6 +67,10 @@ export const symbolTable = (
         return emptyBox();
     };
 
+    const resetState = () => {
+        counts.clear();
+    };
+
     const count = (symbolName: string) => {
         const result = counts.get(symbolName);
         return result == undefined ? 0 : result;
@@ -105,40 +109,44 @@ export const symbolTable = (
         };
     };
 
-    const resetState = () => {
-        counts.clear();
-    };
+    const notCounted = (symbolName: string) => values.get(symbolName)!;
 
-    const value = (symbolName: string) => {
-        if (values.has(symbolName)) {
-            const fromList = values.get(symbolName)!;
-            return fromList.type == "string"
-                || fromList.type == "number"
-                ? fromList.value
-                : "";
-        }
-
+    const listValue = (symbolName: string) => {
         const property = deviceProperties.value(symbolName);
         if (property.which == "box") {
             return property.value;
         }
+        const fromList = notCounted(symbolName);
+        return fromList != undefined
+            && (fromList.type == "string" || fromList.type == "number")
+            ? fromList.value
+            : undefined;
+    };
 
-        return cpuRegisters.value(symbolName);
+    const listDefinition = (symbolName: string) => {
+        const fromList = definitionLocations.get(symbolName);
+        return fromList == undefined ? "" : fromList;
     };
 
     const list = () => {
-        const asArray: Array<[string, number, string | number, string]> = [];
+        const asArray: Array<[
+            string,
+            number,
+            string | number | undefined,
+            string
+        ]> = [];
         counts.forEach((count: number, symbolName: string) => {
-            const definition = definitionLocations.get(symbolName);
             asArray.push([
-                symbolName, count, value(symbolName),
-                definition == undefined ? "" : definition
+                symbolName, count,
+                listValue(symbolName), listDefinition(symbolName)
             ]);
         });
         return asArray;
     }
 
-    const defineDirective: Directive = (symbolName: string, value: number) =>
+    const defineDirective: ObsoleteDirective = (
+        symbolName: string, value: number
+    ) =>
         add(
             symbolName,
             { "type": "number", "value": value },
@@ -150,6 +158,7 @@ export const symbolTable = (
         "has": has,
         "add": add,
         "use": use,
+        "notCounted": notCounted,
         "count": count,
         "list": list,
         "resetState": resetState,

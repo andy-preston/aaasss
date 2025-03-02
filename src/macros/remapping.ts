@@ -3,14 +3,14 @@ import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
-import type { ActualParameters, MacroList, MacroName } from "./data-types.ts";
+import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
 import { lineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
 
 export const remapping = (macros: MacroList) => {
-    const parameterMap: Map<MacroName, ActualParameters> = new Map([]);
+    const parameterMap: Map<MacroName, MacroParameters> = new Map([]);
 
     const parameterSetup = (
-        macroName: MacroName, actualParameters: ActualParameters
+        macroName: MacroName, macro: Macro, actualParameters: MacroParameters
     ) => {
         const checkedParameters = parameterList(
             actualParameters, "type_macroParams"
@@ -18,10 +18,9 @@ export const remapping = (macros: MacroList) => {
         if (checkedParameters.which == "failure") {
             return checkedParameters;
         }
-        const theMacro = macros.get(macroName)!;
-        if (theMacro.parameters.length != actualParameters.length) {
+        if (macro.parameters.length != actualParameters.length) {
             return failure(
-                undefined, "macro_params", [`${theMacro.parameters.length}`]
+                undefined, "macro_params", [`${macro.parameters.length}`]
             );
         }
         parameterMap.set(
@@ -38,19 +37,17 @@ export const remapping = (macros: MacroList) => {
         line.label ? expandedLabel(line, line.label) : "";
 
     const remappedParameters = (line: LineWithTokens) => {
-        const theMacro = macros.get(line.macroName)!;
+        const macro = macros.get(line.macroName)!;
         const actualParameters = parameterMap.get(line.macroName)!;
 
         const isLabel = (parameter: SymbolicOperand) =>
-            theMacro.lines.find(
-                line => line.label == parameter
-            ) != undefined;
+            macro.lines.find(line => line.label == parameter) != undefined;
 
         return line.symbolicOperands.map(symbolicOperand => {
             if (isLabel(symbolicOperand)) {
                 return expandedLabel(line, symbolicOperand);
             }
-            const parameterIndex = theMacro.parameters.indexOf(symbolicOperand);
+            const parameterIndex = macro.parameters.indexOf(symbolicOperand);
             if (parameterIndex >= 0) {
                 return `${actualParameters[parameterIndex]}`;
             }

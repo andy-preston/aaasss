@@ -1,7 +1,5 @@
 import { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-const displayableValues = ["number", "string"];
-
 const transform = (key: string) =>
     key.replace(/^R([0-9])$/, "R0$1").toUpperCase()
 
@@ -16,8 +14,7 @@ export const sortedSymbolTable = (symbolTable: SymbolTable) => {
     );
 
     return symbols.map(([symbolName, usageCount, symbolValue, definition]) => {
-        const formatted = displayableValues.includes(typeof symbolValue)
-            ? ` = ${symbolValue}` : "";
+        const formatted = symbolValue == undefined  ? "" : ` = ${symbolValue}`;
         return `${symbolName}${formatted} (${usageCount}) ${definition}`.trim();
     });
 };

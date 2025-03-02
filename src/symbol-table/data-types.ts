@@ -1,5 +1,4 @@
-import type { Directive } from "../directives/data-types.ts";
-import type { MacroInvocation } from "../macros/data-types.ts";
+import type { FunctionDirective, ObsoleteDirective } from "../directives/data-types.ts";
 
 export type UsageCount = number;
 
@@ -15,15 +14,21 @@ type StringSymbol = {
 
 export type DirectiveSymbol = {
     "type": "directive",
-    "value": Directive
+    "value": ObsoleteDirective
 };
 
-export type MacroSymbol = {
-    "type": "macro",
-    "value": MacroInvocation
+export type FunctionDefineDirectiveSymbol = {
+    "type": "functionDefineDirective",
+    "value": FunctionDirective
+};
+
+export type FunctionUseDirectiveSymbol = {
+    "type": "functionUseDirective",
+    "value": FunctionDirective
 };
 
 export type SymbolValue = NumberSymbol | StringSymbol
-    | DirectiveSymbol | MacroSymbol;
+    | DirectiveSymbol
+    | FunctionDefineDirectiveSymbol | FunctionUseDirectiveSymbol;
 
 export type MapEntry = [UsageCount, SymbolValue];

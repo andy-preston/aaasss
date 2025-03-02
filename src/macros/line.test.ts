@@ -31,7 +31,7 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
 Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => {
     const system = systemUnderTest();
 
-    system.macros.macroDirective("testMacro");
+    system.macros.macroDirective("testMacro", []);
     for (const [label, mnemonic] of testLines) {
         const line = system.macros.lines(
             testLine("", 0, label, mnemonic, [])
@@ -51,7 +51,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const system = systemUnderTest();
 
-    system.macros.macroDirective("testMacro");
+    system.macros.macroDirective("testMacro", []);
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     for (const [label, mnemonic] of testLines) {
@@ -64,7 +64,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     system.macros.endDirective();
     const testMacro = system.symbolTable.use("testMacro").value as Directive;
 
-    assertSuccess(testMacro(), undefined);
+    assertSuccess(testMacro("testMacro", []), "");
     const lines = system.mockFileStack.lines();
     for (const [label, mnemonic] of testLines) {
         const lineSourceCode = lines.next().value!.rawSource;
@@ -76,7 +76,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
 Deno.test("Lines with failures are not recorded in the macro", () => {
     const system = systemUnderTest();
 
-    system.macros.macroDirective("testMacro");
+    system.macros.macroDirective("testMacro", []);
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
 
@@ -87,7 +87,7 @@ Deno.test("Lines with failures are not recorded in the macro", () => {
     system.macros.endDirective();
     const testMacro = system.symbolTable.use("testMacro").value as Directive;
 
-    assertSuccess(testMacro(), undefined);
+    assertSuccess(testMacro("testMacro", []), "");
     let count = 0;
     for (const line of system.mockFileStack.lines()) {
         count = count + 1;
@@ -100,7 +100,7 @@ Deno.test("Lines with failures are not recorded in the macro", () => {
 Deno.test("Lines that are being replayed have a macro name and count", () => {
     const system = systemUnderTest();
 
-    system.macros.macroDirective("testMacro");
+    system.macros.macroDirective("testMacro", []);
     for (const [label, mnemonic] of testLines) {
         system.macros.lines(
             testLine("", 0, label, mnemonic, [])
@@ -110,7 +110,7 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
 
     for (const expectedCount of [1, 2, 3]) {
         const testMacro = system.symbolTable.use("testMacro").value as Directive;
-        assertSuccess(testMacro(), undefined);
+        assertSuccess(testMacro("testMacro", []), "");
         for (const line of system.mockFileStack.lines()) {
             assertEquals(line.macroName, "testMacro");
             assertEquals(line.macroCount, expectedCount);
