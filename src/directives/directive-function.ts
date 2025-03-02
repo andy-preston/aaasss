@@ -3,8 +3,8 @@ import type {
     FunctionUseDirective
 } from "./data-types.ts";
 import {
-    voidDirective, stringDirective,
-    functionDefineDirective, functionUseDirective,
+    voidDirective, stringDirective, numberDirective,
+    functionDefineDirective, functionUseDirective
 } from "./parameters.ts";
 
 export const directiveFunction = (
@@ -15,6 +15,9 @@ export const directiveFunction = (
     }
     if (directive.type == "stringDirective") {
         return stringDirective(directive);
+    }
+    if (directive.type == "numberDirective") {
+        return numberDirective(directive);
     }
     if (directive.type == "functionDefineDirective") {
         return functionDefineDirective(directive);

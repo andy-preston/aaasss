@@ -14,6 +14,11 @@ export type StringDirective = {
     "body": (parameter: string) => DirectiveResult
 };
 
+export type NumberDirective = {
+    "type": "numberDirective",
+    "body": (parameter: number) => DirectiveResult
+};
+
 export type FunctionDefineDirective = {
     "type": "functionDefineDirective",
     "body": (functionName: string, parameters: Array<string>) => DirectiveResult
@@ -30,7 +35,7 @@ export type ObsoleteDirective = {
 };
 
 export type DirectiveSymbol = ObsoleteDirective
-    | VoidDirective | StringDirective
+    | VoidDirective | StringDirective | NumberDirective
     | FunctionDefineDirective | FunctionUseDirective;
 
 export type DirectiveType = DirectiveSymbol["type"];

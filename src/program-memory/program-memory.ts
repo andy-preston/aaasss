@@ -1,5 +1,5 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { ObsoleteDirective } from "../directives/data-types.ts";
+import type { NumberDirective } from "../directives/data-types.ts";
 import { box, emptyBox, failure } from "../failure/failure-or-box.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
@@ -30,8 +30,8 @@ export const programMemory = (
             : emptyBox();
     }
 
-    const originDirective: ObsoleteDirective = {
-        "type": "directive",
+    const originDirective: NumberDirective = {
+        "type": "numberDirective",
         "body": (newAddress: number) => {
             const check = validNumeric(newAddress, "type_positive");
             if (check.which == "failure") {

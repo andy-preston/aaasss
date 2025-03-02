@@ -3,7 +3,7 @@ import {
 } from "../failure/failure-or-box.ts";
 import type {
     JavaScriptFunction,
-    VoidDirective, StringDirective,
+    VoidDirective, StringDirective, NumberDirective,
     FunctionDefineDirective, FunctionUseDirective
 } from "./data-types.ts";
 
@@ -46,6 +46,25 @@ export const stringDirective = (
     return wrongTypes.which == "failure"
         ? wrongTypes
         : directive.body(allAsString(parameters)[0]!);
+};
+
+export const numberDirective = (
+    directive: NumberDirective
+): JavaScriptFunction => (...parameters: unknown[]) => {
+    if (parameters.length != 1) {
+        return failure(undefined, "parameter_count", ["1"]);
+    }
+
+    const wrongTypes = parameterTypes(parameters, ["string", "number"]);
+    if (wrongTypes.which == "failure") {
+        return wrongTypes;
+    }
+
+    const given = parameters[0]! as number | string;
+    const parameter = typeof given == "string" ? parseInt(given) : given;
+    return `${given}` != `${parameter}`
+        ? failure(undefined, "parameter_type", ["number", "0: string"])
+        : directive.body(parameter);
 };
 
 export const functionDefineDirective = (

@@ -1,5 +1,5 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { ObsoleteDirective } from "../directives/data-types.ts";
+import type { NumberDirective } from "../directives/data-types.ts";
 import { box, failure } from "../failure/failure-or-box.ts";
 
 export const dataMemory = (device: DevicePropertiesInterface) => {
@@ -26,8 +26,8 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
             : box(address);
     };
 
-    const allocStackDirective: ObsoleteDirective = {
-        "type": "directive",
+    const allocStackDirective: NumberDirective = {
+        "type": "numberDirective",
         "body": (bytes: number) => {
             // It's entirely optional to allocate space for a stack.
             // but you can if you're worried that your RAM allocations might eat up
@@ -44,8 +44,8 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
         }
     };
 
-    const allocDirective: ObsoleteDirective = {
-        "type": "directive",
+    const allocDirective: NumberDirective = {
+        "type": "numberDirective",
         "body": (bytes: number) => {
             const startAddress = ramAddress(allocated);
             if (startAddress.which == "failure") {
