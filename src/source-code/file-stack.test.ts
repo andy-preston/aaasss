@@ -5,16 +5,18 @@ import { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
 Deno.test("Including a file doesn't return anything", () => {
+    const irrelevantButRealFile = "deno.json";
+    const aFileStack = fileStack(defaultReaderMethod, "");
     assertSuccess(
-        // This file is irrelevant but we can guarantee it exists
-        fileStack(defaultReaderMethod, "").includeDirective("deno.json"),
+        aFileStack.includeDirective.body(irrelevantButRealFile),
         undefined
     );
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
     const fileName = "does-not-exist.test";
-    const result = fileStack(defaultReaderMethod, "").includeDirective(fileName);
+    const aFileStack = fileStack(defaultReaderMethod, "");
+    const result = aFileStack.includeDirective.body(fileName);
     assertFailure(result, "file_notFound");
     const failure = result as Failure;
     assertInstanceOf(failure.extra, Deno.errors.NotFound);
@@ -25,7 +27,8 @@ Deno.test("Including a non existant file returns a failure", () => {
 });
 
 Deno.test("Including an 'irrational' fileName returns a failure", () => {
-    const result = fileStack(defaultReaderMethod, "").includeDirective(
+    const aFileStack = fileStack(defaultReaderMethod, "");
+    const result = aFileStack.includeDirective.body(
         [1, 2, 3] as unknown as string
     );
     assertFailure(result, "type_string");
@@ -81,11 +84,11 @@ Deno.test("An included file is inserted into the source stream", () => {
     const mockReader = (path: FileName) =>
         [1, 2, 3].map(line => `${path} ${line}`);
 
-    const files = fileStack(mockReader, "top.file");
-    const lines = files.lines();
+    const aFileStack = fileStack(mockReader, "top.file");
+    const lines = aFileStack.lines();
 
     assertEquals("top.file 1", lines.next().value!.rawSource);
-    files.includeDirective("plop.txt");
+    aFileStack.includeDirective.body("plop.txt");
     assertEquals([
         "plop.txt 1",
         "plop.txt 2",

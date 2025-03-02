@@ -1,22 +1,26 @@
+import { assertEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
-import type { Directive } from "../directives/data-types.ts";
+import type { FunctionUseDirective, ObsoleteDirective } from "../directives/data-types.ts";
 import { directiveList } from "../directives/directive-list.ts";
 import { emptyBox } from "../failure/failure-or-box.ts";
+import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { SourceCode } from "../source-code/data-types.ts";
 import type { FileLineIterator, SourceOfSource } from "../source-code/file-stack.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
-import { symbolTable } from "../symbol-table/symbol-table.ts";
+import { symbolTable, type SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { macros } from "./macros.ts";
 
 const mockFileStack = () => {
     let lineIterator: FileLineIterator | undefined;
-    const includeDirective: Directive = () => emptyBox();
+    const includeDirective: ObsoleteDirective = {
+        "type": "directive", "body": () => emptyBox()
+    };
     const pushImaginary = (iterator: FileLineIterator) => {
         lineIterator = iterator;
     };
@@ -45,9 +49,12 @@ export const systemUnderTest = () => {
     );
     const fileStack = mockFileStack();
     const macroProcessor = macros(symbols, fileStack);
+    directives.includes("macro", macroProcessor.macroDirective);
+    const javascript = jSExpression(symbols);
     return {
         "symbolTable": symbols,
         "macros": macroProcessor,
+        "jSExpression": javascript,
         "mockFileStack": fileStack
     };
 };
@@ -68,4 +75,10 @@ export const testLineWithSource = (
     const raw = lineWithRawSource("", 0, sourceCode, "", 0, false);
     const rendered = lineWithRenderedJavascript(raw, "");
     return lineWithTokens(rendered, label, mnemonic, operands);
+};
+
+export const macroFromTable = (symbolTable: SymbolTable, macroName: string) => {
+    const fromTable = symbolTable.use(macroName);
+    assertEquals(fromTable.type, "functionUseDirective");
+    return (fromTable as FunctionUseDirective).body;
 };

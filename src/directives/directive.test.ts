@@ -6,7 +6,7 @@ import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
-import type { Directive } from "./data-types.ts";
+import type { ObsoleteDirective } from "./data-types.ts";
 import { directiveList } from "./directive-list.ts";
 
 export const systemUnderTest = () => {
@@ -15,8 +15,8 @@ export const systemUnderTest = () => {
         directives, deviceProperties().public, cpuRegisters(), pass()
     );
     return {
+        "symbolTable": symbols,
         "directiveList": directives,
-        "define": symbols.defineDirective,
         "expression": jSExpression(symbols)
     };
 };
@@ -24,9 +24,12 @@ export const systemUnderTest = () => {
 Deno.test("Any directives that are added can be called as functions", () => {
     const system = systemUnderTest();
     let directiveParameter = "";
-    const testDirective: Directive = (parameter: string)=> {
-        directiveParameter = parameter;
-        return emptyBox();
+    const testDirective: ObsoleteDirective = {
+        "type": "directive",
+        "body": (parameter: string)=> {
+            directiveParameter = parameter;
+            return emptyBox();
+        }
     };
     system.directiveList.includes("testDirective", testDirective);
     system.expression("testDirective('says hello')");
@@ -35,8 +38,11 @@ Deno.test("Any directives that are added can be called as functions", () => {
 
 Deno.test("Directives can return a failure", () => {
     const system = systemUnderTest();
-    const testDirective: Directive = (_: string) => {
-        return failure(undefined, "file_notFound", undefined);
+    const testDirective: ObsoleteDirective = {
+        "type": "directive",
+        "body": (_: string) => {
+            return failure(undefined, "file_notFound", undefined);
+        }
     };
     system.directiveList.includes("testDirective", testDirective);
     const result = system.expression("testDirective('')");
@@ -45,8 +51,11 @@ Deno.test("Directives can return a failure", () => {
 
 Deno.test("Directives can return success in the form of an empty box", () => {
     const system = systemUnderTest();
-    const testDirective: Directive = (_: string) => {
-        return emptyBox();
+    const testDirective: ObsoleteDirective = {
+        "type": "directive",
+        "body": (_: string) => {
+            return emptyBox();
+        }
     };
     system.directiveList.includes("testDirective", testDirective);
     const result = system.expression("testDirective('')");
@@ -55,10 +64,15 @@ Deno.test("Directives can return success in the form of an empty box", () => {
 
 Deno.test("You can't create a symbol with the same name as a directive", () => {
     const system = systemUnderTest();
-    const testDirective: Directive = (_: string) => {
-        return emptyBox();
+    const testDirective: ObsoleteDirective = {
+        "type": "directive",
+        "body": (_: string) => {
+            return emptyBox();
+        }
     };
     system.directiveList.includes("testDirective", testDirective);
-    const result = system.define("testDirective", 47);
-    assertFailure(result, "symbol_nameIsDirective");
+    assertFailure(
+        system.symbolTable.defineDirective.body("testDirective", 47),
+        "symbol_nameIsDirective"
+    );
 });

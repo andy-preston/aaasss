@@ -45,20 +45,23 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         }
     };
 
-    const includeDirective: ObsoleteDirective = (fileName: FileName) => {
-        const check = stringParameter(fileName);
-        if (check.which == "failure") {
-            return check;
+    const includeDirective: ObsoleteDirective = {
+        "type": "directive",
+        "body": (fileName: FileName) => {
+            const check = stringParameter(fileName);
+            if (check.which == "failure") {
+                return check;
+            }
+            const contents = fileContents(fileName);
+            if (contents.which == "failure") {
+                return contents;
+            }
+            fileStack.push({
+                "fileName": fileName,
+                "iterator": fileLineByLine(contents.value)
+            });
+            return emptyBox();
         }
-        const contents = fileContents(fileName);
-        if (contents.which == "failure") {
-            return contents;
-        }
-        fileStack.push({
-            "fileName": fileName,
-            "iterator": fileLineByLine(contents.value)
-        });
-        return emptyBox();
     };
 
     const currentFile = () => fileStack.at(-1);
@@ -72,7 +75,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     };
 
     const lines: SourceOfSource = function* () {
-        const topFile = includeDirective(topFileName);
+        const topFile = includeDirective.body(topFileName);
         if (topFile.which == "failure") {
             yield lineWithRawSource(
                 topFileName, 0, "", "", 0, false

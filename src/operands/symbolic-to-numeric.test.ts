@@ -42,9 +42,10 @@ Deno.test("An expression yields a value", () => {
 Deno.test("A symbol yields a value", () => {
     const system = systemUnderTest();
     system.cpuRegisters.initialise(false);
-    assertEquals(system.symbolTable.use("R7"), {
-        "type": "number", "value": 7
-    });
+    assertEquals(
+        system.symbolTable.use("R7"),
+        { "type": "number", "body": 7 }
+    );
     const result = system.operands(testLine(["R7"]));
     assertEquals(result.numericOperands[0], 7);
     assertEquals(result.operandTypes[0], "register");

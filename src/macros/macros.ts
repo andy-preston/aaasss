@@ -1,4 +1,4 @@
-import { FunctionDirective } from "../directives/data-types.ts";
+import type { FunctionUseDirective } from "../directives/data-types.ts";
 import { box, failure } from "../failure/failure-or-box.ts";
 import type { FileLineIterator, FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
@@ -19,25 +19,26 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
 
     const remap = remapping(macroList);
 
-    const useMacroDirective: FunctionDirective = (
-        macroName: string, parameters: MacroParameters
-    ) => {
-        const macro = macroList.get(macroName)!;
-        if (parameters.length != macro.parameters.length) {
-            return failure(
-                undefined, "macro_params", [`${macro.parameters.length}`]
-            );
-        }
+    const useMacroDirective: FunctionUseDirective = {
+        "type": "functionUseDirective",
+        "body": (macroName: string, parameters: MacroParameters) => {
+            const macro = macroList.get(macroName)!;
+            if (parameters.length != macro.parameters.length) {
+                return failure(
+                    undefined, "macro_params", [`${macro.parameters.length}`]
+                );
+            }
 
-        const setup = remap.parameterSetup(macroName, macro, parameters);
-        if (setup.which == "failure") {
-            return setup;
-        }
+            const setup = remap.parameterSetup(macroName, macro, parameters);
+            if (setup.which == "failure") {
+                return setup;
+            }
 
-        if (!record.isRecording()) {
-            fileStack.pushImaginary(imaginaryFile(macroName));
+            if (!record.isRecording()) {
+                fileStack.pushImaginary(imaginaryFile(macroName));
+            }
+            return box("");
         }
-        return box("");
     };
 
     const record = recording(macroList, symbolTable, useMacroDirective);

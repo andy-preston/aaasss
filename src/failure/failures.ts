@@ -14,6 +14,7 @@ export type FailureKind = TypeFailure
     | "mnemonic_supportedUnknown" | "mnemonic_notSupported" | "mnemonic_unknown"
     | "operand_wrongCount" | "operand_blank" | "operand_wrongType"
         | "operand_offsetX" | "operand_offsetNotLdd" | "operand_offsetNotStd"
+    | "parameter_firstName" | "parameter_types"
     | "symbol_alreadyExists" | "symbol_nameIsDirective" | "symbol_nameIsRegister"
         | "symbol_notFound"
     | "syntax_invalidLabel"

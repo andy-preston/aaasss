@@ -1,20 +1,25 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import type { Directive } from "../directives/data-types.ts";
 import { assertSuccess } from "../failure/testing.ts";
-import { systemUnderTest, testLine } from "./testing.ts";
+import { macroFromTable, systemUnderTest, testLine } from "./testing.ts";
 
 Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const system = systemUnderTest();
-    assertSuccess(system.macros.macroDirective("testMacro", []), undefined);
+    assertSuccess(
+        system.macros.macroDirective.body("testMacro", []),
+        undefined
+    );
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     const lineWithLabel = system.macros.lines(
         testLine("", 0, "aLabel", "", [])
     );
     assertFalse(lineWithLabel.failed());
-    assertSuccess(system.macros.endDirective(), undefined);
+    assertSuccess(
+        system.macros.endDirective.body(),
+        undefined
+    );
 
-    const testMacro = system.symbolTable.use("testMacro").value as Directive;
+    const testMacro = macroFromTable(system.symbolTable, "testMacro");
     assertSuccess(testMacro("testMacro", []), "");
     const mockCount = 2;
 
@@ -26,16 +31,22 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
 
 Deno.test("But label operands from outside the macro are left as is", () => {
     const system = systemUnderTest();
-    assertSuccess(system.macros.macroDirective("testMacro", []), undefined);
+    assertSuccess(
+        system.macros.macroDirective.body("testMacro", []),
+        undefined
+    );
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     const lineWithLabel = system.macros.lines(
         testLine("", 0, "aLabel", "", [])
     );
     assertFalse(lineWithLabel.failed());
-    assertSuccess(system.macros.endDirective(), undefined);
+    assertSuccess(
+        system.macros.endDirective.body(),
+        undefined
+    );
 
-    const testMacro = system.symbolTable.use("testMacro").value as Directive;
+    const testMacro = macroFromTable(system.symbolTable, "testMacro");
     assertSuccess(testMacro("testMacro", []), "");
     const mockCount = 2;
     const line = system.macros.lines(
@@ -46,12 +57,18 @@ Deno.test("But label operands from outside the macro are left as is", () => {
 
 Deno.test("Actual labels in macros are also expanded on playback", () => {
     const system = systemUnderTest();
-    assertSuccess(system.macros.macroDirective("testMacro", []), undefined);
+    assertSuccess(
+        system.macros.macroDirective.body("testMacro", []),
+        undefined
+    );
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
-    assertSuccess(system.macros.endDirective(), undefined);
+    assertSuccess(
+        system.macros.endDirective.body(),
+        undefined
+    );
 
-    const testMacro = system.symbolTable.use("testMacro").value as Directive;
+    const testMacro = macroFromTable(system.symbolTable, "testMacro");
     assertSuccess(testMacro("testMacro", []), "");
     const mockCount = 2;
     const line = system.macros.lines(

@@ -1,4 +1,4 @@
-import type { FunctionDirective, ObsoleteDirective } from "../directives/data-types.ts";
+import type { FunctionDefineDirective, FunctionUseDirective, ObsoleteDirective } from "../directives/data-types.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
 import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
@@ -12,7 +12,7 @@ type UseMacroMethod = (macroName: string) => void;
 export const recording = (
     macros: MacroList,
     symbolTable: SymbolTable,
-    useMacroDirective: FunctionDirective
+    useMacroDirective: FunctionUseDirective
 ) => {
     let theMacro: Macro | undefined = undefined;
     let macroName: MacroName = "";
@@ -23,44 +23,46 @@ export const recording = (
         macroName = "";
     };
 
-    const macroDirective: FunctionDirective = (
-        newName: MacroName, parameters: MacroParameters = []
-    ) => {
-        if (theMacro != undefined) {
-            return failure(undefined, "macro_multiDefine", [macroName]);
+    const macroDirective: FunctionDefineDirective = {
+        "type": "functionDefineDirective",
+        "body": (newName: MacroName, parameters: MacroParameters = []) => {
+            if (theMacro != undefined) {
+                return failure(undefined, "macro_multiDefine", [macroName]);
+            }
+            const checkedName = stringParameter(newName);
+            if (checkedName.which == "failure") {
+                return checkedName;
+            }
+            if (symbolTable.has(newName, "withRegisters")) {
+                return failure(undefined, "macro_name", [newName]);
+            }
+            const checkedParameters = parameterList(parameters, "type_strings");
+            if (checkedParameters.which == "failure") {
+                return checkedParameters;
+            }
+            macroName = newName;
+            theMacro = macro(
+                checkedParameters.value == "undefined" ? [] : parameters
+            );
+            skipFirstLine = true;
+            return emptyBox();
         }
-        const checkedName = stringParameter(newName);
-        if (checkedName.which == "failure") {
-            return checkedName;
-        }
-        if (symbolTable.has(newName, "withRegisters")) {
-            return failure(undefined, "macro_name", [newName]);
-        }
-        const checkedParameters = parameterList(parameters, "type_strings");
-        if (checkedParameters.which == "failure") {
-            return checkedParameters;
-        }
-        macroName = newName;
-        theMacro = macro(
-            checkedParameters.value == "undefined" ? [] : parameters
-        );
-        skipFirstLine = true;
-        return emptyBox();
     };
 
-    const endDirective: ObsoleteDirective = () => {
-        if (theMacro == undefined) {
-            return failure(undefined, "macro_end", undefined);
+    const endDirective: ObsoleteDirective = {
+        "type": "directive",
+        "body": () => {
+            if (theMacro == undefined) {
+                return failure(undefined, "macro_end", undefined);
+            }
+            macros.set(macroName, theMacro!);
+            symbolTable.add(
+                macroName, useMacroDirective,
+                currentFileName(), currentLineNumber()
+            );
+            resetState();
+            return emptyBox();
         }
-        macros.set(macroName, theMacro!);
-        symbolTable.add(
-            macroName,
-            { "type": "functionUseDirective", "value": useMacroDirective },
-            currentFileName(),
-            currentLineNumber()
-        );
-        resetState();
-        return emptyBox();
     };
 
     const isRecording = () => theMacro != undefined;

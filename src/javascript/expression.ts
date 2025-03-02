@@ -5,8 +5,6 @@ import { typeBridge } from "./type-bridge.ts";
 const trailingSemicolons = /;*$/;
 
 export const jSExpression = (symbolTable: SymbolTable) => {
-    const untyped = typeBridge();
-
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
             return symbolName in globalThis || typeof symbolName != "string"
@@ -15,7 +13,7 @@ export const jSExpression = (symbolTable: SymbolTable) => {
         },
         get(_target: object, symbolName: string) {
             return typeof symbolName == "string"
-                ? untyped(symbolTable.use(symbolName))
+                ? typeBridge(symbolTable.use(symbolName))
                 : undefined;
         },
         set() {

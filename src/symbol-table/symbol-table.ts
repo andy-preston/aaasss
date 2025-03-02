@@ -3,7 +3,7 @@ import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { ObsoleteDirective } from "../directives/data-types.ts";
 import type { DirectiveList } from "../directives/directive-list.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { Box, emptyBox, failure } from "../failure/failure-or-box.ts";
+import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { FileName, LineNumber } from "../source-code/data-types.ts";
 import { SymbolValue } from "./data-types.ts";
@@ -51,8 +51,8 @@ export const symbolTable = (
         }
 
         if (values.has(symbolName) && !pass.ignoreErrors()) {
-            const existing = values.get(symbolName)!.value;
-            if (value.value != existing) {
+            const existing = values.get(symbolName)!.body;
+            if (value.body != existing) {
                 return failure(
                     undefined, "symbol_alreadyExists", [`${existing}`]
                 );
@@ -82,10 +82,7 @@ export const symbolTable = (
 
     const use = (symbolName: string): SymbolValue => {
         if (directiveList.has(symbolName)) {
-            return {
-                "type": "directive",
-                "value": directiveList.use(symbolName)
-            };
+            return directiveList.use(symbolName);
         }
 
         if (values.has(symbolName)) {
@@ -98,14 +95,14 @@ export const symbolTable = (
             increment(symbolName);
             return {
                 "type": "string",
-                "value": property.value
+                "body": property.value
             };
         }
 
         increment(symbolName);
         return {
             "type": "number",
-            "value": cpuRegisters.value(symbolName)
+            "body": cpuRegisters.value(symbolName)
         };
     };
 
@@ -119,7 +116,7 @@ export const symbolTable = (
         const fromList = notCounted(symbolName);
         return fromList != undefined
             && (fromList.type == "string" || fromList.type == "number")
-            ? fromList.value
+            ? fromList.body
             : undefined;
     };
 
@@ -144,15 +141,13 @@ export const symbolTable = (
         return asArray;
     }
 
-    const defineDirective: ObsoleteDirective = (
-        symbolName: string, value: number
-    ) =>
-        add(
-            symbolName,
-            { "type": "number", "value": value },
-            currentFileName(),
-            currentLineNumber()
-        );
+    const defineDirective: ObsoleteDirective = {
+        "type": "directive",
+        "body": (symbolName: string, value: number) => add(
+            symbolName, { "type": "number", "body": value },
+            currentFileName(), currentLineNumber()
+        )
+    };
 
     return {
         "has": has,

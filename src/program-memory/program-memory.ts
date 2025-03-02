@@ -1,9 +1,9 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { Directive } from "../directives/data-types.ts";
+import type { ObsoleteDirective } from "../directives/data-types.ts";
 import { box, emptyBox, failure } from "../failure/failure-or-box.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
-import { SymbolTable } from "../symbol-table/symbol-table.ts";
+import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithAddress } from "./line-types.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
@@ -30,29 +30,32 @@ export const programMemory = (
             : emptyBox();
     }
 
-    const originDirective: Directive = (newAddress: number) => {
-        const check = validNumeric(newAddress, "type_positive");
-        if (check.which == "failure") {
-            return check;
-        }
-        if (newAddress == 0) {
-            address = 0;
+    const originDirective: ObsoleteDirective = {
+        "type": "directive",
+        "body": (newAddress: number) => {
+            const check = validNumeric(newAddress, "type_positive");
+            if (check.which == "failure") {
+                return check;
+            }
+            if (newAddress == 0) {
+                address = 0;
+                return box(`${address}`);
+            }
+            const tooBig = pastEnd(newAddress);
+            if (tooBig.which == "failure") {
+                return tooBig;
+            }
+            address = newAddress;
             return box(`${address}`);
         }
-        const tooBig = pastEnd(newAddress);
-        if (tooBig.which == "failure") {
-            return tooBig;
-        }
-        address = newAddress;
-        return box(`${address}`);
     };
 
     const addressed = (line: LineWithObjectCode) => {
         if (line.label) {
             const result = symbolTable.add(
-                line.label, {
-                    "type": "number", "value": address
-                }, line.fileName, line.lineNumber
+                line.label,
+                { "type": "number", "body": address },
+                line.fileName, line.lineNumber
             );
             if (result.which == "failure") {
                 line.withFailure(result);
@@ -66,7 +69,7 @@ export const programMemory = (
             0
         )) + address;
 
-        const step = originDirective(newAddress);
+        const step = originDirective.body(newAddress);
         if (step.which == "failure") {
             newLine.withFailure(step);
         }

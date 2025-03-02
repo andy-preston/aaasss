@@ -48,6 +48,9 @@ export const messages: Record<FailureKind, FailureMessage> = {
     ],
     "operand_wrongCount": (_line: LineWithAddress) => [""],
     "operand_wrongType": (_line: LineWithAddress) => [""],
+    "parameter_firstName": (_line: LineWithAddress) => [
+        "The first parameter should be a name"
+    ],
     "programMemory_outOfRange": (_line: LineWithAddress) => [""],
     "programMemory_sizeUnknown": (_line: LineWithAddress) => [""],
     "ram_outOfRange": (_line: LineWithAddress) => [""],

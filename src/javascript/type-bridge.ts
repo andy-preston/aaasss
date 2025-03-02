@@ -1,43 +1,52 @@
-import { DirectiveResult, FunctionDirective } from "../directives/data-types.ts";
+import { DirectiveResult, FunctionDefineDirective, FunctionDirectiveMethod, FunctionUseDirective } from "../directives/data-types.ts";
 import { failure } from "../failure/failure-or-box.ts";
 import type { SymbolValue } from "../symbol-table/data-types.ts";
 
-type JavaScriptFunction = (...parameters: unknown[]) => DirectiveResult;
 
-const stringsAndNumbers = (unchecked: unknown[]) =>
-    unchecked.slice(1).every(
-        element => ["string", "number"].includes(typeof element)
-    );
+type JavaScriptFunction = (...parameters: unknown[]) => DirectiveResult;
 
 const allStrings = (untyped: unknown[]): Array<string> =>
     untyped.slice(1).map(element => `${element}`);
 
-export const typeBridge = () => {
+const javaScriptType = (untyped: unknown) => typeof untyped;
+type JavaScriptType = ReturnType<typeof javaScriptType>;
 
-    const functionDefineDirective = (
-        directive: FunctionDirective
-    ): JavaScriptFunction =>
-        (...parameters: unknown[]) =>
-            parameters.length > 0
-                && parameters.every(element => typeof element == "string")
-                ? directive(parameters[0] as string, allStrings(parameters))
-                : failure(undefined, "macro_params", undefined);
+const functionDirective = (
+    method: FunctionDirectiveMethod, allowedTypes: Array<JavaScriptType>
+): JavaScriptFunction => (...parameters: unknown[]) => {
+    if (parameters.length == 0) {
+        return failure(undefined, "parameter_firstName", []);
+    }
 
-    const functionUseDirective = (
-        directive: FunctionDirective
-    ): JavaScriptFunction =>
-        (...parameters: unknown[]) =>
-            parameters.length > 0
-                && typeof parameters[0] == "string"
-                && stringsAndNumbers(parameters)
-                ? directive(parameters[0] as string, allStrings(parameters))
-                : failure(undefined, "macro_params", undefined);
+    const wrongTypes: Array<string> = [];
+    for (const [index, parameter] of parameters.entries()) {
+        const typeOf = typeof parameter;
+        if (!allowedTypes.includes(typeOf)) {
+            wrongTypes.push(`${index}: ${typeOf}`);
+        }
+    }
+    if (wrongTypes.length > 0) {
+        return failure (
+            undefined, "parameter_types",
+            [allowedTypes.join(", ")].concat(wrongTypes)
+        );
+    }
 
-    return (symbol: SymbolValue) =>
-        symbol.type == "string" || symbol.type == "number"
-        || symbol.type == "directive"
-        ? symbol.value
-        : symbol.type == "functionDefineDirective"
-        ? functionDefineDirective(symbol.value)
-        : functionUseDirective(symbol.value);
+    return method(parameters[0] as string, allStrings(parameters));
+};
+
+const functionDefineDirective = (directive: FunctionDefineDirective) =>
+    functionDirective(directive.body, ["string"]);
+
+const functionUseDirective = (directive: FunctionUseDirective) =>
+    functionDirective(directive.body, ["string", "number"]);
+
+export const typeBridge = (symbol: SymbolValue) => {
+    console.log("typeBridge", symbol.type);
+    return symbol.type == "string" || symbol.type == "number"
+    || symbol.type == "directive"
+    ? symbol.body
+    : symbol.type == "functionDefineDirective"
+    ? functionDefineDirective(symbol)
+    : functionUseDirective(symbol);
 };

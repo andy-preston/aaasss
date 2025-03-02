@@ -55,39 +55,44 @@ export const deviceChooser = (
         return emptyBox();
     };
 
-    const deviceDirective: ObsoleteDirective = (name: string) => {
-        const fullSpec: FullSpec = {};
+    const deviceDirective: ObsoleteDirective = {
+        "type": "directive",
+        "body": (name: string) => {
+            const fullSpec: FullSpec = {};
 
-        const loadSpec = (spec: RawItems) => {
-            for (const [key, item] of Object.entries(spec)) {
-                if (Object.hasOwn(fullSpec, key)) {
-                    throw new Error(
-                        `${key} declared multiple times in ${name} spec`
-                    );
+            const loadSpec = (spec: RawItems) => {
+                for (const [key, item] of Object.entries(spec)) {
+                    if (Object.hasOwn(fullSpec, key)) {
+                        throw new Error(
+                            `${key} declared multiple times in ${name} spec`
+                        );
+                    }
+                    fullSpec[key] = typeof item.value == "string"
+                        ? hexNumber(item.value)
+                        : item.value;
                 }
-                fullSpec[key] = typeof item.value == "string"
-                    ? hexNumber(item.value)
-                    : item.value;
-            }
-        };
+            };
 
-        const check = stringParameter(name);
-        if (check.which == "failure") {
-            return check;
+            const check = stringParameter(name);
+            if (check.which == "failure") {
+                return check;
+            }
+
+            const baseName = deviceFinder(name);
+            if (baseName.which == "failure") {
+                return baseName;
+            }
+
+            const baseSpec = loadJsonFile(baseName.value) as DeviceSpec;
+            const familySpec = (
+                "family" in baseSpec
+                    ? loadJsonFile(`./devices/families/${baseSpec.family}.json`)
+                    : {}
+            ) as RawItems;
+            loadSpec(baseSpec.spec);
+            loadSpec(familySpec);
+            return choose(name, fullSpec);
         }
-        const baseName = deviceFinder(name);
-        if (baseName.which == "failure") {
-            return baseName;
-        }
-        const baseSpec = loadJsonFile(baseName.value) as DeviceSpec;
-        const familySpec = (
-            "family" in baseSpec
-                ? loadJsonFile(`./devices/families/${baseSpec.family}.json`)
-                : {}
-        ) as RawItems;
-        loadSpec(baseSpec.spec);
-        loadSpec(familySpec);
-        return choose(name, fullSpec);
     };
 
     return {
