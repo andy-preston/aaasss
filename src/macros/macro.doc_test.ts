@@ -5,7 +5,7 @@ Deno.test("Macro demo", () => {
     demo.source([
         '    {{ device("ATTiny24"); }}',
         "",
-        '    {{ macro("aMacro", ["address"]); }}',
+        '    {{ macro("aMacro", "address"); }}',
         "    LDS R30, address",
         "    {{ end(); }}",
         "",
@@ -19,7 +19,7 @@ Deno.test("Macro demo", () => {
         "=================",
         '                      1     {{ device("ATTiny24"); }}',
         "                      2",
-        '                      3     {{ macro("aMacro", ["address"]); }}',
+        '                      3     {{ macro("aMacro", "address"); }}',
         "                      4     LDS R30, address",
         "                      5     {{ end(); }}",
         "                      6",
@@ -33,7 +33,7 @@ Deno.test("Macro demo", () => {
         "============",
         "",
         "aMacro (2) /var/tmp/demo.asm:5",
-        "R30 = 30 (2)"
+        "R30 (2)"
     ]);
     assertFileContains(".hex", [
         ":020000020000FC",
@@ -47,7 +47,7 @@ Deno.test("A macro can be called from inside another macro", () => {
     demo.source([
         '    {{ device("ATTiny24"); }}',
         "",
-        '    {{ macro("innerMacro", ["address"]); }}',
+        '    {{ macro("innerMacro", "address"); }}',
         "    LDS R30, address",
         "    {{ end(); }}",
         "",
@@ -65,7 +65,7 @@ Deno.test("A macro can be called from inside another macro", () => {
         "=================",
         '                      1     {{ device("ATTiny24"); }}',
         "                      2",
-        '                      3     {{ macro("innerMacro", ["address"]); }}',
+        '                      3     {{ macro("innerMacro", "address"); }}',
         "                      4     LDS R30, address",
         "                      5     {{ end(); }}",
         "                      6",
@@ -85,7 +85,7 @@ Deno.test("A macro can be called from inside another macro", () => {
         "",
         "innerMacro (4) /var/tmp/demo.asm:5",
         "outerMacro (1) /var/tmp/demo.asm:10",
-        "R30 = 30 (2)"
+        "R30 (2)"
     ]);
     assertFileContains(".hex", [
         ":020000020000FC",

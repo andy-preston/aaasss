@@ -1,4 +1,4 @@
-import { DirectiveResult, FunctionDefineDirective, FunctionDirectiveMethod, FunctionUseDirective } from "../directives/data-types.ts";
+import type { DirectiveResult, FunctionDefineDirective, FunctionUseDirective } from "../directives/data-types.ts";
 import { failure } from "../failure/failure-or-box.ts";
 import type { SymbolValue } from "../symbol-table/data-types.ts";
 
@@ -6,13 +6,13 @@ import type { SymbolValue } from "../symbol-table/data-types.ts";
 type JavaScriptFunction = (...parameters: unknown[]) => DirectiveResult;
 
 const allStrings = (untyped: unknown[]): Array<string> =>
-    untyped.slice(1).map(element => `${element}`);
+    untyped.map(element => `${element}`);
 
 const javaScriptType = (untyped: unknown) => typeof untyped;
 type JavaScriptType = ReturnType<typeof javaScriptType>;
 
-const functionDirective = (
-    method: FunctionDirectiveMethod, allowedTypes: Array<JavaScriptType>
+const functionDefineDirective = (
+    directive: FunctionDefineDirective
 ): JavaScriptFunction => (...parameters: unknown[]) => {
     if (parameters.length == 0) {
         return failure(undefined, "parameter_firstName", []);
@@ -21,32 +21,42 @@ const functionDirective = (
     const wrongTypes: Array<string> = [];
     for (const [index, parameter] of parameters.entries()) {
         const typeOf = typeof parameter;
-        if (!allowedTypes.includes(typeOf)) {
+        if (typeOf != "string") {
             wrongTypes.push(`${index}: ${typeOf}`);
         }
     }
-    if (wrongTypes.length > 0) {
-        return failure (
-            undefined, "parameter_types",
-            [allowedTypes.join(", ")].concat(wrongTypes)
+    return wrongTypes.length == 0
+        ? directive.body(
+            parameters[0] as string,
+            allStrings(parameters.slice(1))
+        )
+        : failure (
+            undefined, "parameter_types", ["string"].concat(wrongTypes)
         );
-    }
-
-    return method(parameters[0] as string, allStrings(parameters));
 };
 
-const functionDefineDirective = (directive: FunctionDefineDirective) =>
-    functionDirective(directive.body, ["string"]);
+const functionUseDirective = (
+    symbolName: string, directive: FunctionUseDirective
+): JavaScriptFunction => (...parameters: unknown[]) => {
+    const wrongTypes: Array<string> = [];
+    for (const [index, parameter] of parameters.entries()) {
+        const typeOf = typeof parameter;
+        if (!["string", "number"].includes(typeOf)) {
+            wrongTypes.push(`${index}: ${typeOf}`);
+        }
+    }
+    return wrongTypes.length == 0
+        ? directive.body(symbolName, allStrings(parameters))
+        : failure (
+            undefined, "parameter_types", ["string, number"].concat(wrongTypes)
+        );
+};
 
-const functionUseDirective = (directive: FunctionUseDirective) =>
-    functionDirective(directive.body, ["string", "number"]);
-
-export const typeBridge = (symbol: SymbolValue) => {
-    console.log("typeBridge", symbol.type);
+export const typeBridge = (symbolName: string, symbol: SymbolValue) => {
     return symbol.type == "string" || symbol.type == "number"
     || symbol.type == "directive"
     ? symbol.body
     : symbol.type == "functionDefineDirective"
     ? functionDefineDirective(symbol)
-    : functionUseDirective(symbol);
+    : functionUseDirective(symbolName, symbol);
 };

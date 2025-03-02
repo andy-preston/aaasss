@@ -13,7 +13,7 @@ export const jSExpression = (symbolTable: SymbolTable) => {
         },
         get(_target: object, symbolName: string) {
             return typeof symbolName == "string"
-                ? typeBridge(symbolTable.use(symbolName))
+                ? typeBridge(symbolName, symbolTable.use(symbolName))
                 : undefined;
         },
         set() {
