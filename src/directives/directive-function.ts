@@ -3,12 +3,16 @@ import type {
     FunctionUseDirective
 } from "./data-types.ts";
 import {
-    stringDirective, functionDefineDirective, functionUseDirective
+    voidDirective, stringDirective,
+    functionDefineDirective, functionUseDirective,
 } from "./parameters.ts";
 
 export const directiveFunction = (
     symbolName: string, directive: DirectiveSymbol
 ): JavaScriptFunction => {
+    if (directive.type == "voidDirective") {
+        return voidDirective(directive);
+    }
     if (directive.type == "stringDirective") {
         return stringDirective(directive);
     }

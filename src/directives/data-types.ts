@@ -4,10 +4,15 @@ export type DirectiveResult = Box<string|undefined> | Failure;
 
 export type JavaScriptFunction = (...parameters: unknown[]) => DirectiveResult;
 
+export type VoidDirective = {
+    "type": "voidDirective",
+    "body": () => DirectiveResult
+};
+
 export type StringDirective = {
     "type": "stringDirective",
     "body": (parameter: string) => DirectiveResult
-}
+};
 
 export type FunctionDefineDirective = {
     "type": "functionDefineDirective",
@@ -25,7 +30,7 @@ export type ObsoleteDirective = {
 };
 
 export type DirectiveSymbol = ObsoleteDirective
-    | StringDirective
+    | VoidDirective | StringDirective
     | FunctionDefineDirective | FunctionUseDirective;
 
 export type DirectiveType = DirectiveSymbol["type"];

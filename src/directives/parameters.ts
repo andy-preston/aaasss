@@ -1,5 +1,11 @@
-import { emptyBox, failure, type Box, type Failure} from "../failure/failure-or-box.ts";
-import type { FunctionDefineDirective, FunctionUseDirective, JavaScriptFunction, StringDirective } from "./data-types.ts";
+import {
+    emptyBox, failure, type Box, type Failure
+} from "../failure/failure-or-box.ts";
+import type {
+    JavaScriptFunction,
+    VoidDirective, StringDirective,
+    FunctionDefineDirective, FunctionUseDirective
+} from "./data-types.ts";
 
 const parameterTypes = (
     untyped: unknown[], required: Array<"string" | "number">
@@ -21,6 +27,13 @@ const parameterTypes = (
 
 const allAsString = (untyped: unknown[]): Array<string> =>
     untyped.map(element => `${element}`);
+
+export const voidDirective = (
+    directive: VoidDirective
+): JavaScriptFunction => (...parameters: unknown[]) =>
+    parameters.length != 0
+        ? failure(undefined, "parameter_count", ["0"])
+        : directive.body();
 
 export const stringDirective = (
     directive: StringDirective

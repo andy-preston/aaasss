@@ -1,6 +1,5 @@
-import type { FunctionDefineDirective, FunctionUseDirective, ObsoleteDirective } from "../directives/data-types.ts";
+import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/data-types.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { parameterList, stringParameter } from "../directives/type-checking.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
@@ -29,28 +28,18 @@ export const recording = (
             if (theMacro != undefined) {
                 return failure(undefined, "macro_multiDefine", [macroName]);
             }
-            const checkedName = stringParameter(newName);
-            if (checkedName.which == "failure") {
-                return checkedName;
-            }
             if (symbolTable.has(newName, "withRegisters")) {
                 return failure(undefined, "macro_name", [newName]);
             }
-            const checkedParameters = parameterList(parameters, "type_strings");
-            if (checkedParameters.which == "failure") {
-                return checkedParameters;
-            }
             macroName = newName;
-            theMacro = macro(
-                checkedParameters.value == "undefined" ? [] : parameters
-            );
+            theMacro = macro(parameters);
             skipFirstLine = true;
             return emptyBox();
         }
     };
 
-    const endDirective: ObsoleteDirective = {
-        "type": "directive",
+    const endDirective: VoidDirective = {
+        "type": "voidDirective",
         "body": () => {
             if (theMacro == undefined) {
                 return failure(undefined, "macro_end", undefined);

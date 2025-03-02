@@ -1,11 +1,6 @@
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import { FailureKind } from "../failure/failures.ts";
 
-export const stringParameter = (value: unknown): Box<string> | Failure => {
-    const asString = `${value}`;
-    return typeof value == "string"
-        ? box(asString) : failure(undefined, "type_string", [asString]);
-};
 
 type Expected = Extract<FailureKind, "type_strings" | "type_macroParams">;
 
