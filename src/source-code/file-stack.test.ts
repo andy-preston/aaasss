@@ -26,6 +26,7 @@ Deno.test("Including a non existant file returns a failure", () => {
     );
 });
 
+/*
 Deno.test("Including an 'irrational' fileName returns a failure", () => {
     const aFileStack = fileStack(defaultReaderMethod, "");
     const result = aFileStack.includeDirective.body(
@@ -34,6 +35,7 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
     assertFailure(result, "type_string");
     assertEquals((result as Failure).extra, ["1,2,3"]);
 });
+*/
 
 Deno.test("Reading a file yields multiple lines with the file contents", () => {
     // cSpell:words plip wibble

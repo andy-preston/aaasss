@@ -1,8 +1,39 @@
-import { failure } from "../failure/failure-or-box.ts";
-import type { FunctionDefineDirective, FunctionUseDirective, JavaScriptFunction } from "./data-types.ts";
+import { emptyBox, failure, type Box, type Failure} from "../failure/failure-or-box.ts";
+import type { FunctionDefineDirective, FunctionUseDirective, JavaScriptFunction, StringDirective } from "./data-types.ts";
 
-const allStrings = (untyped: unknown[]): Array<string> =>
+const parameterTypes = (
+    untyped: unknown[], required: Array<"string" | "number">
+): Box<undefined> | Failure => {
+    const wrongTypes: Array<string> = [];
+    for (const [index, parameter] of untyped.entries()) {
+        const typeOf = Array.isArray(parameter)
+            ? "array" : typeof parameter;
+        if (!(required as Array<string>).includes(typeOf)) {
+            wrongTypes.push(`${index}: ${typeOf}`);
+        }
+    }
+    return wrongTypes.length == 0
+        ? emptyBox()
+        : failure (
+            undefined, "parameter_type", [required.join(", ")].concat(wrongTypes)
+        );
+}
+
+const allAsString = (untyped: unknown[]): Array<string> =>
     untyped.map(element => `${element}`);
+
+export const stringDirective = (
+    directive: StringDirective
+): JavaScriptFunction => (...parameters: unknown[]) => {
+    if (parameters.length != 1) {
+        return failure(undefined, "parameter_count", ["1"]);
+    }
+
+    const wrongTypes = parameterTypes(parameters, ["string"]);
+    return wrongTypes.which == "failure"
+        ? wrongTypes
+        : directive.body(allAsString(parameters)[0]!);
+};
 
 export const functionDefineDirective = (
     directive: FunctionDefineDirective
@@ -11,36 +42,19 @@ export const functionDefineDirective = (
         return failure(undefined, "parameter_firstName", []);
     }
 
-    const wrongTypes: Array<string> = [];
-    for (const [index, parameter] of parameters.entries()) {
-        const typeOf = typeof parameter;
-        if (typeOf != "string") {
-            wrongTypes.push(`${index}: ${typeOf}`);
-        }
-    }
-    return wrongTypes.length == 0
-        ? directive.body(
-            parameters[0] as string,
-            allStrings(parameters.slice(1))
-        )
-        : failure (
-            undefined, "parameter_types", ["string"].concat(wrongTypes)
+    const wrongTypes = parameterTypes(parameters, ["string"]);
+    return wrongTypes.which == "failure"
+        ? wrongTypes
+        : directive.body(
+            parameters[0] as string, allAsString(parameters.slice(1))
         );
 };
 
 export const functionUseDirective = (
     symbolName: string, directive: FunctionUseDirective
 ): JavaScriptFunction => (...parameters: unknown[]) => {
-    const wrongTypes: Array<string> = [];
-    for (const [index, parameter] of parameters.entries()) {
-        const typeOf = typeof parameter;
-        if (!["string", "number"].includes(typeOf)) {
-            wrongTypes.push(`${index}: ${typeOf}`);
-        }
-    }
-    return wrongTypes.length == 0
-        ? directive.body(symbolName, allStrings(parameters))
-        : failure (
-            undefined, "parameter_types", ["string, number"].concat(wrongTypes)
-        );
+    const wrongTypes = parameterTypes(parameters, ["string", "number"]);
+    return wrongTypes.which == "failure"
+        ? wrongTypes
+        : directive.body(symbolName, allAsString(parameters));
 };

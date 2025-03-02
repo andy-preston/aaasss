@@ -51,10 +51,23 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
     );
 });
 
-Deno.test("The device name must be a string", () => {
+Deno.test("The device name must be present and a string", () => {
     const system = systemUnderTest();
-    assertFailure(
-        system.jSExpression("device([1, 2, 3])"),
-        "type_string"
+    assertFailureWithExtra(
+        system.jSExpression("device()"),
+        "parameter_count", ["1"]
     );
+    assertFailureWithExtra(
+        system.jSExpression("device([1, 2, 3])"),
+        "parameter_type", ["string", "0: array"]
+    );
+    assertFailureWithExtra(
+        system.jSExpression("device(64)"),
+        "parameter_type", ["string", "0: number"]
+    );
+    assertFailureWithExtra(
+        system.jSExpression("device(false)"),
+        "parameter_type", ["string", "0: boolean"]
+    );
+    assertSuccess(system.jSExpression('device("at tiny 24")'), "");
 });

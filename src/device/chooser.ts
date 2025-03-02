@@ -1,5 +1,4 @@
-import type { ObsoleteDirective } from "../directives/data-types.ts";
-import { stringParameter } from "../directives/type-checking.ts";
+import { StringDirective } from "../directives/data-types.ts";
 import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
@@ -55,8 +54,8 @@ export const deviceChooser = (
         return emptyBox();
     };
 
-    const deviceDirective: ObsoleteDirective = {
-        "type": "directive",
+    const deviceDirective: StringDirective = {
+        "type": "stringDirective",
         "body": (name: string) => {
             const fullSpec: FullSpec = {};
 
@@ -72,11 +71,6 @@ export const deviceChooser = (
                         : item.value;
                 }
             };
-
-            const check = stringParameter(name);
-            if (check.which == "failure") {
-                return check;
-            }
 
             const baseName = deviceFinder(name);
             if (baseName.which == "failure") {

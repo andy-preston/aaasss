@@ -1,7 +1,7 @@
 import { assertEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
-import type { FunctionUseDirective, ObsoleteDirective } from "../directives/data-types.ts";
+import type { FunctionUseDirective, StringDirective } from "../directives/data-types.ts";
 import { directiveList } from "../directives/directive-list.ts";
 import { emptyBox } from "../failure/failure-or-box.ts";
 import { jSExpression } from "../javascript/expression.ts";
@@ -18,8 +18,8 @@ import { macros } from "./macros.ts";
 
 const mockFileStack = () => {
     let lineIterator: FileLineIterator | undefined;
-    const includeDirective: ObsoleteDirective = {
-        "type": "directive", "body": () => emptyBox()
+    const includeDirective: StringDirective = {
+        "type": "stringDirective", "body": () => emptyBox()
     };
     const pushImaginary = (iterator: FileLineIterator) => {
         lineIterator = iterator;
