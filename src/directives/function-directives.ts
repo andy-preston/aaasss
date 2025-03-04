@@ -1,10 +1,10 @@
 import { box } from "../failure/failure-or-box.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
-import type { ObsoleteDirective } from "./data-types.ts";
+import type { NumberDirective } from "./data-types.ts";
 
-const lowDirective: ObsoleteDirective = {
-    "type": "directive",
-    "body": (word: unknown) => {
+const lowDirective: NumberDirective = {
+    "type": "numberDirective",
+    "body": (word: number) => {
         const parameter = validNumeric(word, "type_word");
         return parameter.which == "failure"
             ? parameter
@@ -12,9 +12,9 @@ const lowDirective: ObsoleteDirective = {
     }
 };
 
-const highDirective: ObsoleteDirective = {
-    "type": "directive",
-    "body": (word: unknown) => {
+const highDirective: NumberDirective = {
+    "type": "numberDirective",
+    "body": (word: number) => {
         const parameter = validNumeric(word, "type_word");
         return parameter.which == "failure"
             ? parameter

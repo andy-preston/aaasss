@@ -3,8 +3,7 @@ import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import type { FunctionUseDirective, StringDirective } from "../directives/data-types.ts";
 import { directiveList } from "../directives/directive-list.ts";
-import { emptyBox } from "../failure/failure-or-box.ts";
-import { jSExpression } from "../javascript/expression.ts";
+import { box } from "../failure/failure-or-box.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -19,7 +18,7 @@ import { macros } from "./macros.ts";
 const mockFileStack = () => {
     let lineIterator: FileLineIterator | undefined;
     const includeDirective: StringDirective = {
-        "type": "stringDirective", "body": () => emptyBox()
+        "type": "stringDirective", "body": () => box("")
     };
     const pushImaginary = (iterator: FileLineIterator) => {
         lineIterator = iterator;
@@ -49,12 +48,9 @@ export const systemUnderTest = () => {
     );
     const fileStack = mockFileStack();
     const macroProcessor = macros(symbols, fileStack);
-    directives.includes("macro", macroProcessor.macroDirective);
-    const javascript = jSExpression(symbols);
     return {
         "symbolTable": symbols,
         "macros": macroProcessor,
-        "jSExpression": javascript,
         "mockFileStack": fileStack
     };
 };

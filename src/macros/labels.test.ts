@@ -5,8 +5,7 @@ import { macroFromTable, systemUnderTest, testLine } from "./testing.ts";
 Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const system = systemUnderTest();
     assertSuccess(
-        system.macros.macroDirective.body("testMacro", []),
-        undefined
+        system.macros.macroDirective.body("testMacro", []), ""
     );
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
@@ -15,8 +14,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     );
     assertFalse(lineWithLabel.failed());
     assertSuccess(
-        system.macros.endDirective.body(),
-        undefined
+        system.macros.endDirective.body(), ""
     );
 
     const testMacro = macroFromTable(system.symbolTable, "testMacro");
@@ -32,8 +30,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
 Deno.test("But label operands from outside the macro are left as is", () => {
     const system = systemUnderTest();
     assertSuccess(
-        system.macros.macroDirective.body("testMacro", []),
-        undefined
+        system.macros.macroDirective.body("testMacro", []), ""
     );
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
@@ -42,8 +39,7 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     );
     assertFalse(lineWithLabel.failed());
     assertSuccess(
-        system.macros.endDirective.body(),
-        undefined
+        system.macros.endDirective.body(), ""
     );
 
     const testMacro = macroFromTable(system.symbolTable, "testMacro");
@@ -58,14 +54,12 @@ Deno.test("But label operands from outside the macro are left as is", () => {
 Deno.test("Actual labels in macros are also expanded on playback", () => {
     const system = systemUnderTest();
     assertSuccess(
-        system.macros.macroDirective.body("testMacro", []),
-        undefined
+        system.macros.macroDirective.body("testMacro", []), ""
     );
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     assertSuccess(
-        system.macros.endDirective.body(),
-        undefined
+        system.macros.endDirective.body(), ""
     );
 
     const testMacro = macroFromTable(system.symbolTable, "testMacro");

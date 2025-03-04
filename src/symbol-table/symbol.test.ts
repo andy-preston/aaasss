@@ -1,10 +1,11 @@
 import { assertEquals } from "assert/equals";
 import { pass } from "../assembler/pass.ts";
+import { deviceProperties } from "../device/properties.ts";
+import { directiveFunction } from "../directives/directive-function.ts";
 import { directiveList } from "../directives/directive-list.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
-import { symbolTable } from "./symbol-table.ts";
-import { deviceProperties } from "../device/properties.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
+import { symbolTable } from "./symbol-table.ts";
 
 export const systemUnderTest = () => {
     const currentPass = pass();
@@ -26,8 +27,7 @@ export const systemUnderTest = () => {
 Deno.test("A symbol can be defined and accessed", () => {
     const system = systemUnderTest();
     assertSuccess(
-        system.symbolTable.defineDirective.body("plop", 57),
-        undefined
+        system.symbolTable.defineDirective.body("plop", 57), ""
     );
     assertEquals(
         system.symbolTable.use("plop"),
@@ -37,23 +37,15 @@ Deno.test("A symbol can be defined and accessed", () => {
 
 Deno.test("A symbol can only be redefined if it's value has not changed", () => {
     const system = systemUnderTest();
-    assertSuccess(
-        system.symbolTable.defineDirective.body("plop", 57),
-        undefined
-    );
+    const define = directiveFunction("testing", system.symbolTable.defineDirective);
+    assertSuccess(define("plop", 57), "");
     assertEquals(
         system.symbolTable.use("plop"),
         { "type": "number", "body": 57 }
     );
     system.pass.second();
-    assertSuccess(
-        system.symbolTable.defineDirective.body("plop", 57),
-        undefined
-    );
-    assertFailure(
-        system.symbolTable.defineDirective.body("plop", 75),
-        "symbol_alreadyExists"
-    );
+    assertSuccess(define("plop", 57), "");
+    assertFailure(define("plop", 75), "symbol_alreadyExists");
 });
 
 Deno.test("A symbol can't be defined with the same name as a directive", () => {

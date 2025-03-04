@@ -1,12 +1,12 @@
 import type { Pass } from "../assembler/pass.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { ObsoleteDirective } from "../directives/data-types.ts";
+import type { ValueDirective } from "../directives/data-types.ts";
 import type { DirectiveList } from "../directives/directive-list.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import { box, emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { FileName, LineNumber } from "../source-code/data-types.ts";
-import { SymbolValue } from "./data-types.ts";
+import type { SymbolValue } from "./data-types.ts";
 
 export const symbolTable = (
     directiveList: DirectiveList,
@@ -64,7 +64,7 @@ export const symbolTable = (
         definitionLocations.set(
             symbolName, fileName ? `${fileName}:${lineNumber}` : ""
         );
-        return emptyBox();
+        return box("");
     };
 
     const resetState = () => {
@@ -141,8 +141,8 @@ export const symbolTable = (
         return asArray;
     }
 
-    const defineDirective: ObsoleteDirective = {
-        "type": "directive",
+    const defineDirective: ValueDirective = {
+        "type": "valueDirective",
         "body": (symbolName: string, value: number) => add(
             symbolName, { "type": "number", "body": value },
             currentFileName(), currentLineNumber()

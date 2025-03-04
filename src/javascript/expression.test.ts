@@ -14,35 +14,35 @@ const systemUnderTest = () => {
     return {
         "symbols": symbols,
         "cpuRegisters": registers,
-        "expression": jSExpression(symbols)
+        "jsExpression": jSExpression(symbols)
     };
 };
 
 Deno.test("The last expression in the code is returned", () => {
     const system = systemUnderTest();
-    assertSuccess(system.expression("5 + 7"), "12");
+    assertSuccess(system.jsExpression("5 + 7"), "12");
 });
 
 Deno.test("Javascript can contain strings", () => {
     const system = systemUnderTest();
-    assertSuccess(system.expression("'single quoted'"), "single quoted");
-    assertSuccess(system.expression('"double quoted"'), "double quoted");
+    assertSuccess(system.jsExpression("'single quoted'"), "single quoted");
+    assertSuccess(system.jsExpression('"double quoted"'), "double quoted");
 });
 
 Deno.test("If the result is undefined, `value` returns empty string", () => {
     const system = systemUnderTest();
-    assertSuccess(system.expression("undefined;"), "");
+    assertSuccess(system.jsExpression("undefined;"), "");
 });
 
 Deno.test("A plain assignment will not return a value", () => {
     const system = systemUnderTest();
-    assertSuccess(system.expression("const test = 4;"), "");
+    assertSuccess(system.jsExpression("const test = 4;"), "");
 });
 
 Deno.test("Javascript can contain newlines", () => {
     const system = systemUnderTest();
     const js = "const test1 = 4;\nconst test2 = 6;\ntest1 + test2;";
-    assertSuccess(system.expression(js), "10");
+    assertSuccess(system.jsExpression(js), "10");
 });
 
 Deno.test("Javascript can get value from the symbol table", () => {
@@ -50,14 +50,14 @@ Deno.test("Javascript can get value from the symbol table", () => {
     system.symbols.add(
         "plop", { "type": "number", "body": 23 }, "mock.asm", 10
     );
-    const result = system.expression("plop");
+    const result = system.jsExpression("plop");
     assertSuccess(result, "23");
 });
 
 Deno.test("...but not any of the registers", () => {
     const system = systemUnderTest();
     system.cpuRegisters.initialise(false);
-    const result = system.expression("R7 + 5");
+    const result = system.jsExpression("R7 + 5");
     assertFailureWithError(
         result, "js_error", ReferenceError, "R7 is not defined"
     );
@@ -66,7 +66,7 @@ Deno.test("...but not any of the registers", () => {
 Deno.test("An unknown variable gives a reference error", () => {
     const system = systemUnderTest();
     assertFailureWithError(
-        system.expression("const test = plop * 10;"),
+        system.jsExpression("const test = plop * 10;"),
         "js_error",
         ReferenceError,
         "plop is not defined"
@@ -76,7 +76,7 @@ Deno.test("An unknown variable gives a reference error", () => {
 Deno.test("Syntax errors are returned as errors too", () => {
     const system = systemUnderTest();
     assertFailureWithError(
-        system.expression("this is just nonsense"),
+        system.jsExpression("this is just nonsense"),
         "js_error",
         SyntaxError,
         "Unexpected identifier 'is'"
@@ -86,7 +86,7 @@ Deno.test("Syntax errors are returned as errors too", () => {
 Deno.test("A symbol will not be assigned using `this.symbol`", () => {
     const system = systemUnderTest();
     assertFailureWithError(
-        system.expression("this.plop = 27"),
+        system.jsExpression("this.plop = 27"),
         "js_error",
         ReferenceError,
         "this_assignment"

@@ -1,5 +1,5 @@
 import { StringDirective } from "../directives/data-types.ts";
-import { emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
@@ -24,10 +24,10 @@ export const deviceChooser = (
     const choose = (
         deviceName: string,
         fullSpec: FullSpec
-    ): Box<undefined> | Failure => {
+    ): Box<string> | Failure => {
         const previousName = deviceProperties.deviceName();
         if (previousName == deviceName) {
-            return emptyBox();
+            return box("");
         }
         if (previousName != undefined) {
             return failure(
@@ -51,7 +51,7 @@ export const deviceChooser = (
                     break;
             }
         }
-        return emptyBox();
+        return box("");
     };
 
     const deviceDirective: StringDirective = {

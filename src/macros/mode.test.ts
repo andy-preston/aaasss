@@ -11,8 +11,7 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
     const system = systemUnderTest();
     assertSuccess(
-        system.macros.macroDirective.body("aMacro", []),
-        undefined
+        system.macros.macroDirective.body("aMacro", []), ""
     );
     assertFailure(
         system.macros.macroDirective.body("anotherOne", []),
@@ -24,21 +23,17 @@ Deno.test("Multiple macros can be defined", () => {
     const system = systemUnderTest();
 
     assertSuccess(
-        system.macros.macroDirective.body("aMacro", []),
-        undefined
+        system.macros.macroDirective.body("aMacro", []), ""
     );
     assertSuccess(
-        system.macros.endDirective.body(),
-        undefined
+        system.macros.endDirective.body(), ""
     );
 
     assertSuccess(
-        system.macros.macroDirective.body("anotherOne", []),
-        undefined
+        system.macros.macroDirective.body("anotherOne", []), ""
     );
     assertSuccess(
-        system.macros.endDirective.body(),
-        undefined
+        system.macros.endDirective.body(), ""
     );
 });
 

@@ -1,16 +1,14 @@
 import { assert, assertFalse, assertEquals, assertInstanceOf } from "assert";
-import { assertFailure, assertSuccess } from "../failure/testing.ts";
+import { directiveFunction } from "../directives/directive-function.ts";
 import { type Failure } from "../failure/failure-or-box.ts";
+import { assertFailure, assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
 Deno.test("Including a file doesn't return anything", () => {
     const irrelevantButRealFile = "deno.json";
     const aFileStack = fileStack(defaultReaderMethod, "");
-    assertSuccess(
-        aFileStack.includeDirective.body(irrelevantButRealFile),
-        undefined
-    );
+    assertSuccess(aFileStack.includeDirective.body(irrelevantButRealFile), "");
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
@@ -26,16 +24,13 @@ Deno.test("Including a non existant file returns a failure", () => {
     );
 });
 
-/*
 Deno.test("Including an 'irrational' fileName returns a failure", () => {
     const aFileStack = fileStack(defaultReaderMethod, "");
-    const result = aFileStack.includeDirective.body(
-        [1, 2, 3] as unknown as string
+    const include = directiveFunction("testing", aFileStack.includeDirective);
+    assertFailureWithExtra(
+        include([1, 2, 3]), "parameter_type", ["string", "0: array"]
     );
-    assertFailure(result, "type_string");
-    assertEquals((result as Failure).extra, ["1,2,3"]);
 });
-*/
 
 Deno.test("Reading a file yields multiple lines with the file contents", () => {
     // cSpell:words plip wibble

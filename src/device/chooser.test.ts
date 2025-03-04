@@ -1,13 +1,14 @@
+import { directiveFunction } from "../directives/directive-function.ts";
 import { assertFailure, assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
 Deno.test("You can choose any device that has a definition file", () => {
     for (const deviceName of ["AT-Tiny 84", "AT_Tiny 24", "AT.Tiny 44"]) {
         const system = systemUnderTest();
-        assertSuccess(
-            system.deviceChooser.deviceDirective.body(deviceName),
-            undefined
+        const device = directiveFunction(
+            "testing", system.deviceChooser.deviceDirective
         );
+        assertSuccess(device(deviceName), "");
     }
 });
 
@@ -15,14 +16,12 @@ Deno.test("Choosing multiple devices results in failure", () => {
     const firstName = "AT-Tiny 84";
     const secondName = "AT-Tiny 2313";
     const system = systemUnderTest();
-    assertSuccess(
-        system.deviceChooser.deviceDirective.body(firstName),
-        undefined
+    const device = directiveFunction(
+        "testing", system.deviceChooser.deviceDirective
     );
+    assertSuccess(device(firstName), "");
     assertFailureWithExtra(
-        system.deviceChooser.deviceDirective.body(secondName),
-        "device_multiple",
-        [firstName, secondName]
+        device(secondName), "device_multiple", [firstName, secondName]
     );
 });
 
@@ -32,42 +31,40 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
     const firstName = "AT-Tiny 84";
     const secondName = "at tiny 84";
     const system = systemUnderTest();
-    assertSuccess(
-        system.deviceChooser.deviceDirective.body(firstName),
-        undefined
+    const device = directiveFunction(
+        "testing", system.deviceChooser.deviceDirective
     );
+    assertSuccess(device(firstName), "");
     assertFailureWithExtra(
-        system.deviceChooser.deviceDirective.body(secondName),
-        "device_multiple",
-        [firstName, secondName]
+        device(secondName),
+        "device_multiple", [firstName, secondName]
     );
 });
 
 Deno.test("Choosing an non-existant device returns a Failure", () => {
     const system = systemUnderTest();
-    assertFailure(
-        system.deviceChooser.deviceDirective.body("notARealDevice"),
-        "device_notFound"
+    const device = directiveFunction(
+        "testing", system.deviceChooser.deviceDirective
     );
+    assertFailure(device("notARealDevice"), "device_notFound");
 });
 
 Deno.test("The device name must be present and a string", () => {
     const system = systemUnderTest();
-    assertFailureWithExtra(
-        system.jSExpression("device()"),
-        "parameter_count", ["1"]
+    const device = directiveFunction(
+        "testing", system.deviceChooser.deviceDirective
     );
     assertFailureWithExtra(
-        system.jSExpression("device([1, 2, 3])"),
-        "parameter_type", ["string", "0: array"]
+        device(), "parameter_count", ["1"]
     );
     assertFailureWithExtra(
-        system.jSExpression("device(64)"),
-        "parameter_type", ["string", "0: number"]
+        device([1, 2, 3]), "parameter_type", ["string", "0: array"]
     );
     assertFailureWithExtra(
-        system.jSExpression("device(false)"),
-        "parameter_type", ["string", "0: boolean"]
+        device(64), "parameter_type", ["string", "0: number"]
     );
-    assertSuccess(system.jSExpression('device("at tiny 24")'), "");
+    assertFailureWithExtra(
+        device(false), "parameter_type", ["string", "0: boolean"]
+    );
+    assertSuccess(device("at tiny 24"), "");
 });

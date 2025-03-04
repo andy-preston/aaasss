@@ -1,6 +1,6 @@
 import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/data-types.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import { box, emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import { macro, MacroList, MacroParameters, type Macro, type MacroName } from "./data-types.ts";
@@ -34,7 +34,7 @@ export const recording = (
             macroName = newName;
             theMacro = macro(parameters);
             skipFirstLine = true;
-            return emptyBox();
+            return box("");
         }
     };
 
@@ -50,7 +50,7 @@ export const recording = (
                 currentFileName(), currentLineNumber()
             );
             resetState();
-            return emptyBox();
+            return box("");
         }
     };
 

@@ -1,7 +1,6 @@
 import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import { FailureKind } from "../failure/failures.ts";
 
-
 type Expected = Extract<FailureKind, "type_strings" | "type_macroParams">;
 
 const legalTypes: Record<Expected, Array<string>> = {

@@ -1,5 +1,5 @@
 import type { StringDirective } from "../directives/data-types.ts";
-import { box, emptyBox, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource, type LineWithRawSource } from "./line-types.ts";
 
@@ -55,7 +55,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
                 "fileName": fileName,
                 "iterator": fileLineByLine(contents.value)
             });
-            return emptyBox();
+            return box("");
         }
     };
 
