@@ -6,8 +6,6 @@ import type { LineWithTokens } from "../tokens/line-types.ts";
 import { macro, MacroList, MacroParameters, type Macro, type MacroName } from "./data-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 
-type UseMacroMethod = (macroName: string) => void;
-
 export const recording = (
     macros: MacroList,
     symbolTable: SymbolTable,

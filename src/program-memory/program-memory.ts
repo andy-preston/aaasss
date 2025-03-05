@@ -15,7 +15,7 @@ export const programMemory = (
 
     const resetState = () => {
         address = 0;
-    }
+    };
 
     const pastEnd = (newAddress: number) => {
         const bytes = device.numericValue("programMemoryBytes");
@@ -28,26 +28,28 @@ export const programMemory = (
         return newAddress > words
             ? failure(undefined, "programMemory_outOfRange", [`${words}`])
             : emptyBox();
-    }
+    };
+
+    const origin = (newAddress: number) => {
+        const check = validNumeric(newAddress, "type_positive");
+        if (check.which == "failure") {
+            return check;
+        }
+        if (newAddress == 0) {
+            address = 0;
+            return box("");
+        }
+        const tooBig = pastEnd(newAddress);
+        if (tooBig.which == "failure") {
+            return tooBig;
+        }
+        address = newAddress;
+        return box("");
+    };
 
     const originDirective: NumberDirective = {
         "type": "numberDirective",
-        "body": (newAddress: number) => {
-            const check = validNumeric(newAddress, "type_positive");
-            if (check.which == "failure") {
-                return check;
-            }
-            if (newAddress == 0) {
-                address = 0;
-                return box(`${address}`);
-            }
-            const tooBig = pastEnd(newAddress);
-            if (tooBig.which == "failure") {
-                return tooBig;
-            }
-            address = newAddress;
-            return box(`${address}`);
-        }
+        "body": origin
     };
 
     const addressed = (line: LineWithObjectCode) => {
@@ -69,7 +71,7 @@ export const programMemory = (
             0
         )) + address;
 
-        const step = originDirective.body(newAddress);
+        const step = origin(newAddress);
         if (step.which == "failure") {
             newLine.withFailure(step);
         }
