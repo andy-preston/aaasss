@@ -76,5 +76,5 @@ export const testLineWithSource = (
 export const macroFromTable = (symbolTable: SymbolTable, macroName: string) => {
     const fromTable = symbolTable.use(macroName);
     assertEquals(fromTable.type, "functionUseDirective");
-    return (fromTable as FunctionUseDirective).body;
+    return fromTable as FunctionUseDirective;
 };
