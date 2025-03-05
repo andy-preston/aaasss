@@ -1,4 +1,3 @@
-import { parameterList } from "../directives/type-checking.ts";
 import { emptyBox, failure } from "../failure/failure-or-box.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
@@ -7,26 +6,18 @@ import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.
 import { lineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
 
 export const remapping = (macros: MacroList) => {
+
     const parameterMap: Map<MacroName, MacroParameters> = new Map([]);
 
     const parameterSetup = (
         macroName: MacroName, macro: Macro, actualParameters: MacroParameters
     ) => {
-        const checkedParameters = parameterList(
-            actualParameters, "type_macroParams"
-        );
-        if (checkedParameters.which == "failure") {
-            return checkedParameters;
-        }
         if (macro.parameters.length != actualParameters.length) {
             return failure(
                 undefined, "macro_params", [`${macro.parameters.length}`]
             );
         }
-        parameterMap.set(
-            macroName,
-            checkedParameters.value == "undefined" ? [] : actualParameters
-        );
+        parameterMap.set(macroName, actualParameters);
         return emptyBox();
     };
 
