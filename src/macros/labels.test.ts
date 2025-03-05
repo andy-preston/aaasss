@@ -1,24 +1,32 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { assertSuccess } from "../failure/testing.ts";
 import { macroFromTable, systemUnderTest, testLine } from "./testing.ts";
+import { directiveFunction } from "../directives/directive-function.ts";
+
+const irrelevantName = "testing";
 
 Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const system = systemUnderTest();
-    assertSuccess(
-        system.macros.macroDirective.body("testMacro", []), ""
+    const macro = directiveFunction(
+        irrelevantName, system.macros.macroDirective
     );
+    const end = directiveFunction(
+        irrelevantName, system.macros.endDirective
+    );
+
+    assertSuccess(macro("testMacro"), "");
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     const lineWithLabel = system.macros.lines(
         testLine("", 0, "aLabel", "", [])
     );
     assertFalse(lineWithLabel.failed());
-    assertSuccess(
-        system.macros.endDirective.body(), ""
-    );
+    assertSuccess(end(), "");
 
-    const testMacro = macroFromTable(system.symbolTable, "testMacro");
-    assertSuccess(testMacro("testMacro", []), "");
+    const testMacro = directiveFunction(
+        "testMacro", macroFromTable(system.symbolTable, "testMacro")
+    );
+    assertSuccess(testMacro(), "");
     const mockCount = 2;
 
     const line = system.macros.lines(
@@ -29,21 +37,26 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
 
 Deno.test("But label operands from outside the macro are left as is", () => {
     const system = systemUnderTest();
-    assertSuccess(
-        system.macros.macroDirective.body("testMacro", []), ""
+    const macro = directiveFunction(
+        irrelevantName, system.macros.macroDirective
     );
+    const end = directiveFunction(
+        irrelevantName, system.macros.endDirective
+    );
+
+    assertSuccess(macro("testMacro"), "");
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     const lineWithLabel = system.macros.lines(
         testLine("", 0, "aLabel", "", [])
     );
     assertFalse(lineWithLabel.failed());
-    assertSuccess(
-        system.macros.endDirective.body(), ""
-    );
+    assertSuccess(end(), "");
 
-    const testMacro = macroFromTable(system.symbolTable, "testMacro");
-    assertSuccess(testMacro("testMacro", []), "");
+    const testMacro = directiveFunction(
+        "testMacro", macroFromTable(system.symbolTable, "testMacro")
+    );
+    assertSuccess(testMacro(), "");
     const mockCount = 2;
     const line = system.macros.lines(
         testLine("testMacro", mockCount, "", "JMP", ["differentLabel"])
@@ -53,17 +66,22 @@ Deno.test("But label operands from outside the macro are left as is", () => {
 
 Deno.test("Actual labels in macros are also expanded on playback", () => {
     const system = systemUnderTest();
-    assertSuccess(
-        system.macros.macroDirective.body("testMacro", []), ""
+    const macro = directiveFunction(
+        irrelevantName, system.macros.macroDirective
     );
-    const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
-    assert(skipFirstLine.isRecordingMacro);
-    assertSuccess(
-        system.macros.endDirective.body(), ""
+    const end = directiveFunction(
+        irrelevantName, system.macros.endDirective
     );
 
-    const testMacro = macroFromTable(system.symbolTable, "testMacro");
-    assertSuccess(testMacro("testMacro", []), "");
+    assertSuccess(macro("testMacro"), "");
+    const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
+    assert(skipFirstLine.isRecordingMacro);
+    assertSuccess(end(), "");
+
+    const testMacro = directiveFunction(
+        "testMacro", macroFromTable(system.symbolTable, "testMacro")
+    );
+    assertSuccess(testMacro(), "");
     const mockCount = 2;
     const line = system.macros.lines(
         testLine("testMacro", mockCount, "aLabel", "TST", [])

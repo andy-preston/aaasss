@@ -4,6 +4,8 @@ import { directiveFunction } from "../directives/directive-function.ts";
 import { assertFailure, assertSuccess } from "../failure/testing.ts";
 import { dataMemory } from "./data-memory.ts";
 
+const irrelevantName = "testing";
+
 const systemUnderTest = () => {
     const currentPass = pass();
     const device = deviceProperties();
@@ -19,7 +21,7 @@ const systemUnderTest = () => {
 Deno.test("A device must be selected before SRAM can be allocated", () => {
     const system = systemUnderTest();
     const alloc = directiveFunction(
-        "testing", system.dataMemory.allocDirective
+        irrelevantName, system.dataMemory.allocDirective
     );
     system.pass.second();
     assertFailure(alloc(23), "ram_sizeUnknown");
@@ -31,7 +33,7 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
     system.device.property("ramStart", "00");
     system.device.property("ramEnd", "F0");
     const allocStack = directiveFunction(
-        "testing", system.dataMemory.allocStackDirective
+        irrelevantName, system.dataMemory.allocStackDirective
     );
     system.pass.second();
     assertFailure(allocStack(0xf2), "ram_outOfRange");
@@ -43,7 +45,7 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
     system.device.property("ramStart", "00");
     system.device.property("ramEnd", "F0");
     const allocStack = directiveFunction(
-        "testing", system.dataMemory.allocStackDirective
+        irrelevantName, system.dataMemory.allocStackDirective
     );
     system.pass.second();
     assertFailure(allocStack(0xf2), "ram_outOfRange");
@@ -55,7 +57,7 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
     system.device.property("ramStart", "00");
     system.device.property("ramEnd", "FF");
     const alloc = directiveFunction(
-        "testing", system.dataMemory.allocDirective
+        irrelevantName, system.dataMemory.allocDirective
     );
     system.pass.second();
     assertSuccess(alloc(25), "0");
@@ -69,10 +71,10 @@ Deno.test("Stack and memory allocations both decrease the available SRAM", () =>
     system.device.property("ramStart", "00");
     system.device.property("ramEnd", "1F");
     const alloc = directiveFunction(
-        "testing", system.dataMemory.allocDirective
+        irrelevantName, system.dataMemory.allocDirective
     );
     const allocStack = directiveFunction(
-        "testing", system.dataMemory.allocStackDirective
+        irrelevantName, system.dataMemory.allocStackDirective
     );
     system.pass.second();
     assertSuccess(alloc(25), "0");
@@ -86,7 +88,7 @@ Deno.test("Allocations don't get repeated on the second pass", () => {
     system.device.property("ramStart", "00");
     system.device.property("ramEnd", "FF");
     const alloc = directiveFunction(
-        "testing", system.dataMemory.allocDirective
+        irrelevantName, system.dataMemory.allocDirective
     );
     assertSuccess(alloc(25), "0");
     assertSuccess(alloc(25), "25");

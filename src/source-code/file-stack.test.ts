@@ -5,16 +5,24 @@ import { assertFailure, assertFailureWithExtra, assertSuccess } from "../failure
 import { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
+const irrelevantName = "testing";
+
 Deno.test("Including a file doesn't return anything", () => {
     const irrelevantButRealFile = "deno.json";
     const aFileStack = fileStack(defaultReaderMethod, "");
-    assertSuccess(aFileStack.includeDirective.body(irrelevantButRealFile), "");
+    const include = directiveFunction(
+        irrelevantName, aFileStack.includeDirective
+    );
+    assertSuccess(include(irrelevantButRealFile), "");
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
     const fileName = "does-not-exist.test";
     const aFileStack = fileStack(defaultReaderMethod, "");
-    const result = aFileStack.includeDirective.body(fileName);
+    const include = directiveFunction(
+        irrelevantName, aFileStack.includeDirective
+    );
+    const result = include(fileName);
     assertFailure(result, "file_notFound");
     const failure = result as Failure;
     assertInstanceOf(failure.extra, Deno.errors.NotFound);
@@ -26,7 +34,9 @@ Deno.test("Including a non existant file returns a failure", () => {
 
 Deno.test("Including an 'irrational' fileName returns a failure", () => {
     const aFileStack = fileStack(defaultReaderMethod, "");
-    const include = directiveFunction("testing", aFileStack.includeDirective);
+    const include = directiveFunction(
+        irrelevantName, aFileStack.includeDirective
+    );
     assertFailureWithExtra(
         include([1, 2, 3]), "parameter_type", ["string", "0: array"]
     );
@@ -82,16 +92,16 @@ Deno.test("An included file is inserted into the source stream", () => {
         [1, 2, 3].map(line => `${path} ${line}`);
 
     const aFileStack = fileStack(mockReader, "top.file");
+    const include = directiveFunction(
+        irrelevantName, aFileStack.includeDirective
+    );
     const lines = aFileStack.lines();
 
     assertEquals("top.file 1", lines.next().value!.rawSource);
-    aFileStack.includeDirective.body("plop.txt");
+    assertSuccess(include("plop.txt"), "");
     assertEquals([
-        "plop.txt 1",
-        "plop.txt 2",
-        "plop.txt 3",
-        "top.file 2",
-        "top.file 3",
+        "plop.txt 1", "plop.txt 2", "plop.txt 3",
+        "top.file 2", "top.file 3",
     ], lines.toArray().map(line => line.rawSource));
 });
 
