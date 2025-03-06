@@ -52,5 +52,6 @@ export const dataDirect = (
         ]);
         return lineWithObjectCode(line, code);
     };
+
     return mapping.has(line.mnemonic) ? codeGenerator : undefined;
 };

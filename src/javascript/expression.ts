@@ -1,21 +1,42 @@
 import type { DirectiveSymbol } from "../directives/data-types.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { box, failure, isFailureOrBox, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
 import type { SymbolValue } from "../symbol-table/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-const trailingSemicolons = /;*$/;
+const isFailure = (it: object): it is Failure =>
+    Object.hasOwn(it, "which") && Object.hasOwn(it, "kind");
+
+const isBox = (it: object): it is Box<unknown> =>
+    Object.hasOwn(it, "which") && Object.hasOwn(it, "value");
+
+const isTidyBox = (it: object): it is Box<string | number> =>
+    isBox(it) && (typeof it.value == "string" || typeof it.value == "number");
+
+const mappedResult = (result: unknown): Box<string> | Failure =>
+    typeof result == "string" || typeof result == "number"
+        ? box(`${result}`)
+        : !(result instanceof Object)
+        ? box("") // eating unwanted non-objects (including booleans)
+        : isFailure(result)
+        ? result
+        : isTidyBox(result)
+        ? box(`${result.value}`)
+        : box(""); // eating unwanted objects (including boxed booleans)
+
 const discreteTypes = ["string", "number", "directive"];
 
-export const jSExpression = (symbolTable: SymbolTable) => {
-    const typeBridge = (symbolName: string, symbol: SymbolValue) => {
-        return discreteTypes.includes(symbol.type)
-            ? symbol.body
-            : symbol.type.endsWith("Directive")
-            ? directiveFunction(symbolName, symbol as DirectiveSymbol)
-            : undefined;
-    };
+const mappedCall = (symbolName: string, symbol: SymbolValue) => {
+    return discreteTypes.includes(symbol.type)
+        ? symbol.body
+        : symbol.type.endsWith("Directive")
+        ? directiveFunction(symbolName, symbol as DirectiveSymbol)
+        : undefined;
+};
 
+const trailingSemicolons = /;*$/;
+
+export const jSExpression = (symbolTable: SymbolTable) => {
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
             return symbolName in globalThis || typeof symbolName != "string"
@@ -24,7 +45,7 @@ export const jSExpression = (symbolTable: SymbolTable) => {
         },
         get(_target: object, symbolName: string) {
             return typeof symbolName == "string"
-                ? typeBridge(symbolName, symbolTable.use(symbolName))
+                ? mappedCall(symbolName, symbolTable.use(symbolName))
                 : undefined;
         },
         set() {
@@ -32,7 +53,8 @@ export const jSExpression = (symbolTable: SymbolTable) => {
         }
     });
 
-    const functionCall = (functionBody: string) => {
+    const functionCall = (jsSource: string): unknown => {
+        const functionBody = `with (this) { return eval("${jsSource}"); }`;
         try {
             return new Function(functionBody).call(executionContext);
         } catch (error) {
@@ -43,23 +65,15 @@ export const jSExpression = (symbolTable: SymbolTable) => {
         }
     };
 
-    const boxed = (value: unknown) =>
-        value == undefined ? box("") : box(`${value}`.trim());
-
-    const reBox = (result: Failure | Box<unknown>) =>
-        result.which == "failure" ? result : boxed(result.value);
-
     return (jsSource: string): Box<string> | Failure => {
         const clean = jsSource
-            .replaceAll("\n", " ").replaceAll('"', '\\\"')
-            .trim().replace(trailingSemicolons, "").trim();
-        if (clean == "") {
-            return box("");
-        }
-        const result = functionCall(
-            `with (this) { return eval("${clean}"); }`
-        );
-        return isFailureOrBox(result) ? reBox(result) : boxed(result);
+            .replaceAll("\n", " ")
+            .replaceAll('"', '\\\"')
+            .trim()
+            .replace(trailingSemicolons, "")
+            .trim();
+
+        return clean == "" ? box("") : mappedResult(functionCall(clean));
     };
 };
 

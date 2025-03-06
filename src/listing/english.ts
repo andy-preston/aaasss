@@ -76,9 +76,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "type_bytes": (_line: LineWithAddress) => [
         "Should be a string or an array of byte values"
     ],
-    "type_macroParams": (_line: LineWithAddress) => [
-        "Should be an array of numbers &/or strings"
-    ],
     "type_number": (_line: LineWithAddress) => [""],
     "type_nybble": (_line: LineWithAddress) => [""],
     "type_positive": (_line: LineWithAddress) => [""],
