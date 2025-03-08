@@ -1,5 +1,5 @@
 import { booleanBag, numberBag, stringBag } from "../assembler/bags.ts";
-import { failure, bagOfFailures, type StringOrFailures, type NumberOrFailures, type BooleanOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, type StringOrFailures, type NumberOrFailures, type BooleanOrFailures } from "../failure/bags.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
@@ -20,11 +20,11 @@ export const deviceProperties = () => {
 
     const value = (symbolName: string): StringOrFailures => {
         if (!symbols.has("deviceName")) {
-            return bagOfFailures([failure(undefined, "device_notSelected", [symbolName])]);
+            return bagOfFailures([oldFailure(undefined, "device_notSelected", [symbolName])]);
         }
         if (!symbols.has(symbolName)) {
             return bagOfFailures([
-                failure(undefined, "symbol_notFound", [
+                oldFailure(undefined , "symbol_notFound", [
                     symbols.get("deviceName") as string,
                     symbolName
                 ])
@@ -40,7 +40,7 @@ export const deviceProperties = () => {
         }
         if (!theValue.it.match(/^[0-9A-F]*$/)) {
             return bagOfFailures([
-                failure(undefined, "device_internalFormat", [
+                oldFailure(undefined , "device_internalFormat", [
                     symbols.get("deviceName")!,
                     symbolName,
                     theValue.it
@@ -54,17 +54,17 @@ export const deviceProperties = () => {
         symbols.has("deviceName")
             ? booleanBag(reducedCore)
             : bagOfFailures([
-                failure(undefined, "device_notSelected", undefined)
+                oldFailure(undefined , "device_notSelected", undefined)
             ]);
 
     const isUnsupported = (mnemonic: Mnemonic): BooleanOrFailures =>
         !symbols.has("deviceName")
             ? bagOfFailures([
-                failure(undefined, "mnemonic_supportedUnknown", undefined)
+                oldFailure(undefined , "mnemonic_supportedUnknown", undefined)
             ])
             : unsupported.isUnsupported(mnemonic)
             ? bagOfFailures([
-                failure(undefined, "mnemonic_notSupported", undefined)
+                oldFailure(undefined , "mnemonic_notSupported", undefined)
             ])
             : booleanBag(false);
 

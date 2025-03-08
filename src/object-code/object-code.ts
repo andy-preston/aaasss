@@ -1,4 +1,4 @@
-import { failure } from "../failure/bags.ts";
+import { oldFailure } from "../failure/bags.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import { instructionEncoderList } from "./instruction-encoder-list.ts";
 import { lineWithObjectCode, type LineWithPokedBytes, type LineWithObjectCode, lineWithPokedBytes } from "./line-types.ts";
@@ -43,7 +43,7 @@ export const objectCode = (
     const generatedCode = addressingMode(intermediate);
     if (generatedCode == undefined) {
         return emptyLine(intermediate).withFailure(
-            failure(undefined, "mnemonic_unknown", undefined)
+            oldFailure(undefined , "mnemonic_unknown", undefined)
         );
     }
 

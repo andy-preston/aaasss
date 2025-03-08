@@ -1,4 +1,4 @@
-import { failure } from "../failure/bags.ts";
+import { oldFailure } from "../failure/bags.ts";
 import {
     operands, type OperandIndex, type SymbolicOperands
 } from "../operands/data-types.ts"
@@ -16,14 +16,14 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
     if (invalidLabel(label)) {
-        line.withFailure(failure(undefined, "syntax_invalidLabel", undefined));
+        line.withFailure({ "kind": "syntax_invalidLabel" });
     }
 
     const [mnemonic, operandsText] = splitSource("before", " ", withoutLabel);
 
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
-        line.withFailure(failure(
+        line.withFailure(oldFailure(
             undefined, "operand_wrongCount", [`${operandsList.length}`]
         ));
     }
@@ -34,17 +34,17 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
         if (indexing == "") {
             fullOperands.push(operand);
         } else if (indexing == "X+") {
-            line.withFailure(failure(
+            line.withFailure(oldFailure(
                 fullOperands.length as OperandIndex, "operand_offsetX", undefined
             ));
             fullOperands.push(operand);
         } else if (fullOperands.length == 0 && mnemonic != "STD") {
-            line.withFailure(failure(
+            line.withFailure(oldFailure(
                 fullOperands.length as OperandIndex, "operand_offsetNotStd", undefined
             ));
             fullOperands.push(operand);
         } else if (fullOperands.length == 1 && mnemonic != "LDD") {
-            line.withFailure(failure(
+            line.withFailure(oldFailure(
                 fullOperands.length as OperandIndex, "operand_offsetNotLdd", undefined
             ));
             fullOperands.push(operand);
@@ -56,7 +56,7 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
 
     for (const [index, operand] of fullOperands.entries()) {
         if (operand == "") {
-            line.withFailure(failure(index as OperandIndex, "operand_blank", undefined));
+            line.withFailure(oldFailure(index as OperandIndex, "operand_blank", undefined));
         }
     }
 

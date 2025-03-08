@@ -1,7 +1,9 @@
-import { assertEquals, assertNotEquals } from "assert";
+import { assert, assertEquals, assertNotEquals } from "assert";
 import type { BooleanBag, NumberBag, StringBag } from "../assembler/bags.ts";
-import type { FailureKind } from "./failures.ts";
-import type { BooleanOrFailures, Failure, BagOfFailures, NumberOrFailures, StringOrFailures } from "./bags.ts";
+import type {
+    FailureKind, BagOfFailures, OldFailure, Failure,
+    BooleanOrFailures, NumberOrFailures, StringOrFailures
+} from "./bags.ts";
 
 export const assertSuccess = (
     actual: StringOrFailures | NumberOrFailures | BooleanOrFailures
@@ -40,5 +42,7 @@ export const assertFailureWithExtra = (
     expectedExtra: Array<string>
 ) => {
     const failure = assertFailureKind(actual, expectedKind);
-    assertEquals(failure!.extra, expectedExtra, "Extra does not match");
+    assert(Object.hasOwn(failure, "extra"), `Failure ${failure.kind} doesn't have extras`);
+    const oldStyle = failure as OldFailure;
+    assertEquals(oldStyle.extra, expectedExtra, "Extra does not match");
 };

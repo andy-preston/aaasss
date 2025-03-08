@@ -1,7 +1,7 @@
 import { emptyBag } from "../assembler/bags.ts";
 import { DataDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { failure, bagOfFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures } from "../failure/bags.ts";
 import type { Code } from "./data-types.ts";
 
 const encoder = new TextEncoder();
@@ -32,7 +32,7 @@ export const pokeBuffer = () => {
             theBuffer.push(grouped.good.splice(0, 4) as unknown as Code);
         }
         return grouped.bad.length > 0
-            ? bagOfFailures([failure(undefined, "type_bytes", badBytes())])
+            ? bagOfFailures([oldFailure(undefined , "type_bytes", badBytes())])
             : emptyBag()
     };
 

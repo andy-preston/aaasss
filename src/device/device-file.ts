@@ -1,6 +1,6 @@
 import { existsSync } from "fs/exists";
 import { stringBag } from "../assembler/bags.ts";
-import { failure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import type { DeviceSpec, RawItems } from "./data-types.ts";
 
 export const defaultDeviceFinder = (deviceName: string): StringOrFailures => {
@@ -8,7 +8,7 @@ export const defaultDeviceFinder = (deviceName: string): StringOrFailures => {
     const baseName = `./devices/${fileName}.json`;
     return existsSync(baseName)
         ? stringBag(baseName)
-        : bagOfFailures([failure(undefined, "device_notFound", undefined)]);
+        : bagOfFailures([oldFailure(undefined , "device_notFound", undefined)]);
 };
 
 export type DeviceFinder = typeof defaultDeviceFinder;

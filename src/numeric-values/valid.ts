@@ -1,5 +1,5 @@
 import { numberBag } from "../assembler/bags.ts";
-import { failure, bagOfFailures, type NumberOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, type NumberOrFailures } from "../failure/bags.ts";
 import type { NumericType } from "./types.ts";
 
 const minMax: Record<NumericType, [number, number | undefined]> = {
@@ -23,7 +23,7 @@ export const validNumeric = (
         && value >= min
         && (max == undefined || value <= max)
         ? numberBag(value as number)
-        : bagOfFailures([failure(undefined, numericType, [
+        : bagOfFailures([oldFailure(undefined , numericType, [
             `${value}`, `${min}`, max == undefined ? "" : `${max}`
         ])]);
 };

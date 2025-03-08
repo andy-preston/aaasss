@@ -1,7 +1,9 @@
 import { assert, assertEquals } from "assert";
+import { numberBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveList } from "../directives/directive-list.ts";
+import type { OldFailure } from "../failure/bags.ts";
 import { assertFailureWithExtra } from "../failure/testing.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
@@ -12,7 +14,6 @@ import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { symbolicToNumeric } from "./symbolic-to-numeric.ts";
 import type { SymbolicOperands } from "./data-types.ts";
-import { numberBag } from "../assembler/bags.ts";
 
 const systemUnderTest = () => {
     const registers = cpuRegisters();
@@ -66,5 +67,5 @@ Deno.test("An uninitialised symbol yields a failure", () => {
     assertFailureWithExtra(failures, "js_error", [
         "ReferenceError", "notDefined is not defined"
     ]);
-    assertEquals(failures[0]!.operand, 0);
+    assertEquals((failures[0] as OldFailure).operand, 0);
 });

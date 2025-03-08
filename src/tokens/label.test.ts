@@ -31,8 +31,6 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
         tokenised.failures().forEach((failure, index) => {
             assertEquals(index, 0);
             assertEquals(failure.kind, "syntax_invalidLabel");
-            assertEquals(failure.operand, undefined);
-            assertEquals(failure.extra, undefined);
         });
     }
     const goodLines = [

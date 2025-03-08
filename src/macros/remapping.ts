@@ -1,5 +1,5 @@
 import { emptyBag } from "../assembler/bags.ts";
-import { failure, bagOfFailures, StringOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, StringOrFailures } from "../failure/bags.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
@@ -14,7 +14,7 @@ export const remapping = (macros: MacroList) => {
         macroName: MacroName, macro: Macro, actualParameters: MacroParameters
     ): StringOrFailures => {
         if (macro.parameters.length != actualParameters.length) {
-            return bagOfFailures([failure(
+            return bagOfFailures([oldFailure(
                 undefined, "macro_params", [`${macro.parameters.length}`]
             )]);
         }

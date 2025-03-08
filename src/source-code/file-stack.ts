@@ -1,7 +1,7 @@
 import { emptyBag, stringsBag } from "../assembler/bags.ts";
 import type { StringDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { failure, bagOfFailures, StringsOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, StringsOrFailures } from "../failure/bags.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource, type LineWithRawSource } from "./line-types.ts";
 
@@ -30,7 +30,9 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         }
         catch (error) {
             if (error instanceof Deno.errors.NotFound) {
-                return bagOfFailures([failure(undefined, "file_notFound", [error.message])]);
+                return bagOfFailures([
+                    { "kind": "file_notFound", "message": error.message }
+                ]);
             }
             throw error;
         }

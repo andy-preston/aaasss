@@ -2,7 +2,7 @@ import { emptyBag, numberBag } from "../assembler/bags.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { failure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
@@ -27,7 +27,7 @@ export const programMemory = (
             );
             if (notSelected != undefined) {
                 bytes.it.push(
-                    failure(undefined, "programMemory_sizeUnknown", undefined)
+                    oldFailure(undefined , "programMemory_sizeUnknown", undefined)
                 )
             }
             return bytes;
@@ -35,7 +35,7 @@ export const programMemory = (
         const words = bytes.it / 2
         return newAddress > words
             ? bagOfFailures([
-                failure(undefined, "programMemory_outOfRange", [`${words}`])
+                oldFailure(undefined , "programMemory_outOfRange", [`${words}`])
             ])
             : emptyBag()
     };

@@ -2,7 +2,7 @@ import { emptyBag } from "../assembler/bags.ts";
 import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { failure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import { macro, MacroList, MacroParameters, type Macro, type MacroName } from "./data-types.ts";
@@ -27,12 +27,12 @@ export const recording = (
     ): DirectiveResult => {
         if (theMacro != undefined) {
             return bagOfFailures([
-                failure(undefined, "macro_multiDefine", [macroName])
+                oldFailure(undefined , "macro_multiDefine", [macroName])
             ]);
         }
         if (symbolTable.has(newName, "withRegisters")) {
             return bagOfFailures([
-                failure(undefined, "macro_name", [newName])
+                oldFailure(undefined , "macro_name", [newName])
             ]);
         }
         macroName = newName;
@@ -48,7 +48,7 @@ export const recording = (
     const end = (): DirectiveResult => {
         if (theMacro == undefined) {
             return bagOfFailures([
-                failure(undefined, "macro_end", undefined)
+                oldFailure(undefined , "macro_end", undefined)
             ]);
         }
         macros.set(macroName, theMacro!);
@@ -76,7 +76,7 @@ export const recording = (
     };
 
     const leftInIllegalState = (): StringOrFailures => isRecording()
-        ? bagOfFailures([failure(undefined, "macro_noEnd", undefined)])
+        ? bagOfFailures([oldFailure(undefined , "macro_noEnd", undefined)])
         : emptyBag()
 
     return {

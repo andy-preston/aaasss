@@ -1,5 +1,5 @@
 import { assert, assertEquals } from "assert";
-import { failure } from "../failure/bags.ts";
+import { oldFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
@@ -30,7 +30,7 @@ const testLineWithFailure = () => {
     const withPoked = lineWithPokedBytes(withOperands, []);
     const withObject = lineWithObjectCode(withPoked, []);
     return lineWithAddress(withObject, 0).withFailure(
-        failure(0, "js_error", undefined)
+        oldFailure(0, "js_error", undefined)
     );
 }
 

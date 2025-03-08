@@ -1,7 +1,7 @@
 import { emptyBag, NumberBag, StringBag, stringBag } from "../assembler/bags.ts";
 import type { BaggedDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { failure, bagOfFailures, BagOfFailures, BagOrFailures, type StringOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, BagOfFailures, BagOrFailures, type StringOrFailures } from "../failure/bags.ts";
 import type { SymbolBag } from "../symbol-table/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
@@ -61,7 +61,7 @@ export const jSExpression = (symbolTable: SymbolTable) => {
         } catch (error) {
             if (error instanceof Error) {
                 return bagOfFailures([
-                    failure(undefined, "js_error", [error.name, error.message])
+                    oldFailure(undefined , "js_error", [error.name, error.message])
                 ]);
             }
             throw error;

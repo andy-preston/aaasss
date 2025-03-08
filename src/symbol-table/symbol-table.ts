@@ -5,7 +5,7 @@ import type { ValueDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { DirectiveList } from "../directives/directive-list.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { failure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { FileName, LineNumber } from "../source-code/data-types.ts";
 import type { SymbolBag } from "./bags.ts";
@@ -36,11 +36,11 @@ export const symbolTable = (
 
     const inOtherLists = (symbolName: string): StringOrFailures =>
         directiveList.has(symbolName)
-            ? bagOfFailures([failure(undefined, "symbol_nameIsDirective", undefined)])
+            ? bagOfFailures([oldFailure(undefined , "symbol_nameIsDirective", undefined)])
             : cpuRegisters.has(symbolName)
-            ? bagOfFailures([failure(undefined, "symbol_nameIsRegister", undefined)])
+            ? bagOfFailures([oldFailure(undefined , "symbol_nameIsRegister", undefined)])
             : deviceProperties.has(symbolName)
-            ? bagOfFailures([failure(undefined, "symbol_alreadyExists", undefined)])
+            ? bagOfFailures([oldFailure(undefined , "symbol_alreadyExists", undefined)])
             :emptyBag();
 
     const add = (
@@ -56,7 +56,7 @@ export const symbolTable = (
             const existing = values.get(symbolName)!.it;
             if (value.it != existing) {
                 return bagOfFailures([
-                    failure(undefined, "symbol_alreadyExists", [`${existing}`])
+                    oldFailure(undefined , "symbol_alreadyExists", [`${existing}`])
                 ]);
             }
         }

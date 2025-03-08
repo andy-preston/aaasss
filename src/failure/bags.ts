@@ -1,28 +1,38 @@
 import type { OperandIndex } from "../operands/data-types.ts";
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
-import type { FailureKind } from "./failures.ts";
+import type { OldFailureKind } from "./failures.ts";
 
-type Extra = Array<string> | undefined;
+export type FileNotFoundFailure = {
+    "kind": "file_notFound", "message": string
+};
 
-export const failure = (
+export type InvalidLabelFailure = {
+    "kind": "syntax_invalidLabel"
+};
+
+export const oldFailure = (
     operand: OperandIndex | undefined,
-    kind: FailureKind,
-    extra: Extra
+    kind: OldFailureKind,
+    extra: Array<string> | undefined
 ) => {
     const onOperand = (index: OperandIndex) => {
         object.operand = index;
         return object;
     }
     const object = {
-        "operand": operand,
-        "onOperand": onOperand,
         "kind": kind,
         "extra": extra,
+        "operand": operand,
+        "onOperand": onOperand
     };
     return object;
 };
+export type OldFailure = Readonly<ReturnType<typeof oldFailure>>;
+export type NewFailure =
+    FileNotFoundFailure | InvalidLabelFailure;
 
-export type Failure = Readonly<ReturnType<typeof failure>>;
+export type Failure = OldFailure | NewFailure;
+export type FailureKind = OldFailureKind | NewFailure["kind"];
 
 export const bagOfFailures = (failures: Array<Failure>) =>
     ({ "type": "failures" as const, "it": failures });

@@ -6,13 +6,25 @@ export const mockFailureMessages = (
 ) => {
     const result: Array<string> = [failure.kind];
 
-    if (failure.operand) {
-        result.push(`(${failure.operand})`);
+    const push = (label: string, value: string) => {
+        if (value != undefined) {
+            result.push(`${label}: ${value}`);
+        }
     }
 
-    return failure.extra instanceof Error
-        ? result.concat([failure.extra.name, failure.extra.message])
-        : failure.extra != undefined
-        ? result.concat(failure.extra)
-        : result;
+    for (const property in failure) {
+        if (!["kind", "onOperand"].includes(property)) {
+            // deno-lint-ignore no-explicit-any
+            const value = (failure as any)[property];
+            if (Array.isArray(value)) {
+                // deno-lint-ignore no-explicit-any
+                for (const [index, item] of (value as Array<any>).entries()) {
+                    push(`${property}[${index}]`, item);
+                }
+            } else {
+                push(property, value);
+            }
+        }
+    }
+    return result;
 };

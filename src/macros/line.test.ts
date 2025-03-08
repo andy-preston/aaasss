@@ -1,7 +1,7 @@
 import { assert, assertEquals, assertNotEquals } from "assert";
 import { assertSuccess } from "../failure/testing.ts";
 import { macroFromTable, systemUnderTest, testLine, testLineWithSource } from "./testing.ts";
-import { failure } from "../failure/bags.ts";
+import { oldFailure } from "../failure/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 
 const testLines: Array<[string, string]> = [
@@ -101,7 +101,7 @@ Deno.test("Lines with failures are not recorded in the macro", () => {
     assert(skipFirstLine.isRecordingMacro);
 
     const failingLine = testLineWithSource("I have failed!", "", "", []);
-    failingLine.withFailure(failure(undefined, "type_positive", ["negative"]));
+    failingLine.withFailure(oldFailure(undefined , "type_positive", ["negative"]));
     system.macros.lines(failingLine);
     system.macros.lines(testLineWithSource("OK!", "", "", []));
     assertSuccess(end());

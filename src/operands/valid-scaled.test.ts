@@ -1,13 +1,14 @@
-import { assertEquals } from "assert/equals";
+import { assert, assertEquals, assertFalse } from "assert";
+import { assertFailureWithExtra } from "../failure/testing.ts";
+import type { OldFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
-import { NumericType } from "../numeric-values/types.ts";
+import type { NumericType } from "../numeric-values/types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import type { NumericOperand, NumericOperands, OperandTypes, SymbolicOperands } from "./data-types.ts";
 import { lineWithOperands } from "./line-types.ts";
-import { Requirements, validScaledOperands } from "./valid-scaled.ts";
-import { assert, assertFalse } from "assert";
+import { validScaledOperands, type Requirements } from "./valid-scaled.ts";
 
 const testLine = (
     symbolicOperands: SymbolicOperands,
@@ -39,9 +40,8 @@ Deno.test("The number of operands much match", () => {
     assertEquals(result, [0, 0, 0]);
     const failures = line.failures().toArray();
     assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.operand, undefined);
-    assertEquals(failures[0]!.kind, "operand_wrongCount");
-    assertEquals(failures[0]!.extra, ["3"]);
+    assertFailureWithExtra(failures, "operand_wrongCount", ["3"]);
+    assertEquals((failures[0] as OldFailure).operand, undefined);
 });
 
 Deno.test("The required operand type must match the actual operand types", () => {
@@ -75,9 +75,10 @@ Deno.test("If they don't match the line is marked with a failure", () => {
     const failures = line.failures().toArray();
     assertEquals(failures.length, 2);
     failures.forEach((failure, index) => {
-        assertEquals(failure.operand, index);
         assertEquals(failure.kind, "operand_wrongType");
-        assertEquals(failure.extra, [requirements[index]![0]]);
+        const oldStyle = failure as OldFailure;
+        assertEquals(oldStyle.operand, index);
+        assertEquals(oldStyle.extra, [requirements[index]![0]]);
     });
 });
 
@@ -124,9 +125,10 @@ Deno.test("If numeric types don't match the line fails", () => {
         assert(line.failed());
         const failures = line.failures().toArray();
         assertEquals(failures.length, 1);
-        assertEquals(failures[0]!.operand, 0);
-        assertEquals(failures[0]!.kind, numericType);
-        const extras = failures[0]!.extra as Array<string>;
+        const oldStyle = failures[0] as OldFailure;
+        assertEquals(oldStyle.kind, numericType);
+        assertEquals(oldStyle.operand, 0);
+        const extras = oldStyle.extra as Array<string>;
         assert(Array.isArray(extras));
         assertEquals(extras.length, 3);
         assertEquals(extras[0], `${value}`);

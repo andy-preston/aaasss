@@ -2,7 +2,7 @@ import { numberBag, stringBag, type NumberBag } from "../assembler/bags.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { failure, bagOfFailures, type Failure, type NumberOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, type Failure, type NumberOrFailures } from "../failure/bags.ts";
 
 export const dataMemory = (device: DevicePropertiesInterface) => {
     let stack = 0;
@@ -25,13 +25,13 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
             ramEnd.type == "failures" ? ramEnd.it : []
         );
         if (failures.length > 0) {
-            failures.push(failure(undefined, "ram_sizeUnknown", undefined))
+            failures.push(oldFailure(undefined , "ram_sizeUnknown", undefined))
             return bagOfFailures(failures);
         };
 
         const address = (ramStart as NumberBag).it + plusBytes;
         return address > (ramEnd as NumberBag).it
-            ? bagOfFailures([failure(undefined, "ram_outOfRange", [`${address}`])])
+            ? bagOfFailures([oldFailure(undefined , "ram_outOfRange", [`${address}`])])
             : numberBag(address);
     };
 
@@ -40,7 +40,7 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
         // but you can if you're worried that your RAM allocations might eat up
         // all the space.
         if (stack != 0) {
-            return bagOfFailures([failure(undefined, "ram_stackAllocated", [`${stack}`])]);
+            return bagOfFailures([oldFailure(undefined , "ram_stackAllocated", [`${stack}`])]);
         }
         const check = ramAddress(newAllocationSize(bytes));
         if (check.type == "failures") {

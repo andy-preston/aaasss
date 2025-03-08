@@ -1,4 +1,4 @@
-import type { FailureKind } from "../failure/failures.ts";
+import type { FailureKind } from "../failure/bags.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FailureMessage } from "./messages.ts";
 
