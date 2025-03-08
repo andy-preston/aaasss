@@ -1,7 +1,7 @@
-import type { Box, Failure } from "../failure/failure-or-box.ts";
+import type { StringOrFailures } from "./bags.ts";
 import { LineWithFailures } from "./line-types.ts";
 
-export type IllegalStateCallback = () => Box<undefined> | Failure;
+export type IllegalStateCallback = () => StringOrFailures;
 
 export const illegalStateFailures = () => {
     const callbacks: Array<IllegalStateCallback> = [];
@@ -13,8 +13,8 @@ export const illegalStateFailures = () => {
     const check = (line: LineWithFailures) => {
         callbacks.forEach((callback) => {
             const state = callback();
-            if (state.which == "failure") {
-                line.withFailure(state);
+            if (state.type == "failures") {
+                line.withFailures(state.it);
             }
         });
     };

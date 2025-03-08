@@ -1,4 +1,5 @@
-import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { numberBag } from "../assembler/bags.ts";
+import { failure, bagOfFailures, type NumberOrFailures } from "../failure/bags.ts";
 import type { NumericType } from "./types.ts";
 
 const minMax: Record<NumericType, [number, number | undefined]> = {
@@ -15,15 +16,15 @@ const minMax: Record<NumericType, [number, number | undefined]> = {
 
 export const validNumeric = (
     value: unknown, numericType: NumericType
-): Box<number> | Failure => {
+): NumberOrFailures => {
     const [min, max] = minMax[numericType];
     return typeof value == "number"
         && Number.parseInt(`${value}`) == value
         && value >= min
         && (max == undefined || value <= max)
-        ? box(value as number)
-        : failure(undefined, numericType, [
+        ? numberBag(value as number)
+        : bagOfFailures([failure(undefined, numericType, [
             `${value}`, `${min}`, max == undefined ? "" : `${max}`
-        ]);
+        ])]);
 };
 

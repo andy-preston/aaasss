@@ -1,5 +1,6 @@
 import { directiveFunction } from "../directives/directive-function.ts";
-import { assertFailure, assertSuccess } from "../failure/testing.ts";
+import { extractedFailures } from "../failure/bags.ts";
+import { assertFailureKind, assertFailures, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -10,8 +11,10 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
         irrelevantName, system.macros.macroDirective
     );
 
-    assertSuccess(macro("plop"), "");
-    assertFailure(system.macros.leftInIllegalState(), "macro_noEnd");
+    assertSuccess(macro("plop"));
+    const result = system.macros.leftInIllegalState();
+    assertFailures(result);
+    assertFailureKind(extractedFailures(result), "macro_noEnd");
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
@@ -20,8 +23,10 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
         irrelevantName, system.macros.macroDirective
     );
 
-    assertSuccess(macro("aMacro"), "");
-    assertFailure(macro("anotherOne"), "macro_multiDefine");
+    assertSuccess(macro("aMacro"));
+    const result = macro("anotherOne");
+    assertFailures(result);
+    assertFailureKind(extractedFailures(result), "macro_multiDefine");
 });
 
 Deno.test("Multiple macros can be defined", () => {
@@ -33,11 +38,10 @@ Deno.test("Multiple macros can be defined", () => {
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("aMacro"), "");
-    assertSuccess(end(), "");
-
-    assertSuccess(macro("anotherOne"), "");
-    assertSuccess(end(), "");
+    for (const macroName of ["aMacro", "anotherOne", "yetAnotherOne"]) {
+        assertSuccess(macro(macroName));
+        assertSuccess(end());
+    };
 });
 
 Deno.test("You can't end a macro definition if one isn't being defined", () => {
@@ -45,5 +49,8 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
     const end = directiveFunction(
         irrelevantName, system.macros.endDirective
     );
-    assertFailure(end(), "macro_end");
+
+    const result = end();
+    assertFailures(result);
+    assertFailureKind(extractedFailures(result), "macro_end");
 });

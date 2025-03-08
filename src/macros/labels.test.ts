@@ -14,19 +14,19 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("testMacro"), "");
+    assertSuccess(macro("testMacro"));
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     const lineWithLabel = system.macros.lines(
         testLine("", 0, "aLabel", "", [])
     );
     assertFalse(lineWithLabel.failed());
-    assertSuccess(end(), "");
+    assertSuccess(end());
 
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
-    assertSuccess(testMacro(), "");
+    assertSuccess(testMacro());
     const mockCount = 2;
 
     const line = system.macros.lines(
@@ -44,19 +44,19 @@ Deno.test("But label operands from outside the macro are left as is", () => {
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("testMacro"), "");
+    assertSuccess(macro("testMacro"));
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
     const lineWithLabel = system.macros.lines(
         testLine("", 0, "aLabel", "", [])
     );
     assertFalse(lineWithLabel.failed());
-    assertSuccess(end(), "");
+    assertSuccess(end());
 
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
-    assertSuccess(testMacro(), "");
+    assertSuccess(testMacro());
     const mockCount = 2;
     const line = system.macros.lines(
         testLine("testMacro", mockCount, "", "JMP", ["differentLabel"])
@@ -73,15 +73,15 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("testMacro"), "");
+    assertSuccess(macro("testMacro"));
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
     assert(skipFirstLine.isRecordingMacro);
-    assertSuccess(end(), "");
+    assertSuccess(end());
 
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
-    assertSuccess(testMacro(), "");
+    assertSuccess(testMacro());
     const mockCount = 2;
     const line = system.macros.lines(
         testLine("testMacro", mockCount, "aLabel", "TST", [])

@@ -1,11 +1,12 @@
-import { assertEquals } from "assert/equals";
+import { assertEquals } from "assert";
+import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
-import type { VoidDirective } from "../directives/data-types.ts";
+import type { VoidDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { directiveList } from "../directives/directive-list.ts";
-import { box } from "../failure/failure-or-box.ts";
-import { assertFailure, assertSuccess } from "../failure/testing.ts";
+import { extractedFailures } from "../failure/bags.ts";
+import { assertFailureKind, assertFailures, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "./symbol-table.ts";
 
@@ -34,11 +35,8 @@ Deno.test("A symbol can be defined and accessed", () => {
         irrelevantName, system.symbolTable.defineDirective
     );
 
-    assertSuccess(define("plop", 57), "");
-    assertEquals(
-        system.symbolTable.use("plop"),
-        { "type": "number", "body": 57 }
-    );
+    assertSuccess(define("plop", 57));
+    assertEquals(system.symbolTable.use("plop"), numberBag(57));
 });
 
 Deno.test("A symbol can only be redefined if it's value has not changed", () => {
@@ -47,15 +45,15 @@ Deno.test("A symbol can only be redefined if it's value has not changed", () => 
         irrelevantName, system.symbolTable.defineDirective
     );
 
-    assertSuccess(define("plop", 57), "");
-    assertEquals(
-        system.symbolTable.use("plop"),
-        { "type": "number", "body": 57 }
-    );
+    assertSuccess(define("plop", 57));
+    assertEquals(system.symbolTable.use("plop"), numberBag(57));
 
     system.pass.second();
-    assertSuccess(define("plop", 57), "");
-    assertFailure(define("plop", 75), "symbol_alreadyExists");
+    assertSuccess(define("plop", 57));
+
+    const result = define("plop", 75);
+    assertFailures(result);
+    assertFailureKind(extractedFailures(result), "symbol_alreadyExists");
 });
 
 Deno.test("A symbol can't be defined with the same name as a directive", () => {
@@ -65,18 +63,18 @@ Deno.test("A symbol can't be defined with the same name as a directive", () => {
     );
 
     system.directiveList.includes("redefineMe", {
-        "type": "voidDirective",
-        "body": () => box("")
+        "type": "voidDirective", "it": () => emptyBag()
     });
-    assertFailure(define("redefineMe", 57), "symbol_nameIsDirective");
+    const result = define("redefineMe", 57);
+    assertFailures(result);
+    assertFailureKind(extractedFailures(result), "symbol_nameIsDirective");
 });
 
 Deno.test("A symbol is returned but not counted if it's a directive", () => {
     const system = systemUnderTest();
 
     const fakeDirective: VoidDirective = {
-        "type": "voidDirective",
-        "body": () => box("")
+        "type": "voidDirective", "it": () => emptyBag()
     };
     system.directiveList.includes("findMe", fakeDirective);
     assertEquals(system.symbolTable.use("findMe"), fakeDirective);
@@ -90,7 +88,9 @@ Deno.test("A symbol can't be defined with the same name as a register", () => {
     );
 
     system.cpuRegisters.initialise(false);
-    assertFailure(define("R8", 8), "symbol_nameIsRegister");
+    const result = define("R8", 8);
+    assertFailures(result);
+    assertFailureKind(extractedFailures(result), "symbol_nameIsRegister");
 });
 
 Deno.test("A symbol is returned and counted if it's a register", () => {
@@ -98,14 +98,8 @@ Deno.test("A symbol is returned and counted if it's a register", () => {
     system.cpuRegisters.initialise(false);
 
     for (const expectedCount of [1, 2, 3]) {
-        assertEquals(
-            system.symbolTable.use("R3"),
-            { "type": "number", "body": 3 }
-        );
-        assertEquals(
-            system.symbolTable.count("R3"),
-            expectedCount
-        );
+        assertEquals(system.symbolTable.use("R3"), numberBag(3));
+        assertEquals(system.symbolTable.count("R3"), expectedCount);
     }
 });
 
@@ -114,7 +108,9 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
     const define = directiveFunction(irrelevantName, system.symbolTable.defineDirective);
 
     system.deviceProperties.property("test", "57");
-    assertFailure(define("test", 57), "symbol_alreadyExists");
+    const result = define("test", 57);
+    assertFailures(result);
+    assertFailureKind(extractedFailures(result), "symbol_alreadyExists");
 })
 
 Deno.test("A symbol is returned and counted if it's a device property", () => {
@@ -122,12 +118,9 @@ Deno.test("A symbol is returned and counted if it's a device property", () => {
     system.deviceProperties.property("deviceName", "someDevice");
 
     system.deviceProperties.property("test", "57");
-    assertSuccess(system.deviceProperties.public.value("test"), "57");
+    assertSuccessWith(system.deviceProperties.public.value("test"), "57");
     for (const expectedCount of [1, 2, 3]) {
-        assertEquals(
-            system.symbolTable.use("test"),
-            { "type": "string", "body": "57" }
-        );
+        assertEquals(system.symbolTable.use("test"), stringBag("57"));
         assertEquals(system.symbolTable.count("test"), expectedCount);
     }
 });
@@ -144,10 +137,7 @@ Deno.test("A symbol is returned and counted if it's a CPU register", () => {
     system.cpuRegisters.initialise(false);
 
     for (const expectedCount of [1, 2, 3]) {
-        assertEquals(
-            system.symbolTable.use("R15"),
-            { "type": "number", "body": 15 }
-        );
+        assertEquals(system.symbolTable.use("R15"), numberBag(15));
         assertEquals(system.symbolTable.count("R15"), expectedCount);
     }
 });

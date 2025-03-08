@@ -1,17 +1,18 @@
 import { assert, assertEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
+import { deviceProperties } from "../device/properties.ts";
 import { directiveList } from "../directives/directive-list.ts";
-import { assertFailureWithError } from "../failure/testing.ts";
+import { assertFailureWithExtra } from "../failure/testing.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
-import type { SymbolicOperands } from "./data-types.ts";
 import { symbolicToNumeric } from "./symbolic-to-numeric.ts";
-import { deviceProperties } from "../device/properties.ts";
-import { cpuRegisters } from "../registers/cpu-registers.ts";
+import type { SymbolicOperands } from "./data-types.ts";
+import { numberBag } from "../assembler/bags.ts";
 
 const systemUnderTest = () => {
     const registers = cpuRegisters();
@@ -42,10 +43,7 @@ Deno.test("An expression yields a value", () => {
 Deno.test("A symbol yields a value", () => {
     const system = systemUnderTest();
     system.cpuRegisters.initialise(false);
-    assertEquals(
-        system.symbolTable.use("R7"),
-        { "type": "number", "body": 7 }
-    );
+    assertEquals(system.symbolTable.use("R7"), numberBag(7));
     const result = system.operands(testLine(["R7"]));
     assertEquals(result.numericOperands[0], 7);
     assertEquals(result.operandTypes[0], "register");
@@ -63,14 +61,10 @@ Deno.test("An uninitialised symbol yields a failure", () => {
     const system = systemUnderTest();
     const result = system.operands(testLine(["notDefined"]));
     assert(result.failed());
-    result.failures().forEach((failure, index) => {
-        assertEquals(index, 0);
-        assertFailureWithError(
-            failure,
-            "js_error",
-            ReferenceError,
-            "notDefined is not defined"
-        );
-        assertEquals(failure.operand, 0);
-    });
+    const failures = result.failures().toArray();
+    assertEquals(failures.length, 1);
+    assertFailureWithExtra(failures, "js_error", [
+        "ReferenceError", "notDefined is not defined"
+    ]);
+    assertEquals(failures[0]!.operand, 0);
 });

@@ -1,9 +1,9 @@
-import type { DirectiveSymbol } from "./data-types.ts";
+import type { BaggedDirective } from "./bags.ts";
 
 export const directiveList = () => {
-    const list: Map<string, DirectiveSymbol> = new Map();
+    const list: Map<string, BaggedDirective> = new Map();
 
-    const includes = (symbolName: string, directive: DirectiveSymbol) => {
+    const includes = (symbolName: string, directive: BaggedDirective) => {
         list.set(symbolName, directive);
     };
 

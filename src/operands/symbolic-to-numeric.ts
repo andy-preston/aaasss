@@ -1,4 +1,4 @@
-import { box, type Box, type Failure } from "../failure/failure-or-box.ts";
+import type { NumberOrFailures } from "../failure/bags.ts";
 import type { JsExpression } from "../javascript/expression.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
@@ -9,6 +9,7 @@ import {
     type NumericOperand, type OperandType, type SymbolicOperand,
     type NumericOperands, type OperandTypes, type OperandIndex
 } from "./data-types.ts";
+import { numberBag } from "../assembler/bags.ts";
 
 export const symbolicToNumeric = (
     symbolTable: SymbolTable,
@@ -25,19 +26,19 @@ export const symbolicToNumeric = (
 
     const valueAndType = (
         symbolic: SymbolicOperand
-    ): [Box<number> | Failure, OperandType] => {
+    ): [NumberOrFailures, OperandType] => {
         if (indexMapping.has(symbolic)) {
-            return [box(indexMapping.get(symbolic)!), "index_offset"];
+            return [numberBag(indexMapping.get(symbolic)!), "index_offset"];
         }
         if (cpuRegisters.has(symbolic)) {
-            return [box(symbolTable.use(symbolic).body as number), "register"];
+            return [numberBag(symbolTable.use(symbolic).it as number), "register"];
         }
         const numeric = jsExpression(symbolic);
-        return numeric.which == "failure"
+        return numeric.type == "failures"
             ? [numeric, "failure"]
-            : numeric.value == ""
-            ? [box(0), "number"] // why is blank zero? should be "blank"
-            : [box(parseInt(numeric.value)), "number"]
+            : numeric.it == ""
+            ? [numberBag(0), "number"] // why is blank zero? should be "blank"
+            : [numberBag(parseInt(numeric.it)), "number"]
     };
 
     const actualOperation = (line: LineWithProcessedMacro) => {
@@ -47,11 +48,11 @@ export const symbolicToNumeric = (
         for (const [index, symbolic] of line.symbolicOperands.entries()) {
             const [numeric, operandType] = valueAndType(symbolic);
             operandTypes.push(operandType);
-            if (numeric.which == "failure") {
+            if (numeric.type == "failures") {
                 numericOperands.push(0);
-                line.withFailure(numeric.onOperand(index as OperandIndex));
+                line.withFailure(numeric.it[0]!.onOperand(index as OperandIndex));
             } else {
-                numericOperands.push(numeric.value);
+                numericOperands.push(numeric.it);
             }
         }
         return lineWithOperands(

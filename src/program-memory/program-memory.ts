@@ -1,6 +1,8 @@
+import { emptyBag, numberBag } from "../assembler/bags.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import type { NumberDirective } from "../directives/data-types.ts";
-import { box, emptyBox, failure } from "../failure/failure-or-box.ts";
+import { NumberDirective } from "../directives/bags.ts";
+import type { DirectiveResult } from "../directives/data-types.ts";
+import { failure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
@@ -17,50 +19,56 @@ export const programMemory = (
         address = 0;
     };
 
-    const pastEnd = (newAddress: number) => {
+    const pastEnd = (newAddress: number): StringOrFailures => {
         const bytes = device.numericValue("programMemoryBytes");
-        if (bytes.which == "failure") {
-            return bytes.kind == "device_notSelected"
-                ? failure(undefined, "programMemory_sizeUnknown", undefined)
-                : bytes;
+        if (bytes.type == "failures") {
+            const notSelected = bytes.it.find(
+                failure => failure.kind == "device_notSelected"
+            );
+            if (notSelected != undefined) {
+                bytes.it.push(
+                    failure(undefined, "programMemory_sizeUnknown", undefined)
+                )
+            }
+            return bytes;
         }
-        const words = bytes.value / 2
+        const words = bytes.it / 2
         return newAddress > words
-            ? failure(undefined, "programMemory_outOfRange", [`${words}`])
-            : emptyBox();
+            ? bagOfFailures([
+                failure(undefined, "programMemory_outOfRange", [`${words}`])
+            ])
+            : emptyBag()
     };
 
-    const origin = (newAddress: number) => {
+    const origin = (newAddress: number): DirectiveResult => {
         const check = validNumeric(newAddress, "type_positive");
-        if (check.which == "failure") {
+        if (check.type == "failures") {
             return check;
         }
         if (newAddress == 0) {
             address = 0;
-            return box("");
+            return emptyBag();
         }
         const tooBig = pastEnd(newAddress);
-        if (tooBig.which == "failure") {
+        if (tooBig.type == "failures") {
             return tooBig;
         }
         address = newAddress;
-        return box("");
+        return emptyBag();
     };
 
     const originDirective: NumberDirective = {
-        "type": "numberDirective",
-        "body": origin
+        "type": "numberDirective", "it": origin
     };
 
     const addressed = (line: LineWithObjectCode) => {
         if (line.label) {
             const result = symbolTable.add(
-                line.label,
-                { "type": "number", "body": address },
+                line.label, numberBag(address),
                 line.fileName, line.lineNumber
             );
-            if (result.which == "failure") {
-                line.withFailure(result);
+            if (result.type == "failures") {
+                line.withFailures(result.it);
             }
         }
 
@@ -72,8 +80,8 @@ export const programMemory = (
         )) + address;
 
         const step = origin(newAddress);
-        if (step.which == "failure") {
-            newLine.withFailure(step);
+        if (step.type == "failures") {
+            newLine.withFailures(step.it);
         }
 
         return newLine;

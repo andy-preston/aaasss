@@ -1,24 +1,24 @@
-import { box } from "../failure/failure-or-box.ts";
+import { stringBag } from "../assembler/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
-import type { NumberDirective } from "./data-types.ts";
+import type { NumberDirective } from "./bags.ts";
 
 const lowDirective: NumberDirective = {
     "type": "numberDirective",
-    "body": (word: number) => {
+    "it": (word: number) => {
         const parameter = validNumeric(word, "type_word");
-        return parameter.which == "failure"
+        return parameter.type == "failures"
             ? parameter
-            : box(`${parameter.value & 0xff}`);
+            : stringBag(`${parameter.it & 0xff}`);
     }
 };
 
 const highDirective: NumberDirective = {
     "type": "numberDirective",
-    "body": (word: number) => {
+    "it": (word: number) => {
         const parameter = validNumeric(word, "type_word");
-        return parameter.which == "failure"
+        return parameter.type == "failures"
             ? parameter
-            : box(`${(parameter.value >> 8) & 0xff}`);
+            : stringBag(`${(parameter.it >> 8) & 0xff}`);
     }
 };
 

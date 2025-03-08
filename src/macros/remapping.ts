@@ -1,4 +1,5 @@
-import { emptyBox, failure } from "../failure/failure-or-box.ts";
+import { emptyBag } from "../assembler/bags.ts";
+import { failure, bagOfFailures, StringOrFailures } from "../failure/bags.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
@@ -11,14 +12,14 @@ export const remapping = (macros: MacroList) => {
 
     const parameterSetup = (
         macroName: MacroName, macro: Macro, actualParameters: MacroParameters
-    ) => {
+    ): StringOrFailures => {
         if (macro.parameters.length != actualParameters.length) {
-            return failure(
+            return bagOfFailures([failure(
                 undefined, "macro_params", [`${macro.parameters.length}`]
-            );
+            )]);
         }
         parameterMap.set(macroName, actualParameters);
-        return emptyBox();
+        return emptyBag();
     };
 
     const expandedLabel = (line: LineWithTokens, label: Label) =>

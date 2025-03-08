@@ -1,5 +1,6 @@
-import { StringDirective } from "../directives/data-types.ts";
-import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { emptyBag } from "../assembler/bags.ts";
+import type { StringDirective } from "../directives/bags.ts";
+import { failure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
@@ -22,17 +23,16 @@ export const deviceChooser = (
     };
 
     const choose = (
-        deviceName: string,
-        fullSpec: FullSpec
-    ): Box<string> | Failure => {
+        deviceName: string, fullSpec: FullSpec
+    ): StringOrFailures => {
         const previousName = deviceProperties.deviceName();
         if (previousName == deviceName) {
-            return box("");
+            return emptyBag()
         }
         if (previousName != undefined) {
-            return failure(
-                undefined, "device_multiple", [previousName, deviceName]
-            );
+            return bagOfFailures([
+                failure(undefined, "device_multiple", [previousName, deviceName])
+            ]);
         }
         deviceProperties.property("deviceName", deviceName);
         for (const [key, value] of Object.entries(fullSpec)) {
@@ -51,42 +51,43 @@ export const deviceChooser = (
                     break;
             }
         }
-        return box("");
+        return emptyBag();
+    };
+
+    const device = (name: string): StringOrFailures => {
+        const fullSpec: FullSpec = {};
+
+        const loadSpec = (spec: RawItems) => {
+            for (const [key, item] of Object.entries(spec)) {
+                if (Object.hasOwn(fullSpec, key)) {
+                    throw new Error(
+                        `${key} declared multiple times in ${name} spec`
+                    );
+                }
+                fullSpec[key] = typeof item.value == "string"
+                    ? hexNumber(item.value)
+                    : item.value;
+            }
+        };
+
+        const baseName = deviceFinder(name);
+        if (baseName.type == "failures") {
+            return baseName;
+        }
+
+        const baseSpec = loadJsonFile(baseName.it) as DeviceSpec;
+        const familySpec = (
+            "family" in baseSpec
+                ? loadJsonFile(`./devices/families/${baseSpec.family}.json`)
+                : {}
+        ) as RawItems;
+        loadSpec(baseSpec.spec);
+        loadSpec(familySpec);
+        return choose(name, fullSpec);
     };
 
     const deviceDirective: StringDirective = {
-        "type": "stringDirective",
-        "body": (name: string) => {
-            const fullSpec: FullSpec = {};
-
-            const loadSpec = (spec: RawItems) => {
-                for (const [key, item] of Object.entries(spec)) {
-                    if (Object.hasOwn(fullSpec, key)) {
-                        throw new Error(
-                            `${key} declared multiple times in ${name} spec`
-                        );
-                    }
-                    fullSpec[key] = typeof item.value == "string"
-                        ? hexNumber(item.value)
-                        : item.value;
-                }
-            };
-
-            const baseName = deviceFinder(name);
-            if (baseName.which == "failure") {
-                return baseName;
-            }
-
-            const baseSpec = loadJsonFile(baseName.value) as DeviceSpec;
-            const familySpec = (
-                "family" in baseSpec
-                    ? loadJsonFile(`./devices/families/${baseSpec.family}.json`)
-                    : {}
-            ) as RawItems;
-            loadSpec(baseSpec.spec);
-            loadSpec(familySpec);
-            return choose(name, fullSpec);
-        }
+        "type": "stringDirective", "it": device
     };
 
     return {

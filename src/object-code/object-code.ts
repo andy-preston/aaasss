@@ -1,4 +1,4 @@
-import { failure } from "../failure/failure-or-box.ts";
+import { failure } from "../failure/bags.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import { instructionEncoderList } from "./instruction-encoder-list.ts";
 import { lineWithObjectCode, type LineWithPokedBytes, type LineWithObjectCode, lineWithPokedBytes } from "./line-types.ts";
@@ -36,8 +36,8 @@ export const objectCode = (
     }
 
     const isUnsupported = device.isUnsupported(line.mnemonic);
-    if (isUnsupported.which == "failure") {
-        return emptyLine(intermediate).withFailure(isUnsupported);
+    if (isUnsupported.type == "failures") {
+        return emptyLine(intermediate).withFailures(isUnsupported.it);
     }
 
     const generatedCode = addressingMode(intermediate);

@@ -1,4 +1,5 @@
 import { assertEquals } from "assert";
+import { numberBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveList } from "../directives/directive-list.ts";
@@ -19,9 +20,7 @@ const systemUnderTest = () => {
 
 Deno.test("A freshly added symbol has a count of zero", () => {
     const system = systemUnderTest();
-    system.symbols.add(
-        "plop", { "type": "number", "body": 23 }, "file-name.asm", 10
-    );
+    system.symbols.add("plop", numberBag(23), "file-name.asm", 10);
     const result = system.list();
     assertEquals(1, result.length);
     const [symbolName, usageCount, symbolValue, definition] = result[0]!;
@@ -33,9 +32,7 @@ Deno.test("A freshly added symbol has a count of zero", () => {
 
 Deno.test("Each call to use increments the usage", () => {
     const system = systemUnderTest();
-    system.symbols.add(
-        "plop", { "type": "number", "body": 23 }, "file-name.asm", 10
-    );
+    system.symbols.add("plop", numberBag(23), "file-name.asm", 10);
     [1, 2, 3, 4].forEach((expectedCount) => {
         system.symbols.use("plop");
         const result = system.list();

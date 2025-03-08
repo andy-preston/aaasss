@@ -1,5 +1,6 @@
+import { emptyBag } from "../assembler/bags.ts";
 import { saveGlobalLineForDirectives } from "../directives/global-line.ts";
-import { emptyBox, failure, type Failure } from "../failure/failure-or-box.ts";
+import { failure, bagOfFailures, StringOrFailures } from "../failure/bags.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
 import { JsExpression } from "./expression.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";
@@ -22,25 +23,21 @@ export const embeddedJs = (expression: JsExpression) => {
         current = "assembler";
     };
 
-    const leftInIllegalState = () => current == "javascript"
-        ? failure(undefined, "js_jsMode", undefined)
-        : emptyBox();
+    const leftInIllegalState = (): StringOrFailures => current == "javascript"
+        ? bagOfFailures([failure(undefined, "js_jsMode", undefined)])
+        : emptyBag();
 
     const rendered = (line: LineWithRawSource) => {
         saveGlobalLineForDirectives(line);
 
         let itFailed = false;
 
-        const failed = (failure: Failure) => {
-            itFailed = true;
-            line.withFailure(failure);
-        };
-
         const actions = new Map([[
             "{{", () => {
                 const alreadyInJs = leftInIllegalState();
-                if (alreadyInJs.which == "failure") {
-                    failed(alreadyInJs);
+                if (alreadyInJs.type == "failures") {
+                    itFailed = true;
+                    line.withFailures(alreadyInJs.it);
                 } else {
                     current = "javascript";
                 }
@@ -48,15 +45,17 @@ export const embeddedJs = (expression: JsExpression) => {
         ], [
             "}}", () => {
                 if (current == "assembler") {
-                    failed(failure(undefined, "js_assemblerMode", undefined));
+                    itFailed = true;
+                    line.withFailure(failure(undefined, "js_assemblerMode", undefined));
                 } else {
                     const javascriptCode = buffer.javascript.join("\n").trim();
                     buffer.javascript = [];
                     const result = expression(javascriptCode);
-                    if (result.which == "failure") {
-                        failed(result);
+                    if (result.type == "failures") {
+                        itFailed = true;
+                        line.withFailures(result.it);
                     } else {
-                        buffer.assembler.push(result.value);
+                        buffer.assembler.push(result.it);
                     }
                     current = "assembler";
                 }

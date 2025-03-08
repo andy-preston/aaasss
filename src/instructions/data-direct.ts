@@ -28,11 +28,11 @@ export const dataDirect = (
     const codeGenerator = (device: DevicePropertiesInterface) => {
         const hasReducedCore = (): boolean => {
             const reducedCore = device.hasReducedCore();
-            if (reducedCore.which == "failure") {
-                line.withFailure(reducedCore);
+            if (reducedCore.type == "failures") {
+                line.withFailures(reducedCore.it);
                 return false;
             }
-            return reducedCore.value;
+            return reducedCore.it;
         };
 
         const [operationBit, registerIndex, addressIndex] =

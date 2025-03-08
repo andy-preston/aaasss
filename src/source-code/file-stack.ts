@@ -1,5 +1,7 @@
-import type { StringDirective } from "../directives/data-types.ts";
-import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { emptyBag, stringsBag } from "../assembler/bags.ts";
+import type { StringDirective } from "../directives/bags.ts";
+import type { DirectiveResult } from "../directives/data-types.ts";
+import { failure, bagOfFailures, StringsOrFailures } from "../failure/bags.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 import { lineWithRawSource, type LineWithRawSource } from "./line-types.ts";
 
@@ -22,13 +24,13 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     const fileStack: Array<StackEntry> = [];
     let lineNumber: LineNumber = 0;
 
-    const fileContents = (fileName: FileName): Box<Array<string>> | Failure => {
+    const fileContents = (fileName: FileName): StringsOrFailures => {
         try {
-            return box(read(fileName));
+            return stringsBag(read(fileName));
         }
         catch (error) {
-            if (error instanceof Error) {
-                return failure(undefined, "file_notFound", error);
+            if (error instanceof Deno.errors.NotFound) {
+                return bagOfFailures([failure(undefined, "file_notFound", [error.message])]);
             }
             throw error;
         }
@@ -44,21 +46,20 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         }
     };
 
-    const include = (fileName: FileName) => {
+    const include = (fileName: FileName): DirectiveResult => {
         const contents = fileContents(fileName);
-        if (contents.which == "failure") {
+        if (contents.type == "failures") {
             return contents;
         }
         fileStack.push({
             "fileName": fileName,
-            "iterator": fileLineByLine(contents.value)
+            "iterator": fileLineByLine(contents.it)
         });
-        return box("");
+        return emptyBag();
     };
 
     const includeDirective: StringDirective = {
-        "type": "stringDirective",
-        "body": include
+        "type": "stringDirective", "it": include
     };
 
     const currentFile = () => fileStack.at(-1);
@@ -73,10 +74,10 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
 
     const lines: SourceOfSource = function* () {
         const topFile = include(topFileName);
-        if (topFile.which == "failure") {
+        if (topFile.type == "failures") {
             yield lineWithRawSource(
                 topFileName, 0, "", "", 0, false
-            ).withFailure(topFile);
+            ).withFailures(topFile.it);
         }
         let file = fileStack[0];
         while (file != undefined) {

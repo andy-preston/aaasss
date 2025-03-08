@@ -8,8 +8,7 @@ const irrelevantName = "testing";
 Deno.test("The macro doesn't have to have parameters", () => {
     const system = systemUnderTest();
     const macro = directiveFunction(irrelevantName, system.macros.macroDirective);
-
-    assertSuccess(macro("testMacro"), "");
+    assertSuccess(macro("testMacro"));
 });
 
 Deno.test("If a macro has parameters, they are substituted", () => {
@@ -21,13 +20,13 @@ Deno.test("If a macro has parameters, they are substituted", () => {
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("testMacro", "a", "b"), "");
-    assertSuccess(end(), "");
+    assertSuccess(macro("testMacro", "a", "b"));
+    assertSuccess(end());
 
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
-    assertSuccess(testMacro("1", "2"), "");
+    assertSuccess(testMacro("1", "2"));
 
     const result = system.macros.lines(
         testLine("testMacro", 1, "", "TST", ["a", "b"])

@@ -1,7 +1,9 @@
+import { assertEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { assertFailure, assertSuccess } from "../failure/testing.ts";
+import { extractedFailures } from "../failure/bags.ts";
+import { assertFailureKind, assertFailures, assertSuccessWith } from "../failure/testing.ts";
 import { dataMemory } from "./data-memory.ts";
 
 const irrelevantName = "testing";
@@ -23,8 +25,11 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
+
     system.pass.second();
-    assertFailure(alloc(23), "ram_sizeUnknown");
+    const result = alloc(23);
+    assertEquals(result.type, "failures");
+    assertFailureKind(extractedFailures(result), "ram_sizeUnknown");
 });
 
 Deno.test("A stack allocation can't be beyond available SRAM", () => {
@@ -35,8 +40,11 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
     const allocStack = directiveFunction(
         irrelevantName, system.dataMemory.allocStackDirective
     );
+
     system.pass.second();
-    assertFailure(allocStack(0xf2), "ram_outOfRange");
+    const result = allocStack(0xf2);
+    assertFailures(result);
+    assertFailureKind(extractedFailures(result), "ram_outOfRange");
 });
 
 Deno.test("A memory allocation can't be beyond available SRAM", () => {
@@ -44,11 +52,15 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
     system.device.property("deviceName", "test");
     system.device.property("ramStart", "00");
     system.device.property("ramEnd", "F0");
-    const allocStack = directiveFunction(
-        irrelevantName, system.dataMemory.allocStackDirective
+    const alloc = directiveFunction(
+        irrelevantName, system.dataMemory.allocDirective
     );
+
     system.pass.second();
-    assertFailure(allocStack(0xf2), "ram_outOfRange");
+    const result = alloc(0xf2);
+    assertFailures(result);
+    assertFailureKind(extractedFailures(result), "ram_outOfRange");
+
 });
 
 Deno.test("Memory allocations start at the top of SRAM and work down", () => {
@@ -59,10 +71,11 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
+
     system.pass.second();
-    assertSuccess(alloc(25), "0");
-    assertSuccess(alloc(25), "25");
-    assertSuccess(alloc(25), "50");
+    assertSuccessWith(alloc(25), "0");
+    assertSuccessWith(alloc(25), "25");
+    assertSuccessWith(alloc(25), "50");
 });
 
 Deno.test("Stack and memory allocations both decrease the available SRAM", () => {
@@ -76,10 +89,17 @@ Deno.test("Stack and memory allocations both decrease the available SRAM", () =>
     const allocStack = directiveFunction(
         irrelevantName, system.dataMemory.allocStackDirective
     );
+
     system.pass.second();
-    assertSuccess(alloc(25), "0");
-    assertFailure(allocStack(25), "ram_outOfRange");
-    assertFailure(alloc(23), "ram_outOfRange");
+    assertSuccessWith(alloc(25), "0");
+
+    const first = allocStack(25);
+    assertFailures(first);
+    assertFailureKind(extractedFailures(first), "ram_outOfRange");
+
+    const second = alloc(25);
+    assertFailures(second);
+    assertFailureKind(extractedFailures(second), "ram_outOfRange");
 });
 
 Deno.test("Allocations don't get repeated on the second pass", () => {
@@ -90,9 +110,10 @@ Deno.test("Allocations don't get repeated on the second pass", () => {
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
-    assertSuccess(alloc(25), "0");
-    assertSuccess(alloc(25), "25");
+
+    assertSuccessWith(alloc(25), "0");
+    assertSuccessWith(alloc(25), "25");
     system.pass.second();
-    assertSuccess(alloc(25), "0");
-    assertSuccess(alloc(25), "25");
+    assertSuccessWith(alloc(25), "0");
+    assertSuccessWith(alloc(25), "25");
 });

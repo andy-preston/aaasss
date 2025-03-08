@@ -1,36 +1,37 @@
-import type { DirectiveSymbol } from "../directives/data-types.ts";
+import { emptyBag, NumberBag, StringBag, stringBag } from "../assembler/bags.ts";
+import type { BaggedDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
-import type { SymbolValue } from "../symbol-table/data-types.ts";
+import { failure, bagOfFailures, BagOfFailures, BagOrFailures, type StringOrFailures } from "../failure/bags.ts";
+import type { SymbolBag } from "../symbol-table/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-const isFailure = (it: object): it is Failure =>
-    Object.hasOwn(it, "which") && Object.hasOwn(it, "kind");
+const isBagOrFailures = (it: object): it is BagOrFailures =>
+    Object.hasOwn(it, "type") && Object.hasOwn(it, "it");
 
-const isBox = (it: object): it is Box<unknown> =>
-    Object.hasOwn(it, "which") && Object.hasOwn(it, "value");
+const isFailures = (it: object): it is BagOfFailures =>
+    isBagOrFailures(it) && it.type == "failures";
 
-const isTidyBox = (it: object): it is Box<string | number> =>
-    isBox(it) && (typeof it.value == "string" || typeof it.value == "number");
+const isTidyValue = (it: object): it is StringBag | NumberBag =>
+    isBagOrFailures(it) && (it.type == "string" || it.type == "number");
 
-const mappedResult = (result: unknown): Box<string> | Failure =>
+const mappedResult = (result: unknown): StringOrFailures =>
     typeof result == "string" || typeof result == "number"
-        ? box(`${result}`)
+        ? stringBag(`${result}`)
         : !(result instanceof Object)
-        ? box("") // eating unwanted non-objects (including booleans)
-        : isFailure(result)
+        ? emptyBag() // eating unwanted non-objects (including booleans)
+        : isFailures(result)
         ? result
-        : isTidyBox(result)
-        ? box(`${result.value}`)
-        : box(""); // eating unwanted objects (including boxed booleans)
+        : isTidyValue(result)
+        ? stringBag(`${result.it}`)
+        : emptyBag(); // eating unwanted objects (including boxed booleans)
 
 const discreteTypes = ["string", "number", "directive"];
 
-const mappedCall = (symbolName: string, symbol: SymbolValue) => {
+const mappedCall = (symbolName: string, symbol: SymbolBag) => {
     return discreteTypes.includes(symbol.type)
-        ? symbol.body
+        ? symbol.it
         : symbol.type.endsWith("Directive")
-        ? directiveFunction(symbolName, symbol as DirectiveSymbol)
+        ? directiveFunction(symbolName, symbol as BaggedDirective)
         : undefined;
 };
 
@@ -59,13 +60,15 @@ export const jSExpression = (symbolTable: SymbolTable) => {
             return new Function(functionBody).call(executionContext);
         } catch (error) {
             if (error instanceof Error) {
-                return failure(undefined, "js_error", error);
+                return bagOfFailures([
+                    failure(undefined, "js_error", [error.name, error.message])
+                ]);
             }
             throw error;
         }
     };
 
-    return (jsSource: string): Box<string> | Failure => {
+    return (jsSource: string): StringOrFailures => {
         const clean = jsSource
             .replaceAll("\n", " ")
             .replaceAll('"', '\\\"')
@@ -73,7 +76,7 @@ export const jSExpression = (symbolTable: SymbolTable) => {
             .replace(trailingSemicolons, "")
             .trim();
 
-        return clean == "" ? box("") : mappedResult(functionCall(clean));
+        return clean == "" ? emptyBag() : mappedResult(functionCall(clean));
     };
 };
 

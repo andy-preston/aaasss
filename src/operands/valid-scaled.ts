@@ -1,4 +1,4 @@
-import { failure } from "../failure/failure-or-box.ts";
+import { failure } from "../failure/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import {
@@ -35,8 +35,8 @@ export const validScaledOperands = (
         }
 
         const valid = validNumeric(numeric, numericType);
-        if (valid.which == "failure") {
-            line.withFailure(valid.onOperand(operandIndex));
+        if (valid.type == "failures") {
+            line.withFailure(valid.it[0]!.onOperand(operandIndex));
             return 0;
         }
 

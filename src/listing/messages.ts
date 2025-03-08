@@ -1,4 +1,4 @@
-import type { Failure } from "../failure/failure-or-box.ts";
+import type { Failure } from "../failure/bags.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import { messages } from "./english.ts";
 

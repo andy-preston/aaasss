@@ -1,4 +1,4 @@
-import { type Failure, type Failures } from "../failure/failure-or-box.ts";
+import type { Failure } from "../failure/bags.ts";
 import type { Code } from "../object-code/data-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import type { FileName, LineNumber, SourceCode } from "../source-code/data-types.ts";
@@ -8,10 +8,14 @@ export const line = (
     fileName: FileName, lineNumber: LineNumber, source: SourceCode,
     macroName: string, macroCount: number, lastLine: boolean,
 ) => {
-    const failures: Failures = [];
+    const failures: Array<Failure> = [];
 
     const withFailure = (failure: Failure) => {
         failures.push(failure);
+        return theLine;
+    };
+    const withFailures = (moreFailures: Array<Failure>) => {
+        moreFailures.forEach(failure => failures.push(failure));
         return theLine;
     };
     const failed = () => failures.length > 0;
@@ -25,6 +29,7 @@ export const line = (
         "failures": failureMap,
         "failed": failed,
         "withFailure": withFailure,
+        "withFailures": withFailures,
         "fileName": fileName as FileName,
         "lineNumber": lineNumber as LineNumber,
         "lastLine": lastLine,

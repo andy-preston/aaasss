@@ -1,5 +1,7 @@
-import type { FunctionUseDirective } from "../directives/data-types.ts";
-import { box, failure } from "../failure/failure-or-box.ts";
+import { emptyBag } from "../assembler/bags.ts";
+import type { FunctionUseDirective } from "../directives/bags.ts";
+import type { DirectiveResult } from "../directives/data-types.ts";
+import { failure, bagOfFailures } from "../failure/bags.ts";
 import type { FileLineIterator, FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
@@ -19,26 +21,29 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
 
     const remap = remapping(macroList);
 
-    const useMacroDirective: FunctionUseDirective = {
-        "type": "functionUseDirective",
-        "body": (macroName: string, parameters: MacroParameters) => {
-            const macro = macroList.get(macroName)!;
-            if (parameters.length != macro.parameters.length) {
-                return failure(
-                    undefined, "macro_params", [`${macro.parameters.length}`]
-                );
-            }
-
-            const setup = remap.parameterSetup(macroName, macro, parameters);
-            if (setup.which == "failure") {
-                return setup;
-            }
-
-            if (!record.isRecording()) {
-                fileStack.pushImaginary(imaginaryFile(macroName));
-            }
-            return box("");
+    const useMacro = (
+        macroName: string, parameters: MacroParameters
+    ): DirectiveResult => {
+        const macro = macroList.get(macroName)!;
+        if (parameters.length != macro.parameters.length) {
+            return bagOfFailures([
+                failure(undefined, "macro_params", [`${macro.parameters.length}`])
+            ]);
         }
+
+        const setup = remap.parameterSetup(macroName, macro, parameters);
+        if (setup.type == "failures") {
+            return setup;
+        }
+
+        if (!record.isRecording()) {
+            fileStack.pushImaginary(imaginaryFile(macroName));
+        }
+        return emptyBag();
+    };
+
+    const useMacroDirective: FunctionUseDirective = {
+        "type": "functionUseDirective", "it": useMacro
     };
 
     const record = recording(macroList, symbolTable, useMacroDirective);

@@ -1,4 +1,5 @@
-import { box, failure, type Box, type Failure } from "../failure/failure-or-box.ts";
+import { booleanBag, numberBag, stringBag } from "../assembler/bags.ts";
+import { failure, bagOfFailures, type StringOrFailures, type NumberOrFailures, type BooleanOrFailures } from "../failure/bags.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
@@ -17,45 +18,55 @@ export const deviceProperties = () => {
 
     const deviceName = () => symbols.get("deviceName");
 
-    const value = (symbolName: string) => {
+    const value = (symbolName: string): StringOrFailures => {
         if (!symbols.has("deviceName")) {
-            return failure(undefined, "device_notSelected", [symbolName]);
+            return bagOfFailures([failure(undefined, "device_notSelected", [symbolName])]);
         }
         if (!symbols.has(symbolName)) {
-            return failure(undefined, "symbol_notFound", [
-                symbols.get("deviceName") as string,
-                symbolName
+            return bagOfFailures([
+                failure(undefined, "symbol_notFound", [
+                    symbols.get("deviceName") as string,
+                    symbolName
+                ])
             ]);
         }
-        return box(symbols.get(symbolName)!);
+        return stringBag(symbols.get(symbolName)!);
     };
 
-    const numericValue = (symbolName: string) => {
+    const numericValue = (symbolName: string): NumberOrFailures => {
         const theValue = value(symbolName);
-        if (theValue.which == "failure") {
+        if (theValue.type == "failures") {
             return theValue;
         }
-        if (!theValue.value.match(/^[0-9A-F]*$/)) {
-            return failure(undefined, "device_internalFormat", [
-                symbols.get("deviceName")!,
-                symbolName,
-                theValue.value
+        if (!theValue.it.match(/^[0-9A-F]*$/)) {
+            return bagOfFailures([
+                failure(undefined, "device_internalFormat", [
+                    symbols.get("deviceName")!,
+                    symbolName,
+                    theValue.it
+                ])
             ]);
         }
-        return box(parseInt(theValue.value, 16));
+        return numberBag(parseInt(theValue.it, 16));
     };
 
-    const hasReducedCore = (): Box<boolean> | Failure =>
+    const hasReducedCore = (): BooleanOrFailures =>
         symbols.has("deviceName")
-            ? box(reducedCore)
-            : failure(undefined, "device_notSelected", undefined);
+            ? booleanBag(reducedCore)
+            : bagOfFailures([
+                failure(undefined, "device_notSelected", undefined)
+            ]);
 
-    const isUnsupported = (mnemonic: Mnemonic): Box<boolean> | Failure =>
+    const isUnsupported = (mnemonic: Mnemonic): BooleanOrFailures =>
         !symbols.has("deviceName")
-            ? failure(undefined, "mnemonic_supportedUnknown", undefined)
+            ? bagOfFailures([
+                failure(undefined, "mnemonic_supportedUnknown", undefined)
+            ])
             : unsupported.isUnsupported(mnemonic)
-            ? failure(undefined, "mnemonic_notSupported", undefined)
-            : box(false);
+            ? bagOfFailures([
+                failure(undefined, "mnemonic_notSupported", undefined)
+            ])
+            : booleanBag(false);
 
     const setReducedCore = (value: boolean) => {
         reducedCore = value;

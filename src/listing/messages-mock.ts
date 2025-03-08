@@ -1,4 +1,4 @@
-import { Failure } from "../failure/failure-or-box.ts";
+import { Failure } from "../failure/bags.ts";
 import { LineWithObjectCode } from "../object-code/line-types.ts";
 
 export const mockFailureMessages = (

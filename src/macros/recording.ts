@@ -1,6 +1,8 @@
-import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/data-types.ts";
+import { emptyBag } from "../assembler/bags.ts";
+import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/bags.ts";
+import type { DirectiveResult } from "../directives/data-types.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { box, emptyBox, failure } from "../failure/failure-or-box.ts";
+import { failure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import { macro, MacroList, MacroParameters, type Macro, type MacroName } from "./data-types.ts";
@@ -20,36 +22,46 @@ export const recording = (
         macroName = "";
     };
 
-    const macroDirective: FunctionDefineDirective = {
-        "type": "functionDefineDirective",
-        "body": (newName: MacroName, parameters: MacroParameters = []) => {
-            if (theMacro != undefined) {
-                return failure(undefined, "macro_multiDefine", [macroName]);
-            }
-            if (symbolTable.has(newName, "withRegisters")) {
-                return failure(undefined, "macro_name", [newName]);
-            }
-            macroName = newName;
-            theMacro = macro(parameters);
-            skipFirstLine = true;
-            return box("");
+    const define = (
+        newName: MacroName, parameters: MacroParameters = []
+    ): DirectiveResult => {
+        if (theMacro != undefined) {
+            return bagOfFailures([
+                failure(undefined, "macro_multiDefine", [macroName])
+            ]);
         }
+        if (symbolTable.has(newName, "withRegisters")) {
+            return bagOfFailures([
+                failure(undefined, "macro_name", [newName])
+            ]);
+        }
+        macroName = newName;
+        theMacro = macro(parameters);
+        skipFirstLine = true;
+        return emptyBag();
+    };
+
+    const macroDirective: FunctionDefineDirective = {
+        "type": "functionDefineDirective", "it": define
+    };
+
+    const end = (): DirectiveResult => {
+        if (theMacro == undefined) {
+            return bagOfFailures([
+                failure(undefined, "macro_end", undefined)
+            ]);
+        }
+        macros.set(macroName, theMacro!);
+        symbolTable.add(
+            macroName, useMacroDirective,
+            currentFileName(), currentLineNumber()
+        );
+        resetState();
+        return emptyBag();
     };
 
     const endDirective: VoidDirective = {
-        "type": "voidDirective",
-        "body": () => {
-            if (theMacro == undefined) {
-                return failure(undefined, "macro_end", undefined);
-            }
-            macros.set(macroName, theMacro!);
-            symbolTable.add(
-                macroName, useMacroDirective,
-                currentFileName(), currentLineNumber()
-            );
-            resetState();
-            return box("");
-        }
+        "type": "voidDirective", "it": end
     };
 
     const isRecording = () => theMacro != undefined;
@@ -63,9 +75,9 @@ export const recording = (
         return lineWithProcessedMacro(line, true);
     };
 
-    const leftInIllegalState = () => isRecording()
-        ? failure(undefined, "macro_noEnd", undefined)
-        : emptyBox();
+    const leftInIllegalState = (): StringOrFailures => isRecording()
+        ? bagOfFailures([failure(undefined, "macro_noEnd", undefined)])
+        : emptyBag()
 
     return {
         "resetState": resetState,

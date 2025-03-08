@@ -2,7 +2,8 @@ import { assert, assertEquals, assertFalse, assertNotEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveList } from "../directives/directive-list.ts";
-import { assertFailure } from "../failure/testing.ts";
+import { extractedFailures } from "../failure/bags.ts";
+import { assertFailureKind } from "../failure/testing.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { SourceCode } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
@@ -59,20 +60,18 @@ Deno.test("Multiple opening moustaches are illegal", () => {
     const system = systemUnderTest();
     const rendered = system.js.rendered(testLine("{{ {{ }}"));
     assert(rendered.failed());
-    rendered.failures().forEach((failure, index) => {
-        assertEquals(index, 0);
-        assertFailure(failure, "js_jsMode");
-    });
+    const failures = rendered.failures().toArray();
+    assertEquals(failures.length, 1);
+    assertFailureKind(failures, "js_jsMode");
 });
 
 Deno.test("Multiple closing moustaches are illegal", () => {
     const system = systemUnderTest();
     const rendered = system.js.rendered(testLine("{{ }} }}"));
     assert(rendered.failed());
-    rendered.failures().forEach((failure, index) => {
-        assertEquals(index, 0);
-        assertFailure(failure, "js_assemblerMode");
-    });
+    const failures = rendered.failures().toArray();
+    assertEquals(failures.length, 1);
+    assertFailureKind(failures, "js_assemblerMode");
 });
 
 Deno.test("Omitting a closing moustache is illegal", () => {
@@ -81,5 +80,5 @@ Deno.test("Omitting a closing moustache is illegal", () => {
     assertFalse(rendered.failed());
     assertEquals(rendered.failures.length, 0);
     const illegal = system.js.leftInIllegalState();
-    assertFailure(illegal, "js_jsMode");
+    assertFailureKind(extractedFailures(illegal), "js_jsMode");
 });

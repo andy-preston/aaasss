@@ -1,5 +1,5 @@
 import { assert, assertEquals } from "assert";
-import { failure } from "../failure/failure-or-box.ts";
+import { failure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";

@@ -1,11 +1,12 @@
-import type { DirectiveSymbol, JavaScriptFunction } from "./data-types.ts";
+import type { BaggedDirective } from "./bags.ts";
+import type { JavaScriptFunction } from "./data-types.ts";
 import {
     voidDirective, stringDirective, numberDirective, valueDirective, dataDirective,
     functionDefineDirective, functionUseDirective
 } from "./parameters.ts";
 
 export const directiveFunction = (
-    symbolName: string, directive: DirectiveSymbol
+    symbolName: string, directive: BaggedDirective
 ): JavaScriptFunction => {
     switch (directive.type) {
         case "voidDirective": return voidDirective(directive);
