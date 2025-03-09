@@ -1,6 +1,6 @@
 import { assertEquals } from "assert";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { extractedFailures } from "../failure/bags.ts";
+import type { Failure } from "../failure/bags.ts";
 import { assertFailureKind, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
@@ -15,7 +15,7 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
     assertSuccess(macro("plop"));
     const result = system.macros.leftInIllegalState();
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "macro_noEnd");
+    assertFailureKind(result.it as Array<Failure>, "macro_noEnd");
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
@@ -27,7 +27,7 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
     assertSuccess(macro("aMacro"));
     const result = macro("anotherOne");
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "macro_multiDefine");
+    assertFailureKind(result.it as Array<Failure>, "macro_multiDefine");
 });
 
 Deno.test("Multiple macros can be defined", () => {
@@ -53,5 +53,5 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
 
     const result = end();
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "macro_end");
+    assertFailureKind(result.it as Array<Failure>, "macro_end");
 });

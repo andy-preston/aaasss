@@ -1,5 +1,5 @@
 import { assertEquals } from "assert";
-import { extractedFailures } from "../failure/bags.ts";
+import { Failure } from "../failure/bags.ts";
 import { assertFailureKind, assertFailureWithExtra, assertSuccessWith } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
@@ -8,15 +8,15 @@ Deno.test("Returns Failure when no device is selected", () => {
 
     const name = system.deviceProperties.public.value("deviceName");
     assertEquals(name.type, "failures");
-    assertFailureKind(extractedFailures(name), "device_notSelected");
+    assertFailureKind(name.it as Array<Failure>, "device_notSelected");
 
     const reducedCore = system.deviceProperties.public.hasReducedCore();
     assertEquals(reducedCore.type, "failures");
-    assertFailureKind(extractedFailures(reducedCore), "device_notSelected");
+    assertFailureKind(reducedCore.it as Array<Failure>, "device_notSelected");
 
     const unsupported = system.deviceProperties.public.isUnsupported("MUL");
     assertEquals(unsupported.type, "failures");
-    assertFailureKind(extractedFailures(unsupported), "mnemonic_supportedUnknown");
+    assertFailureKind(unsupported.it as Array<Failure>, "mnemonic_supportedUnknown");
 });
 
 Deno.test("Returns default boolean properties once a device name is selected", () => {
@@ -44,7 +44,7 @@ Deno.test("Returns device properties once device type is selected", () => {
 
     const unsupported = system.deviceProperties.public.isUnsupported("MUL");
     assertEquals(unsupported.type, "failures");
-    assertFailureKind(extractedFailures(unsupported), "mnemonic_notSupported");
+    assertFailureKind(unsupported.it as Array<Failure>, "mnemonic_notSupported");
 });
 
 Deno.test("After loading the device, it returns property values", () => {
@@ -70,7 +70,7 @@ Deno.test("... in upper case", () => {
     const result = system.deviceProperties.public.numericValue("PORTD");
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "device_internalFormat", [
+        result.it as Array<Failure>, "device_internalFormat", [
             "imaginaryDevice", "PORTD", "3f"
         ]
     );
@@ -82,7 +82,7 @@ Deno.test("Non-hex values can't be converted to numbers", () => {
     const result = system.deviceProperties.public.numericValue("deviceName");
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "device_internalFormat", [
+        result.it as Array<Failure>, "device_internalFormat", [
             "imaginaryDevice", "deviceName", "imaginaryDevice"
         ]
     );
@@ -94,7 +94,7 @@ Deno.test("Fails if, after loading device, required symbol is still not found", 
     const result = system.deviceProperties.public.value("nonExistant");
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "symbol_notFound", [
+        result.it as Array<Failure>, "symbol_notFound", [
             "imaginaryDevice", "nonExistant"
         ]
     );

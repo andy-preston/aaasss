@@ -1,8 +1,8 @@
 import { assert, assertFalse, assertEquals } from "assert";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { extractedFailures, FileNotFoundFailure } from "../failure/bags.ts";
+import type { Failure, FileNotFoundFailure } from "../failure/bags.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
-import { FileName } from "./data-types.ts";
+import type { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
 const irrelevantName = "testing";
@@ -25,7 +25,7 @@ Deno.test("Including a non existant file returns a failure", () => {
 
     const result = include(fileName);
     assertEquals(result.type, "failures");
-    const failures = extractedFailures(result);
+    const failures = result.it as Array<Failure>;
     assertEquals(failures.length, 1);
     assertEquals(failures[0]!.kind, "file_notFound");
     assertEquals(
@@ -43,7 +43,7 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
     const result = include([1, 2, 3]);
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "parameter_type", ["string", "0: array"]
+        result.it as Array<Failure>, "parameter_type", ["string", "0: array"]
     );
 });
 

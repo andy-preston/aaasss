@@ -53,6 +53,3 @@ export type BooleanOrFailures = BooleanBag | BagOfFailures;
 
 export type BagOrFailures =
     NumberBag | StringBag |  StringsBag | BooleanBag | BagOfFailures;
-
-export const extractedFailures = (symbol: BagOrFailures): Array<Failure> =>
-    symbol.type == "failures" ? symbol.it : [];

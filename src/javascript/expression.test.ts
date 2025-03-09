@@ -3,7 +3,7 @@ import { numberBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveList } from "../directives/directive-list.ts";
-import { extractedFailures } from "../failure/bags.ts";
+import type { Failure } from "../failure/bags.ts";
 import { assertFailureWithExtra, assertSuccessWith } from "../failure/testing.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
@@ -61,7 +61,7 @@ Deno.test("...but not any of the registers", () => {
     const result = system.jsExpression("R7 + 5");
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "js_error", ["ReferenceError", "R7 is not defined"]
+        result.it as Array<Failure>, "js_error", ["ReferenceError", "R7 is not defined"]
     );
 });
 
@@ -70,7 +70,7 @@ Deno.test("An unknown variable gives a reference error", () => {
     const result = system.jsExpression("const test = plop * 10;");
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "js_error", ["ReferenceError", "plop is not defined"]
+        result.it as Array<Failure>, "js_error", ["ReferenceError", "plop is not defined"]
     );
 });
 
@@ -79,7 +79,7 @@ Deno.test("Syntax errors are returned as errors too", () => {
     const result = system.jsExpression("this is just nonsense");
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "js_error", ["SyntaxError", "Unexpected identifier 'is'"]
+        result.it as Array<Failure>, "js_error", ["SyntaxError", "Unexpected identifier 'is'"]
     );
 });
 
@@ -88,6 +88,6 @@ Deno.test("A symbol will not be assigned using `this.symbol`", () => {
     const result = system.jsExpression("this.plop = 27");
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "js_error", ["ReferenceError", "this_assignment"]
+        result.it as Array<Failure>, "js_error", ["ReferenceError", "this_assignment"]
     );
 });

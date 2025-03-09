@@ -5,7 +5,7 @@ import { deviceProperties } from "../device/properties.ts";
 import type { VoidDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { directiveList } from "../directives/directive-list.ts";
-import { extractedFailures } from "../failure/bags.ts";
+import type { Failure } from "../failure/bags.ts";
 import { assertFailureKind, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "./symbol-table.ts";
@@ -53,7 +53,7 @@ Deno.test("A symbol can only be redefined if it's value has not changed", () => 
 
     const result = define("plop", 75);
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "symbol_alreadyExists");
+    assertFailureKind(result.it as Array<Failure>, "symbol_alreadyExists");
 });
 
 Deno.test("A symbol can't be defined with the same name as a directive", () => {
@@ -67,7 +67,7 @@ Deno.test("A symbol can't be defined with the same name as a directive", () => {
     });
     const result = define("redefineMe", 57);
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "symbol_nameIsDirective");
+    assertFailureKind(result.it as Array<Failure>, "symbol_nameIsDirective");
 });
 
 Deno.test("A symbol is returned but not counted if it's a directive", () => {
@@ -90,7 +90,7 @@ Deno.test("A symbol can't be defined with the same name as a register", () => {
     system.cpuRegisters.initialise(false);
     const result = define("R8", 8);
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "symbol_nameIsRegister");
+    assertFailureKind(result.it as Array<Failure>, "symbol_nameIsRegister");
 });
 
 Deno.test("A symbol is returned and counted if it's a register", () => {
@@ -110,7 +110,7 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
     system.deviceProperties.property("test", "57");
     const result = define("test", 57);
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "symbol_alreadyExists");
+    assertFailureKind(result.it as Array<Failure>, "symbol_alreadyExists");
 })
 
 Deno.test("A symbol is returned and counted if it's a device property", () => {

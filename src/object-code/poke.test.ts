@@ -2,7 +2,7 @@ import { assertEquals } from "assert";
 import { pokeBuffer } from "./poke.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
-import { extractedFailures } from "../failure/bags.ts";
+import { Failure } from "../failure/bags.ts";
 
 const irrelevantName = "testing";
 
@@ -71,7 +71,7 @@ Deno.test("Poked numbers must be bytes (0-255)", () => {
     const result = poke(-1, 2, 300, 4);
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "type_bytes", ["-1", "300"]
+        result.it as Array<Failure>, "type_bytes", ["-1", "300"]
     );
     assertEquals(poker.contents(), [[2, 4]]);
 });

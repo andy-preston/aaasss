@@ -1,9 +1,8 @@
 import { assertEquals } from "assert";
-import { stringBag } from "../assembler/bags.ts";
-import { extractedFailures, bagOfFailures } from "../failure/bags.ts";
-import { directiveFunction } from "./directive-function.ts";
-import { emptyBag } from "../assembler/bags.ts";
+import { emptyBag, stringBag } from "../assembler/bags.ts";
+import { bagOfFailures, Failure } from "../failure/bags.ts";
 import { assertFailureKind, assertFailureWithExtra, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
+import { directiveFunction } from "./directive-function.ts";
 
 const irrelevantName = "testing";
 
@@ -28,7 +27,7 @@ Deno.test("Directives can return a failure", () => {
 
     const result = untyped();
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "file_notFound");
+    assertFailureKind(result.it as Array<Failure>, "file_notFound");
 });
 
 Deno.test("Directives can return success in the form of an empty box", () => {
@@ -47,7 +46,7 @@ Deno.test("A VoidDirective has no parameters", () => {
     assertSuccessWith(untyped(), "hello");
     const result = untyped("parameter");
     assertEquals(result.type, "failures");
-    assertFailureWithExtra(extractedFailures(result), "parameter_count", ["0"]);
+    assertFailureWithExtra(result.it as Array<Failure>, "parameter_count", ["0"]);
 });
 
 Deno.test("A string directive has a single string parameter", () => {
@@ -59,25 +58,25 @@ Deno.test("A string directive has a single string parameter", () => {
     const first = untyped();
     assertEquals(first.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(first), "parameter_count", ["1"]
+        first.it as Array<Failure>, "parameter_count", ["1"]
     );
 
     const second = untyped("1", "2");
     assertEquals(second.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(second), "parameter_count", ["1"]
+        second.it as Array<Failure>, "parameter_count", ["1"]
     );
 
     const third = untyped(4);
     assertEquals(third.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(third), "parameter_type", ["string", "0: number"]
+        third.it as Array<Failure>, "parameter_type", ["string", "0: number"]
     );
 
     const fourth = untyped(true);
     assertEquals(fourth.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(fourth), "parameter_type", ["string", "0: boolean"]
+        fourth.it as Array<Failure>, "parameter_type", ["string", "0: boolean"]
     );
 
     assertSuccessWith(untyped("this works"), "this works");
@@ -92,7 +91,7 @@ Deno.test("A NumberDirective has a single number or numeric string parameter", (
     const result = untyped("five");
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "parameter_type", ["number", "0: string"]
+        result.it as Array<Failure>, "parameter_type", ["number", "0: string"]
     );
 
     assertSuccessWith(untyped("99"), "99");
@@ -109,13 +108,13 @@ Deno.test("A ValueDirective has a string and a numeric parameter", () => {
     const first = untyped(23, "plop");
     assertEquals(first.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(first), "parameter_type", ["string", "0: number"]
+        first.it as Array<Failure>, "parameter_type", ["string", "0: number"]
     );
 
     const second = untyped("plop", "plop");
     assertEquals(second.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(second), "parameter_type", ["number", "1: string"]
+        second.it as Array<Failure>, "parameter_type", ["number", "1: string"]
     );
 
     assertSuccessWith(untyped("plop", 23), "plop = 23");
@@ -130,13 +129,13 @@ Deno.test("A DataDirective has any number of string or numeric parameters", () =
     const first = untyped(false);
     assertEquals(first.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(first), "parameter_type", ["string, number", "0: boolean"]
+        first.it as Array<Failure>, "parameter_type", ["string, number", "0: boolean"]
     );
 
     const second = untyped({}, []);
     assertEquals(second.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(second), "parameter_type", ["string, number", "0: object", "1: array"]
+        second.it as Array<Failure>, "parameter_type", ["string, number", "0: object", "1: array"]
     );
 
     assertSuccess(untyped("hello", 2, 3, "goodbye"));
@@ -151,13 +150,13 @@ Deno.test("A FunctionUseDirective also has any number of string or numeric param
     const first = untyped(false);
     assertEquals(first.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(first), "parameter_type", ["string, number", "0: boolean"]
+        first.it as Array<Failure>, "parameter_type", ["string, number", "0: boolean"]
     );
 
     const second = untyped({}, []);
     assertEquals(second.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(second), "parameter_type", ["string, number", "0: object", "1: array"]
+        second.it as Array<Failure>, "parameter_type", ["string, number", "0: object", "1: array"]
     );
 
     assertSuccess(untyped("hello", 2, 3, "goodbye"));
@@ -172,13 +171,13 @@ Deno.test("A FunctionDefineDirective has any number of string parameters", () =>
     const first = untyped(false);
     assertEquals(first.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(first), "parameter_type", ["string", "0: boolean"]
+        first.it as Array<Failure>, "parameter_type", ["string", "0: boolean"]
     );
 
     const second = untyped(1, "two", 3);
     assertEquals(second.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(second), "parameter_type", ["string", "0: number", "2: number"]
+        second.it as Array<Failure>, "parameter_type", ["string", "0: number", "2: number"]
     );
 
     assertSuccess(untyped("hello", "goodbye"));

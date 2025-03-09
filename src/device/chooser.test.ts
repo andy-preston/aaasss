@@ -1,6 +1,6 @@
 import { assertEquals } from "assert";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { extractedFailures } from "../failure/bags.ts";
+import { Failure } from "../failure/bags.ts";
 import { assertFailureKind, assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
@@ -28,7 +28,7 @@ Deno.test("Choosing multiple devices results in failure", () => {
     const result = device(secondName);
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "device_multiple", [firstName, secondName]
+        result.it as Array<Failure>, "device_multiple", [firstName, secondName]
     );
 });
 
@@ -46,7 +46,7 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
     const result = device(secondName);
     assertEquals(result.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(result), "device_multiple", [firstName, secondName]
+        result.it as Array<Failure>, "device_multiple", [firstName, secondName]
     );
 });
 
@@ -58,7 +58,7 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
 
     const result = device("notARealDevice");
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "device_notFound");
+    assertFailureKind(result.it as Array<Failure>, "device_notFound");
 });
 
 Deno.test("The device name must be present and a string", () => {
@@ -69,24 +69,24 @@ Deno.test("The device name must be present and a string", () => {
 
     const wrongCount = device("notARealDevice");
     assertEquals(wrongCount.type, "failures");
-    assertFailureKind(extractedFailures(wrongCount), "device_notFound");
+    assertFailureKind(wrongCount.it as Array<Failure>, "device_notFound");
 
     const wrongArray = device([1, 2, 3]);
     assertEquals(wrongArray.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(wrongArray), "parameter_type", ["string", "0: array"]
+        wrongArray.it as Array<Failure>, "parameter_type", ["string", "0: array"]
     );
 
     const wrongNumber = device(64);
     assertEquals(wrongNumber.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(wrongNumber), "parameter_type", ["string", "0: number"]
+        wrongNumber.it as Array<Failure>, "parameter_type", ["string", "0: number"]
     );
 
     const wrongBoolean = device(false);
     assertEquals(wrongBoolean.type, "failures");
     assertFailureWithExtra(
-        extractedFailures(wrongBoolean), "parameter_type", ["string", "0: boolean"]
+        wrongBoolean.it as Array<Failure>, "parameter_type", ["string", "0: boolean"]
     );
 
     assertSuccess(device("at tiny 24"));
