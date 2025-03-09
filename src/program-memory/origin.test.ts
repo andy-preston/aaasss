@@ -1,6 +1,6 @@
 import { assertEquals } from "assert";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { extractedFailures, OldFailure, ProgramMemoryOutOfRange } from "../failure/bags.ts";
+import type { OldFailure, MemoryRangeFailure, Failure } from "../failure/bags.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
@@ -14,7 +14,7 @@ Deno.test("A device must be selected before program memory can be set", () => {
 
     const result = origin(10);
     assertEquals(result.type, "failures");
-    const failures = extractedFailures(result);
+    const failures = result.it as Array<Failure>;
     assertEquals(failures.length, 2);
     assertEquals(failures[0]!.kind, "device_notSelected");
     const notSelected = failures[0] as OldFailure;
@@ -30,10 +30,10 @@ Deno.test("Origin addresses can't be less than zero", () => {
 
     const result = origin(-1);
     assertEquals(result.type, "failures");
-    const failures = extractedFailures(result);
+    const failures = result.it as Array<Failure>;
     assertEquals(failures.length, 1);
     assertFailureWithExtra(
-        extractedFailures(result), "type_positive", ["-1", "0", ""]
+        result.it as Array<Failure>, "type_positive", ["-1", "0", ""]
     );
 });
 
@@ -45,10 +45,10 @@ Deno.test("Origin addresses can't be strange type", () => {
 
     const result = origin("nothing");
     assertEquals(result.type, "failures");
-    const failures = extractedFailures(result);
+    const failures = result.it as Array<Failure>;
     assertEquals(failures.length, 1);
     assertFailureWithExtra(
-        extractedFailures(result), "parameter_type", ["number", "0: string"]
+        failures, "parameter_type", ["number", "0: string"]
     );
 });
 
@@ -61,7 +61,7 @@ Deno.test("Device name is used to determine if properties have been set", () => 
 
     const result = origin(10);
     assertEquals(result.type, "failures");
-    const failures = extractedFailures(result);
+    const failures = result.it as Array<Failure>;
     assertEquals(failures.length, 2);
     assertEquals(failures[0]!.kind, "device_notSelected");
     const notSelected = failures[0] as OldFailure;
@@ -76,7 +76,6 @@ Deno.test("Origin addresses must be progmem size when a device is chosen", () =>
     );
     system.deviceProperties.property("deviceName", "test");
     const bytesAvailable = 100;
-    const wordsAvailable = bytesAvailable / 2;
     system.deviceProperties.property(
         "programMemoryBytes", bytesAvailable.toString(16).toUpperCase()
     );
@@ -84,12 +83,12 @@ Deno.test("Origin addresses must be progmem size when a device is chosen", () =>
     const tryOrigin = 92;
     const result = origin(tryOrigin);
     assertEquals(result.type, "failures");
-    const failures = extractedFailures(result);
+    const failures = result.it as Array<Failure>;
     assertEquals(failures.length, 1);
     assertEquals(failures[0]!.kind, "programMemory_outOfRange");
-    const failure = failures[0] as ProgramMemoryOutOfRange;
-    assertEquals(failure.newAddress, tryOrigin);
-    assertEquals(failure.wordsAvailable, wordsAvailable);
+    const failure = failures[0] as MemoryRangeFailure;
+    assertEquals(failure.bytesRequested, tryOrigin * 2);
+    assertEquals(failure.bytesAvailable, bytesAvailable);
 });
 
 Deno.test("Origin directive sets current address", () => {

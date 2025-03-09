@@ -34,7 +34,8 @@ export const programMemory = (
         const words = bytes.it / 2
         return newAddress > words ? bagOfFailures([{
             "kind": "programMemory_outOfRange",
-            "newAddress": newAddress, "wordsAvailable": words
+            "bytesAvailable": bytes.it,
+            "bytesRequested": (newAddress - address) * 2
         }]) : emptyBag()
     };
 

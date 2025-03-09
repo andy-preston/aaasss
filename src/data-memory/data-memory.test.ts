@@ -2,8 +2,8 @@ import { assertEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { extractedFailures, OldFailure } from "../failure/bags.ts";
-import { assertFailureKind, assertSuccessWith } from "../failure/testing.ts";
+import { Failure, OldFailure, MemoryRangeFailure } from "../failure/bags.ts";
+import { assertSuccessWith } from "../failure/testing.ts";
 import { dataMemory } from "./data-memory.ts";
 
 const irrelevantName = "testing";
@@ -29,7 +29,7 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
     system.pass.second();
     const result = alloc(23);
     assertEquals(result.type, "failures");
-    const failures = extractedFailures(result);
+    const failures = result.it as Array<Failure>;
     assertEquals(failures.length, 3);
     assertEquals(failures[0]!.kind, "device_notSelected");
     assertEquals((failures[0] as OldFailure).extra, ["ramStart"]);
@@ -48,9 +48,15 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
     );
 
     system.pass.second();
-    const result = allocStack(0xf2);
+    const bytesRequested = 0xf2;
+    const result = allocStack(bytesRequested);
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "ram_outOfRange");
+    const failures = result.it as Array<Failure>;
+    assertEquals(failures.length, 1);
+    const failure = failures[0] as MemoryRangeFailure;
+    assertEquals(failure.kind, "ram_outOfRange");
+    assertEquals(failure.bytesAvailable, 0xf0);
+    assertEquals(failure.bytesRequested, bytesRequested);
 });
 
 Deno.test("A memory allocation can't be beyond available SRAM", () => {
@@ -63,10 +69,15 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
     );
 
     system.pass.second();
-    const result = alloc(0xf2);
+    const bytesRequested = 0xf2;
+    const result = alloc(bytesRequested);
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "ram_outOfRange");
-
+    const failures = result.it as Array<Failure>;
+    assertEquals(failures.length, 1);
+    const failure = failures[0] as MemoryRangeFailure;
+    assertEquals(failure.kind, "ram_outOfRange");
+    assertEquals(failure.bytesAvailable, 0xf0);
+    assertEquals(failure.bytesRequested, bytesRequested);
 });
 
 Deno.test("Memory allocations start at the top of SRAM and work down", () => {
@@ -84,7 +95,7 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
     assertSuccessWith(alloc(25), "50");
 });
 
-Deno.test("Stack and memory allocations both decrease the available SRAM", () => {
+Deno.test("Stack allocations decrease the available SRAM", () => {
     const system = systemUnderTest();
     system.device.property("deviceName", "test");
     system.device.property("ramStart", "00");
@@ -95,17 +106,44 @@ Deno.test("Stack and memory allocations both decrease the available SRAM", () =>
     const allocStack = directiveFunction(
         irrelevantName, system.dataMemory.allocStackDirective
     );
+    const bytesRequested = 0x19;
 
     system.pass.second();
-    assertSuccessWith(alloc(25), "0");
+    assertSuccessWith(alloc(bytesRequested), "0");
+    const bytesAvailable = 0x1f - bytesRequested;
 
-    const first = allocStack(25);
-    assertEquals(first.type, "failures");
-    assertFailureKind(extractedFailures(first), "ram_outOfRange");
+    const result = allocStack(bytesRequested);
+    assertEquals(result.type, "failures");
+    const failures = result.it as Array<Failure>;
+    assertEquals(failures.length, 1);
+    const failure = failures[0] as MemoryRangeFailure;
+    assertEquals(failure.kind, "ram_outOfRange");
+    assertEquals(failure.bytesAvailable, bytesAvailable);
+    assertEquals(failure.bytesRequested, bytesRequested);
+});
 
-    const second = alloc(25);
-    assertEquals(second.type, "failures");
-    assertFailureKind(extractedFailures(second), "ram_outOfRange");
+Deno.test("Memory allocations decrease the available SRAM", () => {
+    const system = systemUnderTest();
+    system.device.property("deviceName", "test");
+    system.device.property("ramStart", "00");
+    system.device.property("ramEnd", "1F");
+    const alloc = directiveFunction(
+        irrelevantName, system.dataMemory.allocDirective
+    );
+    const bytesRequested = 0x19;
+
+    system.pass.second();
+    assertSuccessWith(alloc(bytesRequested), "0");
+    const bytesAvailable = 0x1f - bytesRequested;
+
+    const result = alloc(bytesRequested);
+    assertEquals(result.type, "failures");
+    const failures = result.it as Array<Failure>;
+    assertEquals(failures.length, 1);
+    const failure = failures[0] as MemoryRangeFailure;
+    assertEquals(failure.kind, "ram_outOfRange");
+    assertEquals(failure.bytesAvailable, bytesAvailable);
+    assertEquals(failure.bytesRequested, bytesRequested);
 });
 
 Deno.test("Allocations don't get repeated on the second pass", () => {

@@ -9,12 +9,13 @@ export type FileNotFoundFailure = {
 
 export type BoringFailure = {
     "kind": "syntax_invalidLabel"
-        | "programMemory_sizeUnknown" | "ram_sizeUnknown"
+        | "programMemory_sizeUnknown"
+        | "ram_sizeUnknown" | "ram_stackAllocated";
 };
 
-export type ProgramMemoryOutOfRange = {
-    "kind": "programMemory_outOfRange",
-    "wordsAvailable": number, "newAddress": number
+export type MemoryRangeFailure = {
+    "kind": "programMemory_outOfRange" | "ram_outOfRange",
+    "bytesAvailable": number, "bytesRequested": number
 };
 
 export const oldFailure = (
@@ -36,7 +37,7 @@ export const oldFailure = (
 };
 export type OldFailure = Readonly<ReturnType<typeof oldFailure>>;
 export type NewFailure = BoringFailure | FileNotFoundFailure
-    | ProgramMemoryOutOfRange;
+    | MemoryRangeFailure;
 
 export type Failure = OldFailure | NewFailure;
 export type FailureKind = OldFailureKind | NewFailure["kind"];

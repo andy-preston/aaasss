@@ -1,22 +1,19 @@
-import { numberBag, stringBag, type NumberBag } from "../assembler/bags.ts";
+import { emptyBag, numberBag, stringBag, type NumberBag } from "../assembler/bags.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import { NumberDirective } from "../directives/bags.ts";
+import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { oldFailure, bagOfFailures, type Failure, type NumberOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, type Failure, type NumberOrFailures } from "../failure/bags.ts";
 
 export const dataMemory = (device: DevicePropertiesInterface) => {
     let stack = 0;
     let allocated = 0;
-
-    const newAllocationSize = (plusBytes: number) =>
-        stack + allocated + plusBytes;
 
     const resetState = () => {
         stack = 0;
         allocated = 0;
     };
 
-    const ramAddress = (plusBytes: number): NumberOrFailures => {
+    const availableAddress = (bytesRequested: number): NumberOrFailures => {
         const ramStart = device.numericValue("ramStart");
         const ramEnd = device.numericValue("ramEnd");
         const failures: Array<Failure> = (
@@ -29,48 +26,48 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
             return bagOfFailures(failures);
         };
 
-        const address = (ramStart as NumberBag).it + plusBytes;
-        return address > (ramEnd as NumberBag).it
-            ? bagOfFailures([oldFailure(undefined , "ram_outOfRange", [`${address}`])])
-            : numberBag(address);
-    };
-
-    const allocStack = (bytes: number): DirectiveResult => {
-        // It's entirely optional to allocate space for a stack.
-        // but you can if you're worried that your RAM allocations might eat up
-        // all the space.
-        if (stack != 0) {
-            return bagOfFailures([oldFailure(undefined , "ram_stackAllocated", [`${stack}`])]);
-        }
-        const check = ramAddress(newAllocationSize(bytes));
-        if (check.type == "failures") {
-            return check;
-        }
-        stack = bytes;
-        return stringBag(`${bytes}`);
-    };
-
-    const allocStackDirective: NumberDirective = {
-        "type": "numberDirective", "it": allocStack
+        const startAddress = (ramStart as NumberBag).it;
+        const endAddress = (ramEnd as NumberBag).it;
+        const currentAddress = startAddress + allocated;
+        const bytesAvailable = endAddress - stack - currentAddress;
+        return bytesRequested > bytesAvailable ? bagOfFailures([{
+            "kind": "ram_outOfRange",
+            "bytesAvailable": bytesAvailable,
+            "bytesRequested": bytesRequested
+        }]) : numberBag(currentAddress);
     };
 
     const alloc = (bytes: number): DirectiveResult => {
-        const startAddress = ramAddress(allocated);
+        const startAddress = availableAddress(bytes);
         if (startAddress.type == "failures") {
             return startAddress;
         }
-
-        const check = ramAddress(newAllocationSize(bytes));
-        if (check.type == "failures") {
-            return check;
-        }
-
         allocated = allocated + bytes;
         return stringBag(`${startAddress.it}`);
     };
 
     const allocDirective: NumberDirective = {
         "type": "numberDirective", "it": alloc
+    };
+
+    const allocStack = (bytes: number): DirectiveResult => {
+        // It's entirely optional to allocate space for a stack.
+        // but you can if you're worried that your RAM allocations might eat up
+        // all the space.
+        // On AVRs, the stack is at RamEnd and grows down!
+        if (stack != 0) {
+            return bagOfFailures([{ "kind": "ram_stackAllocated" }]);
+        }
+        const check = availableAddress(bytes);
+        if (check.type == "failures") {
+            return check;
+        }
+        stack = bytes;
+        return emptyBag();
+    };
+
+    const allocStackDirective: NumberDirective = {
+        "type": "numberDirective", "it": allocStack
     };
 
     return {
