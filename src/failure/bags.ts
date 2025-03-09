@@ -2,9 +2,11 @@ import type { OperandIndex } from "../operands/data-types.ts";
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
 import type { OldFailureKind } from "./failures.ts";
 
-export type FileNotFoundFailure = {
-    "kind": "file_notFound",
-    "message": string
+export type ClueFailure = {
+    "kind": "file_notFound"
+        | "mnemonic_unknown"
+        | "mnemonic_notSupported" | "mnemonic_supportedUnknown",
+    "clue": string
 };
 
 export type BoringFailure = {
@@ -36,8 +38,7 @@ export const oldFailure = (
     return object;
 };
 export type OldFailure = Readonly<ReturnType<typeof oldFailure>>;
-export type NewFailure = BoringFailure | FileNotFoundFailure
-    | MemoryRangeFailure;
+export type NewFailure = BoringFailure | ClueFailure | MemoryRangeFailure;
 
 export type Failure = OldFailure | NewFailure;
 export type FailureKind = OldFailureKind | NewFailure["kind"];

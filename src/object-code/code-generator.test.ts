@@ -1,6 +1,6 @@
 import { assert, assertEquals, assertFalse } from "assert";
 import { deviceProperties } from "../device/properties.ts";
-import { assertFailureKind } from "../failure/testing.ts";
+import type { BoringFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
@@ -46,8 +46,9 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
     const result = system.objectCode(line);
     assert(result.failed());
     const failures = result.failures().toArray();
-    assertEquals(failures.length, 1);
-    assertFailureKind(failures, "mnemonic_supportedUnknown");
+    assertEquals(failures.length, 2);
+    assertEquals(failures[0]!.kind, "device_notSelected");
+    assertEquals(failures[1]!.kind, "mnemonic_supportedUnknown");
     assertEquals(result.code.length, 0);
 });
 
@@ -60,19 +61,22 @@ Deno.test("Lines with unsupported instructions fail", () => {
     assert(result.failed());
     const failures = result.failures().toArray();
     assertEquals(failures.length, 1);
-    assertFailureKind(failures, "mnemonic_notSupported");
+    const failure = failures[0] as BoringFailure;
+    assertEquals(failure.kind, "mnemonic_notSupported");
     assertEquals(result.code.length, 0);
 });
 
 Deno.test("Lines with unknown instructions fail", () => {
     const system = systemUnderTest();
     system.device.property("deviceName", "test");
+
     const line = testLine("", "NOT_REAL", [], [], [], false);
     const result = system.objectCode(line);
     assert(result.failed());
     const failures = result.failures().toArray();
     assertEquals(failures.length, 1);
-    assertFailureKind(failures, "mnemonic_unknown");
+    const failure = failures[0] as BoringFailure;
+    assertEquals(failure.kind, "mnemonic_unknown");
     assertEquals(result.code.length, 0);
 });
 

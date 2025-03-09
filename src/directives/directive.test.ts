@@ -22,7 +22,7 @@ Deno.test("Any directives that are added can be called as functions", () => {
 Deno.test("Directives can return a failure", () => {
     const untyped = directiveFunction(irrelevantName, {
         "type": "voidDirective",
-        "it": () => bagOfFailures([{ "kind": "file_notFound", message: "" }])
+        "it": () => bagOfFailures([{ "kind": "file_notFound", clue: "" }])
     });
 
     const result = untyped();

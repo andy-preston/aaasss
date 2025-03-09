@@ -60,12 +60,13 @@ export const deviceProperties = () => {
     const isUnsupported = (mnemonic: Mnemonic): BooleanOrFailures =>
         !symbols.has("deviceName")
             ? bagOfFailures([
-                oldFailure(undefined , "mnemonic_supportedUnknown", undefined)
+                oldFailure(undefined , "device_notSelected", undefined),
+                { "kind": "mnemonic_supportedUnknown", "clue": mnemonic }
             ])
             : unsupported.isUnsupported(mnemonic)
-            ? bagOfFailures([
-                oldFailure(undefined , "mnemonic_notSupported", undefined)
-            ])
+            ? bagOfFailures([{
+                "kind": "mnemonic_notSupported", "clue": mnemonic
+            }])
             : booleanBag(false);
 
     const setReducedCore = (value: boolean) => {

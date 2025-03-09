@@ -31,7 +31,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         catch (error) {
             if (error instanceof Deno.errors.NotFound) {
                 return bagOfFailures([
-                    { "kind": "file_notFound", "message": error.message }
+                    { "kind": "file_notFound", "clue": error.message }
                 ]);
             }
             throw error;

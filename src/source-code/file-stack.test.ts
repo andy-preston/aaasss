@@ -1,7 +1,7 @@
-import { assert, assertFalse, assertEquals } from "assert";
+import { assert, assertFalse, assertEquals, assertNotEquals } from "assert";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure, FileNotFoundFailure } from "../failure/bags.ts";
-import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
+import type { Failure, ClueFailure } from "../failure/bags.ts";
+import { assertFailureWithExtra } from "../failure/testing.ts";
 import type { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
@@ -13,7 +13,9 @@ Deno.test("Including a file doesn't return anything", () => {
     const include = directiveFunction(
         irrelevantName, aFileStack.includeDirective
     );
-    assertSuccess(include(irrelevantButRealFile));
+
+    const result = include(irrelevantButRealFile);
+    assertNotEquals(result.type, "failure");
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
@@ -29,7 +31,7 @@ Deno.test("Including a non existant file returns a failure", () => {
     assertEquals(failures.length, 1);
     assertEquals(failures[0]!.kind, "file_notFound");
     assertEquals(
-        (failures[0] as FileNotFoundFailure).message,
+        (failures[0] as ClueFailure).clue,
         `No such file or directory (os error 2): readfile '${fileName}'`
     );
 });
@@ -100,7 +102,9 @@ Deno.test("An included file is inserted into the source stream", () => {
     const lines = aFileStack.lines();
 
     assertEquals("top.file 1", lines.next().value!.rawSource);
-    assertSuccess(include("plop.txt"));
+
+    const result = include("plop.txt");
+    assertNotEquals(result.type, "failure");
     assertEquals([
         "plop.txt 1", "plop.txt 2", "plop.txt 3",
         "top.file 2", "top.file 3",
