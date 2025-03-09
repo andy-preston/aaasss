@@ -25,7 +25,7 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
             ramEnd.type == "failures" ? ramEnd.it : []
         );
         if (failures.length > 0) {
-            failures.push(oldFailure(undefined , "ram_sizeUnknown", undefined))
+            failures.push({ "kind": "ram_sizeUnknown" })
             return bagOfFailures(failures);
         };
 

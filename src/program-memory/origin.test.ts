@@ -1,6 +1,6 @@
 import { assertEquals } from "assert";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { extractedFailures, ProgramMemoryOutOfRange } from "../failure/bags.ts";
+import { extractedFailures, OldFailure, ProgramMemoryOutOfRange } from "../failure/bags.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
@@ -17,6 +17,8 @@ Deno.test("A device must be selected before program memory can be set", () => {
     const failures = extractedFailures(result);
     assertEquals(failures.length, 2);
     assertEquals(failures[0]!.kind, "device_notSelected");
+    const notSelected = failures[0] as OldFailure;
+    assertEquals(notSelected.extra, ["programMemoryBytes"]);
     assertEquals(failures[1]!.kind, "programMemory_sizeUnknown");
 });
 
@@ -62,6 +64,8 @@ Deno.test("Device name is used to determine if properties have been set", () => 
     const failures = extractedFailures(result);
     assertEquals(failures.length, 2);
     assertEquals(failures[0]!.kind, "device_notSelected");
+    const notSelected = failures[0] as OldFailure;
+    assertEquals(notSelected.extra, ["programMemoryBytes"]);
     assertEquals(failures[1]!.kind, "programMemory_sizeUnknown");
 });
 

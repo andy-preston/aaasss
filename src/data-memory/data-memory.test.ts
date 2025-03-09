@@ -2,7 +2,7 @@ import { assertEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { extractedFailures } from "../failure/bags.ts";
+import { extractedFailures, OldFailure } from "../failure/bags.ts";
 import { assertFailureKind, assertSuccessWith } from "../failure/testing.ts";
 import { dataMemory } from "./data-memory.ts";
 
@@ -29,7 +29,13 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
     system.pass.second();
     const result = alloc(23);
     assertEquals(result.type, "failures");
-    assertFailureKind(extractedFailures(result), "ram_sizeUnknown");
+    const failures = extractedFailures(result);
+    assertEquals(failures.length, 3);
+    assertEquals(failures[0]!.kind, "device_notSelected");
+    assertEquals((failures[0] as OldFailure).extra, ["ramStart"]);
+    assertEquals(failures[1]!.kind, "device_notSelected");
+    assertEquals((failures[1] as OldFailure).extra, ["ramEnd"]);
+    assertEquals(failures[2]!.kind, "ram_sizeUnknown");
 });
 
 Deno.test("A stack allocation can't be beyond available SRAM", () => {

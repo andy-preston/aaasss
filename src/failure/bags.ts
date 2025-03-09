@@ -8,7 +8,8 @@ export type FileNotFoundFailure = {
 };
 
 export type BoringFailure = {
-    "kind": "syntax_invalidLabel" | "programMemory_sizeUnknown"
+    "kind": "syntax_invalidLabel"
+        | "programMemory_sizeUnknown" | "ram_sizeUnknown"
 };
 
 export type ProgramMemoryOutOfRange = {
