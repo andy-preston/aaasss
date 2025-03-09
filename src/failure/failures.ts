@@ -15,6 +15,5 @@ export type OldFailureKind = TypeFailure
     | "parameter_firstName" | "parameter_count" | "parameter_type"
     | "symbol_alreadyExists" | "symbol_nameIsDirective" | "symbol_nameIsRegister"
         | "symbol_notFound"
-    | "programMemory_outOfRange" | "programMemory_sizeUnknown"
     | "ram_outOfRange" | "ram_sizeUnknown" | "ram_stackAllocated";
 

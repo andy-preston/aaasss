@@ -3,11 +3,17 @@ import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/
 import type { OldFailureKind } from "./failures.ts";
 
 export type FileNotFoundFailure = {
-    "kind": "file_notFound", "message": string
+    "kind": "file_notFound",
+    "message": string
 };
 
-export type InvalidLabelFailure = {
-    "kind": "syntax_invalidLabel"
+export type BoringFailure = {
+    "kind": "syntax_invalidLabel" | "programMemory_sizeUnknown"
+};
+
+export type ProgramMemoryOutOfRange = {
+    "kind": "programMemory_outOfRange",
+    "wordsAvailable": number, "newAddress": number
 };
 
 export const oldFailure = (
@@ -28,8 +34,8 @@ export const oldFailure = (
     return object;
 };
 export type OldFailure = Readonly<ReturnType<typeof oldFailure>>;
-export type NewFailure =
-    FileNotFoundFailure | InvalidLabelFailure;
+export type NewFailure = BoringFailure | FileNotFoundFailure
+    | ProgramMemoryOutOfRange;
 
 export type Failure = OldFailure | NewFailure;
 export type FailureKind = OldFailureKind | NewFailure["kind"];

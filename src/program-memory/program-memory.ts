@@ -1,8 +1,8 @@
 import { emptyBag, numberBag } from "../assembler/bags.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
-import { NumberDirective } from "../directives/bags.ts";
+import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { oldFailure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
@@ -26,18 +26,16 @@ export const programMemory = (
                 failure => failure.kind == "device_notSelected"
             );
             if (notSelected != undefined) {
-                bytes.it.push(
-                    oldFailure(undefined , "programMemory_sizeUnknown", undefined)
-                )
+                bytes.it.push({ "kind": "programMemory_sizeUnknown" });
             }
             return bytes;
         }
+
         const words = bytes.it / 2
-        return newAddress > words
-            ? bagOfFailures([
-                oldFailure(undefined , "programMemory_outOfRange", [`${words}`])
-            ])
-            : emptyBag()
+        return newAddress > words ? bagOfFailures([{
+            "kind": "programMemory_outOfRange",
+            "newAddress": newAddress, "wordsAvailable": words
+        }]) : emptyBag()
     };
 
     const origin = (newAddress: number): DirectiveResult => {
