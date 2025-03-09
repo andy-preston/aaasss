@@ -69,6 +69,7 @@ Deno.test("Some(most?) devices don't support DES",() => {
         '                      1     {{ device("AT-Tiny-24"); }}',
         "                      2     DES 15",
         "                        mnemonic_notSupported",
+        "                        clue: DES"
     ]);
     assertNoFileExists(".hex");
 });

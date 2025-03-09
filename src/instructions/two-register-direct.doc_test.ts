@@ -92,6 +92,7 @@ Deno.test("Many chips do not support 8-bit multiply",() => {
         '                      1     {{ device("ATTiny 24"); }}',
         "                      2     MUL R0, R1",
         "                        mnemonic_notSupported",
+        "                        clue: MUL",
         "",
         "Symbol Table",
         "============",

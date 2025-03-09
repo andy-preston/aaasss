@@ -31,7 +31,9 @@ Deno.test("A device must be specified before any instructions can be assembled",
         "/var/tmp/demo.asm",
         "=================",
         "                      1     DES 23",
+        "                        device_notSelected",
         "                        mnemonic_supportedUnknown",
+        "                        clue: DES"
     ]);
     assertNoFileExists(".hex");
 });
