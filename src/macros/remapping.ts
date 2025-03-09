@@ -14,9 +14,9 @@ export const remapping = (macros: MacroList) => {
         macroName: MacroName, macro: Macro, actualParameters: MacroParameters
     ): StringOrFailures => {
         if (macro.parameters.length != actualParameters.length) {
-            return bagOfFailures([oldFailure(
-                undefined, "macro_params", [`${macro.parameters.length}`]
-            )]);
+            return bagOfFailures([
+                oldFailure("macro_params", [`${macro.parameters.length}`])
+            ]);
         }
         parameterMap.set(macroName, actualParameters);
         return emptyBag();

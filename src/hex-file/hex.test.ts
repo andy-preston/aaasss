@@ -1,5 +1,5 @@
 import { assert, assertEquals } from "assert";
-import { oldFailure } from "../failure/bags.ts";
+import { boringFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { Code } from "../object-code/data-types.ts";
@@ -30,7 +30,7 @@ const testLineWithFailure = () => {
     const withPoked = lineWithPokedBytes(withOperands, []);
     const withObject = lineWithObjectCode(withPoked, []);
     return lineWithAddress(withObject, 0).withFailure(
-        oldFailure(0, "js_error", undefined)
+        boringFailure("syntax_invalidLabel")
     );
 }
 

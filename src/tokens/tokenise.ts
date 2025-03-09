@@ -1,4 +1,4 @@
-import { oldFailure } from "../failure/bags.ts";
+import { boringFailure, oldFailure } from "../failure/bags.ts";
 import {
     operands, type OperandIndex, type SymbolicOperands
 } from "../operands/data-types.ts"
@@ -16,16 +16,16 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
     if (invalidLabel(label)) {
-        line.withFailure({ "kind": "syntax_invalidLabel" });
+        line.withFailure(boringFailure("syntax_invalidLabel"));
     }
 
     const [mnemonic, operandsText] = splitSource("before", " ", withoutLabel);
 
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
-        line.withFailure(oldFailure(
-            undefined, "operand_wrongCount", [`${operandsList.length}`]
-        ));
+        line.withFailure(
+            oldFailure("operand_wrongCount", [`${operandsList.length}`])
+        );
     }
 
     const fullOperands: Array<string> = [];
@@ -34,19 +34,19 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
         if (indexing == "") {
             fullOperands.push(operand);
         } else if (indexing == "X+") {
-            line.withFailure(oldFailure(
-                fullOperands.length as OperandIndex, "operand_offsetX", undefined
-            ));
+            const failure = oldFailure("operand_offsetX", undefined);
+            failure.operand = fullOperands.length as OperandIndex;
+            line.withFailure(failure);
             fullOperands.push(operand);
         } else if (fullOperands.length == 0 && mnemonic != "STD") {
-            line.withFailure(oldFailure(
-                fullOperands.length as OperandIndex, "operand_offsetNotStd", undefined
-            ));
+            const failure = oldFailure("operand_offsetNotStd", undefined);
+            failure.operand = fullOperands.length as OperandIndex;
+            line.withFailure(failure);
             fullOperands.push(operand);
         } else if (fullOperands.length == 1 && mnemonic != "LDD") {
-            line.withFailure(oldFailure(
-                fullOperands.length as OperandIndex, "operand_offsetNotLdd", undefined
-            ));
+            const failure = oldFailure("operand_offsetNotLdd", undefined);
+            failure.operand = fullOperands.length as OperandIndex;
+            line.withFailure(failure);
             fullOperands.push(operand);
         } else {
             fullOperands.push(indexing);
@@ -56,7 +56,9 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
 
     for (const [index, operand] of fullOperands.entries()) {
         if (operand == "") {
-            line.withFailure(oldFailure(index as OperandIndex, "operand_blank", undefined));
+            const failure = oldFailure("operand_blank", undefined);
+            failure.operand = index as OperandIndex;
+            line.withFailure(failure);
         }
     }
 

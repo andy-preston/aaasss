@@ -1,4 +1,4 @@
-import { oldFailure, type OldFailure } from "../failure/bags.ts";
+import { oldFailure, type Failure } from "../failure/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import {
@@ -28,16 +28,18 @@ export const validScaledOperands = (
         const numeric = line.numericOperands[operandIndex]!;
 
         if (line.operandTypes[operandIndex] != operandType) {
-            line.withFailure(oldFailure(
-                operandIndex, "operand_wrongType", [operandType])
-            );
+            const failure = oldFailure("operand_wrongType", [operandType]);
+            failure.operand = operandIndex;
+            line.withFailure(failure);
             return 0;
         }
 
         const valid = validNumeric(numeric, numericType);
         if (valid.type == "failures") {
-            const oldStyle = valid.it[0] as OldFailure;
-            line.withFailure(oldStyle.onOperand(operandIndex));
+            (valid.it as Array<Failure>).forEach((failure) => {
+                failure.operand = operandIndex;
+                line.withFailure(failure);
+            });
             return 0;
         }
 
@@ -51,9 +53,9 @@ export const validScaledOperands = (
 
     const failed = line.numericOperands.length != requirements.length;
     if (failed) {
-        line.withFailure(oldFailure(
-            undefined, "operand_wrongCount", [`${requirements.length}`]
-        ));
+        line.withFailure(
+            oldFailure("operand_wrongCount", [`${requirements.length}`])
+        );
     }
 
     return operands<NumericOperands>(

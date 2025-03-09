@@ -1,5 +1,5 @@
 import { numberBag } from "../assembler/bags.ts";
-import type { NumberOrFailures, OldFailure } from "../failure/bags.ts";
+import type { Failure, NumberOrFailures } from "../failure/bags.ts";
 import type { JsExpression } from "../javascript/expression.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
@@ -50,8 +50,10 @@ export const symbolicToNumeric = (
             operandTypes.push(operandType);
             if (numeric.type == "failures") {
                 numericOperands.push(0);
-                const oldStyle = numeric.it[0] as OldFailure;
-                line.withFailure(oldStyle.onOperand(index as OperandIndex));
+                (numeric.it as Array<Failure>).forEach((failure) => {
+                    failure.operand = index as OperandIndex;
+                    line.withFailure(failure);
+                });
             } else {
                 numericOperands.push(numeric.it);
             }

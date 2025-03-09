@@ -27,7 +27,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         const macro = macroList.get(macroName)!;
         if (parameters.length != macro.parameters.length) {
             return bagOfFailures([
-                oldFailure(undefined , "macro_params", [`${macro.parameters.length}`])
+                oldFailure("macro_params", [`${macro.parameters.length}`])
             ]);
         }
 

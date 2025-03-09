@@ -1,5 +1,5 @@
 import { booleanBag, numberBag, stringBag } from "../assembler/bags.ts";
-import { oldFailure, bagOfFailures, type StringOrFailures, type NumberOrFailures, type BooleanOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, type StringOrFailures, type NumberOrFailures, type BooleanOrFailures, clueFailure } from "../failure/bags.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
@@ -20,11 +20,11 @@ export const deviceProperties = () => {
 
     const value = (symbolName: string): StringOrFailures => {
         if (!symbols.has("deviceName")) {
-            return bagOfFailures([oldFailure(undefined, "device_notSelected", [symbolName])]);
+            return bagOfFailures([oldFailure("device_notSelected", [symbolName])]);
         }
         if (!symbols.has(symbolName)) {
             return bagOfFailures([
-                oldFailure(undefined , "symbol_notFound", [
+                oldFailure("symbol_notFound", [
                     symbols.get("deviceName") as string,
                     symbolName
                 ])
@@ -40,7 +40,7 @@ export const deviceProperties = () => {
         }
         if (!theValue.it.match(/^[0-9A-F]*$/)) {
             return bagOfFailures([
-                oldFailure(undefined , "device_internalFormat", [
+                oldFailure("device_internalFormat", [
                     symbols.get("deviceName")!,
                     symbolName,
                     theValue.it
@@ -54,19 +54,17 @@ export const deviceProperties = () => {
         symbols.has("deviceName")
             ? booleanBag(reducedCore)
             : bagOfFailures([
-                oldFailure(undefined , "device_notSelected", undefined)
+                oldFailure("device_notSelected", undefined)
             ]);
 
     const isUnsupported = (mnemonic: Mnemonic): BooleanOrFailures =>
         !symbols.has("deviceName")
             ? bagOfFailures([
-                oldFailure(undefined , "device_notSelected", undefined),
-                { "kind": "mnemonic_supportedUnknown", "clue": mnemonic }
+                oldFailure("device_notSelected", undefined),
+                clueFailure("mnemonic_supportedUnknown", mnemonic)
             ])
             : unsupported.isUnsupported(mnemonic)
-            ? bagOfFailures([{
-                "kind": "mnemonic_notSupported", "clue": mnemonic
-            }])
+            ? bagOfFailures([clueFailure("mnemonic_notSupported", mnemonic)])
             : booleanBag(false);
 
     const setReducedCore = (value: boolean) => {

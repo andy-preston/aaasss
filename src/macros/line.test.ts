@@ -101,7 +101,7 @@ Deno.test("Lines with failures are not recorded in the macro", () => {
     assert(skipFirstLine.isRecordingMacro);
 
     const failingLine = testLineWithSource("I have failed!", "", "", []);
-    failingLine.withFailure(oldFailure(undefined , "type_positive", ["negative"]));
+    failingLine.withFailure(oldFailure("type_positive", ["negative"]));
     system.macros.lines(failingLine);
     system.macros.lines(testLineWithSource("OK!", "", "", []));
     assertSuccess(end());

@@ -1,4 +1,5 @@
 import type { DevicePropertiesInterface } from "../device/properties.ts";
+import { clueFailure } from "../failure/bags.ts";
 import type { LineWithOperands } from "../operands/line-types.ts";
 import { instructionEncoderList } from "./instruction-encoder-list.ts";
 import {
@@ -45,7 +46,7 @@ export const objectCode = (
     const generatedCode = addressingMode(intermediate);
     if (generatedCode == undefined) {
         return emptyLine(intermediate).withFailure(
-            { "kind": "mnemonic_unknown", "clue": line.mnemonic }
+            clueFailure("mnemonic_unknown", line.mnemonic)
         );
     }
 

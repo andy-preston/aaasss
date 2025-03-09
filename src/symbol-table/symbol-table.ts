@@ -36,11 +36,11 @@ export const symbolTable = (
 
     const inOtherLists = (symbolName: string): StringOrFailures =>
         directiveList.has(symbolName)
-            ? bagOfFailures([oldFailure(undefined , "symbol_nameIsDirective", undefined)])
+            ? bagOfFailures([oldFailure("symbol_nameIsDirective", undefined)])
             : cpuRegisters.has(symbolName)
-            ? bagOfFailures([oldFailure(undefined , "symbol_nameIsRegister", undefined)])
+            ? bagOfFailures([oldFailure("symbol_nameIsRegister", undefined)])
             : deviceProperties.has(symbolName)
-            ? bagOfFailures([oldFailure(undefined , "symbol_alreadyExists", undefined)])
+            ? bagOfFailures([oldFailure("symbol_alreadyExists", undefined)])
             :emptyBag();
 
     const add = (
@@ -56,7 +56,7 @@ export const symbolTable = (
             const existing = values.get(symbolName)!.it;
             if (value.it != existing) {
                 return bagOfFailures([
-                    oldFailure(undefined , "symbol_alreadyExists", [`${existing}`])
+                    oldFailure("symbol_alreadyExists", [`${existing}`])
                 ]);
             }
         }

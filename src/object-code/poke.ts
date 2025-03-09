@@ -32,7 +32,7 @@ export const pokeBuffer = () => {
             theBuffer.push(grouped.good.splice(0, 4) as unknown as Code);
         }
         return grouped.bad.length > 0
-            ? bagOfFailures([oldFailure(undefined , "type_bytes", badBytes())])
+            ? bagOfFailures([oldFailure("type_bytes", badBytes())])
             : emptyBag()
     };
 

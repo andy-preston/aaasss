@@ -1,6 +1,6 @@
 import { assertEquals } from "assert";
 import { emptyBag, stringBag } from "../assembler/bags.ts";
-import { bagOfFailures, Failure } from "../failure/bags.ts";
+import { bagOfFailures, clueFailure, Failure } from "../failure/bags.ts";
 import { assertFailureKind, assertFailureWithExtra, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
 import { directiveFunction } from "./directive-function.ts";
 
@@ -22,7 +22,7 @@ Deno.test("Any directives that are added can be called as functions", () => {
 Deno.test("Directives can return a failure", () => {
     const untyped = directiveFunction(irrelevantName, {
         "type": "voidDirective",
-        "it": () => bagOfFailures([{ "kind": "file_notFound", clue: "" }])
+        "it": () => bagOfFailures([clueFailure("file_notFound", "" )])
     });
 
     const result = untyped();

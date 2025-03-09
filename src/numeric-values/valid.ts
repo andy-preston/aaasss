@@ -23,7 +23,7 @@ export const validNumeric = (
         && value >= min
         && (max == undefined || value <= max)
         ? numberBag(value as number)
-        : bagOfFailures([oldFailure(undefined , numericType, [
+        : bagOfFailures([oldFailure(numericType, [
             `${value}`, `${min}`, max == undefined ? "" : `${max}`
         ])]);
 };

@@ -2,7 +2,7 @@ import { emptyBag, numberBag } from "../assembler/bags.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, boringFailure, memoryRangeFailure, type StringOrFailures } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
@@ -26,17 +26,15 @@ export const programMemory = (
                 failure => failure.kind == "device_notSelected"
             );
             if (notSelected != undefined) {
-                bytes.it.push({ "kind": "programMemory_sizeUnknown" });
+                bytes.it.push(boringFailure("programMemory_sizeUnknown"));
             }
             return bytes;
         }
 
         const words = bytes.it / 2
-        return newAddress > words ? bagOfFailures([{
-            "kind": "programMemory_outOfRange",
-            "bytesAvailable": bytes.it,
-            "bytesRequested": (newAddress - address) * 2
-        }]) : emptyBag()
+        return newAddress > words ? bagOfFailures([memoryRangeFailure(
+            "programMemory_outOfRange", bytes.it, (newAddress - address) * 2
+        )]) : emptyBag()
     };
 
     const origin = (newAddress: number): DirectiveResult => {

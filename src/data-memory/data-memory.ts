@@ -2,7 +2,7 @@ import { emptyBag, numberBag, stringBag, type NumberBag } from "../assembler/bag
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { bagOfFailures, type Failure, type NumberOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, boringFailure, memoryRangeFailure, type Failure, type NumberOrFailures } from "../failure/bags.ts";
 
 export const dataMemory = (device: DevicePropertiesInterface) => {
     let stack = 0;
@@ -22,7 +22,7 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
             ramEnd.type == "failures" ? ramEnd.it : []
         );
         if (failures.length > 0) {
-            failures.push({ "kind": "ram_sizeUnknown" })
+            failures.push(boringFailure("ram_sizeUnknown"));
             return bagOfFailures(failures);
         };
 
@@ -30,11 +30,9 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
         const endAddress = (ramEnd as NumberBag).it;
         const currentAddress = startAddress + allocated;
         const bytesAvailable = endAddress - stack - currentAddress;
-        return bytesRequested > bytesAvailable ? bagOfFailures([{
-            "kind": "ram_outOfRange",
-            "bytesAvailable": bytesAvailable,
-            "bytesRequested": bytesRequested
-        }]) : numberBag(currentAddress);
+        return bytesRequested > bytesAvailable ? bagOfFailures([
+            memoryRangeFailure("ram_outOfRange", bytesAvailable, bytesRequested)
+        ]) : numberBag(currentAddress);
     };
 
     const alloc = (bytes: number): DirectiveResult => {
@@ -56,7 +54,7 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
         // all the space.
         // On AVRs, the stack is at RamEnd and grows down!
         if (stack != 0) {
-            return bagOfFailures([{ "kind": "ram_stackAllocated" }]);
+            return bagOfFailures([boringFailure("ram_stackAllocated")]);
         }
         const check = availableAddress(bytes);
         if (check.type == "failures") {

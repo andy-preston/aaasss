@@ -20,7 +20,7 @@ const parameterTypes = (
 
     if (length != undefined && length != them.length) {
         return bagOfFailures([
-            oldFailure(undefined , "parameter_count", [`${length}`])
+            oldFailure("parameter_count", [`${length}`])
         ]);
     }
 
@@ -33,16 +33,16 @@ const parameterTypes = (
     }
     return wrongTypes.length == 0
         ? emptyBag()
-        : bagOfFailures([oldFailure(
-            undefined, "parameter_type", [required.join(", ")].concat(wrongTypes)
-        )]);
+        : bagOfFailures([
+            oldFailure("parameter_type", [required.join(", ")].concat(wrongTypes))
+        ]);
 }
 
 export const voidDirective = (
     directive: VoidDirective
 ): JavaScriptFunction => (...parameters: unknown[]) =>
     parameters.length != 0
-        ? bagOfFailures([oldFailure(undefined , "parameter_count", ["0"])])
+        ? bagOfFailures([oldFailure("parameter_count", ["0"])])
         : directive.it();
 
 export const stringDirective = (
@@ -65,7 +65,7 @@ export const numberDirective = (
     const numeric = typeof given == "string" ? parseInt(given) : given;
     return `${given}` != `${numeric}`
         ? bagOfFailures([
-            oldFailure(undefined , "parameter_type", ["number", "0: string"])
+            oldFailure("parameter_type", ["number", "0: string"])
         ])
         : directive.it(numeric);
 };
@@ -75,19 +75,19 @@ export const valueDirective = (
 ): JavaScriptFunction => (...parameters: unknown[]) => {
     if (parameters.length != 2) {
         return bagOfFailures([
-            oldFailure(undefined , "parameter_count", ["2"])
+            oldFailure("parameter_count", ["2"])
         ]);
     }
     const typeOfFirst = typeof parameters[0];
     if (typeOfFirst != "string") {
         return bagOfFailures([
-            oldFailure (undefined, "parameter_type", ["string", `0: ${typeOfFirst}`])
+            oldFailure("parameter_type", ["string", `0: ${typeOfFirst}`])
         ]);
     }
     const typeOfSecond = typeof parameters[1];
     if (typeOfSecond != "number") {
         return bagOfFailures([
-            oldFailure (undefined, "parameter_type", ["number", `1: ${typeOfSecond}`])
+            oldFailure("parameter_type", ["number", `1: ${typeOfSecond}`])
         ]);
     }
     return directive.it(parameters[0] as string, parameters[1] as number);
@@ -108,7 +108,7 @@ export const functionDefineDirective = (
 ): JavaScriptFunction => (...parameters: unknown[]) => {
     if (parameters.length == 0) {
         return bagOfFailures([
-            oldFailure(undefined , "parameter_firstName", [])
+            oldFailure("parameter_firstName", [])
         ]);
     }
     const check = parameterTypes(parameters, ["string"], undefined);

@@ -2,44 +2,66 @@ import type { OperandIndex } from "../operands/data-types.ts";
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
 import type { OldFailureKind } from "./failures.ts";
 
-export type BoringFailure = {
-    "kind": "syntax_invalidLabel"
+type FailureOperand = undefined | OperandIndex;
+
+export const boringFailure = (
+    kind: "syntax_invalidLabel"
         | "js_jsMode" | "js_assemblerMode"
         | "programMemory_sizeUnknown"
-        | "ram_sizeUnknown" | "ram_stackAllocated";
-};
+        | "ram_sizeUnknown" | "ram_stackAllocated"
+) => ({
+    "kind": kind, "operand": undefined as FailureOperand
+});
 
-export type ClueFailure = {
-    "kind": "file_notFound"
+export type BoringFailure = ReturnType<typeof boringFailure>;
+
+export const clueFailure = (
+    kind: "file_notFound"
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown",
-    "clue": string
-};
+    clue: string
+) => ({
+    "kind": kind, "operand": undefined as FailureOperand,
+    "clue": clue
+});
 
-export type MemoryRangeFailure = {
-    "kind": "programMemory_outOfRange" | "ram_outOfRange",
-    "bytesAvailable": number, "bytesRequested": number
-};
+export type ClueFailure = ReturnType<typeof clueFailure>;
+
+export const exceptionFailure = (
+    kind: "js_error",
+    exception: string,
+    message: string
+) => ({
+    "kind": kind, "operand": undefined as FailureOperand,
+    "exception": exception, "message": message
+});
+
+export type ExceptionFailure = ReturnType<typeof exceptionFailure>;
+
+export const memoryRangeFailure = (
+    kind: "programMemory_outOfRange" | "ram_outOfRange",
+    bytesAvailable: number,
+    bytesRequested: number
+) => ({
+    "kind": kind, "operand": undefined as FailureOperand,
+    "bytesAvailable": bytesAvailable, "bytesRequested": bytesRequested
+});
+
+export type MemoryRangeFailure = ReturnType<typeof memoryRangeFailure>;
 
 export const oldFailure = (
-    operand: OperandIndex | undefined,
     kind: OldFailureKind,
     extra: Array<string> | undefined
-) => {
-    const onOperand = (index: OperandIndex) => {
-        object.operand = index;
-        return object;
-    }
-    const object = {
-        "kind": kind,
-        "extra": extra,
-        "operand": operand,
-        "onOperand": onOperand
-    };
-    return object;
-};
-export type OldFailure = Readonly<ReturnType<typeof oldFailure>>;
-export type NewFailure = BoringFailure | ClueFailure | MemoryRangeFailure;
+) => ({
+    "kind": kind,
+    "extra": extra,
+    "operand": undefined as FailureOperand,
+});
+
+export type OldFailure = ReturnType<typeof oldFailure>;
+
+export type NewFailure = BoringFailure | ClueFailure
+    | ExceptionFailure | MemoryRangeFailure;
 
 export type Failure = OldFailure | NewFailure;
 export type FailureKind = OldFailureKind | NewFailure["kind"];

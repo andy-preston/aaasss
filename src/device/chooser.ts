@@ -31,7 +31,7 @@ export const deviceChooser = (
         }
         if (previousName != undefined) {
             return bagOfFailures([
-                oldFailure(undefined , "device_multiple", [previousName, deviceName])
+                oldFailure("device_multiple", [previousName, deviceName])
             ]);
         }
         deviceProperties.property("deviceName", deviceName);

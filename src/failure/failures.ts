@@ -14,7 +14,6 @@ export type TypeFailure = NumericType
 export type OldFailureKind = TypeFailure
     | "device_notFound" | "device_notSelected" | "device_multiple"
         | "device_internalFormat"
-    | "js_error"
     | "macro_multiDefine" | "macro_noEnd" | "macro_end" | "macro_params"
         | "macro_name" | "macro_notExist"
     | "operand_wrongCount" | "operand_blank" | "operand_wrongType"

@@ -49,8 +49,8 @@ Deno.test("The device name must be a string",() => {
         "=================",
         "                      1     {{ device(ATTiny24); }}",
         "                        js_error",
-        "                        extra[0]: ReferenceError",
-        "                        extra[1]: ATTiny24 is not defined",
+        "                        exception: ReferenceError",
+        "                        message: ATTiny24 is not defined",
     ]);
     assertNoFileExists(".hex");
 });

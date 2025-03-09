@@ -8,7 +8,7 @@ export const defaultDeviceFinder = (deviceName: string): StringOrFailures => {
     const baseName = `./devices/${fileName}.json`;
     return existsSync(baseName)
         ? stringBag(baseName)
-        : bagOfFailures([oldFailure(undefined , "device_notFound", undefined)]);
+        : bagOfFailures([oldFailure("device_notFound", undefined)]);
 };
 
 export type DeviceFinder = typeof defaultDeviceFinder;

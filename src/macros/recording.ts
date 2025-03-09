@@ -27,12 +27,12 @@ export const recording = (
     ): DirectiveResult => {
         if (theMacro != undefined) {
             return bagOfFailures([
-                oldFailure(undefined , "macro_multiDefine", [macroName])
+                oldFailure("macro_multiDefine", [macroName])
             ]);
         }
         if (symbolTable.has(newName, "withRegisters")) {
             return bagOfFailures([
-                oldFailure(undefined , "macro_name", [newName])
+                oldFailure("macro_name", [newName])
             ]);
         }
         macroName = newName;
@@ -48,7 +48,7 @@ export const recording = (
     const end = (): DirectiveResult => {
         if (theMacro == undefined) {
             return bagOfFailures([
-                oldFailure(undefined , "macro_end", undefined)
+                oldFailure("macro_end", undefined)
             ]);
         }
         macros.set(macroName, theMacro!);
@@ -76,7 +76,7 @@ export const recording = (
     };
 
     const leftInIllegalState = (): StringOrFailures => isRecording()
-        ? bagOfFailures([oldFailure(undefined , "macro_noEnd", undefined)])
+        ? bagOfFailures([oldFailure("macro_noEnd", undefined)])
         : emptyBag()
 
     return {
