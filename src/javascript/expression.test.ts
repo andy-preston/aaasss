@@ -1,9 +1,10 @@
+import { assertEquals } from "assert";
 import { numberBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveList } from "../directives/directive-list.ts";
 import { extractedFailures } from "../failure/bags.ts";
-import { assertFailures, assertFailureWithExtra, assertSuccessWith } from "../failure/testing.ts";
+import { assertFailureWithExtra, assertSuccessWith } from "../failure/testing.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { jSExpression } from "./expression.ts";
@@ -58,7 +59,7 @@ Deno.test("...but not any of the registers", () => {
     const system = systemUnderTest();
     system.cpuRegisters.initialise(false);
     const result = system.jsExpression("R7 + 5");
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureWithExtra(
         extractedFailures(result), "js_error", ["ReferenceError", "R7 is not defined"]
     );
@@ -67,7 +68,7 @@ Deno.test("...but not any of the registers", () => {
 Deno.test("An unknown variable gives a reference error", () => {
     const system = systemUnderTest();
     const result = system.jsExpression("const test = plop * 10;");
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureWithExtra(
         extractedFailures(result), "js_error", ["ReferenceError", "plop is not defined"]
     );
@@ -76,7 +77,7 @@ Deno.test("An unknown variable gives a reference error", () => {
 Deno.test("Syntax errors are returned as errors too", () => {
     const system = systemUnderTest();
     const result = system.jsExpression("this is just nonsense");
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureWithExtra(
         extractedFailures(result), "js_error", ["SyntaxError", "Unexpected identifier 'is'"]
     );
@@ -85,7 +86,7 @@ Deno.test("Syntax errors are returned as errors too", () => {
 Deno.test("A symbol will not be assigned using `this.symbol`", () => {
     const system = systemUnderTest();
     const result = system.jsExpression("this.plop = 27");
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureWithExtra(
         extractedFailures(result), "js_error", ["ReferenceError", "this_assignment"]
     );

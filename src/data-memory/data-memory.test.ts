@@ -3,7 +3,7 @@ import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { extractedFailures } from "../failure/bags.ts";
-import { assertFailureKind, assertFailures, assertSuccessWith } from "../failure/testing.ts";
+import { assertFailureKind, assertSuccessWith } from "../failure/testing.ts";
 import { dataMemory } from "./data-memory.ts";
 
 const irrelevantName = "testing";
@@ -43,7 +43,7 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
 
     system.pass.second();
     const result = allocStack(0xf2);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureKind(extractedFailures(result), "ram_outOfRange");
 });
 
@@ -58,7 +58,7 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
 
     system.pass.second();
     const result = alloc(0xf2);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureKind(extractedFailures(result), "ram_outOfRange");
 
 });
@@ -94,11 +94,11 @@ Deno.test("Stack and memory allocations both decrease the available SRAM", () =>
     assertSuccessWith(alloc(25), "0");
 
     const first = allocStack(25);
-    assertFailures(first);
+    assertEquals(first.type, "failures");
     assertFailureKind(extractedFailures(first), "ram_outOfRange");
 
     const second = alloc(25);
-    assertFailures(second);
+    assertEquals(second.type, "failures");
     assertFailureKind(extractedFailures(second), "ram_outOfRange");
 });
 

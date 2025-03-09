@@ -6,7 +6,7 @@ import type { VoidDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { directiveList } from "../directives/directive-list.ts";
 import { extractedFailures } from "../failure/bags.ts";
-import { assertFailureKind, assertFailures, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
+import { assertFailureKind, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "./symbol-table.ts";
 
@@ -52,7 +52,7 @@ Deno.test("A symbol can only be redefined if it's value has not changed", () => 
     assertSuccess(define("plop", 57));
 
     const result = define("plop", 75);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureKind(extractedFailures(result), "symbol_alreadyExists");
 });
 
@@ -66,7 +66,7 @@ Deno.test("A symbol can't be defined with the same name as a directive", () => {
         "type": "voidDirective", "it": () => emptyBag()
     });
     const result = define("redefineMe", 57);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureKind(extractedFailures(result), "symbol_nameIsDirective");
 });
 
@@ -89,7 +89,7 @@ Deno.test("A symbol can't be defined with the same name as a register", () => {
 
     system.cpuRegisters.initialise(false);
     const result = define("R8", 8);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureKind(extractedFailures(result), "symbol_nameIsRegister");
 });
 
@@ -109,7 +109,7 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
 
     system.deviceProperties.property("test", "57");
     const result = define("test", 57);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureKind(extractedFailures(result), "symbol_alreadyExists");
 })
 

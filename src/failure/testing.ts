@@ -11,12 +11,6 @@ export const assertSuccess = (
     assertNotEquals(actual.type, "failures");
 };
 
-export const assertFailures = (
-    actual: StringOrFailures | NumberOrFailures | BooleanOrFailures
-) => {
-    assertEquals(actual.type, "failures", `Expected failures but got ${actual.type}`);
-};
-
 type Value<It> = It extends string ? StringBag
     : It extends number ? NumberBag
     : BooleanBag;

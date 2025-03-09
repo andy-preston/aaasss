@@ -1,5 +1,6 @@
+import { assertEquals } from "assert";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { assertFailures, assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
+import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { macroFromTable, systemUnderTest } from "./testing.ts";
 import { extractedFailures } from "../failure/bags.ts";
 
@@ -11,7 +12,7 @@ Deno.test("The macro directive name must be a string", () => {
         irrelevantName, system.macros.macroDirective
     );
     const result = macro(47);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureWithExtra(
         extractedFailures(result), "parameter_type", ["string", "0: number"]
     );
@@ -23,7 +24,7 @@ Deno.test("The parameters in a definition must be strings", () => {
         irrelevantName, system.macros.macroDirective
     );
     const result = macro("testMacro", "a", 2, "b", 3);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureWithExtra(
         extractedFailures(result), "parameter_type", ["string", "2: number", "4: number"]
     );
@@ -44,7 +45,7 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
     const result = testMacro(true, {"c": "c"});
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureWithExtra(
         extractedFailures(result), "parameter_type", ["string, number", "0: boolean", "1: object"]
     );
@@ -65,7 +66,7 @@ Deno.test("Parameter count mismatches result in a failure", () => {
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
     const result = testMacro("1", "2");
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     assertFailureWithExtra(
         extractedFailures(result), "macro_params", ["3"]
     );

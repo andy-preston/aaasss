@@ -1,7 +1,7 @@
 import { assertEquals } from "assert";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { extractedFailures, ProgramMemoryOutOfRange } from "../failure/bags.ts";
-import { assertFailureWithExtra, assertFailures, assertSuccess } from "../failure/testing.ts";
+import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -13,7 +13,7 @@ Deno.test("A device must be selected before program memory can be set", () => {
     );
 
     const result = origin(10);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     const failures = extractedFailures(result);
     assertEquals(failures.length, 2);
     assertEquals(failures[0]!.kind, "device_notSelected");
@@ -27,7 +27,7 @@ Deno.test("Origin addresses can't be less than zero", () => {
     );
 
     const result = origin(-1);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     const failures = extractedFailures(result);
     assertEquals(failures.length, 1);
     assertFailureWithExtra(
@@ -42,7 +42,7 @@ Deno.test("Origin addresses can't be strange type", () => {
     );
 
     const result = origin("nothing");
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     const failures = extractedFailures(result);
     assertEquals(failures.length, 1);
     assertFailureWithExtra(
@@ -58,7 +58,7 @@ Deno.test("Device name is used to determine if properties have been set", () => 
     system.deviceProperties.property("programMemoryBytes", "FF");
 
     const result = origin(10);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     const failures = extractedFailures(result);
     assertEquals(failures.length, 2);
     assertEquals(failures[0]!.kind, "device_notSelected");
@@ -79,7 +79,7 @@ Deno.test("Origin addresses must be progmem size when a device is chosen", () =>
 
     const tryOrigin = 92;
     const result = origin(tryOrigin);
-    assertFailures(result);
+    assertEquals(result.type, "failures");
     const failures = extractedFailures(result);
     assertEquals(failures.length, 1);
     assertEquals(failures[0]!.kind, "programMemory_outOfRange");
