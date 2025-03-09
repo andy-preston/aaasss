@@ -1,5 +1,5 @@
 import { assertEquals } from "assert";
-import type { ClueFailure, Failure } from "../failure/bags.ts";
+import type { ClueFailure, Failure, OldFailure } from "../failure/bags.ts";
 import { assertFailureWithExtra } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
@@ -9,8 +9,10 @@ Deno.test("Device name fails when no device is selected", () => {
     const result = system.deviceProperties.public.value("deviceName");
     assertEquals(result.type, "failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
+    assertEquals(failures.length, 2);
     assertEquals(failures[0]!.kind, "device_notSelected");
+    assertEquals(failures[1]!.kind, "symbol_notFound");
+    assertEquals((failures[1] as OldFailure).extra, [undefined, "deviceName"]);
 });
 
 Deno.test("reducedCore fails when no device is selected", () => {

@@ -1,5 +1,5 @@
 import { booleanBag, numberBag, stringBag } from "../assembler/bags.ts";
-import { oldFailure, bagOfFailures, type StringOrFailures, type NumberOrFailures, type BooleanOrFailures, clueFailure } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, type StringOrFailures, type NumberOrFailures, type BooleanOrFailures, clueFailure, boringFailure, Failure } from "../failure/bags.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
@@ -19,18 +19,21 @@ export const deviceProperties = () => {
     const deviceName = () => symbols.get("deviceName");
 
     const value = (symbolName: string): StringOrFailures => {
+        const failures: Array<Failure> = [];
         if (!symbols.has("deviceName")) {
-            return bagOfFailures([oldFailure("device_notSelected", [symbolName])]);
+            failures.push(boringFailure("device_notSelected"));
         }
         if (!symbols.has(symbolName)) {
-            return bagOfFailures([
-                oldFailure("symbol_notFound", [
+            failures.push(oldFailure(
+                "symbol_notFound", [
                     symbols.get("deviceName") as string,
                     symbolName
-                ])
-            ]);
+                ]
+            ));
         }
-        return stringBag(symbols.get(symbolName)!);
+        return failures.length > 0
+            ? bagOfFailures(failures)
+            : stringBag(symbols.get(symbolName)!);
     };
 
     const numericValue = (symbolName: string): NumberOrFailures => {
@@ -53,14 +56,12 @@ export const deviceProperties = () => {
     const hasReducedCore = (): BooleanOrFailures =>
         symbols.has("deviceName")
             ? booleanBag(reducedCore)
-            : bagOfFailures([
-                oldFailure("device_notSelected", undefined)
-            ]);
+            : bagOfFailures([boringFailure("device_notSelected")]);
 
     const isUnsupported = (mnemonic: Mnemonic): BooleanOrFailures =>
         !symbols.has("deviceName")
             ? bagOfFailures([
-                oldFailure("device_notSelected", undefined),
+                boringFailure("device_notSelected"),
                 clueFailure("mnemonic_supportedUnknown", mnemonic)
             ])
             : unsupported.isUnsupported(mnemonic)

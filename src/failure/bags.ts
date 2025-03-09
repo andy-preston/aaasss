@@ -6,6 +6,7 @@ type FailureOperand = undefined | OperandIndex;
 
 export const boringFailure = (
     kind: "syntax_invalidLabel"
+        | "device_notSelected"
         | "js_jsMode" | "js_assemblerMode"
         | "programMemory_sizeUnknown"
         | "ram_sizeUnknown" | "ram_stackAllocated"

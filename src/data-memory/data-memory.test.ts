@@ -1,9 +1,8 @@
-import { assertEquals } from "assert";
+import { assertEquals, assertNotEquals } from "assert";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { Failure, OldFailure, MemoryRangeFailure } from "../failure/bags.ts";
-import { assertSuccessWith } from "../failure/testing.ts";
+import type { Failure, MemoryRangeFailure, OldFailure } from "../failure/bags.ts";
 import { dataMemory } from "./data-memory.ts";
 
 const irrelevantName = "testing";
@@ -30,12 +29,14 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
     const result = alloc(23);
     assertEquals(result.type, "failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 3);
+    assertEquals(failures.length, 5);
     assertEquals(failures[0]!.kind, "device_notSelected");
-    assertEquals((failures[0] as OldFailure).extra, ["ramStart"]);
-    assertEquals(failures[1]!.kind, "device_notSelected");
-    assertEquals((failures[1] as OldFailure).extra, ["ramEnd"]);
-    assertEquals(failures[2]!.kind, "ram_sizeUnknown");
+    assertEquals(failures[1]!.kind, "symbol_notFound");
+    assertEquals((failures[1] as OldFailure).extra, [undefined, "ramStart"]);
+    assertEquals(failures[2]!.kind, "device_notSelected");
+    assertEquals(failures[3]!.kind, "symbol_notFound");
+    assertEquals((failures[3] as OldFailure).extra, [undefined, "ramEnd"]);
+    assertEquals(failures[4]!.kind, "ram_sizeUnknown");
 });
 
 Deno.test("A stack allocation can't be beyond available SRAM", () => {
@@ -90,9 +91,11 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
     );
 
     system.pass.second();
-    assertSuccessWith(alloc(25), "0");
-    assertSuccessWith(alloc(25), "25");
-    assertSuccessWith(alloc(25), "50");
+    ["0", "25", "50"].forEach((expectedStartAddress) => {
+        const result = alloc(25);
+        assertNotEquals(result.type, "failures");
+        assertEquals(result.it, expectedStartAddress);
+    });
 });
 
 Deno.test("Stack allocations decrease the available SRAM", () => {
@@ -109,12 +112,14 @@ Deno.test("Stack allocations decrease the available SRAM", () => {
     const bytesRequested = 0x19;
 
     system.pass.second();
-    assertSuccessWith(alloc(bytesRequested), "0");
+    const allocation = allocStack(bytesRequested);
+    assertNotEquals(allocation.type, "failures");
+    assertEquals(allocation.it, "");
     const bytesAvailable = 0x1f - bytesRequested;
 
-    const result = allocStack(bytesRequested);
-    assertEquals(result.type, "failures");
-    const failures = result.it as Array<Failure>;
+    const failing = alloc(bytesRequested);
+    assertEquals(failing.type, "failures");
+    const failures = failing.it as Array<Failure>;
     assertEquals(failures.length, 1);
     const failure = failures[0] as MemoryRangeFailure;
     assertEquals(failure.kind, "ram_outOfRange");
@@ -133,12 +138,14 @@ Deno.test("Memory allocations decrease the available SRAM", () => {
     const bytesRequested = 0x19;
 
     system.pass.second();
-    assertSuccessWith(alloc(bytesRequested), "0");
+    const allocation = alloc(bytesRequested);
+    assertNotEquals(allocation.type, "failures");
+    assertEquals(allocation.it, "0");
     const bytesAvailable = 0x1f - bytesRequested;
 
-    const result = alloc(bytesRequested);
-    assertEquals(result.type, "failures");
-    const failures = result.it as Array<Failure>;
+    const failing = alloc(bytesRequested);
+    assertEquals(failing.type, "failures");
+    const failures = failing.it as Array<Failure>;
     assertEquals(failures.length, 1);
     const failure = failures[0] as MemoryRangeFailure;
     assertEquals(failure.kind, "ram_outOfRange");
@@ -155,9 +162,14 @@ Deno.test("Allocations don't get repeated on the second pass", () => {
         irrelevantName, system.dataMemory.allocDirective
     );
 
-    assertSuccessWith(alloc(25), "0");
-    assertSuccessWith(alloc(25), "25");
-    system.pass.second();
-    assertSuccessWith(alloc(25), "0");
-    assertSuccessWith(alloc(25), "25");
+    [1, 2].forEach((pass) => {
+        if (pass == 2) {
+            system.pass.second();
+        }
+        ["0", "25"].forEach((expectedStartAddress) => {
+            const result = alloc(25);
+            assertNotEquals(result.type, "failures");
+            assertEquals(result.it, expectedStartAddress);
+        });
+    });
 });
