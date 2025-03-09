@@ -2,17 +2,18 @@ import type { OperandIndex } from "../operands/data-types.ts";
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
 import type { OldFailureKind } from "./failures.ts";
 
+export type BoringFailure = {
+    "kind": "syntax_invalidLabel"
+        | "js_jsMode" | "js_assemblerMode"
+        | "programMemory_sizeUnknown"
+        | "ram_sizeUnknown" | "ram_stackAllocated";
+};
+
 export type ClueFailure = {
     "kind": "file_notFound"
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown",
     "clue": string
-};
-
-export type BoringFailure = {
-    "kind": "syntax_invalidLabel"
-        | "programMemory_sizeUnknown"
-        | "ram_sizeUnknown" | "ram_stackAllocated";
 };
 
 export type MemoryRangeFailure = {

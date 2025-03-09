@@ -1,6 +1,6 @@
 import { emptyBag } from "../assembler/bags.ts";
 import { saveGlobalLineForDirectives } from "../directives/global-line.ts";
-import { oldFailure, bagOfFailures, StringOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
 import { JsExpression } from "./expression.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";
@@ -24,7 +24,7 @@ export const embeddedJs = (expression: JsExpression) => {
     };
 
     const leftInIllegalState = (): StringOrFailures => current == "javascript"
-        ? bagOfFailures([oldFailure(undefined , "js_jsMode", undefined)])
+        ? bagOfFailures([{ "kind": "js_jsMode"}])
         : emptyBag();
 
     const rendered = (line: LineWithRawSource) => {
@@ -46,7 +46,7 @@ export const embeddedJs = (expression: JsExpression) => {
             "}}", () => {
                 if (current == "assembler") {
                     itFailed = true;
-                    line.withFailure(oldFailure(undefined , "js_assemblerMode", undefined));
+                    line.withFailure({ "kind": "js_assemblerMode" });
                 } else {
                     const javascriptCode = buffer.javascript.join("\n").trim();
                     buffer.javascript = [];
