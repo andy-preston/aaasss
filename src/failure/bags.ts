@@ -2,7 +2,15 @@ import type { OperandIndex } from "../operands/data-types.ts";
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
 import type { OldFailureKind } from "./failures.ts";
 
-type FailureOperand = undefined | OperandIndex;
+type OperandLocation = {
+    "operand": OperandIndex
+};
+
+type ParameterLocation = {
+    "parameter": number
+};
+
+type FailureLocation = undefined | OperandLocation | ParameterLocation;
 
 export const boringFailure = (
     kind: "syntax_invalidLabel"
@@ -11,18 +19,28 @@ export const boringFailure = (
         | "programMemory_sizeUnknown"
         | "ram_sizeUnknown" | "ram_stackAllocated"
 ) => ({
-    "kind": kind, "operand": undefined as FailureOperand
+    "kind": kind, "location": undefined as FailureLocation
 });
 
 export type BoringFailure = ReturnType<typeof boringFailure>;
 
+export const comparisonFailure = (
+    kind: "device_multiple",
+    before: string, after: string
+) => ({
+    "kind": kind, "location": undefined as FailureLocation,
+    "before": before, "after": after
+});
+
+export type ComparisonFailure = ReturnType<typeof comparisonFailure>;
+
 export const clueFailure = (
-    kind: "file_notFound"
+    kind: "file_notFound" | "device_notFound"
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown",
     clue: string
 ) => ({
-    "kind": kind, "operand": undefined as FailureOperand,
+    "kind": kind, "location": undefined as FailureLocation,
     "clue": clue
 });
 
@@ -33,7 +51,7 @@ export const exceptionFailure = (
     exception: string,
     message: string
 ) => ({
-    "kind": kind, "operand": undefined as FailureOperand,
+    "kind": kind, "location": undefined as FailureLocation,
     "exception": exception, "message": message
 });
 
@@ -44,7 +62,7 @@ export const memoryRangeFailure = (
     bytesAvailable: number,
     bytesRequested: number
 ) => ({
-    "kind": kind, "operand": undefined as FailureOperand,
+    "kind": kind, "location": undefined as FailureLocation,
     "bytesAvailable": bytesAvailable, "bytesRequested": bytesRequested
 });
 
@@ -54,14 +72,13 @@ export const oldFailure = (
     kind: OldFailureKind,
     extra: Array<string> | undefined
 ) => ({
-    "kind": kind,
+    "kind": kind, "location": undefined as FailureLocation,
     "extra": extra,
-    "operand": undefined as FailureOperand,
 });
 
 export type OldFailure = ReturnType<typeof oldFailure>;
 
-export type NewFailure = BoringFailure | ClueFailure
+export type NewFailure = BoringFailure | ClueFailure | ComparisonFailure
     | ExceptionFailure | MemoryRangeFailure;
 
 export type Failure = OldFailure | NewFailure;

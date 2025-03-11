@@ -6,7 +6,7 @@ import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
-import type { NumericOperand, NumericOperands, OperandTypes, SymbolicOperands } from "./data-types.ts";
+import type { NumericOperand, NumericOperands, OperandIndex, OperandTypes, SymbolicOperands } from "./data-types.ts";
 import { lineWithOperands } from "./line-types.ts";
 import { validScaledOperands, type Requirements } from "./valid-scaled.ts";
 
@@ -41,7 +41,7 @@ Deno.test("The number of operands much match", () => {
     const failures = line.failures().toArray();
     assertEquals(failures.length, 1);
     assertFailureWithExtra(failures, "operand_wrongCount", ["3"]);
-    assertEquals((failures[0] as OldFailure).operand, undefined);
+    assertEquals((failures[0] as OldFailure).location, undefined);
 });
 
 Deno.test("The required operand type must match the actual operand types", () => {
@@ -77,7 +77,7 @@ Deno.test("If they don't match the line is marked with a failure", () => {
     failures.forEach((failure, index) => {
         assertEquals(failure.kind, "operand_wrongType");
         const oldStyle = failure as OldFailure;
-        assertEquals(oldStyle.operand, index);
+        assertEquals(oldStyle.location, {"operand": index as OperandIndex});
         assertEquals(oldStyle.extra, [requirements[index]![0]]);
     });
 });
@@ -127,7 +127,7 @@ Deno.test("If numeric types don't match the line fails", () => {
         assertEquals(failures.length, 1);
         const oldStyle = failures[0] as OldFailure;
         assertEquals(oldStyle.kind, numericType);
-        assertEquals(oldStyle.operand, 0);
+        assertEquals(oldStyle.location, {"operand": 0});
         const extras = oldStyle.extra as Array<string>;
         assert(Array.isArray(extras));
         assertEquals(extras.length, 3);

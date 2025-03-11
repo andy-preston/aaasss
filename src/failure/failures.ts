@@ -12,7 +12,7 @@ export type TypeFailure = NumericType
     | "type_number" | "type_string" | "type_strings" | "type_bytes";
 
 export type OldFailureKind = TypeFailure
-    | "device_notFound"  | "device_multiple" | "device_internalFormat"
+    | "device_internalFormat"
     | "macro_multiDefine" | "macro_noEnd" | "macro_end" | "macro_params"
         | "macro_name" | "macro_notExist"
     | "operand_wrongCount" | "operand_blank" | "operand_wrongType"

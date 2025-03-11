@@ -51,7 +51,7 @@ export const symbolicToNumeric = (
             if (numeric.type == "failures") {
                 numericOperands.push(0);
                 (numeric.it as Array<Failure>).forEach((failure) => {
-                    failure.operand = index as OperandIndex;
+                    failure.location = {"operand": index as OperandIndex};
                     line.withFailure(failure);
                 });
             } else {

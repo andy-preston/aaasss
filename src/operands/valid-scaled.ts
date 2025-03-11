@@ -29,7 +29,7 @@ export const validScaledOperands = (
 
         if (line.operandTypes[operandIndex] != operandType) {
             const failure = oldFailure("operand_wrongType", [operandType]);
-            failure.operand = operandIndex;
+            failure.location = {"operand": operandIndex};
             line.withFailure(failure);
             return 0;
         }
@@ -37,7 +37,7 @@ export const validScaledOperands = (
         const valid = validNumeric(numeric, numericType);
         if (valid.type == "failures") {
             (valid.it as Array<Failure>).forEach((failure) => {
-                failure.operand = operandIndex;
+                failure.location = {"operand": operandIndex};
                 line.withFailure(failure);
             });
             return 0;

@@ -1,6 +1,5 @@
 import { assert, assertEquals } from "assert";
 import type { OldFailure } from "../failure/bags.ts";
-import { assertFailureKind, assertFailureWithExtra } from "../failure/testing.ts";
 import { tokenise } from "./tokenise.ts";
 import { testLine } from "./testing.ts";
 
@@ -27,7 +26,9 @@ Deno.test("No instruction has three (or more) operands", () => {
     assert(tokenised.failed());
     const failures = tokenised.failures().toArray();
     assertEquals(failures.length, 1);
-    assertFailureWithExtra(failures, "operand_wrongCount", ["3"]);
+    assertEquals(failures[0]!.kind, "operand_wrongCount");
+    const failure = failures[0] as OldFailure;
+    assertEquals(failure.extra, ["3"]);
 });
 
 Deno.test("An operand must not be empty", () => {
@@ -37,8 +38,8 @@ Deno.test("An operand must not be empty", () => {
     assert(tokenised.failed());
     const failures = tokenised.failures().toArray();
     assertEquals(failures.length, 1);
-    assertFailureKind(failures, "operand_blank");
-    assertEquals((failures[0] as OldFailure).operand, 0);
+    assertEquals(failures[0]!.kind, "operand_blank");
+    assertEquals(failures[0]!.location, {"operand": 0});
 });
 
 Deno.test("Trailing commas count as an (empty operand)", () => {
@@ -48,8 +49,8 @@ Deno.test("Trailing commas count as an (empty operand)", () => {
     assert(tokenised.failed());
     const failures = tokenised.failures().toArray();
     assertEquals(failures.length, 1);
-    assertFailureKind(failures, "operand_blank");
-    assertEquals((failures[0] as OldFailure).operand, 1);
+    assertEquals(failures[0]!.kind, "operand_blank");
+    assertEquals(failures[0]!.location, {"operand": 1});
 });
 
 Deno.test("Some instructions only have one operand", () => {
@@ -100,9 +101,9 @@ Deno.test("... but not as the first operand of any other instruction", () => {
     assert(tokenised.failed());
     const failures = tokenised.failures().toArray();
     assertEquals(failures.length, 1);
-    assertFailureKind(failures, "operand_offsetNotStd");
-    assertEquals((failures[0] as OldFailure).operand, 0);
-});
+    assertEquals(failures[0]!.kind, "operand_offsetNotStd");
+    assertEquals(failures[0]!.location, {"operand": 0});
+ });
 
 Deno.test("... or the second operand", () => {
     const line = testLine("LDI R14, Z+offset");
@@ -112,6 +113,6 @@ Deno.test("... or the second operand", () => {
     assert(tokenised.failed());
     const failures = tokenised.failures().toArray();
     assertEquals(failures.length, 1);
-    assertFailureKind(failures, "operand_offsetNotLdd");
-    assertEquals((failures[0] as OldFailure).operand, 1);
+    assertEquals(failures[0]!.kind, "operand_offsetNotLdd");
+    assertEquals(failures[0]!.location, {"operand": 1});
 });

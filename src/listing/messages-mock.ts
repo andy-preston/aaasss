@@ -13,18 +13,31 @@ export const mockFailureMessages = (
     }
 
     for (const property in failure) {
-        if (!["kind", "onOperand"].includes(property)) {
-            // deno-lint-ignore no-explicit-any
-            const value = (failure as any)[property];
-            if (Array.isArray(value)) {
-                // deno-lint-ignore no-explicit-any
-                for (const [index, item] of (value as Array<any>).entries()) {
-                    push(`${property}[${index}]`, item);
-                }
-            } else {
-                push(property, value);
-            }
+        if (["kind", "onOperand"].includes(property)) {
+            continue;
         }
+
+        // deno-lint-ignore no-explicit-any
+        const value = (failure as any)[property];
+        if (Array.isArray(value)) {
+            // deno-lint-ignore no-explicit-any
+            for (const [index, item] of (value as Array<any>).entries()) {
+                push(`${property}[${index}]`, item);
+            }
+            continue;
+        }
+
+        if (value instanceof Object) {
+            for (const littleProperty in value) {
+            // deno-lint-ignore no-explicit-any
+            const littleValue = (value as any)[littleProperty];
+                push(`${property}.${littleProperty}`, littleValue);
+
+            }
+            continue;
+        }
+
+        push(property, value);
     }
     return result;
 };

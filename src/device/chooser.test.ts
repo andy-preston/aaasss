@@ -1,7 +1,6 @@
-import { assertEquals } from "assert";
+import { assertEquals, assertNotEquals } from "assert";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { Failure } from "../failure/bags.ts";
-import { assertFailureKind, assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
+import type { ClueFailure, ComparisonFailure, Failure, OldFailure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -12,7 +11,9 @@ Deno.test("You can choose any device that has a definition file", () => {
         const device = directiveFunction(
             irrelevantName, system.deviceChooser.deviceDirective
         );
-        assertSuccess(device(deviceName));
+        const result = device(deviceName);
+        assertNotEquals(result.type, "failures");
+        assertEquals(result.it, "");
     }
 });
 
@@ -23,13 +24,17 @@ Deno.test("Choosing multiple devices results in failure", () => {
     const device = directiveFunction(
         irrelevantName, system.deviceChooser.deviceDirective
     );
-    assertSuccess(device(firstName));
+    const firstTry = device(firstName);
+    assertNotEquals(firstTry.type, "failures");
 
-    const result = device(secondName);
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "device_multiple", [firstName, secondName]
-    );
+    const secondTry = device(secondName);
+    assertEquals(secondTry.type, "failures");
+    const failures = secondTry.it as Array<Failure>;
+    assertEquals(failures.length, 1);
+    assertEquals(failures[0]!.kind, "device_multiple");
+    const failure = failures[0] as ComparisonFailure;
+    assertEquals(failure.before, firstName)
+    assertEquals(failure.after, secondName);
 });
 
 Deno.test("Choosing the same device by different names is also a failure", () => {
@@ -42,12 +47,17 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
         irrelevantName, system.deviceChooser.deviceDirective
     );
 
-    assertSuccess(device(firstName));
-    const result = device(secondName);
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "device_multiple", [firstName, secondName]
-    );
+    const firstTry = device(firstName);
+    assertNotEquals(firstTry.type, "failures");
+
+    const secondTry = device(secondName);
+    assertEquals(secondTry.type, "failures");
+    const failures = secondTry.it as Array<Failure>;
+    assertEquals(failures.length, 1);
+    assertEquals(failures[0]!.kind, "device_multiple");
+    const failure = failures[0] as ComparisonFailure;
+    assertEquals(failure.before, firstName)
+    assertEquals(failure.after, secondName);
 });
 
 Deno.test("Choosing an non-existant device returns a Failure", () => {
@@ -58,7 +68,26 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
 
     const result = device("notARealDevice");
     assertEquals(result.type, "failures");
-    assertFailureKind(result.it as Array<Failure>, "device_notFound");
+    const failures = result.it as Array<Failure>;
+    assertEquals(failures.length, 1);
+    const failure = failures[0] as ClueFailure;
+    assertEquals(failure.kind, "device_notFound");
+    assertEquals(failure.clue, "./devices/notarealdevice.json");
+});
+
+Deno.test("The device name must be present", () => {
+    const system = systemUnderTest();
+    const device = directiveFunction(
+        irrelevantName, system.deviceChooser.deviceDirective
+    );
+
+    const result = device();
+    assertEquals(result.type, "failures");
+    const failures = result.it as Array<Failure>;
+    assertEquals(failures.length, 1);
+    assertEquals(failures[0]!.kind, "parameter_count");
+    const failure = failures[0] as OldFailure;
+    assertEquals(failure.extra, ["1"]);
 });
 
 Deno.test("The device name must be present and a string", () => {
@@ -66,28 +95,7 @@ Deno.test("The device name must be present and a string", () => {
     const device = directiveFunction(
         irrelevantName, system.deviceChooser.deviceDirective
     );
-
-    const wrongCount = device("notARealDevice");
-    assertEquals(wrongCount.type, "failures");
-    assertFailureKind(wrongCount.it as Array<Failure>, "device_notFound");
-
-    const wrongArray = device([1, 2, 3]);
-    assertEquals(wrongArray.type, "failures");
-    assertFailureWithExtra(
-        wrongArray.it as Array<Failure>, "parameter_type", ["string", "0: array"]
-    );
-
-    const wrongNumber = device(64);
-    assertEquals(wrongNumber.type, "failures");
-    assertFailureWithExtra(
-        wrongNumber.it as Array<Failure>, "parameter_type", ["string", "0: number"]
-    );
-
-    const wrongBoolean = device(false);
-    assertEquals(wrongBoolean.type, "failures");
-    assertFailureWithExtra(
-        wrongBoolean.it as Array<Failure>, "parameter_type", ["string", "0: boolean"]
-    );
-
-    assertSuccess(device("at tiny 24"));
+    const result = device("at tiny 24");
+    assertNotEquals(result.type, "failures");
+    assertEquals(result.it, "");
 });

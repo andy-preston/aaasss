@@ -1,6 +1,6 @@
 import { emptyBag } from "../assembler/bags.ts";
 import type { StringDirective } from "../directives/bags.ts";
-import { oldFailure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, comparisonFailure, type StringOrFailures } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
@@ -31,7 +31,7 @@ export const deviceChooser = (
         }
         if (previousName != undefined) {
             return bagOfFailures([
-                oldFailure("device_multiple", [previousName, deviceName])
+                comparisonFailure("device_multiple", previousName, deviceName)
             ]);
         }
         deviceProperties.property("deviceName", deviceName);

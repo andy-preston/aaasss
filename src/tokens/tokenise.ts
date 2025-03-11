@@ -1,4 +1,4 @@
-import { boringFailure, oldFailure } from "../failure/bags.ts";
+import { boringFailure, Failure, oldFailure } from "../failure/bags.ts";
 import {
     operands, type OperandIndex, type SymbolicOperands
 } from "../operands/data-types.ts"
@@ -29,38 +29,47 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
     }
 
     const fullOperands: Array<string> = [];
-    for (const operand of operandsList.slice(0, 2)) {
+
+    const addFailure = (failure: Failure) => {
+        failure.location = {"operand": fullOperands.length as OperandIndex};
+        line.withFailure(failure);
+    };
+
+    operandsList.slice(0, 2).forEach((operand) => {
         const indexing = indexRegisterWithPlus(operand);
         if (indexing == "") {
             fullOperands.push(operand);
-        } else if (indexing == "X+") {
-            const failure = oldFailure("operand_offsetX", undefined);
-            failure.operand = fullOperands.length as OperandIndex;
-            line.withFailure(failure);
-            fullOperands.push(operand);
-        } else if (fullOperands.length == 0 && mnemonic != "STD") {
-            const failure = oldFailure("operand_offsetNotStd", undefined);
-            failure.operand = fullOperands.length as OperandIndex;
-            line.withFailure(failure);
-            fullOperands.push(operand);
-        } else if (fullOperands.length == 1 && mnemonic != "LDD") {
-            const failure = oldFailure("operand_offsetNotLdd", undefined);
-            failure.operand = fullOperands.length as OperandIndex;
-            line.withFailure(failure);
-            fullOperands.push(operand);
-        } else {
-            fullOperands.push(indexing);
-            fullOperands.push(operand.substring(2));
+            return;
         }
-    }
 
-    for (const [index, operand] of fullOperands.entries()) {
+        if (indexing == "X+") {
+            addFailure(oldFailure("operand_offsetX", undefined));
+            fullOperands.push(operand);
+            return;
+        }
+
+        if (fullOperands.length == 0 && mnemonic != "STD") {
+            addFailure(oldFailure("operand_offsetNotStd", undefined));
+            fullOperands.push(operand);
+            return;
+        }
+
+        if (fullOperands.length == 1 && mnemonic != "LDD") {
+            addFailure(oldFailure("operand_offsetNotLdd", undefined));
+            fullOperands.push(operand);
+            return;
+        }
+
+        fullOperands.push(indexing);
+        fullOperands.push(operand.substring(2));
+    });
+    fullOperands.forEach((operand, index) => {
         if (operand == "") {
             const failure = oldFailure("operand_blank", undefined);
-            failure.operand = index as OperandIndex;
+            failure.location = {"operand": index as OperandIndex};
             line.withFailure(failure);
         }
-    }
+    });
 
     const mappedOperands = fullOperands.map(upperCaseRegisters);
 
