@@ -8,8 +8,6 @@ import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithAddress } from "./line-types.ts";
 
-const bytesToWords = (byteCount: number): number => byteCount / 2;
-
 export const programMemory = (
     symbolTable: SymbolTable, device: DevicePropertiesInterface
 ) => {
@@ -20,21 +18,28 @@ export const programMemory = (
     };
 
     const pastEnd = (newAddress: number): StringOrFailures => {
-        const bytes = device.numericValue("programMemoryBytes");
-        if (bytes.type == "failures") {
-            const notSelected = bytes.it.find(
+        const totalBytes = device.numericValue("programMemoryBytes");
+        if (totalBytes.type == "failures") {
+            const notSelected = totalBytes.it.find(
                 failure => failure.kind == "device_notSelected"
             );
             if (notSelected != undefined) {
-                bytes.it.push(boringFailure("programMemory_sizeUnknown"));
+                totalBytes.it.push(boringFailure("programMemory_sizeUnknown"));
             }
-            return bytes;
+            return totalBytes;
         }
 
-        const words = bytes.it / 2
-        return newAddress > words ? bagOfFailures([memoryRangeFailure(
-            "programMemory_outOfRange", bytes.it, (newAddress - address) * 2
-        )]) : emptyBag()
+        const totalWords = totalBytes.it / 2;
+
+        return newAddress > totalWords
+            ? bagOfFailures([
+                memoryRangeFailure(
+                    "programMemory_outOfRange",
+                    (totalWords - address) * 2,
+                    (newAddress - address) * 2
+                )
+            ])
+            : emptyBag()
     };
 
     const origin = (newAddress: number): DirectiveResult => {
@@ -71,10 +76,10 @@ export const programMemory = (
 
         const newLine = lineWithAddress(line, address);
 
-        const newAddress = bytesToWords(line.code.reduce(
-            (accumulated, codeBlock) => accumulated + codeBlock.length,
-            0
-        )) + address;
+        const newAddress = line.code.reduce(
+            (accumulated, codeBlock) => accumulated + (codeBlock.length / 2),
+            address
+        );
 
         const step = origin(newAddress);
         if (step.type == "failures") {
@@ -86,9 +91,6 @@ export const programMemory = (
 
     return {
         "resetState": resetState,
-        // "address" isn't used in the code but it's extremely simple and it's
-        // being there makes tests SO much simpler. I'm not sure if that is
-        // haram or not but I'm keeping it, at least for now.
         "address": () => address,
         "originDirective": originDirective,
         "addressed": addressed

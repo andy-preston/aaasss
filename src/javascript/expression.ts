@@ -1,8 +1,10 @@
 import { emptyBag, NumberBag, StringBag, stringBag } from "../assembler/bags.ts";
 import type { BaggedDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { bagOfFailures, exceptionFailure , type BagOfFailures, type BagOrFailures, type StringOrFailures } from "../failure/bags.ts";
-import type { SymbolBag } from "../symbol-table/bags.ts";
+import {
+    bagOfFailures, exceptionFailure ,
+    type BagOfFailures, type BagOrFailures, type StringOrFailures
+} from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 const isBagOrFailures = (it: object): it is BagOrFailures =>
@@ -27,7 +29,9 @@ const mappedResult = (result: unknown): StringOrFailures =>
 
 const discreteTypes = ["string", "number", "directive"];
 
-const mappedCall = (symbolName: string, symbol: SymbolBag) => {
+const mappedCall = (
+    symbolName: string, symbol: StringBag | NumberBag | BaggedDirective
+) => {
     return discreteTypes.includes(symbol.type)
         ? symbol.it
         : symbol.type.endsWith("Directive")

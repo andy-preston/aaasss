@@ -13,11 +13,12 @@ type ParameterLocation = {
 type FailureLocation = undefined | OperandLocation | ParameterLocation;
 
 export const boringFailure = (
-    kind: "syntax_invalidLabel"
-        | "device_notSelected"
+    kind: "device_notSelected"
         | "js_jsMode" | "js_assemblerMode"
+        | "macro_end" | "macro_noEnd"
         | "programMemory_sizeUnknown"
         | "ram_sizeUnknown" | "ram_stackAllocated"
+        | "syntax_invalidLabel"
 ) => ({
     "kind": kind, "location": undefined as FailureLocation
 });
@@ -35,7 +36,9 @@ export const comparisonFailure = (
 export type ComparisonFailure = ReturnType<typeof comparisonFailure>;
 
 export const clueFailure = (
-    kind: "file_notFound" | "device_notFound"
+    kind: "device_notFound"
+        | "file_notFound"
+        | "macro_name" | "macro_multiDefine"
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown",
     clue: string

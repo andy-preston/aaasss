@@ -1,7 +1,7 @@
 import { assertEquals } from "assert";
 import { emptyBag, stringBag } from "../assembler/bags.ts";
-import { bagOfFailures, clueFailure, Failure } from "../failure/bags.ts";
-import { assertFailureKind, assertFailureWithExtra, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
+import { bagOfFailures, ClueFailure, clueFailure, Failure } from "../failure/bags.ts";
+import { assertFailureWithExtra, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
 import { directiveFunction } from "./directive-function.ts";
 
 const irrelevantName = "testing";
@@ -22,12 +22,16 @@ Deno.test("Any directives that are added can be called as functions", () => {
 Deno.test("Directives can return a failure", () => {
     const untyped = directiveFunction(irrelevantName, {
         "type": "voidDirective",
-        "it": () => bagOfFailures([clueFailure("file_notFound", "" )])
+        "it": () => bagOfFailures([clueFailure("file_notFound", "nothing!" )])
     });
 
     const result = untyped();
     assertEquals(result.type, "failures");
-    assertFailureKind(result.it as Array<Failure>, "file_notFound");
+    const failures = result.it as Array<Failure>;
+    assertEquals(failures.length, 1);
+    assertEquals(failures[0]!.kind, "file_notFound");
+    const failure = failures[0] as ClueFailure;
+    assertEquals(failure.clue, "nothing!");
 });
 
 Deno.test("Directives can return success in the form of an empty box", () => {

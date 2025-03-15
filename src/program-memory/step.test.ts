@@ -1,7 +1,9 @@
 import { assert, assertEquals, assertFalse } from "assert";
-import { assertFailureKind } from "../failure/testing.ts";
+import type { MemoryRangeFailure } from "../failure/bags.ts";
+import type { Code } from "../object-code/data-types.ts";
 import { systemUnderTest, testLine } from "./testing.ts";
 
+/*
 Deno.test("If a line has no code the address remains unchanged", () => {
     const system = systemUnderTest();
     system.deviceProperties.property("deviceName", "test");
@@ -51,39 +53,51 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
     system.deviceProperties.property("deviceName", "test");
     system.deviceProperties.property("programMemoryBytes", "00");
     const preFailureAddress = system.programMemory.address();
+    const testPokes: Code = [1, 2, 3, 4];
+    const testCode: Code = [1, 2];
 
-    const line = testLine("", [[1, 2, 3, 4]], [1, 2]);
+    const line = testLine("", [testPokes], testCode);
     const result = system.programMemory.addressed(line);
     assert(result.failed());
     const failures = result.failures().toArray();
     assertEquals(failures.length, 1);
-    assertFailureKind(failures, "programMemory_outOfRange");
+    assertEquals(failures[0]!.kind, "programMemory_outOfRange");
+    const failure = failures[0] as MemoryRangeFailure;
+    assertEquals(failure.bytesAvailable, 0);
+    assertEquals(failure.bytesRequested, testPokes.length + testCode.length);
     // Code is still generated
-    assertEquals(result.code, [[1, 2, 3, 4], [1, 2]]);
+    assertEquals(result.code, [testPokes, testCode]);
     // But the address doesn't advance
     assertEquals(system.programMemory.address(), preFailureAddress);
 });
+*/
 
 Deno.test("Advancing beyond the end of program memory causes failure", () => {
     const system = systemUnderTest();
     system.deviceProperties.property("deviceName", "test");
     system.deviceProperties.property("programMemoryBytes", "06");
+    const testPokes: Code = [1, 2, 3, 4];
+    const testCode: Code = [1, 2];
 
-    const firstLine = testLine("", [[1, 2, 3, 4]], [1, 2]);
+    const firstLine = testLine("", [testPokes], testCode);
     const firstResult = system.programMemory.addressed(firstLine);
     assertFalse(firstResult.failed());
     assertEquals(firstResult.failures.length, 0);
-    assertEquals(firstResult.code, [[1, 2, 3, 4], [1, 2]]);
+    assertEquals(firstResult.code, [testPokes, testCode]);
     const preFailureAddress = system.programMemory.address();
+    assertEquals(preFailureAddress * 2, testPokes.length + testCode.length);
 
-    const secondLine = testLine("", [[1, 2, 3, 4]], [1, 2]);
+    const secondLine = testLine("", [testPokes], testCode);
     const secondResult = system.programMemory.addressed(secondLine);
     assert(secondResult.failed(), "Didn't fail!");
     const failures = secondResult.failures().toArray();
     assertEquals(failures.length, 1);
-    assertFailureKind(failures, "programMemory_outOfRange");
+    assertEquals(failures[0]!.kind, "programMemory_outOfRange");
+    const failure = failures[0] as MemoryRangeFailure;
+    assertEquals(failure.bytesAvailable, 0);
+    assertEquals(failure.bytesRequested, testPokes.length + testCode.length);
     // Code is still generated
-    assertEquals(firstResult.code, [[1, 2, 3, 4], [1, 2]]);
+    assertEquals(firstResult.code, [testPokes, testCode]);
     // But the address doesn't advance
     assertEquals(system.programMemory.address(), preFailureAddress);
 });

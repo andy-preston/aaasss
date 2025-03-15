@@ -1,4 +1,4 @@
-import { assertEquals, assertNotEquals } from "assert";
+import { assert, assertEquals, assertNotEquals } from "assert";
 import { numberBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";

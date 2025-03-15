@@ -1,29 +1,19 @@
 import { assertEquals } from "assert";
-import { numberBag } from "../assembler/bags.ts";
-import { pass } from "../assembler/pass.ts";
-import { deviceProperties } from "../device/properties.ts";
-import { directiveList } from "../directives/directive-list.ts";
-import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "./symbol-table.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
 
 const systemUnderTest = () => {
-    const currentPass = pass();
-    const symbols = symbolTable(
-        directiveList(), deviceProperties().public, cpuRegisters(), currentPass
-    );
     return {
-        "pass": currentPass,
-        "symbols": symbols,
-        "list": () => symbols.list()
+        "symbolTable": symbolTable(cpuRegisters()),
     };
 };
 
 Deno.test("A freshly added symbol has a count of zero", () => {
     const system = systemUnderTest();
-    system.symbols.add("plop", numberBag(23), "file-name.asm", 10);
-    const result = system.list();
-    assertEquals(1, result.length);
-    const [symbolName, usageCount, symbolValue, definition] = result[0]!;
+    system.symbolTable.add("plop", 23, "file-name.asm", 10);
+    const list = system.symbolTable.list();
+    assertEquals(list.length, 1);
+    const [symbolName, usageCount, symbolValue, definition] = list[0]!;
     assertEquals(symbolName, "plop");
     assertEquals(usageCount, 0);
     assertEquals(symbolValue, 23);
@@ -32,12 +22,12 @@ Deno.test("A freshly added symbol has a count of zero", () => {
 
 Deno.test("Each call to use increments the usage", () => {
     const system = systemUnderTest();
-    system.symbols.add("plop", numberBag(23), "file-name.asm", 10);
+    system.symbolTable.add("plop", 23, "file-name.asm", 10);
     [1, 2, 3, 4].forEach((expectedCount) => {
-        system.symbols.use("plop");
-        const result = system.list();
-        assertEquals(1, result.length);
-        const [symbolName, usageCount, symbolValue, definition] = result[0]!;
+        system.symbolTable.use("plop");
+        const list = system.symbolTable.list();
+        assertEquals(list.length, 1);
+        const [symbolName, usageCount, symbolValue, definition] = list[0]!;
         assertEquals(symbolName, "plop");
         assertEquals(usageCount, expectedCount);
         assertEquals(symbolValue, 23);

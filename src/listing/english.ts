@@ -27,9 +27,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "macro_name": (_line: LineWithAddress) => [
         "Macro already exists"
     ],
-    "macro_notExist": (_line: LineWithAddress) => [
-        "Macro does not exist"
-    ],
     "macro_params": (_line: LineWithAddress) => [
         "Parameter count mismatch"
     ],

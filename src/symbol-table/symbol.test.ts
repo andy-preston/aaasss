@@ -4,7 +4,6 @@ import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import type { VoidDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { directiveList } from "../directives/directive-list.ts";
 import type { Failure } from "../failure/bags.ts";
 import { assertFailureKind, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -14,16 +13,12 @@ const irrelevantName = "testing";
 
 export const systemUnderTest = () => {
     const currentPass = pass();
-    const directives = directiveList();
     const device = deviceProperties();
     const registers = cpuRegisters();
-    const symbols = symbolTable(
-        directives, device.public, registers, currentPass
-    );
+    const symbols = symbolTable(registers);
     return {
         "symbolTable": symbols,
-        "directiveList": directives,
-        "deviceProperties": device,
+        //"deviceProperties": device,
         "cpuRegisters": registers,
         "pass": currentPass
     };
@@ -62,9 +57,10 @@ Deno.test("A symbol can't be defined with the same name as a directive", () => {
         irrelevantName, system.symbolTable.defineDirective
     );
 
-    system.directiveList.includes("redefineMe", {
+    const fakeDirective: VoidDirective = {
         "type": "voidDirective", "it": () => emptyBag()
-    });
+    };
+    system.symbolTable.addFunction("redefineMe", fakeDirective, "", 0);
     const result = define("redefineMe", 57);
     assertEquals(result.type, "failures");
     assertFailureKind(result.it as Array<Failure>, "symbol_nameIsDirective");
@@ -76,9 +72,13 @@ Deno.test("A symbol is returned but not counted if it's a directive", () => {
     const fakeDirective: VoidDirective = {
         "type": "voidDirective", "it": () => emptyBag()
     };
-    system.directiveList.includes("findMe", fakeDirective);
+    system.symbolTable.addFunction("findMe", fakeDirective, "", 0);
     assertEquals(system.symbolTable.use("findMe"), fakeDirective);
-    assertEquals(system.symbolTable.count("findMe"), 0);
+    const list = system.symbolTable.list();
+    assertEquals(list.length, 1);
+    const [symbolName, count, _value, _definition] = list[0]!;
+    assertEquals(symbolName, "findMe");
+    assertEquals(count, 0);
 });
 
 Deno.test("A symbol can't be defined with the same name as a register", () => {
@@ -99,7 +99,11 @@ Deno.test("A symbol is returned and counted if it's a register", () => {
 
     for (const expectedCount of [1, 2, 3]) {
         assertEquals(system.symbolTable.use("R3"), numberBag(3));
-        assertEquals(system.symbolTable.count("R3"), expectedCount);
+        const list = system.symbolTable.list();
+        assertEquals(list.length, 1);
+        const [symbolName, usageCount, _symbolValue, _definition] = list[0]!;
+        assertEquals(symbolName, "R3");
+        assertEquals(usageCount, expectedCount);
     }
 });
 

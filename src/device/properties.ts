@@ -4,23 +4,17 @@ import type { Mnemonic } from "../tokens/data-types.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
 export const deviceProperties = () => {
-    let reducedCore = false;
 
     const unsupported = unsupportedInstructions();
 
-    const symbols: Map<string, string> = new Map([]);
+    let reducedCore = false;
 
-    const property = (symbolName: string, value: string) => {
-        symbols.set(symbolName, value);
-    };
+    let deviceName: string = "";
 
-    const has = (symbolName: string) => symbols.has(symbolName);
-
-    const deviceName = () => symbols.get("deviceName");
-
+    /*
     const value = (symbolName: string): StringOrFailures => {
         const failures: Array<Failure> = [];
-        if (!symbols.has("deviceName")) {
+        if (deviceName == "") {
             failures.push(boringFailure("device_notSelected"));
         }
         if (!symbols.has(symbolName)) {
@@ -52,14 +46,15 @@ export const deviceProperties = () => {
         }
         return numberBag(parseInt(theValue.it, 16));
     };
+    */
 
     const hasReducedCore = (): BooleanOrFailures =>
-        symbols.has("deviceName")
-            ? booleanBag(reducedCore)
-            : bagOfFailures([boringFailure("device_notSelected")]);
+        deviceName == ""
+            ? bagOfFailures([boringFailure("device_notSelected")])
+            : booleanBag(reducedCore);
 
     const isUnsupported = (mnemonic: Mnemonic): BooleanOrFailures =>
-        !symbols.has("deviceName")
+        deviceName == ""
             ? bagOfFailures([
                 boringFailure("device_notSelected"),
                 clueFailure("mnemonic_supportedUnknown", mnemonic)
@@ -73,14 +68,14 @@ export const deviceProperties = () => {
     };
 
     return {
-        "property": property,
+        //"property": property,
         "reducedCore": setReducedCore,
         "unsupportedInstructions": unsupported.choose,
-        "deviceName": deviceName,
+        "deviceName": () => deviceName,
         "public": {
-            "has": has,
-            "value": value,
-            "numericValue": numericValue,
+            //"has": has,
+            //"value": value,
+            //"numericValue": numericValue,
             "hasReducedCore": hasReducedCore,
             "isUnsupported": isUnsupported,
         },
