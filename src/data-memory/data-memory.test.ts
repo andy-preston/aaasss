@@ -2,7 +2,7 @@ import { expect } from "jsr:@std/expect";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure, MemoryRangeFailure, OldFailure } from "../failure/bags.ts";
+import type { DeviceFailure, Failure, MemoryRangeFailure } from "../failure/bags.ts";
 import { dataMemory } from "./data-memory.ts";
 
 const irrelevantName = "testing";
@@ -32,10 +32,14 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
     expect(failures.length).toBe(5);
     expect(failures[0]!.kind).toBe("device_notSelected");
     expect(failures[1]!.kind).toBe("symbol_notFound");
-    expect((failures[1] as OldFailure).extra).toEqual([undefined, "ramStart"]);
+    const startFailure = failures[1] as DeviceFailure;
+    expect(startFailure.device).toBe(undefined);
+    expect(startFailure.clue).toBe("ramStart");
     expect(failures[2]!.kind).toBe("device_notSelected");
     expect(failures[3]!.kind).toBe("symbol_notFound");
-    expect((failures[3] as OldFailure).extra).toEqual([undefined, "ramEnd"]);
+    const endFailure = failures[3] as DeviceFailure;
+    expect(endFailure.device).toBe(undefined);
+    expect(endFailure.clue).toBe("ramEnd");
     expect(failures[4]!.kind).toBe("ram_sizeUnknown");
 });
 

@@ -1,5 +1,5 @@
 import { expect } from "jsr:@std/expect";
-import type { OldFailure } from "../failure/bags.ts";
+import type { ClueFailure, OldFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericType } from "../numeric-values/types.ts";
@@ -41,8 +41,8 @@ Deno.test("The number of operands much match", () => {
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect (failure.kind).toBe("operand_wrongCount");
-    const oldStyle = failure as OldFailure;
-    expect(oldStyle.extra).toEqual(["3"]);
+    const oldStyle = failure as ClueFailure;
+    expect(oldStyle.clue).toEqual("3");
     expect(oldStyle.location).toBe(undefined);
 });
 
@@ -78,9 +78,9 @@ Deno.test("If they don't match the line is marked with a failure", () => {
     expect(failures.length).toBe(2);
     failures.forEach((failure, index) => {
         expect(failure.kind).toBe("operand_wrongType");
-        const oldStyle = failure as OldFailure;
-        expect(oldStyle.location).toEqual({"operand": index as OperandIndex});
-        expect(oldStyle.extra).toEqual([requirements[index]![0]]);
+        const clueFailure = failure as ClueFailure;
+        expect(clueFailure.location).toEqual({"operand": index as OperandIndex});
+        expect(clueFailure.clue).toEqual(requirements[index]![0]);
     });
 });
 

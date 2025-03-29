@@ -1,4 +1,4 @@
-import { boringFailure, Failure, oldFailure } from "../failure/bags.ts";
+import { boringFailure, clueFailure, type Failure } from "../failure/bags.ts";
 import {
     operands, type OperandIndex, type SymbolicOperands
 } from "../operands/data-types.ts"
@@ -24,7 +24,7 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
         line.withFailure(
-            oldFailure("operand_wrongCount", [`${operandsList.length}`])
+            clueFailure("operand_wrongCount", `${operandsList.length}`)
         );
     }
 
@@ -43,19 +43,19 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
         }
 
         if (indexing == "X+") {
-            addFailure(oldFailure("operand_offsetX", undefined));
+            addFailure(boringFailure("operand_offsetX"));
             fullOperands.push(operand);
             return;
         }
 
         if (fullOperands.length == 0 && mnemonic != "STD") {
-            addFailure(oldFailure("operand_offsetNotStd", undefined));
+            addFailure(boringFailure("operand_offsetNotStd"));
             fullOperands.push(operand);
             return;
         }
 
         if (fullOperands.length == 1 && mnemonic != "LDD") {
-            addFailure(oldFailure("operand_offsetNotLdd", undefined));
+            addFailure(boringFailure("operand_offsetNotLdd"));
             fullOperands.push(operand);
             return;
         }
@@ -65,7 +65,7 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
     });
     fullOperands.forEach((operand, index) => {
         if (operand == "") {
-            const failure = oldFailure("operand_blank", undefined);
+            const failure = boringFailure("operand_blank");
             failure.location = {"operand": index as OperandIndex};
             line.withFailure(failure);
         }

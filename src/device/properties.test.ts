@@ -1,5 +1,5 @@
 import { expect } from "jsr:@std/expect";
-import type { ClueFailure, Failure, OldFailure } from "../failure/bags.ts";
+import type { ClueFailure, DeviceFailure, Failure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 
 Deno.test("Device name fails when no device is selected", () => {
@@ -11,7 +11,9 @@ Deno.test("Device name fails when no device is selected", () => {
     expect(failures.length).toBe(2);
     expect(failures[0]!.kind).toBe("device_notSelected");
     expect(failures[1]!.kind).toBe("symbol_notFound");
-    expect((failures[1] as OldFailure).extra).toEqual([undefined, "deviceName"]);
+    const deviceFailure = failures[1] as DeviceFailure;
+    expect(deviceFailure.device).toBe(undefined);
+    expect(deviceFailure.clue).toBe("deviceName");
 });
 
 Deno.test("reducedCore fails when no device is selected", () => {
@@ -116,10 +118,9 @@ Deno.test("... in upper case", () => {
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect (failure.kind).toBe("device_internalFormat");
-    const oldStyle = failure as OldFailure;
-    expect(oldStyle.extra).toEqual(
-        ["imaginaryDevice", "PORTD", "3f"]
-    );
+    const deviceFailure = failure as DeviceFailure;
+    expect(deviceFailure.device).toBe("imaginaryDevice");
+    expect(deviceFailure.clue).toBe("PORTD: 3f");
 });
 
 Deno.test("Non-hex values can't be converted to numbers", () => {
@@ -132,10 +133,9 @@ Deno.test("Non-hex values can't be converted to numbers", () => {
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect (failure.kind).toBe("device_internalFormat");
-    const oldStyle = failure as OldFailure;
-    expect(oldStyle.extra).toEqual(
-        ["imaginaryDevice", "deviceName", "imaginaryDevice"]
-    );
+    const deviceFailure = failure as DeviceFailure;
+    expect(deviceFailure.device).toBe("imaginaryDevice");
+    expect(deviceFailure.clue).toBe("deviceName: imaginaryDevice");
 });
 
 Deno.test("Fails if, after loading device, required symbol is still not found", () => {
@@ -148,8 +148,7 @@ Deno.test("Fails if, after loading device, required symbol is still not found", 
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect (failure.kind).toBe("symbol_notFound");
-    const oldStyle = failure as OldFailure;
-    expect(oldStyle.extra).toEqual(
-        ["imaginaryDevice", "nonExistant"]
-    );
+    const deviceFailure = failure as DeviceFailure;
+    expect(deviceFailure.device).toBe("imaginaryDevice");
+    expect(deviceFailure.clue).toBe("nonExistant");
 });

@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { MemoryRangeFailure, Failure, OldFailure } from "../failure/bags.ts";
+import type { MemoryRangeFailure, Failure, OldFailure, DeviceFailure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -17,7 +17,9 @@ Deno.test("A device must be selected before program memory can be set", () => {
     expect(failures.length).toBe(3);
     expect(failures[0]!.kind).toBe("device_notSelected");
     expect(failures[1]!.kind).toBe("symbol_notFound");
-    expect((failures[1] as OldFailure).extra).toEqual([undefined, "programMemoryBytes"]);
+    const deviceFailure = failures[1] as DeviceFailure;
+    expect(deviceFailure.device).toBe(undefined);
+    expect(deviceFailure.clue).toBe("programMemoryBytes");
     expect(failures[2]!.kind).toBe("programMemory_sizeUnknown");
 });
 

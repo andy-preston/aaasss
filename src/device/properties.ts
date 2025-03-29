@@ -1,5 +1,5 @@
 import { booleanBag, numberBag, stringBag } from "../assembler/bags.ts";
-import { oldFailure, bagOfFailures, type StringOrFailures, type NumberOrFailures, type BooleanOrFailures, clueFailure, boringFailure, Failure } from "../failure/bags.ts";
+import { bagOfFailures, type StringOrFailures, type NumberOrFailures, type BooleanOrFailures, clueFailure, boringFailure, Failure, deviceFailure } from "../failure/bags.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
@@ -24,11 +24,9 @@ export const deviceProperties = () => {
             failures.push(boringFailure("device_notSelected"));
         }
         if (!symbols.has(symbolName)) {
-            failures.push(oldFailure(
-                "symbol_notFound", [
-                    symbols.get("deviceName") as string,
-                    symbolName
-                ]
+            failures.push(deviceFailure(
+                "symbol_notFound",
+                symbols.get("deviceName") as string, symbolName
             ));
         }
         return failures.length > 0
@@ -42,13 +40,10 @@ export const deviceProperties = () => {
             return theValue;
         }
         if (!theValue.it.match(/^[0-9A-F]*$/)) {
-            return bagOfFailures([
-                oldFailure("device_internalFormat", [
-                    symbols.get("deviceName")!,
-                    symbolName,
-                    theValue.it
-                ])
-            ]);
+            return bagOfFailures([deviceFailure(
+                "device_internalFormat",
+                symbols.get("deviceName")!, `${symbolName}: ${theValue.it}`
+            )]);
         }
         return numberBag(parseInt(theValue.it, 16));
     };

@@ -16,6 +16,8 @@ export const boringFailure = (
     kind: "syntax_invalidLabel"
         | "device_notSelected"
         | "js_jsMode" | "js_assemblerMode"
+        | "operand_blank" | "operand_offsetNotLdd" | "operand_offsetNotStd"
+        | "operand_offsetX"
         | "programMemory_sizeUnknown"
         | "ram_sizeUnknown" | "ram_stackAllocated"
 ) => ({
@@ -37,7 +39,10 @@ export type ComparisonFailure = ReturnType<typeof comparisonFailure>;
 export const clueFailure = (
     kind: "file_notFound" | "device_notFound"
         | "mnemonic_unknown"
-        | "mnemonic_notSupported" | "mnemonic_supportedUnknown",
+        | "mnemonic_notSupported" | "mnemonic_supportedUnknown"
+        | "operand_wrongCount" | "operand_wrongType"
+        | "symbol_alreadyExists"
+        | "symbol_nameIsDirective" | "symbol_nameIsRegister",
     clue: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -45,6 +50,16 @@ export const clueFailure = (
 });
 
 export type ClueFailure = ReturnType<typeof clueFailure>;
+
+export const deviceFailure = (
+    kind: "device_internalFormat" | "symbol_notFound",
+    device: string, clue: string
+) => ({
+    "kind": kind, "location": undefined as FailureLocation,
+    "device": device, "clue": clue
+});
+
+export type DeviceFailure = ReturnType<typeof deviceFailure>;
 
 export const exceptionFailure = (
     kind: "js_error",
@@ -79,7 +94,7 @@ export const oldFailure = (
 export type OldFailure = ReturnType<typeof oldFailure>;
 
 export type NewFailure = BoringFailure | ClueFailure | ComparisonFailure
-    | ExceptionFailure | MemoryRangeFailure;
+    | DeviceFailure | ExceptionFailure | MemoryRangeFailure;
 
 export type Failure = OldFailure | NewFailure;
 export type FailureKind = OldFailureKind | NewFailure["kind"];

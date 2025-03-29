@@ -1,5 +1,5 @@
 import { expect } from "jsr:@std/expect";
-import type { OldFailure } from "../failure/bags.ts";
+import type { ClueFailure } from "../failure/bags.ts";
 import { tokenise } from "./tokenise.ts";
 import { testLine } from "./testing.ts";
 
@@ -27,8 +27,8 @@ Deno.test("No instruction has three (or more) operands", () => {
     const failures = tokenised.failures().toArray();
     expect(failures.length).toBe(1);
     expect(failures[0]!.kind).toBe("operand_wrongCount");
-    const failure = failures[0] as OldFailure;
-    expect(failure.extra).toEqual(["3"]);
+    const failure = failures[0] as ClueFailure;
+    expect(failure.clue).toEqual("3");
 });
 
 Deno.test("An operand must not be empty", () => {
