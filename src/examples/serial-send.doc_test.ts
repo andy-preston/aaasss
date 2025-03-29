@@ -1,4 +1,4 @@
-import { assertFileContains, docTest } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("serial-send Demo", () => {
     const demo = docTest();
@@ -79,7 +79,7 @@ Deno.test("serial-send Demo", () => {
         ""
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATTiny2313"); }}',

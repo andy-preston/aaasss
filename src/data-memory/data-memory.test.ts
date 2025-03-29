@@ -1,4 +1,4 @@
-import { assertEquals, assertNotEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
@@ -27,16 +27,16 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
 
     system.pass.second();
     const result = alloc(23);
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 5);
-    assertEquals(failures[0]!.kind, "device_notSelected");
-    assertEquals(failures[1]!.kind, "symbol_notFound");
-    assertEquals((failures[1] as OldFailure).extra, [undefined, "ramStart"]);
-    assertEquals(failures[2]!.kind, "device_notSelected");
-    assertEquals(failures[3]!.kind, "symbol_notFound");
-    assertEquals((failures[3] as OldFailure).extra, [undefined, "ramEnd"]);
-    assertEquals(failures[4]!.kind, "ram_sizeUnknown");
+    expect(failures.length).toBe(5);
+    expect(failures[0]!.kind).toBe("device_notSelected");
+    expect(failures[1]!.kind).toBe("symbol_notFound");
+    expect((failures[1] as OldFailure).extra).toEqual([undefined, "ramStart"]);
+    expect(failures[2]!.kind).toBe("device_notSelected");
+    expect(failures[3]!.kind).toBe("symbol_notFound");
+    expect((failures[3] as OldFailure).extra).toEqual([undefined, "ramEnd"]);
+    expect(failures[4]!.kind).toBe("ram_sizeUnknown");
 });
 
 Deno.test("A stack allocation can't be beyond available SRAM", () => {
@@ -51,13 +51,13 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
     system.pass.second();
     const bytesRequested = 0xf2;
     const result = allocStack(bytesRequested);
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
+    expect(failures.length).toBe(1);
     const failure = failures[0] as MemoryRangeFailure;
-    assertEquals(failure.kind, "ram_outOfRange");
-    assertEquals(failure.bytesAvailable, 0xf0);
-    assertEquals(failure.bytesRequested, bytesRequested);
+    expect(failure.kind).toBe("ram_outOfRange");
+    expect(failure.bytesAvailable).toBe(0xf0);
+    expect(failure.bytesRequested).toBe(bytesRequested);
 });
 
 Deno.test("A memory allocation can't be beyond available SRAM", () => {
@@ -72,13 +72,13 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
     system.pass.second();
     const bytesRequested = 0xf2;
     const result = alloc(bytesRequested);
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
+    expect(failures.length).toBe(1);
     const failure = failures[0] as MemoryRangeFailure;
-    assertEquals(failure.kind, "ram_outOfRange");
-    assertEquals(failure.bytesAvailable, 0xf0);
-    assertEquals(failure.bytesRequested, bytesRequested);
+    expect(failure.kind).toBe("ram_outOfRange");
+    expect(failure.bytesAvailable).toBe(0xf0);
+    expect(failure.bytesRequested).toBe(bytesRequested);
 });
 
 Deno.test("Memory allocations start at the top of SRAM and work down", () => {
@@ -93,8 +93,8 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
     system.pass.second();
     ["0", "25", "50"].forEach((expectedStartAddress) => {
         const result = alloc(25);
-        assertNotEquals(result.type, "failures");
-        assertEquals(result.it, expectedStartAddress);
+        expect(result.type).not.toBe("failures");
+        expect(result.it).toBe(expectedStartAddress);
     });
 });
 
@@ -113,18 +113,18 @@ Deno.test("Stack allocations decrease the available SRAM", () => {
 
     system.pass.second();
     const allocation = allocStack(bytesRequested);
-    assertNotEquals(allocation.type, "failures");
-    assertEquals(allocation.it, "");
+    expect(allocation.type).not.toBe("failures");
+    expect(allocation.it).toBe("");
     const bytesAvailable = 0x1f - bytesRequested;
 
     const failing = alloc(bytesRequested);
-    assertEquals(failing.type, "failures");
+    expect(failing.type).toBe("failures");
     const failures = failing.it as Array<Failure>;
-    assertEquals(failures.length, 1);
+    expect(failures.length).toBe(1);
     const failure = failures[0] as MemoryRangeFailure;
-    assertEquals(failure.kind, "ram_outOfRange");
-    assertEquals(failure.bytesAvailable, bytesAvailable);
-    assertEquals(failure.bytesRequested, bytesRequested);
+    expect(failure.kind).toBe("ram_outOfRange");
+    expect(failure.bytesAvailable).toBe(bytesAvailable);
+    expect(failure.bytesRequested).toBe(bytesRequested);
 });
 
 Deno.test("Memory allocations decrease the available SRAM", () => {
@@ -139,18 +139,18 @@ Deno.test("Memory allocations decrease the available SRAM", () => {
 
     system.pass.second();
     const allocation = alloc(bytesRequested);
-    assertNotEquals(allocation.type, "failures");
-    assertEquals(allocation.it, "0");
+    expect(allocation.type).not.toBe("failures");
+    expect(allocation.it).toBe("0");
     const bytesAvailable = 0x1f - bytesRequested;
 
     const failing = alloc(bytesRequested);
-    assertEquals(failing.type, "failures");
+    expect(failing.type).toBe("failures");
     const failures = failing.it as Array<Failure>;
-    assertEquals(failures.length, 1);
+    expect(failures.length).toBe(1);
     const failure = failures[0] as MemoryRangeFailure;
-    assertEquals(failure.kind, "ram_outOfRange");
-    assertEquals(failure.bytesAvailable, bytesAvailable);
-    assertEquals(failure.bytesRequested, bytesRequested);
+    expect(failure.kind).toBe("ram_outOfRange");
+    expect(failure.bytesAvailable).toBe(bytesAvailable);
+    expect(failure.bytesRequested).toBe(bytesRequested);
 });
 
 Deno.test("Allocations don't get repeated on the second pass", () => {
@@ -168,8 +168,8 @@ Deno.test("Allocations don't get repeated on the second pass", () => {
         }
         ["0", "25"].forEach((expectedStartAddress) => {
             const result = alloc(25);
-            assertNotEquals(result.type, "failures");
-            assertEquals(result.it, expectedStartAddress);
+            expect(result.type).not.toBe("failures");
+            expect(result.it).toBe(expectedStartAddress);
         });
     });
 });

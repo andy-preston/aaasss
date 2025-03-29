@@ -1,7 +1,6 @@
-import { assertEquals } from "assert";
+import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure } from "../failure/bags.ts";
-import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
+import type { Failure, OldFailure } from "../failure/bags.ts";
 import { macroFromTable, systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -12,10 +11,13 @@ Deno.test("The macro directive name must be a string", () => {
         irrelevantName, system.macros.macroDirective
     );
     const result = macro(47);
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "parameter_type", ["string", "0: number"]
-    );
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("parameter_type");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(["string", "0: number"]);
 });
 
 Deno.test("The parameters in a definition must be strings", () => {
@@ -24,10 +26,13 @@ Deno.test("The parameters in a definition must be strings", () => {
         irrelevantName, system.macros.macroDirective
     );
     const result = macro("testMacro", "a", 2, "b", 3);
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "parameter_type", ["string", "2: number", "4: number"]
-    );
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("parameter_type");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(["string", "2: number", "4: number"]);
 });
 
 Deno.test("On calling a macro, the parameters must be strings or numbers", () => {
@@ -39,15 +44,20 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("testMacro", "a", "b"));
-    assertSuccess(end());
+    expect(macro("testMacro", "a", "b").type).not.toBe("failures");
+    expect(end().type).not.toBe("failures");
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
     const result = testMacro(true, {"c": "c"});
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "parameter_type", ["string, number", "0: boolean", "1: object"]
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("parameter_type");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(
+        ["string, number", "0: boolean", "1: object"]
     );
 });
 
@@ -60,14 +70,17 @@ Deno.test("Parameter count mismatches result in a failure", () => {
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("testMacro", "a", "b", "C"));
-    assertSuccess(end());
+    expect(macro("testMacro", "a", "b", "C").type).not.toBe("failures");
+    expect(end().type).not.toBe("failures");
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
     const result = testMacro("1", "2");
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "macro_params", ["3"]
-    );
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("macro_params");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(["3"]);
 });

@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { deviceProperties } from "../device/properties.ts";
 import type { BoringFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
@@ -35,21 +35,21 @@ Deno.test("Lines with no mnemonic don't bother generating code", () => {
     const system = systemUnderTest();
     const line = testLine("", "", [], [], [], false);
     const result = system.objectCode(line);
-    assertFalse(result.failed());
-    assertEquals(result.failures.length, 0);
-    assertEquals(result.code.length, 0);
+    expect(result.failed()).toBeFalsy();
+    expect(result.failures.length).toBe(0);
+    expect(result.code.length).toBe(0);
 });
 
 Deno.test("Attempting to generate code with no device selected fails", () => {
     const system = systemUnderTest();
     const line = testLine("", "DES", [], [], [], false);
     const result = system.objectCode(line);
-    assert(result.failed());
+    expect(result.failed()).toBeTruthy();
     const failures = result.failures().toArray();
-    assertEquals(failures.length, 2);
-    assertEquals(failures[0]!.kind, "device_notSelected");
-    assertEquals(failures[1]!.kind, "mnemonic_supportedUnknown");
-    assertEquals(result.code.length, 0);
+    expect(failures.length).toBe(2);
+    expect(failures[0]!.kind).toBe("device_notSelected");
+    expect(failures[1]!.kind).toBe("mnemonic_supportedUnknown");
+    expect(result.code.length).toBe(0);
 });
 
 Deno.test("Lines with unsupported instructions fail", () => {
@@ -58,12 +58,12 @@ Deno.test("Lines with unsupported instructions fail", () => {
     system.device.unsupportedInstructions(["DES"]);
     const line = testLine("", "DES", [], [], [], false);
     const result = system.objectCode(line);
-    assert(result.failed());
+    expect(result.failed()).toBeTruthy();
     const failures = result.failures().toArray();
-    assertEquals(failures.length, 1);
+    expect(failures.length).toBe(1);
     const failure = failures[0] as BoringFailure;
-    assertEquals(failure.kind, "mnemonic_notSupported");
-    assertEquals(result.code.length, 0);
+    expect(failure.kind).toBe("mnemonic_notSupported");
+    expect(result.code.length).toBe(0);
 });
 
 Deno.test("Lines with unknown instructions fail", () => {
@@ -72,12 +72,12 @@ Deno.test("Lines with unknown instructions fail", () => {
 
     const line = testLine("", "NOT_REAL", [], [], [], false);
     const result = system.objectCode(line);
-    assert(result.failed());
+    expect(result.failed()).toBeTruthy();
     const failures = result.failures().toArray();
-    assertEquals(failures.length, 1);
+    expect(failures.length).toBe(1);
     const failure = failures[0] as BoringFailure;
-    assertEquals(failure.kind, "mnemonic_unknown");
-    assertEquals(result.code.length, 0);
+    expect(failure.kind).toBe("mnemonic_unknown");
+    expect(result.code.length).toBe(0);
 });
 
 Deno.test("Lines with real/supported instructions produce code", () => {
@@ -85,8 +85,8 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     system.device.property("deviceName", "test");
     const line = testLine("", "DES", ["15"], [15], ["number"], false);
     const result = system.objectCode(line);
-    assertFalse(result.failed());
-    assertEquals(result.code,[[0x94, 0xfb]]);
+    expect(result.failed()).toBeFalsy();
+    expect(result.code).toEqual([[0x94, 0xfb]]);
 });
 
 Deno.test("If a line has `isRecordingMacro == true`, no code is generated", () => {
@@ -94,6 +94,6 @@ Deno.test("If a line has `isRecordingMacro == true`, no code is generated", () =
     system.device.property("deviceName", "test");
     const line = testLine("", "DES", ["15"], [15], ["number"], true);
     const result = system.objectCode(line);
-    assertFalse(result.failed());
-    assertEquals(result.code,[]);
+    expect(result.failed()).toBeFalsy();
+    expect(result.code.length).toBe(0);
 });

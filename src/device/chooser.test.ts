@@ -1,4 +1,4 @@
-import { assertEquals, assertNotEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
 import type { ClueFailure, ComparisonFailure, Failure, OldFailure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
@@ -12,8 +12,8 @@ Deno.test("You can choose any device that has a definition file", () => {
             irrelevantName, system.deviceChooser.deviceDirective
         );
         const result = device(deviceName);
-        assertNotEquals(result.type, "failures");
-        assertEquals(result.it, "");
+        expect(result.type).not.toBe("failures");
+        expect(result.it).toBe("");
     }
 });
 
@@ -25,16 +25,16 @@ Deno.test("Choosing multiple devices results in failure", () => {
         irrelevantName, system.deviceChooser.deviceDirective
     );
     const firstTry = device(firstName);
-    assertNotEquals(firstTry.type, "failures");
+    expect(firstTry.type).not.toBe("failures");
 
     const secondTry = device(secondName);
-    assertEquals(secondTry.type, "failures");
+    expect(secondTry.type).toBe("failures");
     const failures = secondTry.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "device_multiple");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("device_multiple");
     const failure = failures[0] as ComparisonFailure;
-    assertEquals(failure.before, firstName)
-    assertEquals(failure.after, secondName);
+    expect(failure.before).toBe(firstName)
+    expect(failure.after).toBe(secondName);
 });
 
 Deno.test("Choosing the same device by different names is also a failure", () => {
@@ -48,16 +48,16 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
     );
 
     const firstTry = device(firstName);
-    assertNotEquals(firstTry.type, "failures");
+    expect(firstTry.type).not.toBe("failures");
 
     const secondTry = device(secondName);
-    assertEquals(secondTry.type, "failures");
+    expect(secondTry.type, "failures");
     const failures = secondTry.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "device_multiple");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("device_multiple");
     const failure = failures[0] as ComparisonFailure;
-    assertEquals(failure.before, firstName)
-    assertEquals(failure.after, secondName);
+    expect(failure.before).toBe(firstName)
+    expect(failure.after).toBe(secondName);
 });
 
 Deno.test("Choosing an non-existant device returns a Failure", () => {
@@ -67,12 +67,12 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
     );
 
     const result = device("notARealDevice");
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
+    expect(failures.length).toBe(1);
     const failure = failures[0] as ClueFailure;
-    assertEquals(failure.kind, "device_notFound");
-    assertEquals(failure.clue, "./devices/notarealdevice.json");
+    expect(failure.kind).toBe("device_notFound");
+    expect(failure.clue).toBe("./devices/notarealdevice.json");
 });
 
 Deno.test("The device name must be present", () => {
@@ -82,12 +82,12 @@ Deno.test("The device name must be present", () => {
     );
 
     const result = device();
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "parameter_count");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("parameter_count");
     const failure = failures[0] as OldFailure;
-    assertEquals(failure.extra, ["1"]);
+    expect(failure.extra).toEqual(["1"]);
 });
 
 Deno.test("The device name must be present and a string", () => {
@@ -96,6 +96,6 @@ Deno.test("The device name must be present and a string", () => {
         irrelevantName, system.deviceChooser.deviceDirective
     );
     const result = device("at tiny 24");
-    assertNotEquals(result.type, "failures");
-    assertEquals(result.it, "");
+    expect(result.type).not.toBe("failures");
+    expect(result.it).toBe("");
 });

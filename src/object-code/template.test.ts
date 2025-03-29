@@ -1,9 +1,9 @@
-import { assertEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { template } from "./template.ts";
 
 Deno.test("A plain binary number is rendered as numbers", () => {
     const result = template("1111_0000 0000_1111", []);
-    assertEquals([0xf0, 0x0f], result);
+    expect(result).toEqual([0xf0, 0x0f]);
 });
 
 Deno.test("Substitutions are substituted", () => {
@@ -11,5 +11,5 @@ Deno.test("Substitutions are substituted", () => {
         ['d', 0xff],
         ['r', 0x00]
     ]);
-    assertEquals([0xf0, 0x0f], result);
+    expect(result).toEqual([0xf0, 0x0f]);
 });

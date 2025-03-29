@@ -1,39 +1,38 @@
-import { assertEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import type { ClueFailure, Failure, OldFailure } from "../failure/bags.ts";
-import { assertFailureWithExtra } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
 Deno.test("Device name fails when no device is selected", () => {
     const system = systemUnderTest();
 
     const result = system.deviceProperties.public.value("deviceName");
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 2);
-    assertEquals(failures[0]!.kind, "device_notSelected");
-    assertEquals(failures[1]!.kind, "symbol_notFound");
-    assertEquals((failures[1] as OldFailure).extra, [undefined, "deviceName"]);
+    expect(failures.length).toBe(2);
+    expect(failures[0]!.kind).toBe("device_notSelected");
+    expect(failures[1]!.kind).toBe("symbol_notFound");
+    expect((failures[1] as OldFailure).extra).toEqual([undefined, "deviceName"]);
 });
 
 Deno.test("reducedCore fails when no device is selected", () => {
     const system = systemUnderTest();
 
     const result = system.deviceProperties.public.hasReducedCore();
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "device_notSelected");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("device_notSelected");
 });
 
 Deno.test("Unsupported instructions fails when no device is selected", () => {
     const system = systemUnderTest();
 
     const result = system.deviceProperties.public.isUnsupported("MUL");
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 2);
-    assertEquals(failures[0]!.kind, "device_notSelected");
-    assertEquals(failures[1]!.kind, "mnemonic_supportedUnknown");
+    expect(failures.length).toBe(2);
+    expect(failures[0]!.kind).toBe("device_notSelected");
+    expect(failures[1]!.kind).toBe("mnemonic_supportedUnknown");
 });
 
 Deno.test("Returns device name once a device name is selected", () => {
@@ -41,8 +40,8 @@ Deno.test("Returns device name once a device name is selected", () => {
     system.deviceProperties.property("deviceName", "imaginaryDevice");
 
     const result = system.deviceProperties.public.value("deviceName");
-    assertEquals(result.type, "string");
-    assertEquals(result.it, "imaginaryDevice");
+    expect(result.type).toBe("string");
+    expect(result.it).toBe("imaginaryDevice");
 });
 
 Deno.test("Returns default reducedCore flag once a device name is selected", () => {
@@ -50,8 +49,8 @@ Deno.test("Returns default reducedCore flag once a device name is selected", () 
     system.deviceProperties.property("deviceName", "imaginaryDevice");
 
     const result = system.deviceProperties.public.hasReducedCore();
-    assertEquals(result.type, "boolean");
-    assertEquals(result.it, false);
+    expect(result.type).toBe("boolean");
+    expect(result.it).toBe(false);
 });
 
 Deno.test("Returns default unsupported instruction flags once a device name is selected", () => {
@@ -59,8 +58,8 @@ Deno.test("Returns default unsupported instruction flags once a device name is s
     system.deviceProperties.property("deviceName", "imaginaryDevice");
 
     const result = system.deviceProperties.public.isUnsupported("MUL");
-    assertEquals(result.type, "boolean");
-    assertEquals(result.it, false);
+    expect(result.type).toBe("boolean");
+    expect(result.it).toBe(false);
 });
 
 Deno.test("Returns reduced core flag once device type is selected", () => {
@@ -69,8 +68,8 @@ Deno.test("Returns reduced core flag once device type is selected", () => {
     system.deviceProperties.reducedCore(true);
 
     const result = system.deviceProperties.public.hasReducedCore();
-    assertEquals(result.type, "boolean");
-    assertEquals(result.it, true);
+    expect(result.type).toBe("boolean");
+    expect(result.it).toBe(true);
 });
 
 Deno.test("Returns mnemonic support once device type is selected", () => {
@@ -79,11 +78,11 @@ Deno.test("Returns mnemonic support once device type is selected", () => {
     system.deviceProperties.unsupportedInstructions(["multiply"]);
 
     const result = system.deviceProperties.public.isUnsupported("MUL");
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "mnemonic_notSupported");
-    assertEquals((failures[0] as ClueFailure).clue, "MUL");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("mnemonic_notSupported");
+    expect((failures[0] as ClueFailure).clue).toBe("MUL");
 });
 
 Deno.test("After loading the device, it returns property values", () => {
@@ -92,8 +91,8 @@ Deno.test("After loading the device, it returns property values", () => {
     system.deviceProperties.property("PORTD", "3F");
 
     const result = system.deviceProperties.public.value("PORTD");
-    assertEquals(result.type, "string");
-    assertEquals(result.it, "3F");
+    expect(result.type).toBe("string");
+    expect(result.it).toBe("3F");
 });
 
 Deno.test("Property values are, commonly, hex values", () => {
@@ -102,8 +101,8 @@ Deno.test("Property values are, commonly, hex values", () => {
     system.deviceProperties.property("PORTD", "3F");
 
     const result = system.deviceProperties.public.numericValue("PORTD");
-    assertEquals(result.type, "number");
-    assertEquals(result.it, 0x3f);
+    expect(result.type).toBe("number");
+    expect(result.it).toBe(0x3f);
 });
 
 Deno.test("... in upper case", () => {
@@ -112,11 +111,14 @@ Deno.test("... in upper case", () => {
     system.deviceProperties.property("PORTD", "3f");
 
     const result = system.deviceProperties.public.numericValue("PORTD");
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "device_internalFormat", [
-            "imaginaryDevice", "PORTD", "3f"
-        ]
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("device_internalFormat");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(
+        ["imaginaryDevice", "PORTD", "3f"]
     );
 });
 
@@ -125,11 +127,14 @@ Deno.test("Non-hex values can't be converted to numbers", () => {
     system.deviceProperties.property("deviceName", "imaginaryDevice");
 
     const result = system.deviceProperties.public.numericValue("deviceName");
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "device_internalFormat", [
-            "imaginaryDevice", "deviceName", "imaginaryDevice"
-        ]
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("device_internalFormat");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(
+        ["imaginaryDevice", "deviceName", "imaginaryDevice"]
     );
 });
 
@@ -138,10 +143,13 @@ Deno.test("Fails if, after loading device, required symbol is still not found", 
     system.deviceProperties.property("deviceName", "imaginaryDevice");
 
     const result = system.deviceProperties.public.value("nonExistant");
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "symbol_notFound", [
-            "imaginaryDevice", "nonExistant"
-        ]
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("symbol_notFound");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(
+        ["imaginaryDevice", "nonExistant"]
     );
 });

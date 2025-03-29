@@ -1,4 +1,4 @@
-import { assertFileContains, assertFileExists, assertNoFileExists, docTest } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents, expectFileExists } from "../assembler/doc-test.ts";
 
 Deno.test("Device demo", () => {
     const demo = docTest();
@@ -7,7 +7,7 @@ Deno.test("Device demo", () => {
         "    LDS R30, 1024",
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATTiny24"); }}',
@@ -18,7 +18,7 @@ Deno.test("Device demo", () => {
         "",
         "R30 (1)"
     ]);
-    assertFileExists(".hex");
+    expectFileExists(".hex").toBeTruthy();
 });
 
 Deno.test("A device must be specified before any instructions can be assembled", () => {
@@ -27,7 +27,7 @@ Deno.test("A device must be specified before any instructions can be assembled",
         "    DES 23",
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         "                      1     DES 23",
@@ -35,7 +35,7 @@ Deno.test("A device must be specified before any instructions can be assembled",
         "                        mnemonic_supportedUnknown",
         "                        clue: DES"
     ]);
-    assertNoFileExists(".hex");
+    expectFileExists(".hex").toBeFalsy();
 });
 
 Deno.test("The device name must be a string",() => {
@@ -44,7 +44,7 @@ Deno.test("The device name must be a string",() => {
         "    {{ device(ATTiny24); }}",
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         "                      1     {{ device(ATTiny24); }}",
@@ -52,5 +52,5 @@ Deno.test("The device name must be a string",() => {
         "                        exception: ReferenceError",
         "                        message: ATTiny24 is not defined",
     ]);
-    assertNoFileExists(".hex");
+    expectFileExists(".hex").toBeFalsy();
 });

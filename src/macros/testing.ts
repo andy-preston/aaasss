@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { emptyBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
@@ -75,6 +75,6 @@ export const testLineWithSource = (
 
 export const macroFromTable = (symbolTable: SymbolTable, macroName: string) => {
     const fromTable = symbolTable.use(macroName);
-    assertEquals(fromTable.type, "functionUseDirective");
+    expect(fromTable.type).toBe("functionUseDirective");
     return fromTable as FunctionUseDirective;
 };

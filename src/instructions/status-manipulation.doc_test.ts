@@ -1,4 +1,4 @@
-import { assertFileContains, docTest } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Status manipulation demo",() => {
     const demo = docTest();
@@ -24,7 +24,7 @@ Deno.test("Status manipulation demo",() => {
         "    SEI"
         ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("AT Tiny 24"); }}',
@@ -48,7 +48,7 @@ Deno.test("Status manipulation demo",() => {
         "000011 94 78         19     SEI",
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
-    assertFileContains(".hex", [
+    expectFileContents(".hex").toEqual([
         ":020000020000FC",
         ":10000000989488949894A894B894C894D894E894B0",
         ":10001000F894189408941894289438944894589410",

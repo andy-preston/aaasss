@@ -1,7 +1,6 @@
-import { assert, assertFalse, assertEquals, assertNotEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure, ClueFailure } from "../failure/bags.ts";
-import { assertFailureWithExtra } from "../failure/testing.ts";
+import type { Failure, ClueFailure, OldFailure } from "../failure/bags.ts";
 import type { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
@@ -15,7 +14,7 @@ Deno.test("Including a file doesn't return anything", () => {
     );
 
     const result = include(irrelevantButRealFile);
-    assertNotEquals(result.type, "failure");
+    expect(result.type).not.toBe("failure");
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
@@ -26,12 +25,11 @@ Deno.test("Including a non existant file returns a failure", () => {
     );
 
     const result = include(fileName);
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "file_notFound");
-    assertEquals(
-        (failures[0] as ClueFailure).clue,
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("file_notFound");
+    expect((failures[0] as ClueFailure).clue).toBe(
         `No such file or directory (os error 2): readfile '${fileName}'`
     );
 });
@@ -43,9 +41,14 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
     );
 
     const result = include([1, 2, 3]);
-    assertEquals(result.type, "failures");
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "parameter_type", ["string", "0: array"]
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("parameter_type");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(
+        ["string", "0: array"]
     );
 });
 
@@ -58,10 +61,10 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
     );
     let index = 0;
     for (const line of files.lines()) {
-        assertEquals(line.fileName, "mock.test");
-        assertEquals(line.lineNumber, index + 1);
-        assertEquals(line.rawSource, expectedLines[index]);
-        assertFalse(line.failed());
+        expect(line.fileName).toBe("mock.test");
+        expect(line.lineNumber).toBe(index + 1);
+        expect(line.rawSource).toBe(expectedLines[index]);
+        expect(line.failed()).toBeFalsy();
         index = index + 1;
     }
 });
@@ -69,15 +72,15 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
 Deno.test("Reading a non existant source file gives one line with a failure", () => {
     const files = fileStack(defaultReaderMethod, "does-not-exist.test");
     const lines = files.lines().toArray();
-    assertEquals(lines.length, 1);
+    expect(lines.length).toBe(1);
     const line = lines[0]!;
-    assertEquals(line.fileName, "does-not-exist.test");
-    assertEquals(line.lineNumber, 0);
-    assertEquals(line.rawSource, "");
-    assert(line.failed());
+    expect(line.fileName).toBe("does-not-exist.test");
+    expect(line.lineNumber).toBe(0);
+    expect(line.rawSource).toBe("");
+    expect(line.failed()).toBeTruthy();
     const failures = line.failures().toArray();
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "file_notFound");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("file_notFound");
 });
 
 Deno.test("The last line of the top source file is flagged as such", () => {
@@ -87,7 +90,7 @@ Deno.test("The last line of the top source file is flagged as such", () => {
         "mock.test"
     );
     for (const line of files.lines()) {
-        assertEquals(line.lastLine, line.rawSource == "last");
+        expect(line.lastLine).toBe(line.rawSource == "last");
     }
 });
 
@@ -101,14 +104,14 @@ Deno.test("An included file is inserted into the source stream", () => {
     );
     const lines = aFileStack.lines();
 
-    assertEquals("top.file 1", lines.next().value!.rawSource);
+    expect(lines.next().value!.rawSource).toBe("top.file 1");
 
     const result = include("plop.txt");
-    assertNotEquals(result.type, "failure");
-    assertEquals([
+    expect(result.type).not.toBe("failure");
+    expect(lines.toArray().map(line => line.rawSource)).toEqual([
         "plop.txt 1", "plop.txt 2", "plop.txt 3",
         "top.file 2", "top.file 3",
-    ], lines.toArray().map(line => line.rawSource));
+    ]);
 });
 
 Deno.test("Imaginary files (e.g. macros) can be included", () => {
@@ -119,8 +122,8 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
     const lines = files.lines();
 
     const firstLine = lines.next().value!;
-    assertEquals(firstLine.lineNumber, 1);
-    assertEquals(firstLine.rawSource, "top.file 1");
+    expect(firstLine.lineNumber).toBe(1);
+    expect(firstLine.rawSource).toBe("top.file 1");
 
     const imaginaryFile = function* (): FileLineIterator {
         yield ["one", "", 0, false];
@@ -135,8 +138,8 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
     ];
 
     for (const [index, line] of lines.toArray().entries()) {
-        assertEquals(line.fileName, "top.file");
-        assertEquals(line.lineNumber, expected[index]![0]);
-        assertEquals(line.rawSource, expected[index]![1]);
+        expect(line.fileName).toBe("top.file");
+        expect(line.lineNumber).toBe(expected[index]![0]);
+        expect(line.rawSource).toBe(expected[index]![1]);
     }
 });

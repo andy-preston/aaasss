@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { numberBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
@@ -38,38 +38,38 @@ const testLine = (symbolic: SymbolicOperands) => {
 Deno.test("An expression yields a value", () => {
     const system = systemUnderTest();
     const result = system.symbolicToNumeric(testLine(["20 / 2"]));
-    assertFalse(result.failed());
-    assertEquals(result.numericOperands[0], 10);
-    assertEquals(result.operandTypes[0], "number");
+    expect(result.failed()).toBeFalsy();
+    expect(result.numericOperands[0]).toBe(10);
+    expect(result.operandTypes[0]).toBe("number");
 });
 
 Deno.test("A symbol yields a value", () => {
     const system = systemUnderTest();
     system.cpuRegisters.initialise(false);
-    assertEquals(system.symbolTable.use("R7"), numberBag(7));
+    expect(system.symbolTable.use("R7")).toEqual(numberBag(7));
     const result = system.symbolicToNumeric(testLine(["R7"]));
-    assertFalse(result.failed());
-    assertEquals(result.numericOperands[0], 7);
-    assertEquals(result.operandTypes[0], "register");
+    expect(result.failed()).toBeFalsy();
+    expect(result.numericOperands[0]).toBe(7);
+    expect(result.operandTypes[0]).toBe("register");
 });
 
 Deno.test("An index offset operand returns special values not related to the symbol table", () => {
     const system = systemUnderTest();
     const result = system.symbolicToNumeric(testLine(["Z+", "Y+"]));
-    assertFalse(result.failed());
-    assertEquals(result.numericOperands[0], 0);
-    assertEquals(result.numericOperands[1], 1);
-    assertEquals(result.operandTypes, ["index_offset", "index_offset"]);
+    expect(result.failed()).toBeFalsy();
+    expect(result.numericOperands[0]).toBe(0);
+    expect(result.numericOperands[1]).toBe(1);
+    expect(result.operandTypes).toEqual(["index_offset", "index_offset"]);
 });
 
 Deno.test("An uninitialised symbol yields a failure", () => {
     const system = systemUnderTest();
     const result = system.symbolicToNumeric(testLine(["notDefined"]));
-    assert(result.failed());
+    expect(result.failed()).toBeTruthy();
     const failures = result.failures().toArray();
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "js_error");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("js_error");
     const failure = failures[0] as ExceptionFailure;
-    assertEquals(failure.exception, "ReferenceError");
-    assertEquals(failure.message, "notDefined is not defined");
+    expect(failure.exception).toBe("ReferenceError");
+    expect(failure.message).toBe("notDefined is not defined");
 });

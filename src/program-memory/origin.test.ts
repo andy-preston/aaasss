@@ -1,7 +1,6 @@
-import { assertEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
 import type { MemoryRangeFailure, Failure, OldFailure } from "../failure/bags.ts";
-import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -13,13 +12,13 @@ Deno.test("A device must be selected before program memory can be set", () => {
     );
 
     const result = origin(10);
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 3);
-    assertEquals(failures[0]!.kind, "device_notSelected");
-    assertEquals(failures[1]!.kind, "symbol_notFound");
-    assertEquals((failures[1] as OldFailure).extra, [undefined, "programMemoryBytes"]);
-    assertEquals(failures[2]!.kind, "programMemory_sizeUnknown");
+    expect(failures.length).toBe(3);
+    expect(failures[0]!.kind).toBe("device_notSelected");
+    expect(failures[1]!.kind).toBe("symbol_notFound");
+    expect((failures[1] as OldFailure).extra).toEqual([undefined, "programMemoryBytes"]);
+    expect(failures[2]!.kind).toBe("programMemory_sizeUnknown");
 });
 
 Deno.test("Origin addresses can't be less than zero", () => {
@@ -29,12 +28,13 @@ Deno.test("Origin addresses can't be less than zero", () => {
     );
 
     const result = origin(-1);
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertFailureWithExtra(
-        result.it as Array<Failure>, "type_positive", ["-1", "0", ""]
-    );
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("type_positive");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(["-1", "0", ""]);
 });
 
 Deno.test("Origin addresses can't be strange type", () => {
@@ -44,12 +44,13 @@ Deno.test("Origin addresses can't be strange type", () => {
     );
 
     const result = origin("nothing");
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertFailureWithExtra(
-        failures, "parameter_type", ["number", "0: string"]
-    );
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("parameter_type");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(["number", "0: string"]);
 });
 
 Deno.test("Device name is used to determine if properties have been set", () => {
@@ -60,11 +61,11 @@ Deno.test("Device name is used to determine if properties have been set", () => 
     system.deviceProperties.property("programMemoryBytes", "FF");
 
     const result = origin(10);
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 2);
-    assertEquals(failures[0]!.kind, "device_notSelected");
-    assertEquals(failures[1]!.kind, "programMemory_sizeUnknown");
+    expect(failures.length).toBe(2);
+    expect(failures[0]!.kind).toBe("device_notSelected");
+    expect(failures[1]!.kind).toBe("programMemory_sizeUnknown");
 });
 
 Deno.test("Origin addresses must be progmem size when a device is chosen", () => {
@@ -80,13 +81,13 @@ Deno.test("Origin addresses must be progmem size when a device is chosen", () =>
 
     const tryOrigin = 92;
     const result = origin(tryOrigin);
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "programMemory_outOfRange");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("programMemory_outOfRange");
     const failure = failures[0] as MemoryRangeFailure;
-    assertEquals(failure.bytesRequested, tryOrigin * 2);
-    assertEquals(failure.bytesAvailable, bytesAvailable);
+    expect(failure.bytesRequested).toBe(tryOrigin * 2);
+    expect(failure.bytesAvailable).toBe(bytesAvailable);
 });
 
 Deno.test("Origin directive sets current address", () => {
@@ -97,8 +98,8 @@ Deno.test("Origin directive sets current address", () => {
     system.deviceProperties.property("deviceName", "test");
     system.deviceProperties.property("programMemoryBytes", "FF");
 
-    assertSuccess(origin(23));
-    assertEquals(system.programMemory.address(), 23);
-    assertSuccess(origin(42));
-    assertEquals(system.programMemory.address(), 42);
+    expect(origin(23).type).not.toBe("failures");
+    expect(system.programMemory.address()).toBe(23);
+    expect(origin(42).type).not.toBe("failures");
+    expect(system.programMemory.address()).toBe(42);
 });

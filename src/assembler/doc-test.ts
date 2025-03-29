@@ -1,5 +1,5 @@
+import { expect } from "jsr:@std/expect/expect";
 import { existsSync } from "jsr:@std/fs/exists";
-import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
 import { defaultDeviceFinder, defaultJsonLoader, type DeviceFileOperations } from "../device/device-file.ts";
 import { deviceMocks } from "../device/device-file-mocks.ts";
 import { mockFailureMessages } from "../listing/messages-mock.ts";
@@ -10,29 +10,18 @@ import { extensionSwap, type FileExtension } from "./output-file.ts";
 
 const topFileName = "/var/tmp/demo.asm";
 
-export const assertNoFileExists = (extension: FileExtension) => {
-    assertFalse(
-        existsSync(extensionSwap(topFileName, extension)),
-        `${extension} file should not exist`
-    );
-}
+export const expectFileExists = (extension: FileExtension) => {
+    const file = extensionSwap(topFileName, extension);
+    return expect(existsSync(file), `File ${file} exists`);
+};
 
-export const assertFileExists = (extension: FileExtension) => {
-    assert(
-        existsSync(extensionSwap(topFileName, extension)),
-        `${extension} file should exist`
-    );
-}
-
-export const assertFileContains = (
-    extension: FileExtension, expected: Array<string>
-) => {
-    assertFileExists(extension);
+export const expectFileContents = (extension: FileExtension) => {
+    expectFileExists(extension).toBeTruthy();
     const contents = Deno.readTextFileSync(
         extensionSwap(topFileName, extension)
     ).split("\n");
     contents.pop();
-    assertEquals(contents, expected);
+    return expect(contents);
 };
 
 const cleanup = () => {

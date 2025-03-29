@@ -1,4 +1,4 @@
-import { assertFileContains, docTest } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Data-direct without reduced core",() => {
     const demo = docTest();
@@ -8,7 +8,7 @@ Deno.test("Data-direct without reduced core",() => {
         "    STS 1024 * 4, R8", // STS data-memory address, register
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATTiny24"); }}',
@@ -22,7 +22,7 @@ Deno.test("Data-direct without reduced core",() => {
         "R30 (1)"
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
-    assertFileContains(".hex", [
+    expectFileContents(".hex").toEqual([
         ":020000020000FC",
         ":08000000E09100048092001061",
         ":00000001FF"
@@ -42,7 +42,7 @@ Deno.test("Data-direct with reduced core",() => {
         "    STS 126, R18"
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATtiny20"); }}',
@@ -56,7 +56,7 @@ Deno.test("Data-direct with reduced core",() => {
         "R30 (1)"
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
-    assertFileContains(".hex", [
+    expectFileContents(".hex").toEqual([
         ":020000020000FC",
         ":04000000E8A72EAF90",
         ":00000001FF"

@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { numberBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
@@ -22,12 +22,12 @@ Deno.test("A freshly added symbol has a count of zero", () => {
     const system = systemUnderTest();
     system.symbols.add("plop", numberBag(23), "file-name.asm", 10);
     const result = system.list();
-    assertEquals(1, result.length);
+    expect(result.length).toBe(1);
     const [symbolName, usageCount, symbolValue, definition] = result[0]!;
-    assertEquals(symbolName, "plop");
-    assertEquals(usageCount, 0);
-    assertEquals(symbolValue, 23);
-    assertEquals(definition, "file-name.asm:10")
+    expect(symbolName).toBe("plop");
+    expect(usageCount).toBe(0);
+    expect(symbolValue).toBe(23);
+    expect(definition).toBe("file-name.asm:10")
 });
 
 Deno.test("Each call to use increments the usage", () => {
@@ -36,11 +36,11 @@ Deno.test("Each call to use increments the usage", () => {
     [1, 2, 3, 4].forEach((expectedCount) => {
         system.symbols.use("plop");
         const result = system.list();
-        assertEquals(1, result.length);
+        expect(result.length).toBe(1);
         const [symbolName, usageCount, symbolValue, definition] = result[0]!;
-        assertEquals(symbolName, "plop");
-        assertEquals(usageCount, expectedCount);
-        assertEquals(symbolValue, 23);
-        assertEquals(definition, "file-name.asm:10")
+        expect(symbolName).toBe("plop");
+        expect(usageCount).toBe(expectedCount);
+        expect(symbolValue).toBe(23);
+        expect(definition).toBe("file-name.asm:10")
     });
 });

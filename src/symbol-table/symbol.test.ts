@@ -1,12 +1,11 @@
-import { assertEquals } from "jsr:@std/assert";
-import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
+import { expect } from "jsr:@std/expect";
+import { emptyBag, numberBag, StringBag, stringBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import type { VoidDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { directiveList } from "../directives/directive-list.ts";
 import type { Failure } from "../failure/bags.ts";
-import { assertFailureKind, assertSuccess, assertSuccessWith } from "../failure/testing.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "./symbol-table.ts";
 
@@ -35,8 +34,8 @@ Deno.test("A symbol can be defined and accessed", () => {
         irrelevantName, system.symbolTable.defineDirective
     );
 
-    assertSuccess(define("plop", 57));
-    assertEquals(system.symbolTable.use("plop"), numberBag(57));
+    expect(define("plop", 57).type).not.toBe("failures");
+    expect(system.symbolTable.use("plop")).toEqual(numberBag(57));
 });
 
 Deno.test("A symbol can only be redefined if it's value has not changed", () => {
@@ -45,15 +44,18 @@ Deno.test("A symbol can only be redefined if it's value has not changed", () => 
         irrelevantName, system.symbolTable.defineDirective
     );
 
-    assertSuccess(define("plop", 57));
-    assertEquals(system.symbolTable.use("plop"), numberBag(57));
+    expect(define("plop", 57).type).not.toBe("failures");
+    expect(system.symbolTable.use("plop")).toEqual(numberBag(57));
 
     system.pass.second();
-    assertSuccess(define("plop", 57));
+    expect(define("plop", 57).type).not.toBe("failures");
 
     const result = define("plop", 75);
-    assertEquals(result.type, "failures");
-    assertFailureKind(result.it as Array<Failure>, "symbol_alreadyExists");
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("symbol_alreadyExists");
 });
 
 Deno.test("A symbol can't be defined with the same name as a directive", () => {
@@ -66,8 +68,11 @@ Deno.test("A symbol can't be defined with the same name as a directive", () => {
         "type": "voidDirective", "it": () => emptyBag()
     });
     const result = define("redefineMe", 57);
-    assertEquals(result.type, "failures");
-    assertFailureKind(result.it as Array<Failure>, "symbol_nameIsDirective");
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("symbol_nameIsDirective");
 });
 
 Deno.test("A symbol is returned but not counted if it's a directive", () => {
@@ -77,8 +82,8 @@ Deno.test("A symbol is returned but not counted if it's a directive", () => {
         "type": "voidDirective", "it": () => emptyBag()
     };
     system.directiveList.includes("findMe", fakeDirective);
-    assertEquals(system.symbolTable.use("findMe"), fakeDirective);
-    assertEquals(system.symbolTable.count("findMe"), 0);
+    expect(system.symbolTable.use("findMe")).toEqual(fakeDirective);
+    expect(system.symbolTable.count("findMe")).toBe(0);
 });
 
 Deno.test("A symbol can't be defined with the same name as a register", () => {
@@ -89,8 +94,11 @@ Deno.test("A symbol can't be defined with the same name as a register", () => {
 
     system.cpuRegisters.initialise(false);
     const result = define("R8", 8);
-    assertEquals(result.type, "failures");
-    assertFailureKind(result.it as Array<Failure>, "symbol_nameIsRegister");
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("symbol_nameIsRegister");
 });
 
 Deno.test("A symbol is returned and counted if it's a register", () => {
@@ -98,8 +106,8 @@ Deno.test("A symbol is returned and counted if it's a register", () => {
     system.cpuRegisters.initialise(false);
 
     for (const expectedCount of [1, 2, 3]) {
-        assertEquals(system.symbolTable.use("R3"), numberBag(3));
-        assertEquals(system.symbolTable.count("R3"), expectedCount);
+        expect(system.symbolTable.use("R3")).toEqual(numberBag(3));
+        expect(system.symbolTable.count("R3")).toBe(expectedCount);
     }
 });
 
@@ -109,19 +117,24 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
 
     system.deviceProperties.property("test", "57");
     const result = define("test", 57);
-    assertEquals(result.type, "failures");
-    assertFailureKind(result.it as Array<Failure>, "symbol_alreadyExists");
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("symbol_alreadyExists");
 })
 
 Deno.test("A symbol is returned and counted if it's a device property", () => {
     const system = systemUnderTest();
     system.deviceProperties.property("deviceName", "someDevice");
-
     system.deviceProperties.property("test", "57");
-    assertSuccessWith(system.deviceProperties.public.value("test"), "57");
+
+    const result = system.deviceProperties.public.value("test");
+    expect(result.type).not.toBe("failures");
+    expect((result as StringBag).it).toBe("57");
     for (const expectedCount of [1, 2, 3]) {
-        assertEquals(system.symbolTable.use("test"), stringBag("57"));
-        assertEquals(system.symbolTable.count("test"), expectedCount);
+        expect(system.symbolTable.use("test")).toEqual(stringBag("57"));
+        expect(system.symbolTable.count("test")).toBe(expectedCount);
     }
 });
 
@@ -129,7 +142,7 @@ Deno.test("Device properties don't 'become' symbols until they're used", () => {
     const system = systemUnderTest();
 
     system.deviceProperties.property("test", "57");
-    assertEquals(system.symbolTable.count("test"), 0);
+    expect(system.symbolTable.count("test")).toBe(0);
 });
 
 Deno.test("A symbol is returned and counted if it's a CPU register", () => {
@@ -137,14 +150,13 @@ Deno.test("A symbol is returned and counted if it's a CPU register", () => {
     system.cpuRegisters.initialise(false);
 
     for (const expectedCount of [1, 2, 3]) {
-        assertEquals(system.symbolTable.use("R15"), numberBag(15));
-        assertEquals(system.symbolTable.count("R15"), expectedCount);
+        expect(system.symbolTable.use("R15")).toEqual(numberBag(15));
+        expect(system.symbolTable.count("R15")).toBe(expectedCount);
     }
 });
 
 Deno.test("CPU registers don't 'become' symbols until they're used", () => {
     const system = systemUnderTest();
     system.cpuRegisters.initialise(false);
-
-    assertEquals(system.symbolTable.count("R15"), 0);
+    expect(system.symbolTable.count("R15")).toBe(0);
 });

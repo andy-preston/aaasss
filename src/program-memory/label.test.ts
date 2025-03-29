@@ -1,7 +1,6 @@
-import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
-import { numberBag } from "../assembler/bags.ts";
+import { expect } from "jsr:@std/expect";
+import { numberBag, StringBag } from "../assembler/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { assertSuccess, assertSuccessWith } from "../failure/testing.ts";
 import { systemUnderTest, testLine } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -14,13 +13,13 @@ Deno.test("A label is stored in the symbol table with the current address", () =
 
     system.deviceProperties.property("deviceName", "test");
     system.deviceProperties.property("programMemoryBytes", "FF");
-    assertSuccess(origin(10));
+    expect(origin(10).type).not.toBe("failures");
 
     const line = testLine("A_LABEL", [], []);
     const second = system.programMemory.addressed(line);
-    assertFalse(second.failed(), "Unexpected failure");
-    assertEquals(second.failures.length, 0);
-    assertEquals(system.symbolTable.use("A_LABEL"), numberBag(10));
+    expect(second.failed(), "Unexpected failure").toBeFalsy();
+    expect(second.failures.length).toBe(0);
+    expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
 });
 
 Deno.test("Labels can only be redefined if their value doesn't change", () => {
@@ -33,17 +32,17 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
     system.deviceProperties.property("programMemoryBytes", "FF");
     const line = testLine("A_LABEL", [], []);
 
-    assertSuccess(origin(10));
+    expect(origin(10).type).not.toBe("failures");
     system.programMemory.addressed(line);
 
     system.pass.second();
-    assertSuccess(origin(10));
-    assertFalse(system.programMemory.addressed(line).failed());
-    assertEquals(system.symbolTable.use("A_LABEL"), numberBag(10));
+    expect(origin(10).type).not.toBe("failures");
+    expect(system.programMemory.addressed(line).failed()).toBeFalsy();
+    expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
 
-    assertSuccess(origin(20));
-    assert(system.programMemory.addressed(line).failed());
-    assertEquals(system.symbolTable.use("A_LABEL"), numberBag(10));
+    expect(origin(20).type).not.toBe("failures");
+    expect(system.programMemory.addressed(line).failed()).toBeTruthy();
+    expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
 });
 
 Deno.test("Labels are available to javascript", () => {
@@ -56,7 +55,9 @@ Deno.test("Labels are available to javascript", () => {
     system.deviceProperties.property("programMemoryBytes", "FF");
 
     system.pass.second();
-    assertSuccess(origin(10));
+    expect(origin(10).type).not.toBe("failures");
     system.programMemory.addressed(testLine("A_LABEL", [], []));
-    assertSuccessWith(system.jsExpression("A_LABEL"), "10");
+    const result = system.jsExpression("A_LABEL");
+    expect(result.type).not.toBe("failures");
+    expect((result as StringBag).it).toBe("10");
 });

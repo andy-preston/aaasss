@@ -1,4 +1,4 @@
-import { assertFileContains, docTest } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Macro demo", () => {
     const demo = docTest();
@@ -14,7 +14,7 @@ Deno.test("Macro demo", () => {
         '    {{ aMacro(2048); }}',
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATTiny24"); }}',
@@ -35,7 +35,7 @@ Deno.test("Macro demo", () => {
         "aMacro (2) /var/tmp/demo.asm:5",
         "R30 (2)"
     ]);
-    assertFileContains(".hex", [
+    expectFileContents(".hex").toEqual([
         ":020000020000FC",
         ":08000000E0910004E09100080A",
         ":00000001FF"
@@ -60,7 +60,7 @@ Deno.test("A macro can be called from inside another macro", () => {
 
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATTiny24"); }}',
@@ -87,7 +87,7 @@ Deno.test("A macro can be called from inside another macro", () => {
         "outerMacro (1) /var/tmp/demo.asm:10",
         "R30 (2)"
     ]);
-    assertFileContains(".hex", [
+    expectFileContents(".hex").toEqual([
         ":020000020000FC",
         ":08000000E0910004E09100080A",
         ":00000001FF"

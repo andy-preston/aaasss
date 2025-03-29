@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertFalse, assertNotEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveList } from "../directives/directive-list.ts";
@@ -30,9 +30,9 @@ Deno.test("A symbol assignment does not pollute the `this` context object", () =
     const rendered = system.js.rendered(testLine(
         "{{ plop = 27; this.plop; }}"
     ));
-    assertFalse(rendered.failed());
-    assertNotEquals(rendered.assemblySource, "27");
-    assertEquals(rendered.assemblySource, "");
+    expect(rendered.failed()).toBeFalsy();
+    expect(rendered.assemblySource).not.toBe("27");
+    expect(rendered.assemblySource).toBe("");
 });
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {
@@ -40,8 +40,8 @@ Deno.test("JS can be delimited with moustaches on the same line", () => {
     const rendered = system.js.rendered(testLine(
         "MOV {{ const test = 27; test; }}, R2"
     ));
-    assertFalse(rendered.failed());
-    assertEquals(rendered.assemblySource, "MOV 27, R2");
+    expect(rendered.failed()).toBeFalsy();
+    expect(rendered.assemblySource).toBe("MOV 27, R2");
 });
 
 Deno.test("JS can be delimited by moustaches across several lines", () => {
@@ -52,40 +52,40 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
         testLine("message; }} matey!"),
     ];
     const rendered = lines.map(system.js.rendered);
-    assertFalse(rendered[0]!.failed());
-    assertEquals(rendered[0]!.assemblySource, "some ordinary stuff");
-    assertFalse(rendered[1]!.failed());
-    assertEquals(rendered[1]!.assemblySource, "");
-    assertFalse(rendered[2]!.failed());
-    assertEquals(rendered[2]!.assemblySource, "hello matey!");
+    expect(rendered[0]!.failed()).toBeFalsy();
+    expect(rendered[0]!.assemblySource).toBe("some ordinary stuff");
+    expect(rendered[1]!.failed()).toBeFalsy();
+    expect(rendered[1]!.assemblySource).toBe("");
+    expect(rendered[2]!.failed()).toBeFalsy();
+    expect(rendered[2]!.assemblySource).toBe("hello matey!");
 });
 
 Deno.test("Multiple opening moustaches are illegal", () => {
     const system = systemUnderTest();
     const rendered = system.js.rendered(testLine("{{ {{ }}"));
-    assert(rendered.failed());
+    expect(rendered.failed()).toBeTruthy();
     const failures = rendered.failures().toArray();
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "js_jsMode");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("js_jsMode");
 });
 
 Deno.test("Multiple closing moustaches are illegal", () => {
     const system = systemUnderTest();
     const rendered = system.js.rendered(testLine("{{ }} }}"));
-    assert(rendered.failed());
+    expect(rendered.failed()).toBeTruthy();
     const failures = rendered.failures().toArray();
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "js_assemblerMode");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("js_assemblerMode");
 });
 
 Deno.test("Omitting a closing moustache is illegal", () => {
     const system = systemUnderTest();
     const rendered = system.js.rendered(testLine("{{"));
-    assertFalse(rendered.failed());
-    assertEquals(rendered.failures.length, 0);
+    expect(rendered.failed()).toBeFalsy();
+    expect(rendered.failures.length).toBe(0);
     const result = system.js.leftInIllegalState();
-    assertEquals(result.type, "failures");
+    expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    assertEquals(failures.length, 1);
-    assertEquals(failures[0]!.kind, "js_jsMode");
+    expect(failures.length).toBe(1);
+    expect(failures[0]!.kind).toBe("js_jsMode");
 });

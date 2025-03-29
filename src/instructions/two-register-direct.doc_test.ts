@@ -1,4 +1,4 @@
-import { assertFileContains, assertNoFileExists, docTest } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents, expectFileExists } from "../assembler/doc-test.ts";
 
 Deno.test("Two register direct demo",() => {
     const demo = docTest();
@@ -27,7 +27,7 @@ Deno.test("Two register direct demo",() => {
         "    TST R8",
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATMega 328"); }}',
@@ -71,7 +71,7 @@ Deno.test("Two register direct demo",() => {
         "R23 (1)",
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
-    assertFileContains(".hex", [
+    expectFileContents(".hex").toEqual([
         ":020000020000FC",
         ":10000000121C340C7820EE24F016120745137025CC",
         ":10001000550C782C809ECD28441F42091218882048",
@@ -86,7 +86,7 @@ Deno.test("Many chips do not support 8-bit multiply",() => {
         "    MUL R0, R1"
         ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATTiny 24"); }}',
@@ -100,6 +100,6 @@ Deno.test("Many chips do not support 8-bit multiply",() => {
         "R0 (1)",
         "R1 (1)",
     ]);
-    assertNoFileExists(".hex");
+    expectFileExists(".hex").toBeFalsy();
 });
 

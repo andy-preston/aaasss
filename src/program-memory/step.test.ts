@@ -1,49 +1,48 @@
-import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
-import { assertFailureKind } from "../failure/testing.ts";
+import { expect } from "jsr:@std/expect";
 import { systemUnderTest, testLine } from "./testing.ts";
 
 Deno.test("If a line has no code the address remains unchanged", () => {
     const system = systemUnderTest();
     system.deviceProperties.property("deviceName", "test");
     system.deviceProperties.property("programMemoryBytes", "FF");
-    assertEquals(0, system.programMemory.address());
+    expect(system.programMemory.address()).toBe(0);
     system.programMemory.addressed(testLine("", [], []));
-    assertEquals(0, system.programMemory.address());
+    expect(system.programMemory.address()).toBe(0);
 });
 
 Deno.test("The program counter advances by the number of words poked", () => {
     const system = systemUnderTest();
     system.deviceProperties.property("deviceName", "test");
     system.deviceProperties.property("programMemoryBytes", "FF");
-    assertEquals(0, system.programMemory.address());
+    expect(system.programMemory.address()).toBe(0);
     system.programMemory.addressed(testLine(
         "",
         [[1, 2, 3, 4], [5, 6]],
         []
     ));
-    assertEquals(3, system.programMemory.address());
+    expect(system.programMemory.address()).toBe(3);
 });
 
 Deno.test("... or by the number of words of code", () => {
     const system = systemUnderTest();
     system.deviceProperties.property("deviceName", "test");
     system.deviceProperties.property("programMemoryBytes", "FF");
-    assertEquals(0, system.programMemory.address());
+    expect(system.programMemory.address()).toBe(0);
     system.programMemory.addressed(testLine("", [], [1, 2]));
-    assertEquals(1, system.programMemory.address());
+    expect(system.programMemory.address()).toBe(1);
 });
 
 Deno.test("... or both", () => {
     const system = systemUnderTest();
     system.deviceProperties.property("deviceName", "test");
     system.deviceProperties.property("programMemoryBytes", "FF");
-    assertEquals(0, system.programMemory.address());
+    expect(system.programMemory.address()).toBe(0);
     system.programMemory.addressed(testLine("",
         [[1, 2, 3, 4], [5, 6]],
         [1, 2]
     ));
     const result = system.programMemory.address();
-    assertEquals(4, result);
+    expect(result).toBe(4);
 });
 
 Deno.test("Insufficient program memory causes generation to fail", () => {
@@ -54,14 +53,16 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
 
     const line = testLine("", [[1, 2, 3, 4]], [1, 2]);
     const result = system.programMemory.addressed(line);
-    assert(result.failed());
+    expect(result.failed()).toBeTruthy();
     const failures = result.failures().toArray();
-    assertEquals(failures.length, 1);
-    assertFailureKind(failures, "programMemory_outOfRange");
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("programMemory_outOfRange");
+
     // Code is still generated
-    assertEquals(result.code, [[1, 2, 3, 4], [1, 2]]);
+    expect(result.code).toEqual([[1, 2, 3, 4], [1, 2]]);
     // But the address doesn't advance
-    assertEquals(system.programMemory.address(), preFailureAddress);
+    expect(system.programMemory.address()).toBe(preFailureAddress);
 });
 
 Deno.test("Advancing beyond the end of program memory causes failure", () => {
@@ -71,19 +72,21 @@ Deno.test("Advancing beyond the end of program memory causes failure", () => {
 
     const firstLine = testLine("", [[1, 2, 3, 4]], [1, 2]);
     const firstResult = system.programMemory.addressed(firstLine);
-    assertFalse(firstResult.failed());
-    assertEquals(firstResult.failures.length, 0);
-    assertEquals(firstResult.code, [[1, 2, 3, 4], [1, 2]]);
+    expect(firstResult.failed()).toBeFalsy();
+    expect(firstResult.failures.length).toBe(0);
+    expect(firstResult.code).toEqual([[1, 2, 3, 4], [1, 2]]);
     const preFailureAddress = system.programMemory.address();
 
     const secondLine = testLine("", [[1, 2, 3, 4]], [1, 2]);
     const secondResult = system.programMemory.addressed(secondLine);
-    assert(secondResult.failed(), "Didn't fail!");
+    expect(secondResult.failed(), "Didn't fail!").toBeTruthy();
     const failures = secondResult.failures().toArray();
-    assertEquals(failures.length, 1);
-    assertFailureKind(failures, "programMemory_outOfRange");
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("programMemory_outOfRange");
+
     // Code is still generated
-    assertEquals(firstResult.code, [[1, 2, 3, 4], [1, 2]]);
+    expect(firstResult.code).toEqual([[1, 2, 3, 4], [1, 2]]);
     // But the address doesn't advance
-    assertEquals(system.programMemory.address(), preFailureAddress);
+    expect(system.programMemory.address()).toBe(preFailureAddress);
 });

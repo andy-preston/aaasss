@@ -1,4 +1,4 @@
-import { assertFileContains, docTest } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Defining methods to get high and low bytes", () => {
     const demo = docTest();
@@ -16,7 +16,7 @@ Deno.test("Defining methods to get high and low bytes", () => {
         "    {{ poke ((0xf00d).low()); }}"
     ]);
     demo.assemble();
-    assertFileContains(".lst", [
+    expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("ATTiny2313"); }}',

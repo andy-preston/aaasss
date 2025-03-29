@@ -1,7 +1,6 @@
-import { assertEquals, assertNotEquals } from "jsr:@std/assert";
+import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
 import type { Failure } from "../failure/bags.ts";
-import { assertFailureKind, assertSuccess } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -12,10 +11,13 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
         irrelevantName, system.macros.macroDirective
     );
 
-    assertSuccess(macro("plop"));
+    expect(macro("plop").type).not.toBe("failures");
     const result = system.macros.leftInIllegalState();
-    assertEquals(result.type, "failures");
-    assertFailureKind(result.it as Array<Failure>, "macro_noEnd");
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("macro_noEnd");
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
@@ -24,10 +26,13 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
         irrelevantName, system.macros.macroDirective
     );
 
-    assertSuccess(macro("aMacro"));
+    expect(macro("aMacro").type).not.toBe("failures");
     const result = macro("anotherOne");
-    assertEquals(result.type, "failures");
-    assertFailureKind(result.it as Array<Failure>, "macro_multiDefine");
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("macro_multiDefine");
 });
 
 Deno.test("Multiple macros can be defined", () => {
@@ -40,8 +45,8 @@ Deno.test("Multiple macros can be defined", () => {
     );
 
     for (const macroName of ["aMacro", "anotherOne", "yetAnotherOne"]) {
-        assertSuccess(macro(macroName));
-        assertSuccess(end());
+        expect(macro(macroName).type).not.toBe("failures");
+        expect(end().type).not.toBe("failures");
     };
 });
 
@@ -52,6 +57,9 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
     );
 
     const result = end();
-    assertEquals(result.type, "failures");
-    assertFailureKind(result.it as Array<Failure>, "macro_end");
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("macro_end");
 });

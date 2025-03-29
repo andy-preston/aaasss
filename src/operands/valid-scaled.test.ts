@@ -1,5 +1,4 @@
-import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
-import { assertFailureWithExtra } from "../failure/testing.ts";
+import { expect } from "jsr:@std/expect";
 import type { OldFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
@@ -36,12 +35,15 @@ Deno.test("The number of operands much match", () => {
     ];
 
     const result = validScaledOperands(line, requirements);
-    assert(line.failed());
-    assertEquals(result, [0, 0, 0]);
+    expect(line.failed()).toBeTruthy();
+    expect(result).toEqual([0, 0, 0]);
     const failures = line.failures().toArray();
-    assertEquals(failures.length, 1);
-    assertFailureWithExtra(failures, "operand_wrongCount", ["3"]);
-    assertEquals((failures[0] as OldFailure).location, undefined);
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect (failure.kind).toBe("operand_wrongCount");
+    const oldStyle = failure as OldFailure;
+    expect(oldStyle.extra).toEqual(["3"]);
+    expect(oldStyle.location).toBe(undefined);
 });
 
 Deno.test("The required operand type must match the actual operand types", () => {
@@ -55,8 +57,8 @@ Deno.test("The required operand type must match the actual operand types", () =>
         ["register", someNumericType, 0],
     ];
     const result = validScaledOperands(line, requirements);
-    assertFalse(line.failed());
-    assertEquals(result, [anyNumber, anyNumber]);
+    expect(line.failed()).toBeFalsy();
+    expect(result).toEqual([anyNumber, anyNumber]);
 });
 
 Deno.test("If they don't match the line is marked with a failure", () => {
@@ -70,15 +72,15 @@ Deno.test("If they don't match the line is marked with a failure", () => {
         ["register", someNumericType, 1],
     ];
     const result = validScaledOperands(line, requirements);
-    assert(line.failed());
-    assertEquals(result, [0, 0]);
+    expect(line.failed()).toBeTruthy();
+    expect(result).toEqual([0, 0]);
     const failures = line.failures().toArray();
-    assertEquals(failures.length, 2);
+    expect(failures.length).toBe(2);
     failures.forEach((failure, index) => {
-        assertEquals(failure.kind, "operand_wrongType");
+        expect(failure.kind).toBe("operand_wrongType");
         const oldStyle = failure as OldFailure;
-        assertEquals(oldStyle.location, {"operand": index as OperandIndex});
-        assertEquals(oldStyle.extra, [requirements[index]![0]]);
+        expect(oldStyle.location).toEqual({"operand": index as OperandIndex});
+        expect(oldStyle.extra).toEqual([requirements[index]![0]]);
     });
 });
 
@@ -100,7 +102,7 @@ Deno.test("The required numeric type must match the actual type", () => {
         const line = testLine([anySymbolic], [value], ["number"]);
         validScaledOperands(line, [["number", numericType, 0]]);
         // The result might be scaled, so we're not checking it here!
-        assertFalse(line.failed(), `${key}`);
+        expect(line.failed(), `${key}`).toBeFalsy();
     }
 });
 
@@ -122,16 +124,16 @@ Deno.test("If numeric types don't match the line fails", () => {
         const line = testLine([anySymbolic], [value], ["number"]);
         validScaledOperands(line, [["number", numericType, 0]]);
         // The result might be scaled, so we're not checking it here!
-        assert(line.failed());
+        expect(line.failed()).toBeTruthy();
         const failures = line.failures().toArray();
-        assertEquals(failures.length, 1);
+        expect(failures.length).toBe(1);
         const oldStyle = failures[0] as OldFailure;
-        assertEquals(oldStyle.kind, numericType);
-        assertEquals(oldStyle.location, {"operand": 0});
+        expect(oldStyle.kind).toBe(numericType);
+        expect(oldStyle.location).toEqual({"operand": 0});
         const extras = oldStyle.extra as Array<string>;
-        assert(Array.isArray(extras));
-        assertEquals(extras.length, 3);
-        assertEquals(extras[0], `${value}`);
+        expect(Array.isArray(extras)).toBeTruthy();
+        expect(extras.length).toBe(3);
+        expect(extras[0]).toBe(`${value}`);
         // The other 2 are expected min and max - I'm not testing that here
     }
 });

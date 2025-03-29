@@ -1,5 +1,4 @@
-import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
-import { assertSuccess } from "../failure/testing.ts";
+import { expect } from "jsr:@std/expect";
 import { macroFromTable, systemUnderTest, testLine } from "./testing.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 
@@ -14,25 +13,25 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("testMacro"));
+    expect(macro("testMacro").type).not.toBe("failures");
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
-    assert(skipFirstLine.isRecordingMacro);
+    expect(skipFirstLine.isRecordingMacro).toBeTruthy();
     const lineWithLabel = system.macros.lines(
         testLine("", 0, "aLabel", "", [])
     );
-    assertFalse(lineWithLabel.failed());
-    assertSuccess(end());
+    expect(lineWithLabel.failed()).toBeFalsy();
+    expect(end().type).not.toBe("failures");
 
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
-    assertSuccess(testMacro());
+    expect(testMacro().type).not.toBe("failures");
     const mockCount = 2;
 
     const line = system.macros.lines(
         testLine("testMacro", mockCount, "", "JMP", ["aLabel"])
     );
-    assertEquals(line.symbolicOperands[0], `testMacro$${mockCount}$aLabel`);
+    expect(line.symbolicOperands[0]).toBe(`testMacro$${mockCount}$aLabel`);
 });
 
 Deno.test("But label operands from outside the macro are left as is", () => {
@@ -44,24 +43,24 @@ Deno.test("But label operands from outside the macro are left as is", () => {
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("testMacro"));
+    expect(macro("testMacro").type).not.toBe("failures");
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
-    assert(skipFirstLine.isRecordingMacro);
+    expect(skipFirstLine.isRecordingMacro).toBeTruthy();
     const lineWithLabel = system.macros.lines(
         testLine("", 0, "aLabel", "", [])
     );
-    assertFalse(lineWithLabel.failed());
-    assertSuccess(end());
+    expect(lineWithLabel.failed()).toBeFalsy();
+    expect(end().type).not.toBe("failures");
 
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
-    assertSuccess(testMacro());
+    expect(testMacro().type).not.toBe("failures");
     const mockCount = 2;
     const line = system.macros.lines(
         testLine("testMacro", mockCount, "", "JMP", ["differentLabel"])
     );
-    assertEquals(line.symbolicOperands[0], "differentLabel");
+    expect(line.symbolicOperands[0]).toBe("differentLabel");
 });
 
 Deno.test("Actual labels in macros are also expanded on playback", () => {
@@ -73,18 +72,18 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
         irrelevantName, system.macros.endDirective
     );
 
-    assertSuccess(macro("testMacro"));
+    expect(macro("testMacro").type).not.toBe("failures");
     const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
-    assert(skipFirstLine.isRecordingMacro);
-    assertSuccess(end());
+    expect(skipFirstLine.isRecordingMacro).toBeTruthy();
+    expect(end().type).not.toBe("failures");
 
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
-    assertSuccess(testMacro());
+    expect(testMacro().type).not.toBe("failures");
     const mockCount = 2;
     const line = system.macros.lines(
         testLine("testMacro", mockCount, "aLabel", "TST", [])
     );
-    assertEquals(line.label, `testMacro$${mockCount}$aLabel`);
+    expect(line.label).toBe(`testMacro$${mockCount}$aLabel`);
 });
