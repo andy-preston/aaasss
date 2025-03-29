@@ -1,4 +1,4 @@
-import { assertEquals } from "assert";
+import { assertEquals } from "jsr:@std/assert";
 import { emptyBag, stringBag } from "../assembler/bags.ts";
 import { bagOfFailures, clueFailure, Failure } from "../failure/bags.ts";
 import { assertFailureKind, assertFailureWithExtra, assertSuccess, assertSuccessWith } from "../failure/testing.ts";

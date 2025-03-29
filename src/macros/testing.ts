@@ -1,4 +1,4 @@
-import { assertEquals } from "assert";
+import { assertEquals } from "jsr:@std/assert";
 import { emptyBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";

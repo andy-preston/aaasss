@@ -1,4 +1,4 @@
-import { existsSync } from "fs/exists";
+import { existsSync } from "jsr:@std/fs/exists";
 import { stringBag } from "../assembler/bags.ts";
 import { bagOfFailures, clueFailure, type StringOrFailures } from "../failure/bags.ts";
 import type { DeviceSpec, RawItems } from "./data-types.ts";

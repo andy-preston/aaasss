@@ -1,4 +1,4 @@
-import { assert, assertFalse, assertThrows } from "assert";
+import { assert, assertFalse, assertThrows } from "jsr:@std/assert";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
 Deno.test("Instructions are added to the unsupported list in groups", () => {

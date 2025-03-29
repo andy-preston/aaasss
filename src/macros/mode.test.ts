@@ -1,4 +1,4 @@
-import { assertEquals } from "assert";
+import { assertEquals, assertNotEquals } from "jsr:@std/assert";
 import { directiveFunction } from "../directives/directive-function.ts";
 import type { Failure } from "../failure/bags.ts";
 import { assertFailureKind, assertSuccess } from "../failure/testing.ts";

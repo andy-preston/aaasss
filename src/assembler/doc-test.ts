@@ -1,5 +1,5 @@
-import { existsSync } from "fs/exists";
-import { assert, assertEquals, assertFalse } from "assert";
+import { existsSync } from "jsr:@std/fs/exists";
+import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
 import { defaultDeviceFinder, defaultJsonLoader, type DeviceFileOperations } from "../device/device-file.ts";
 import { deviceMocks } from "../device/device-file-mocks.ts";
 import { mockFailureMessages } from "../listing/messages-mock.ts";

@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertNotEquals } from "assert";
+import { assert, assertEquals, assertNotEquals } from "jsr:@std/assert";
 import { assertSuccess } from "../failure/testing.ts";
 import { macroFromTable, systemUnderTest, testLine, testLineWithSource } from "./testing.ts";
 import { oldFailure } from "../failure/bags.ts";

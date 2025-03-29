@@ -1,4 +1,4 @@
-import { assertEquals } from "assert";
+import { assertEquals } from "jsr:@std/assert";
 import { pokeBuffer } from "./poke.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";

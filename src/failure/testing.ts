@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertNotEquals } from "assert";
+import { assert, assertEquals, assertNotEquals } from "jsr:@std/assert";
 import type { BooleanBag, NumberBag, StringBag } from "../assembler/bags.ts";
 import type {
     FailureKind, BagOfFailures, OldFailure, Failure,

@@ -1,4 +1,4 @@
-import { assertEquals } from "assert";
+import { assertEquals } from "jsr:@std/assert";
 import { directiveFunction } from "../directives/directive-function.ts";
 import type { MemoryRangeFailure, Failure, OldFailure } from "../failure/bags.ts";
 import { assertFailureWithExtra, assertSuccess } from "../failure/testing.ts";

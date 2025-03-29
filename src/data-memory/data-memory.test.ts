@@ -1,4 +1,4 @@
-import { assertEquals, assertNotEquals } from "assert";
+import { assertEquals, assertNotEquals } from "jsr:@std/assert";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import { directiveFunction } from "../directives/directive-function.ts";

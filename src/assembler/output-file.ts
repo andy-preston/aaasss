@@ -1,4 +1,4 @@
-import { existsSync } from "fs/exists";
+import { existsSync } from "jsr:@std/fs/exists";
 import { FileName } from "../source-code/data-types.ts";
 
 export type FileExtension = ".lst" | ".hex";

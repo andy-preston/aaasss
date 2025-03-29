@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertFalse } from "assert";
+import { assert, assertEquals, assertFalse } from "jsr:@std/assert";
 import { assertFailureWithExtra } from "../failure/testing.ts";
 import type { OldFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";

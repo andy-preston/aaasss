@@ -1,4 +1,4 @@
-import { assert, assertEquals } from "assert";
+import { assert, assertEquals } from "jsr:@std/assert";
 import type { OldFailure } from "../failure/bags.ts";
 import { tokenise } from "./tokenise.ts";
 import { testLine } from "./testing.ts";

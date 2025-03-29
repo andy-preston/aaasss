@@ -10,10 +10,6 @@
             "command": "deno coverage _coverage"
         }
     },
-    "imports": {
-        "assert": "jsr:@std/assert",
-        "fs": "jsr:@std/fs"
-    },
     "compilerOptions": {
         "noUncheckedIndexedAccess": true,
         "noImplicitAny": true,

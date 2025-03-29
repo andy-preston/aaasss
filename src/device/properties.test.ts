@@ -1,4 +1,4 @@
-import { assertEquals } from "assert";
+import { assertEquals } from "jsr:@std/assert";
 import type { ClueFailure, Failure, OldFailure } from "../failure/bags.ts";
 import { assertFailureWithExtra } from "../failure/testing.ts";
 import { systemUnderTest } from "./testing.ts";
