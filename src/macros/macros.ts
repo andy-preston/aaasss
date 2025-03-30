@@ -1,7 +1,7 @@
 import { emptyBag } from "../assembler/bags.ts";
 import type { FunctionUseDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { oldFailure, bagOfFailures } from "../failure/bags.ts";
+import { bagOfFailures, clueFailure } from "../failure/bags.ts";
 import type { FileLineIterator, FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
@@ -27,7 +27,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         const macro = macroList.get(macroName)!;
         if (parameters.length != macro.parameters.length) {
             return bagOfFailures([
-                oldFailure("macro_params", [`${macro.parameters.length}`])
+                clueFailure("macro_params", `${macro.parameters.length}`)
             ]);
         }
 

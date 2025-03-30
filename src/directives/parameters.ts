@@ -1,5 +1,5 @@
 import { emptyBag } from "../assembler/bags.ts";
-import { oldFailure, bagOfFailures, BagOrFailures } from "../failure/bags.ts";
+import { oldFailure, bagOfFailures, boringFailure, clueFailure, type BagOrFailures } from "../failure/bags.ts";
 import type {
     VoidDirective, StringDirective, NumberDirective, ValueDirective,
     FunctionDefineDirective, FunctionUseDirective, DataDirective
@@ -10,6 +10,13 @@ const cleverType = (it: unknown) => Array.isArray(it) ? "array" : typeof it;
 
 const allAsString = (them: unknown[]) => them.map(element => `${element}`);
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// For the sake of error reporting, it would be good if we knew the name of
+// the function being called in here!
+//
+////////////////////////////////////////////////////////////////////////////////
+
 const parameterTypes = (
     them: unknown[],
     required: Array<"string" | "number">,
@@ -19,9 +26,7 @@ const parameterTypes = (
         (required as Array<string>).includes(included);
 
     if (length != undefined && length != them.length) {
-        return bagOfFailures([
-            oldFailure("parameter_count", [`${length}`])
-        ]);
+        return bagOfFailures([clueFailure("parameter_count", `${length}`)]);
     }
 
     const wrongTypes: Array<string> = [];
@@ -42,7 +47,7 @@ export const voidDirective = (
     directive: VoidDirective
 ): JavaScriptFunction => (...parameters: unknown[]) =>
     parameters.length != 0
-        ? bagOfFailures([oldFailure("parameter_count", ["0"])])
+        ? bagOfFailures([clueFailure("parameter_count", "0")])
         : directive.it();
 
 export const stringDirective = (
@@ -74,9 +79,7 @@ export const valueDirective = (
     directive: ValueDirective
 ): JavaScriptFunction => (...parameters: unknown[]) => {
     if (parameters.length != 2) {
-        return bagOfFailures([
-            oldFailure("parameter_count", ["2"])
-        ]);
+        return bagOfFailures([clueFailure("parameter_count", "2")]);
     }
     const typeOfFirst = typeof parameters[0];
     if (typeOfFirst != "string") {
@@ -107,9 +110,7 @@ export const functionDefineDirective = (
     directive: FunctionDefineDirective
 ): JavaScriptFunction => (...parameters: unknown[]) => {
     if (parameters.length == 0) {
-        return bagOfFailures([
-            oldFailure("parameter_firstName", [])
-        ]);
+        return bagOfFailures([boringFailure("parameter_firstName")]);
     }
     const check = parameterTypes(parameters, ["string"], undefined);
     return check.type == "failures"

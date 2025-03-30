@@ -116,11 +116,10 @@ Deno.test("... in upper case", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as DeviceFailure;
     expect (failure.kind).toBe("device_internalFormat");
-    const deviceFailure = failure as DeviceFailure;
-    expect(deviceFailure.device).toBe("imaginaryDevice");
-    expect(deviceFailure.clue).toBe("PORTD: 3f");
+    expect(failure.device).toBe("imaginaryDevice");
+    expect(failure.clue).toBe("PORTD: 3f");
 });
 
 Deno.test("Non-hex values can't be converted to numbers", () => {
@@ -131,11 +130,10 @@ Deno.test("Non-hex values can't be converted to numbers", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as DeviceFailure;
     expect (failure.kind).toBe("device_internalFormat");
-    const deviceFailure = failure as DeviceFailure;
-    expect(deviceFailure.device).toBe("imaginaryDevice");
-    expect(deviceFailure.clue).toBe("deviceName: imaginaryDevice");
+    expect(failure.device).toBe("imaginaryDevice");
+    expect(failure.clue).toBe("deviceName: imaginaryDevice");
 });
 
 Deno.test("Fails if, after loading device, required symbol is still not found", () => {
@@ -146,9 +144,8 @@ Deno.test("Fails if, after loading device, required symbol is still not found", 
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as DeviceFailure;
     expect (failure.kind).toBe("symbol_notFound");
-    const deviceFailure = failure as DeviceFailure;
-    expect(deviceFailure.device).toBe("imaginaryDevice");
-    expect(deviceFailure.clue).toBe("nonExistant");
+    expect(failure.device).toBe("imaginaryDevice");
+    expect(failure.clue).toBe("nonExistant");
 });

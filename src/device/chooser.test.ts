@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { ClueFailure, ComparisonFailure, Failure, OldFailure } from "../failure/bags.ts";
+import type { ClueFailure, ComparisonFailure, Failure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -86,8 +86,8 @@ Deno.test("The device name must be present", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     expect(failures[0]!.kind).toBe("parameter_count");
-    const failure = failures[0] as OldFailure;
-    expect(failure.extra).toEqual(["1"]);
+    const failure = failures[0] as ClueFailure;
+    expect(failure.clue).toBe("1");
 });
 
 Deno.test("The device name must be present and a string", () => {

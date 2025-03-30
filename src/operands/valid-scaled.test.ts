@@ -39,11 +39,10 @@ Deno.test("The number of operands much match", () => {
     expect(result).toEqual([0, 0, 0]);
     const failures = line.failures().toArray();
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as ClueFailure;
     expect (failure.kind).toBe("operand_wrongCount");
-    const oldStyle = failure as ClueFailure;
-    expect(oldStyle.clue).toEqual("3");
-    expect(oldStyle.location).toBe(undefined);
+    expect(failure.clue).toBe("3");
+    expect(failure.location).toBe(undefined);
 });
 
 Deno.test("The required operand type must match the actual operand types", () => {
@@ -80,7 +79,7 @@ Deno.test("If they don't match the line is marked with a failure", () => {
         expect(failure.kind).toBe("operand_wrongType");
         const clueFailure = failure as ClueFailure;
         expect(clueFailure.location).toEqual({"operand": index as OperandIndex});
-        expect(clueFailure.clue).toEqual(requirements[index]![0]);
+        expect(clueFailure.clue).toBe(requirements[index]![0]);
     });
 });
 
@@ -127,10 +126,10 @@ Deno.test("If numeric types don't match the line fails", () => {
         expect(line.failed()).toBeTruthy();
         const failures = line.failures().toArray();
         expect(failures.length).toBe(1);
-        const oldStyle = failures[0] as OldFailure;
-        expect(oldStyle.kind).toBe(numericType);
-        expect(oldStyle.location).toEqual({"operand": 0});
-        const extras = oldStyle.extra as Array<string>;
+        const failure = failures[0] as OldFailure;
+        expect(failure.kind).toBe(numericType);
+        expect(failure.location).toEqual({"operand": 0});
+        const extras = failure.extra!;
         expect(Array.isArray(extras)).toBeTruthy();
         expect(extras.length).toBe(3);
         expect(extras[0]).toBe(`${value}`);

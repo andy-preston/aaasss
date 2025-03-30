@@ -28,8 +28,9 @@ Deno.test("Including a non existant file returns a failure", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("file_notFound");
-    expect((failures[0] as ClueFailure).clue).toBe(
+    const failure = failures[0] as ClueFailure;
+    expect(failure.kind).toBe("file_notFound");
+    expect(failure.clue).toBe(
         `No such file or directory (os error 2): readfile '${fileName}'`
     );
 });
@@ -44,12 +45,9 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as OldFailure;
     expect (failure.kind).toBe("parameter_type");
-    const oldStyle = failure as OldFailure;
-    expect(oldStyle.extra).toEqual(
-        ["string", "0: array"]
-    );
+    expect(failure.extra).toEqual(["string", "0: array"]);
 });
 
 Deno.test("Reading a file yields multiple lines with the file contents", () => {
@@ -80,7 +78,8 @@ Deno.test("Reading a non existant source file gives one line with a failure", ()
     expect(line.failed()).toBeTruthy();
     const failures = line.failures().toArray();
     expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("file_notFound");
+    const failure = failures[0]!;
+    expect(failure.kind).toBe("file_notFound");
 });
 
 Deno.test("The last line of the top source file is flagged as such", () => {

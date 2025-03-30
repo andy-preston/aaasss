@@ -26,9 +26,9 @@ Deno.test("No instruction has three (or more) operands", () => {
     expect(tokenised.failed()).toBeTruthy();
     const failures = tokenised.failures().toArray();
     expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("operand_wrongCount");
     const failure = failures[0] as ClueFailure;
-    expect(failure.clue).toEqual("3");
+    expect(failure.kind).toBe("operand_wrongCount");
+    expect(failure.clue).toBe("3");
 });
 
 Deno.test("An operand must not be empty", () => {
@@ -38,8 +38,9 @@ Deno.test("An operand must not be empty", () => {
     expect(tokenised.failed()).toBeTruthy();
     const failures = tokenised.failures().toArray();
     expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("operand_blank");
-    expect(failures[0]!.location).toEqual({"operand": 0});
+    const failure = failures[0]!;
+    expect(failure.kind).toBe("operand_blank");
+    expect(failure.location).toEqual({"operand": 0});
 });
 
 Deno.test("Trailing commas count as an (empty operand)", () => {
@@ -49,8 +50,9 @@ Deno.test("Trailing commas count as an (empty operand)", () => {
     expect(tokenised.failed()).toBeTruthy();
     const failures = tokenised.failures().toArray();
     expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("operand_blank");
-    expect(failures[0]!.location).toEqual({"operand": 1});
+    const failure = failures[0]!;
+    expect(failure.kind).toBe("operand_blank");
+    expect(failure.location).toEqual({"operand": 1});
 });
 
 Deno.test("Some instructions only have one operand", () => {
@@ -101,8 +103,9 @@ Deno.test("... but not as the first operand of any other instruction", () => {
     expect(tokenised.failed()).toBeTruthy();
     const failures = tokenised.failures().toArray();
     expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("operand_offsetNotStd");
-    expect(failures[0]!.location).toEqual({"operand": 0});
+    const failure = failures[0]!;
+    expect(failure.kind).toBe("operand_offsetNotStd");
+    expect(failure.location).toEqual({"operand": 0});
  });
 
 Deno.test("... or the second operand", () => {
@@ -113,6 +116,7 @@ Deno.test("... or the second operand", () => {
     expect(tokenised.failed()).toBeTruthy();
     const failures = tokenised.failures().toArray();
     expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("operand_offsetNotLdd");
-    expect(failures[0]!.location).toEqual({"operand": 1});
+    const failure = failures[0]!;
+    expect(failure.kind).toBe("operand_offsetNotLdd");
+    expect(failure.location).toEqual({"operand": 1});
 });

@@ -2,7 +2,7 @@ import { emptyBag } from "../assembler/bags.ts";
 import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { oldFailure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, boringFailure, clueFailure, type StringOrFailures } from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import { macro, MacroList, MacroParameters, type Macro, type MacroName } from "./data-types.ts";
@@ -26,14 +26,10 @@ export const recording = (
         newName: MacroName, parameters: MacroParameters = []
     ): DirectiveResult => {
         if (theMacro != undefined) {
-            return bagOfFailures([
-                oldFailure("macro_multiDefine", [macroName])
-            ]);
+            return bagOfFailures([clueFailure("macro_multiDefine", macroName)]);
         }
         if (symbolTable.has(newName, "withRegisters")) {
-            return bagOfFailures([
-                oldFailure("macro_name", [newName])
-            ]);
+            return bagOfFailures([clueFailure("macro_name", newName)]);
         }
         macroName = newName;
         theMacro = macro(parameters);
@@ -47,9 +43,7 @@ export const recording = (
 
     const end = (): DirectiveResult => {
         if (theMacro == undefined) {
-            return bagOfFailures([
-                oldFailure("macro_end", undefined)
-            ]);
+            return bagOfFailures([boringFailure("macro_end")]);
         }
         macros.set(macroName, theMacro!);
         symbolTable.add(
@@ -76,7 +70,7 @@ export const recording = (
     };
 
     const leftInIllegalState = (): StringOrFailures => isRecording()
-        ? bagOfFailures([oldFailure("macro_noEnd", undefined)])
+        ? bagOfFailures([boringFailure("macro_noEnd")])
         : emptyBag()
 
     return {

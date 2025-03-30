@@ -16,8 +16,10 @@ export const boringFailure = (
     kind: "syntax_invalidLabel"
         | "device_notSelected"
         | "js_jsMode" | "js_assemblerMode"
+        | "macro_end" | "macro_noEnd"
         | "operand_blank" | "operand_offsetNotLdd" | "operand_offsetNotStd"
         | "operand_offsetX"
+        | "parameter_firstName"
         | "programMemory_sizeUnknown"
         | "ram_sizeUnknown" | "ram_stackAllocated"
 ) => ({
@@ -38,9 +40,11 @@ export type ComparisonFailure = ReturnType<typeof comparisonFailure>;
 
 export const clueFailure = (
     kind: "file_notFound" | "device_notFound"
+        | "macro_multiDefine" | "macro_name"  | "macro_params"
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown"
         | "operand_wrongCount" | "operand_wrongType"
+        | "parameter_count"
         | "symbol_alreadyExists"
         | "symbol_nameIsDirective" | "symbol_nameIsRegister",
     clue: string

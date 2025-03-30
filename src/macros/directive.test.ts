@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure, OldFailure } from "../failure/bags.ts";
+import type { ClueFailure, Failure, OldFailure } from "../failure/bags.ts";
 import { macroFromTable, systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -14,10 +14,9 @@ Deno.test("The macro directive name must be a string", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as OldFailure;
     expect (failure.kind).toBe("parameter_type");
-    const oldStyle = failure as OldFailure;
-    expect(oldStyle.extra).toEqual(["string", "0: number"]);
+    expect(failure.extra).toEqual(["string", "0: number"]);
 });
 
 Deno.test("The parameters in a definition must be strings", () => {
@@ -29,10 +28,9 @@ Deno.test("The parameters in a definition must be strings", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as OldFailure;
     expect (failure.kind).toBe("parameter_type");
-    const oldStyle = failure as OldFailure;
-    expect(oldStyle.extra).toEqual(["string", "2: number", "4: number"]);
+    expect(failure.extra).toEqual(["string", "2: number", "4: number"]);
 });
 
 Deno.test("On calling a macro, the parameters must be strings or numbers", () => {
@@ -53,10 +51,9 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as OldFailure;
     expect (failure.kind).toBe("parameter_type");
-    const oldStyle = failure as OldFailure;
-    expect(oldStyle.extra).toEqual(
+    expect(failure.extra).toEqual(
         ["string, number", "0: boolean", "1: object"]
     );
 });
@@ -79,8 +76,7 @@ Deno.test("Parameter count mismatches result in a failure", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as ClueFailure;
     expect (failure.kind).toBe("macro_params");
-    const oldStyle = failure as OldFailure;
-    expect(oldStyle.extra).toEqual(["3"]);
+    expect(failure.clue).toBe("3");
 });

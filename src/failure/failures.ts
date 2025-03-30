@@ -12,6 +12,4 @@ export type TypeFailure = NumericType
     | "type_number" | "type_string" | "type_strings" | "type_bytes";
 
 export type OldFailureKind = TypeFailure
-    | "macro_multiDefine" | "macro_noEnd" | "macro_end" | "macro_params"
-    | "macro_name" | "macro_notExist"
-    | "parameter_firstName" | "parameter_count" | "parameter_type"
+      | "parameter_type"
