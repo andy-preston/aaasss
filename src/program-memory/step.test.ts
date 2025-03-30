@@ -57,7 +57,7 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
     const failures = result.failures().toArray();
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect (failure.kind).toBe("programMemory_outOfRange");
+    expect(failure.kind).toBe("programMemory_outOfRange");
 
     // Code is still generated
     expect(result.code).toEqual([[1, 2, 3, 4], [1, 2]]);
@@ -83,7 +83,7 @@ Deno.test("Advancing beyond the end of program memory causes failure", () => {
     const failures = secondResult.failures().toArray();
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect (failure.kind).toBe("programMemory_outOfRange");
+    expect(failure.kind).toBe("programMemory_outOfRange");
 
     // Code is still generated
     expect(firstResult.code).toEqual([[1, 2, 3, 4], [1, 2]]);

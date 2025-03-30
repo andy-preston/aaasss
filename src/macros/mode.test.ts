@@ -17,7 +17,7 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect (failure.kind).toBe("macro_noEnd");
+    expect(failure.kind).toBe("macro_noEnd");
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
@@ -32,7 +32,7 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect (failure.kind).toBe("macro_multiDefine");
+    expect(failure.kind).toBe("macro_multiDefine");
 });
 
 Deno.test("Multiple macros can be defined", () => {
@@ -61,5 +61,5 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect (failure.kind).toBe("macro_end");
+    expect(failure.kind).toBe("macro_end");
 });

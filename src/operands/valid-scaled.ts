@@ -1,4 +1,4 @@
-import { clueFailure, type Failure } from "../failure/bags.ts";
+import { clueFailure, typeFailure, type Failure } from "../failure/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import {
@@ -23,12 +23,15 @@ export const validScaledOperands = (
     line: LineWithOperands, requirements: Requirements
 ): NumericOperands => {
     const realMapper = (requirement: Requirement): NumericOperand => {
-        const [operandType, numericType, operandIndex] = requirement;
+        const [requiredType, numericType, operandIndex] = requirement;
 
         const numeric = line.numericOperands[operandIndex]!;
+        const actualType = line.operandTypes[operandIndex];
 
-        if (line.operandTypes[operandIndex] != operandType) {
-            const failure = clueFailure("operand_wrongType", operandType);
+        if (actualType != requiredType) {
+            const failure = typeFailure(
+                "operand_type", requiredType, `${actualType}`
+            );
             failure.location = {"operand": operandIndex};
             line.withFailure(failure);
             return 0;

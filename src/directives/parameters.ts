@@ -1,39 +1,46 @@
 import { emptyBag } from "../assembler/bags.ts";
-import { oldFailure, bagOfFailures, boringFailure, clueFailure, type BagOrFailures } from "../failure/bags.ts";
+import {
+    bagOfFailures, boringFailure, clueFailure, typeFailure,
+    type BagOrFailures, type Failure
+} from "../failure/bags.ts";
 import type {
     VoidDirective, StringDirective, NumberDirective, ValueDirective,
     FunctionDefineDirective, FunctionUseDirective, DataDirective
 } from "./bags.ts";
 import type { JavaScriptFunction } from "./data-types.ts";
 
-const cleverType = (it: unknown) => Array.isArray(it) ? "array" : typeof it;
+const arrayOfStrings = (them: unknown[]) => them.map(element => `${element}`);
 
-const allAsString = (them: unknown[]) => them.map(element => `${element}`);
 
 const parameterTypes = (
-    them: unknown[],
-    required: Array<"string" | "number">,
+    givenParameters: unknown[],
+    requiredTypes: Array<"string" | "number">,
     length: number | undefined
 ): BagOrFailures => {
-    const requiredIncludes = (included: string) =>
-        (required as Array<string>).includes(included);
+    const requiredIncludes = (requiredType: string) =>
+        (requiredTypes as Array<string>).includes(requiredType);
 
-    if (length != undefined && length != them.length) {
-        return bagOfFailures([clueFailure("parameter_count", `${length}`)]);
+    const failures: Array<Failure> = [];
+
+    if (length != undefined && length != givenParameters.length) {
+        failures.push(clueFailure("parameter_count", `${length}`));
     }
 
-    const wrongTypes: Array<string> = [];
-    for (const [index, parameter] of them.entries()) {
-        const typeOf = cleverType(parameter);
-        if (!requiredIncludes(typeOf)) {
-            wrongTypes.push(`${index}: ${typeOf}`);
+    givenParameters.forEach((parameter, index) => {
+        if (length != undefined && index >= length) {
+            return;
         }
-    }
-    return wrongTypes.length == 0
-        ? emptyBag()
-        : bagOfFailures([
-            oldFailure("parameter_type", [required.join(", ")].concat(wrongTypes))
-        ]);
+        const typeOf = Array.isArray(parameter) ? "array" : typeof parameter;
+        if (!requiredIncludes(typeOf)) {
+            const failure = typeFailure(
+                "parameter_type", requiredTypes.join(", "), typeOf
+            );
+            failure.location = { "parameter": index };
+            failures.push(failure);
+        }
+    });
+
+    return failures.length == 0 ? emptyBag() : bagOfFailures(failures);
 }
 
 export const voidDirective = (
@@ -49,7 +56,7 @@ export const stringDirective = (
     const check = parameterTypes(parameters, ["string"], 1);
     return check.type == "failures"
         ? check
-        : directive.it(allAsString(parameters)[0]!);
+        : directive.it(arrayOfStrings(parameters)[0]!);
 };
 
 export const numberDirective = (
@@ -62,9 +69,7 @@ export const numberDirective = (
     const given = parameters[0]! as number | string;
     const numeric = typeof given == "string" ? parseInt(given) : given;
     return `${given}` != `${numeric}`
-        ? bagOfFailures([
-            oldFailure("parameter_type", ["number", "0: string"])
-        ])
+        ? bagOfFailures([typeFailure("parameter_type", "number", "string")])
         : directive.it(numeric);
 };
 
@@ -77,13 +82,13 @@ export const valueDirective = (
     const typeOfFirst = typeof parameters[0];
     if (typeOfFirst != "string") {
         return bagOfFailures([
-            oldFailure("parameter_type", ["string", `0: ${typeOfFirst}`])
+            typeFailure("parameter_type", "string", typeOfFirst)
         ]);
     }
     const typeOfSecond = typeof parameters[1];
     if (typeOfSecond != "number") {
         return bagOfFailures([
-            oldFailure("parameter_type", ["number", `1: ${typeOfSecond}`])
+            typeFailure("parameter_type", "number", typeOfSecond)
         ]);
     }
     return directive.it(parameters[0] as string, parameters[1] as number);
@@ -109,7 +114,7 @@ export const functionDefineDirective = (
     return check.type == "failures"
         ? check
         : directive.it(
-            parameters[0] as string, allAsString(parameters.slice(1))
+            parameters[0] as string, arrayOfStrings(parameters.slice(1))
         );
 };
 
@@ -119,5 +124,5 @@ export const functionUseDirective = (
     const check = parameterTypes(parameters, ["string", "number"], undefined);
     return check.type == "failures"
         ? check
-        : directive.it(symbolName, allAsString(parameters));
+        : directive.it(symbolName, arrayOfStrings(parameters));
 };

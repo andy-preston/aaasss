@@ -33,7 +33,9 @@ export const objectCode = (
         return emptyLine(lineWithPokedBytes(line, []));
     }
 
-    const intermediate = lineWithPokedBytes(line, pokeBuffer.contents());
+    const intermediate = lineWithPokedBytes(
+        line, pokeBuffer.contents().toArray()
+    );
     if (line.mnemonic == "") {
         return emptyLine(intermediate);
     }

@@ -1,7 +1,7 @@
 import { expect } from "jsr:@std/expect";
-import { macroFromTable, systemUnderTest, testLine, testLineWithSource } from "./testing.ts";
-import { oldFailure } from "../failure/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
+import { boringFailure } from "../failure/bags.ts";
+import { macroFromTable, systemUnderTest, testLine, testLineWithSource } from "./testing.ts";
 
 const testLines: Array<[string, string]> = [
     ["testLabel", "TST"],
@@ -100,7 +100,7 @@ Deno.test("Lines with failures are not recorded in the macro", () => {
     expect(skipFirstLine.isRecordingMacro).toBeTruthy();
 
     const failingLine = testLineWithSource("I have failed!", "", "", []);
-    failingLine.withFailure(oldFailure("type_positive", ["negative"]));
+    failingLine.withFailure(boringFailure("js_jsMode"));
     system.macros.lines(failingLine);
     system.macros.lines(testLineWithSource("OK!", "", "", []));
     expect(end().type).not.toBe("failures");

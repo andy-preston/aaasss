@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { MemoryRangeFailure, Failure, OldFailure, DeviceFailure } from "../failure/bags.ts";
+import type { MemoryRangeFailure, Failure, DeviceFailure, NumericTypeFailure, TypeFailure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -33,9 +33,11 @@ Deno.test("Origin addresses can't be less than zero", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as OldFailure;
-    expect (failure.kind).toBe("type_positive");
-    expect(failure.extra).toEqual(["-1", "0", ""]);
+    const failure = failures[0] as NumericTypeFailure;
+    expect(failure.kind).toBe("type_positive");
+    expect(failure.value).toBe(-1);
+    expect(failure.min).toBe(0);
+    expect(failure.max).toBe(undefined);
 });
 
 Deno.test("Origin addresses can't be strange type", () => {
@@ -43,14 +45,14 @@ Deno.test("Origin addresses can't be strange type", () => {
     const origin = directiveFunction(
         irrelevantName, system.programMemory.originDirective
     );
-
     const result = origin("nothing");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as OldFailure;
-    expect (failure.kind).toBe("parameter_type");
-    expect(failure.extra).toEqual(["number", "0: string"]);
+    const failure = failures[0] as TypeFailure;
+    expect(failure.kind).toBe("parameter_type");
+    expect(failure.expected).toBe("number");
+    expect(failure.actual).toBe("string");
 });
 
 Deno.test("Device name is used to determine if properties have been set", () => {

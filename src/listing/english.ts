@@ -44,7 +44,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Index offset instructions only operate on the Y or Z registers"
     ],
     "operand_wrongCount": (_line: LineWithAddress) => [""],
-    "operand_wrongType": (_line: LineWithAddress) => [""],
+    "operand_type": (_line: LineWithAddress) => [""],
     "parameter_firstName": (_line: LineWithAddress) => [
         "The first parameter should be a name"
     ],
@@ -70,17 +70,13 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "type_7BitDataAddress": (_line: LineWithAddress) => [""],
     "type_bitIndex": (_line: LineWithAddress) => [""],
     "type_byte":  (_line: LineWithAddress) => [""],
-    "type_bytes": (_line: LineWithAddress) => [
+    "type_bytesOrString": (_line: LineWithAddress) => [
         "Should be a string or an array of byte values"
     ],
-    "type_number": (_line: LineWithAddress) => [""],
+    "type_ioPort": (_line: LineWithAddress) => [""],
     "type_nybble": (_line: LineWithAddress) => [""],
     "type_positive": (_line: LineWithAddress) => [""],
     "type_register": (_line: LineWithAddress) => [""],
     "type_registerImmediate": (_line: LineWithAddress) => [""],
-    "type_string": (_line: LineWithAddress) => [""],
-    "type_strings": (_line: LineWithAddress) => [
-        "Should be an array of strings"
-    ],
     "type_word":  (_line: LineWithAddress) => [""],
 } as const;

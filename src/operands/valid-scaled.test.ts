@@ -1,5 +1,5 @@
 import { expect } from "jsr:@std/expect";
-import type { ClueFailure, OldFailure } from "../failure/bags.ts";
+import type { ClueFailure, NumericTypeFailure, TypeFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericType } from "../numeric-values/types.ts";
@@ -40,7 +40,7 @@ Deno.test("The number of operands much match", () => {
     const failures = line.failures().toArray();
     expect(failures.length).toBe(1);
     const failure = failures[0] as ClueFailure;
-    expect (failure.kind).toBe("operand_wrongCount");
+    expect(failure.kind).toBe("operand_wrongCount");
     expect(failure.clue).toBe("3");
     expect(failure.location).toBe(undefined);
 });
@@ -76,10 +76,13 @@ Deno.test("If they don't match the line is marked with a failure", () => {
     const failures = line.failures().toArray();
     expect(failures.length).toBe(2);
     failures.forEach((failure, index) => {
-        expect(failure.kind).toBe("operand_wrongType");
-        const clueFailure = failure as ClueFailure;
-        expect(clueFailure.location).toEqual({"operand": index as OperandIndex});
-        expect(clueFailure.clue).toBe(requirements[index]![0]);
+        expect(failure.kind).toBe("operand_type");
+        const typeFailure = failure as TypeFailure;
+        expect(typeFailure.location).toEqual({
+            "operand": index as OperandIndex
+        });
+        expect(typeFailure.expected).toBe(requirements[index]![0]);
+        expect(typeFailure.actual).toBe(line.operandTypes[index]!);
     });
 });
 
@@ -126,13 +129,10 @@ Deno.test("If numeric types don't match the line fails", () => {
         expect(line.failed()).toBeTruthy();
         const failures = line.failures().toArray();
         expect(failures.length).toBe(1);
-        const failure = failures[0] as OldFailure;
+        const failure = failures[0] as NumericTypeFailure;
         expect(failure.kind).toBe(numericType);
         expect(failure.location).toEqual({"operand": 0});
-        const extras = failure.extra!;
-        expect(Array.isArray(extras)).toBeTruthy();
-        expect(extras.length).toBe(3);
-        expect(extras[0]).toBe(`${value}`);
-        // The other 2 are expected min and max - I'm not testing that here
+        expect(failure.value).toBe(value);
+        // There is also min and max but I'm not testing them here
     }
 });

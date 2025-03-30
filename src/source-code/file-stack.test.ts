@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure, ClueFailure, OldFailure } from "../failure/bags.ts";
+import type { Failure, ClueFailure, TypeFailure } from "../failure/bags.ts";
 import type { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
@@ -45,9 +45,11 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as OldFailure;
-    expect (failure.kind).toBe("parameter_type");
-    expect(failure.extra).toEqual(["string", "0: array"]);
+    const failure = failures[0] as TypeFailure;
+    expect(failure.kind).toBe("parameter_type");
+    expect(failure.location).toEqual({"parameter": 0});
+    expect(failure.expected).toBe("string");
+    expect(failure.actual).toBe("array");
 });
 
 Deno.test("Reading a file yields multiple lines with the file contents", () => {

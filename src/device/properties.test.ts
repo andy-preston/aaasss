@@ -117,7 +117,7 @@ Deno.test("... in upper case", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as DeviceFailure;
-    expect (failure.kind).toBe("device_internalFormat");
+    expect(failure.kind).toBe("device_internalFormat");
     expect(failure.device).toBe("imaginaryDevice");
     expect(failure.clue).toBe("PORTD: 3f");
 });
@@ -131,7 +131,7 @@ Deno.test("Non-hex values can't be converted to numbers", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as DeviceFailure;
-    expect (failure.kind).toBe("device_internalFormat");
+    expect(failure.kind).toBe("device_internalFormat");
     expect(failure.device).toBe("imaginaryDevice");
     expect(failure.clue).toBe("deviceName: imaginaryDevice");
 });
@@ -145,7 +145,7 @@ Deno.test("Fails if, after loading device, required symbol is still not found", 
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as DeviceFailure;
-    expect (failure.kind).toBe("symbol_notFound");
+    expect(failure.kind).toBe("symbol_notFound");
     expect(failure.device).toBe("imaginaryDevice");
     expect(failure.clue).toBe("nonExistant");
 });

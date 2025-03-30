@@ -55,7 +55,7 @@ Deno.test("A symbol can only be redefined if it's value has not changed", () => 
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect (failure.kind).toBe("symbol_alreadyExists");
+    expect(failure.kind).toBe("symbol_alreadyExists");
 });
 
 Deno.test("A symbol can't be defined with the same name as a directive", () => {
@@ -72,7 +72,7 @@ Deno.test("A symbol can't be defined with the same name as a directive", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect (failure.kind).toBe("symbol_nameIsDirective");
+    expect(failure.kind).toBe("symbol_nameIsDirective");
 });
 
 Deno.test("A symbol is returned but not counted if it's a directive", () => {
@@ -98,7 +98,7 @@ Deno.test("A symbol can't be defined with the same name as a register", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect (failure.kind).toBe("symbol_nameIsRegister");
+    expect(failure.kind).toBe("symbol_nameIsRegister");
 });
 
 Deno.test("A symbol is returned and counted if it's a register", () => {
@@ -121,7 +121,7 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect (failure.kind).toBe("symbol_alreadyExists");
+    expect(failure.kind).toBe("symbol_alreadyExists");
 })
 
 Deno.test("A symbol is returned and counted if it's a device property", () => {

@@ -1,6 +1,6 @@
 import type { OperandIndex } from "../operands/data-types.ts";
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
-import type { OldFailureKind } from "./failures.ts";
+import type { NumericType } from "../numeric-values/types.ts";
 
 type OperandLocation = {
     "operand": OperandIndex
@@ -38,13 +38,32 @@ export const comparisonFailure = (
 
 export type ComparisonFailure = ReturnType<typeof comparisonFailure>;
 
+export const typeFailure = (
+    kind: "operand_type" | "parameter_type",
+    expected: string, actual: string
+) => ({
+    "kind": kind, "location": undefined as FailureLocation,
+    "expected": expected, "actual": actual
+});
+
+export type TypeFailure = ReturnType<typeof typeFailure>;
+
+export const numericTypeFailure = (
+    kind: NumericType | "type_bytesOrString",
+    value: unknown, min: number, max: number | undefined
+) => ({
+    "kind": kind, "location": undefined as FailureLocation,
+    "value": value, "min": min, "max": max
+});
+
+export type NumericTypeFailure = ReturnType<typeof numericTypeFailure>;
+
 export const clueFailure = (
     kind: "file_notFound" | "device_notFound"
         | "macro_multiDefine" | "macro_name"  | "macro_params"
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown"
-        | "operand_wrongCount" | "operand_wrongType"
-        | "parameter_count"
+        | "operand_wrongCount" | "parameter_count"
         | "symbol_alreadyExists"
         | "symbol_nameIsDirective" | "symbol_nameIsRegister",
     clue: string
@@ -87,21 +106,11 @@ export const memoryRangeFailure = (
 
 export type MemoryRangeFailure = ReturnType<typeof memoryRangeFailure>;
 
-export const oldFailure = (
-    kind: OldFailureKind,
-    extra: Array<string> | undefined
-) => ({
-    "kind": kind, "location": undefined as FailureLocation,
-    "extra": extra,
-});
+export type Failure = BoringFailure | ClueFailure | ComparisonFailure
+    | DeviceFailure | ExceptionFailure | MemoryRangeFailure
+    | NumericTypeFailure | TypeFailure;
 
-export type OldFailure = ReturnType<typeof oldFailure>;
-
-export type NewFailure = BoringFailure | ClueFailure | ComparisonFailure
-    | DeviceFailure | ExceptionFailure | MemoryRangeFailure;
-
-export type Failure = OldFailure | NewFailure;
-export type FailureKind = OldFailureKind | NewFailure["kind"];
+export type FailureKind = Failure["kind"];
 
 export const bagOfFailures = (failures: Array<Failure>) =>
     ({ "type": "failures" as const, "it": failures });
