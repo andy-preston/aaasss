@@ -27,7 +27,7 @@ Deno.test("No instruction has three (or more) operands", () => {
     const failures = tokenised.failures().toArray();
     expect(failures.length).toBe(1);
     const failure = failures[0] as ClueFailure;
-    expect(failure.kind).toBe("operand_wrongCount");
+    expect(failure.kind).toBe("operand_count");
     expect(failure.clue).toBe("3");
 });
 

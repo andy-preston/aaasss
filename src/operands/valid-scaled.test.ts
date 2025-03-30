@@ -40,7 +40,7 @@ Deno.test("The number of operands much match", () => {
     const failures = line.failures().toArray();
     expect(failures.length).toBe(1);
     const failure = failures[0] as ClueFailure;
-    expect(failure.kind).toBe("operand_wrongCount");
+    expect(failure.kind).toBe("operand_count");
     expect(failure.clue).toBe("3");
     expect(failure.location).toBe(undefined);
 });
@@ -76,7 +76,7 @@ Deno.test("If they don't match the line is marked with a failure", () => {
     const failures = line.failures().toArray();
     expect(failures.length).toBe(2);
     failures.forEach((failure, index) => {
-        expect(failure.kind).toBe("operand_type");
+        expect(failure.kind).toBe("type_failure");
         const typeFailure = failure as TypeFailure;
         expect(typeFailure.location).toEqual({
             "operand": index as OperandIndex

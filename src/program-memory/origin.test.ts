@@ -51,7 +51,7 @@ Deno.test("Origin addresses can't be strange type", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("parameter_type");
+    expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 0});
     expect(failure.expected).toBe("number");
     expect(failure.actual).toBe("string");

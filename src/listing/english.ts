@@ -43,15 +43,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "operand_offsetX": (_line: LineWithAddress) => [
         "Index offset instructions only operate on the Y or Z registers"
     ],
-    "operand_wrongCount": (_line: LineWithAddress) => [""],
-    "operand_type": (_line: LineWithAddress) => [""],
+    "operand_count": (_line: LineWithAddress) => [""],
     "parameter_firstName": (_line: LineWithAddress) => [
         "The first parameter should be a name"
     ],
     "parameter_count": (_line: LineWithAddress) => [],
-    "parameter_type": (_line: LineWithAddress) => [
-        "The type of the parameters don't match the requirements"
-    ],
     "programMemory_outOfRange": (_line: LineWithAddress) => [""],
     "programMemory_sizeUnknown": (_line: LineWithAddress) => [""],
     "ram_outOfRange": (_line: LineWithAddress) => [""],
@@ -72,6 +68,9 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "type_byte":  (_line: LineWithAddress) => [""],
     "type_bytesOrString": (_line: LineWithAddress) => [
         "Should be a string or an array of byte values"
+    ],
+    "type_failure": (_line: LineWithAddress) => [
+        "The type of the operands / parameters don't match the requirements"
     ],
     "type_ioPort": (_line: LineWithAddress) => [""],
     "type_nybble": (_line: LineWithAddress) => [""],

@@ -24,7 +24,7 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
         line.withFailure(
-            clueFailure("operand_wrongCount", `${operandsList.length}`)
+            clueFailure("operand_count", `${operandsList.length}`)
         );
     }
 

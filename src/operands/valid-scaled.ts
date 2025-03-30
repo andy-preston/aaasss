@@ -30,7 +30,7 @@ export const validScaledOperands = (
 
         if (actualType != requiredType) {
             const failure = typeFailure(
-                "operand_type", requiredType, `${actualType}`
+                "type_failure", requiredType, `${actualType}`
             );
             failure.location = {"operand": operandIndex};
             line.withFailure(failure);
@@ -57,7 +57,7 @@ export const validScaledOperands = (
     const failed = line.numericOperands.length != requirements.length;
     if (failed) {
         line.withFailure(
-            clueFailure("operand_wrongCount", `${requirements.length}`)
+            clueFailure("operand_count", `${requirements.length}`)
         );
     }
 

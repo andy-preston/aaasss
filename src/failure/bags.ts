@@ -39,7 +39,7 @@ export const comparisonFailure = (
 export type ComparisonFailure = ReturnType<typeof comparisonFailure>;
 
 export const typeFailure = (
-    kind: "operand_type" | "parameter_type",
+    kind: "type_failure",
     expected: string, actual: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -63,7 +63,7 @@ export const clueFailure = (
         | "macro_multiDefine" | "macro_name"  | "macro_params"
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown"
-        | "operand_wrongCount" | "parameter_count"
+        | "operand_count" | "parameter_count"
         | "symbol_alreadyExists"
         | "symbol_nameIsDirective" | "symbol_nameIsRegister",
     clue: string

@@ -100,7 +100,7 @@ Deno.test("A string directive can't have a number parameter", () => {
     const failures = wrongNumber.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("parameter_type");
+    expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 0});
     expect(failure.expected).toBe("string");
     expect(failure.actual).toBe("number");
@@ -116,7 +116,7 @@ Deno.test("A string directive can't have a boolean parameters", () => {
     const failures = wrongBoolean.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("parameter_type");
+    expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 0});
     expect(failure.expected).toBe("string");
     expect(failure.actual).toBe("boolean");
@@ -143,7 +143,7 @@ Deno.test("A number directive can't have a non-numeric string parameter", () => 
     const failures = wrongType.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("parameter_type");
+    expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({ "parameter": 0 });
     expect(failure.expected).toBe("number");
     expect(failure.actual).toBe("string");
@@ -176,7 +176,7 @@ Deno.test("A value directive can't have a number as the first parameter", () => 
     const failures = wrongNumber.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("parameter_type");
+    expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({ "parameter": 0 });
     expect(failure.expected).toBe("string");
     expect(failure.actual).toBe("number");
@@ -194,7 +194,7 @@ Deno.test("A value directive can't have a string as the second parameter", () =>
     const failures = wrongString.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("parameter_type");
+    expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 1});
     expect(failure.expected).toBe("number");
     expect(failure.actual).toBe("string");
@@ -222,7 +222,7 @@ Deno.test("A data directive can't have boolean parameters", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("parameter_type");
+    expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 0});
     expect(failure.expected).toBe("string, number");
     expect(failure.actual).toBe("boolean");
@@ -239,13 +239,13 @@ Deno.test("A data directive can't have object or array parameters", () => {
     expect(failures.length).toBe(2);
 
     const firstFailure = failures[0] as TypeFailure;
-    expect(firstFailure.kind).toBe("parameter_type");
+    expect(firstFailure.kind).toBe("type_failure");
     expect(firstFailure.location).toEqual({"parameter": 0});
     expect(firstFailure.expected).toBe("string, number");
     expect(firstFailure.actual).toBe("object");
 
     const secondFailure = failures[1] as TypeFailure;
-    expect(secondFailure.kind).toBe("parameter_type");
+    expect(secondFailure.kind).toBe("type_failure");
     expect(secondFailure.location).toEqual({"parameter": 1});
     expect(secondFailure.expected).toBe("string, number");
     expect(secondFailure.actual).toBe("array");
@@ -269,7 +269,7 @@ Deno.test("A function-use directive can't have boolean parameters", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("parameter_type");
+    expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 0});
     expect(failure.expected).toBe("string, number");
     expect(failure.actual).toBe("boolean");
@@ -286,13 +286,13 @@ Deno.test("A function-use directive can't have object or array parameters", () =
     expect(failures.length).toBe(2);
 
     const firstFailure = failures[0] as TypeFailure;
-    expect(firstFailure.kind).toBe("parameter_type");
+    expect(firstFailure.kind).toBe("type_failure");
     expect(firstFailure.location).toEqual({"parameter": 0});
     expect(firstFailure.expected).toBe("string, number");
     expect(firstFailure.actual).toBe("object");
 
     const secondFailure = failures[1] as TypeFailure;
-    expect(secondFailure.kind).toBe("parameter_type");
+    expect(secondFailure.kind).toBe("type_failure");
     expect(secondFailure.location).toEqual({"parameter": 1});
     expect(secondFailure.expected).toBe("string, number");
     expect(secondFailure.actual).toBe("array");
@@ -317,7 +317,7 @@ Deno.test("A function-define directive can't have boolean parameters", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("parameter_type");
+    expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 0});
     expect(failure.expected).toBe("string");
     expect(failure.actual).toBe("boolean");
@@ -334,13 +334,13 @@ Deno.test("A function-define directive can't have obejct or array parameters", (
     expect(failures.length).toBe(2);
 
     const firstFailure = failures[0] as TypeFailure;
-    expect(firstFailure.kind).toBe("parameter_type");
+    expect(firstFailure.kind).toBe("type_failure");
     expect(firstFailure.location).toEqual({"parameter": 0});
     expect(firstFailure.expected).toBe("string");
     expect(firstFailure.actual).toBe("number");
 
     const secondFailure = failures[1] as TypeFailure;
-    expect(secondFailure.kind).toBe("parameter_type");
+    expect(secondFailure.kind).toBe("type_failure");
     expect(secondFailure.location).toEqual({"parameter": 2});
     expect(secondFailure.expected).toBe("string");
     expect(secondFailure.actual).toBe("number");

@@ -33,7 +33,7 @@ const parameterTypes = (
         const typeOf = Array.isArray(parameter) ? "array" : typeof parameter;
         if (!requiredIncludes(typeOf)) {
             const failure = typeFailure(
-                "parameter_type", requiredTypes.join(", "), typeOf
+                "type_failure", requiredTypes.join(", "), typeOf
             );
             failure.location = { "parameter": index };
             failures.push(failure);
@@ -69,7 +69,7 @@ export const numberDirective = (
     const given = parameters[0]! as number | string;
     const numeric = typeof given == "string" ? parseInt(given) : given;
     if (`${given}` != `${numeric}`) {
-        const failure = typeFailure("parameter_type", "number", "string");
+        const failure = typeFailure("type_failure", "number", "string");
         failure.location = { "parameter": 0 };
         return bagOfFailures([failure]);
     }
@@ -84,13 +84,13 @@ export const valueDirective = (
     }
     const typeOfFirst = typeof parameters[0];
     if (typeOfFirst != "string") {
-        const failure = typeFailure("parameter_type", "string", typeOfFirst);
+        const failure = typeFailure("type_failure", "string", typeOfFirst);
         failure.location = { "parameter": 0 };
         return bagOfFailures([failure]);
     }
     const typeOfSecond = typeof parameters[1];
     if (typeOfSecond != "number") {
-        const failure = typeFailure("parameter_type", "number", typeOfSecond);
+        const failure = typeFailure("type_failure", "number", typeOfSecond);
         failure.location = { "parameter": 1 };
         return bagOfFailures([failure]);
     }
