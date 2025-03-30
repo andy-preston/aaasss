@@ -28,8 +28,9 @@ Deno.test("Directives can return a failure", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const failure = failures[0] as ClueFailure;
     expect(failure.kind).toBe("file_notFound");
+    expect(failure.location).toBe(undefined);
 });
 
 Deno.test("Directives can return success in the form of an empty box", () => {
@@ -143,6 +144,7 @@ Deno.test("A number directive can't have a non-numeric string parameter", () => 
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
     expect(failure.kind).toBe("parameter_type");
+    expect(failure.location).toEqual({ "parameter": 0 });
     expect(failure.expected).toBe("number");
     expect(failure.actual).toBe("string");
 });
@@ -175,6 +177,7 @@ Deno.test("A value directive can't have a number as the first parameter", () => 
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
     expect(failure.kind).toBe("parameter_type");
+    expect(failure.location).toEqual({ "parameter": 0 });
     expect(failure.expected).toBe("string");
     expect(failure.actual).toBe("number");
 });
@@ -186,13 +189,13 @@ Deno.test("A value directive can't have a string as the second parameter", () =>
             stringBag(`${valueName} = ${actualValue}`)
     });
 
-    // This error reporting could be much, much nicer!
     const wrongString = untyped("plop", "plop");
     expect(wrongString.type).toBe("failures");
     const failures = wrongString.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
     expect(failure.kind).toBe("parameter_type");
+    expect(failure.location).toEqual({"parameter": 1});
     expect(failure.expected).toBe("number");
     expect(failure.actual).toBe("string");
 });

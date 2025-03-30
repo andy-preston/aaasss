@@ -40,6 +40,9 @@ export const programMemory = (
     const origin = (newAddress: number): DirectiveResult => {
         const check = validNumeric(newAddress, "type_positive");
         if (check.type == "failures") {
+            check.it.forEach((failure) => {
+                failure.location = { "parameter": 0 };
+            });
             return check;
         }
         if (newAddress == 0) {

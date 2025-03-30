@@ -68,9 +68,12 @@ export const numberDirective = (
     }
     const given = parameters[0]! as number | string;
     const numeric = typeof given == "string" ? parseInt(given) : given;
-    return `${given}` != `${numeric}`
-        ? bagOfFailures([typeFailure("parameter_type", "number", "string")])
-        : directive.it(numeric);
+    if (`${given}` != `${numeric}`) {
+        const failure = typeFailure("parameter_type", "number", "string");
+        failure.location = { "parameter": 0 };
+        return bagOfFailures([failure]);
+    }
+    return directive.it(numeric);
 };
 
 export const valueDirective = (
@@ -81,15 +84,15 @@ export const valueDirective = (
     }
     const typeOfFirst = typeof parameters[0];
     if (typeOfFirst != "string") {
-        return bagOfFailures([
-            typeFailure("parameter_type", "string", typeOfFirst)
-        ]);
+        const failure = typeFailure("parameter_type", "string", typeOfFirst);
+        failure.location = { "parameter": 0 };
+        return bagOfFailures([failure]);
     }
     const typeOfSecond = typeof parameters[1];
     if (typeOfSecond != "number") {
-        return bagOfFailures([
-            typeFailure("parameter_type", "number", typeOfSecond)
-        ]);
+        const failure = typeFailure("parameter_type", "number", typeOfSecond);
+        failure.location = { "parameter": 1 };
+        return bagOfFailures([failure]);
     }
     return directive.it(parameters[0] as string, parameters[1] as number);
 };

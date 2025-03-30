@@ -35,6 +35,7 @@ Deno.test("Origin addresses can't be less than zero", () => {
     expect(failures.length).toBe(1);
     const failure = failures[0] as NumericTypeFailure;
     expect(failure.kind).toBe("type_positive");
+    expect(failure.location).toEqual({"parameter": 0});
     expect(failure.value).toBe(-1);
     expect(failure.min).toBe(0);
     expect(failure.max).toBe(undefined);
@@ -51,6 +52,7 @@ Deno.test("Origin addresses can't be strange type", () => {
     expect(failures.length).toBe(1);
     const failure = failures[0] as TypeFailure;
     expect(failure.kind).toBe("parameter_type");
+    expect(failure.location).toEqual({"parameter": 0});
     expect(failure.expected).toBe("number");
     expect(failure.actual).toBe("string");
 });
