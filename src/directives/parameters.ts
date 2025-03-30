@@ -10,13 +10,6 @@ const cleverType = (it: unknown) => Array.isArray(it) ? "array" : typeof it;
 
 const allAsString = (them: unknown[]) => them.map(element => `${element}`);
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// For the sake of error reporting, it would be good if we knew the name of
-// the function being called in here!
-//
-////////////////////////////////////////////////////////////////////////////////
-
 const parameterTypes = (
     them: unknown[],
     required: Array<"string" | "number">,
