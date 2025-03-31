@@ -17,12 +17,15 @@ type Requirement = [OperandType, NumericType, OperandIndex];
 
 export type Requirements = Array<Requirement>;
 
-const dummyMapper = (_requirement: Requirement) => 0 as NumericOperand;
-
 export const validScaledOperands = (
     line: LineWithOperands, requirements: Requirements
 ): NumericOperands => {
-    const realMapper = (requirement: Requirement): NumericOperand => {
+    const count = requirements.length;
+    if (count != line.numericOperands.length) {
+        line.withFailure(clueFailure("operand_count", `${count}`));
+    }
+
+    const mapped = requirements.map((requirement: Requirement) => {
         const [requiredType, numericType, operandIndex] = requirement;
 
         const numeric = line.numericOperands[operandIndex]!;
@@ -34,7 +37,6 @@ export const validScaledOperands = (
             );
             failure.location = {"operand": operandIndex};
             line.withFailure(failure);
-            return 0;
         }
 
         const valid = validNumeric(numeric, numericType);
@@ -43,7 +45,6 @@ export const validScaledOperands = (
                 failure.location = {"operand": operandIndex};
                 line.withFailure(failure);
             });
-            return 0;
         }
 
         if (scalers.has(numericType)) {
@@ -51,17 +52,8 @@ export const validScaledOperands = (
             return scale(numeric);
         }
 
-        return numeric;
-    };
+        return numeric ? numeric : 0;
+    });
 
-    const failed = line.numericOperands.length != requirements.length;
-    if (failed) {
-        line.withFailure(
-            clueFailure("operand_count", `${requirements.length}`)
-        );
-    }
-
-    return operands<NumericOperands>(
-        requirements.map(failed ? dummyMapper : realMapper)
-    );
+    return operands<NumericOperands>(mapped);
 };

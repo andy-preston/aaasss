@@ -98,7 +98,7 @@ Deno.test("If they don't match the line is marked with a failure", () => {
     ];
     const result = validScaledOperands(line, requirements);
     expect(line.failed()).toBeTruthy();
-    expect(result).toEqual([0, 0]);
+    expect(result).toEqual([anyNumber, anyNumber]);
     const failures = line.failures().toArray();
     expect(failures.length).toBe(2);
     failures.forEach((failure, index) => {
