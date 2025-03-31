@@ -11,6 +11,7 @@ type Scaler = (value: NumericOperand) => NumericOperand;
 
 const scalers: Map<NumericType, Scaler> = new Map([
     ["type_registerImmediate", (value) => value - 16],
+    ["type_ioPort", (value) => value - 0x20]
 ]);
 
 type Requirement = [OperandType, NumericType, OperandIndex];
