@@ -38,11 +38,37 @@ Deno.test("The number of operands much match", () => {
     expect(line.failed()).toBeTruthy();
     expect(result).toEqual([0, 0, 0]);
     const failures = line.failures().toArray();
-    expect(failures.length).toBe(1);
-    const failure = failures[0] as ClueFailure;
-    expect(failure.kind).toBe("operand_count");
-    expect(failure.clue).toBe("3");
-    expect(failure.location).toBe(undefined);
+    expect(failures.length).toBe(5);
+    {
+        const failure = failures[0] as ClueFailure;
+        expect(failure.kind).toBe("operand_count");
+        expect(failure.location).toBe(undefined);
+        expect(failure.clue).toBe("3");
+    } {
+        const failure = failures[1] as TypeFailure;
+        expect(failure.kind).toBe("type_failure");
+        expect(failure.location).toEqual({ "operand": 0 });
+        expect(failure.expected).toBe("number | string");
+        expect(failure.actual).toBe("undefined");
+    } {
+        const failure = failures[2] as TypeFailure;
+        expect(failure.kind).toBe("type_failure");
+        expect(failure.location).toEqual({ "operand": 1 });
+        expect(failure.expected).toBe("number | string");
+        expect(failure.actual).toBe("undefined");
+    } {
+        const failure = failures[3] as TypeFailure;
+        expect(failure.kind).toBe("type_failure");
+        expect(failure.location).toEqual({ "operand": 2 });
+        expect(failure.expected).toBe("number");
+        expect(failure.actual).toBe("undefined");
+    } {
+        const failure = failures[4] as TypeFailure;
+        expect(failure.kind).toBe("type_failure");
+        expect(failure.location).toEqual({ "operand": 2 });
+        expect(failure.expected).toBe("number | string");
+        expect(failure.actual).toBe("undefined");
+    }
 });
 
 Deno.test("The required operand type must match the actual operand types", () => {

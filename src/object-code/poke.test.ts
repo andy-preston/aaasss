@@ -81,15 +81,16 @@ Deno.test("Poked numbers must be bytes (0-255)", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(2);
-
-    const firstFailure = failures[0] as NumericTypeFailure;
-    expect(firstFailure.kind).toBe("type_bytesOrString");
-    expect(firstFailure.location).toEqual({"parameter": 0});
-    expect(firstFailure.value).toBe(-1);
-
-    const secondFailure = failures[1] as NumericTypeFailure;
-    expect(secondFailure.kind).toBe("type_bytesOrString");
-    expect(secondFailure.location).toEqual({"parameter": 2});
-    expect(secondFailure.value).toBe(300);
+    {
+        const failure = failures[0] as NumericTypeFailure;
+        expect(failure.kind).toBe("type_bytesOrString");
+        expect(failure.location).toEqual({"parameter": 0});
+        expect(failure.value).toBe(-1);
+    } {
+        const failure = failures[1] as NumericTypeFailure;
+        expect(failure.kind).toBe("type_bytesOrString");
+        expect(failure.location).toEqual({"parameter": 2});
+        expect(failure.value).toBe(300);
+    }
     expect(poker.contents().toArray()).toEqual([[2, 4]]);
 });

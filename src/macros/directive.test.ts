@@ -30,18 +30,19 @@ Deno.test("The parameters in a definition must be strings", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(2);
-
-    const firstFailure = failures[0] as TypeFailure;
-    expect(firstFailure.kind).toBe("type_failure");
-    expect(firstFailure.location).toEqual({"parameter": 2});
-    expect(firstFailure.expected).toEqual("string");
-    expect(firstFailure.actual).toEqual("number");
-
-    const secondFailure = failures[1] as TypeFailure;
-    expect(secondFailure.kind).toBe("type_failure");
-    expect(secondFailure.location).toEqual({"parameter": 4});
-    expect(secondFailure.expected).toBe("string");
-    expect(secondFailure.actual).toBe("number");
+    {
+        const failure = failures[0] as TypeFailure;
+        expect(failure.kind).toBe("type_failure");
+        expect(failure.location).toEqual({"parameter": 2});
+        expect(failure.expected).toEqual("string");
+        expect(failure.actual).toEqual("number");
+    } {
+        const failure = failures[1] as TypeFailure;
+        expect(failure.kind).toBe("type_failure");
+        expect(failure.location).toEqual({"parameter": 4});
+        expect(failure.expected).toBe("string");
+        expect(failure.actual).toBe("number");
+    }
 });
 
 Deno.test("On calling a macro, the parameters must be strings or numbers", () => {
@@ -62,18 +63,19 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(2);
-
-    const firstFailure = failures[0] as TypeFailure;
-    expect(firstFailure.kind).toBe("type_failure");
-    expect(firstFailure.location).toEqual({"parameter": 0});
-    expect(firstFailure.expected).toBe("string, number");
-    expect(firstFailure.actual).toBe("boolean");
-
-    const secondFailure = failures[1] as TypeFailure;
-    expect(secondFailure.kind).toBe("type_failure");
-    expect(secondFailure.location).toEqual({"parameter": 1});
-    expect(secondFailure.expected).toBe("string, number");
-    expect(secondFailure.actual).toBe("object");
+    {
+        const failure = failures[0] as TypeFailure;
+        expect(failure.kind).toBe("type_failure");
+        expect(failure.location).toEqual({"parameter": 0});
+        expect(failure.expected).toBe("string, number");
+        expect(failure.actual).toBe("boolean");
+    } {
+        const failure = failures[1] as TypeFailure;
+        expect(failure.kind).toBe("type_failure");
+        expect(failure.location).toEqual({"parameter": 1});
+        expect(failure.expected).toBe("string, number");
+        expect(failure.actual).toBe("object");
+    }
 });
 
 Deno.test("Parameter count mismatches result in a failure", () => {
