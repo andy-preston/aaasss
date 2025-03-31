@@ -1,5 +1,5 @@
 import { numberBag } from "../assembler/bags.ts";
-import { bagOfFailures, numericTypeFailure, type NumberOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, numericTypeFailure, typeFailure, type NumberOrFailures } from "../failure/bags.ts";
 import type { NumericType } from "./types.ts";
 
 const minMax: Record<NumericType, [number, number | undefined]> = {
@@ -15,14 +15,32 @@ const minMax: Record<NumericType, [number, number | undefined]> = {
 };
 
 export const validNumeric = (
-    value: unknown, numericType: NumericType
+    given: unknown, numericType: NumericType | undefined
 ): NumberOrFailures => {
-    const [min, max] = minMax[numericType];
-    return typeof value == "number"
-        && Number.parseInt(`${value}`) == value
-        && value >= min
-        && (max == undefined || value <= max)
-        ? numberBag(value as number)
-        : bagOfFailures([numericTypeFailure(numericType, value, min, max)]);
-};
+    const typeOf = Array.isArray(given) ? "array" : typeof given;
+    if (!["number", "string"].includes(typeOf)) {
+        return bagOfFailures([typeFailure(
+            "type_failure", "number | string", typeOf
+        )]);
+    }
 
+    const numeric = typeOf == "number" ? given as number : parseInt(`${given}`);
+    if (`${numeric}` != `${given}`) {
+        return bagOfFailures([typeFailure(
+            "type_failure", "numeric", `"${given}"`
+        )]);
+    }
+
+    if (numericType == undefined) {
+        return numberBag(numeric);
+    }
+
+    const [min, max] = minMax[numericType];
+    if (numeric < min || (max != undefined && numeric > max)) {
+        return bagOfFailures([numericTypeFailure(
+            numericType, numeric, min, max
+        )]);
+    }
+
+    return numberBag(numeric);
+};

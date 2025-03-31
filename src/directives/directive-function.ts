@@ -3,7 +3,7 @@ import type { JavaScriptFunction } from "./data-types.ts";
 import {
     voidDirective, stringDirective, numberDirective, valueDirective, dataDirective,
     functionDefineDirective, functionUseDirective
-} from "./parameters.ts";
+} from "./directives.ts";
 
 export const directiveFunction = (
     symbolName: string, directive: BaggedDirective

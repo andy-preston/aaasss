@@ -126,7 +126,7 @@ Deno.test("If numeric types don't match the line fails", () => {
         const line = testLine([anySymbolic], [value], ["number"]);
         validScaledOperands(line, [["number", numericType, 0]]);
         // The result might be scaled, so we're not checking it here!
-        expect(line.failed()).toBeTruthy();
+        expect(line.failed(), numericType).toBeTruthy();
         const failures = line.failures().toArray();
         expect(failures.length).toBe(1);
         const failure = failures[0] as NumericTypeFailure;

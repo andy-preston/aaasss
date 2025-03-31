@@ -53,8 +53,8 @@ Deno.test("Origin addresses can't be strange type", () => {
     const failure = failures[0] as TypeFailure;
     expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 0});
-    expect(failure.expected).toBe("number");
-    expect(failure.actual).toBe("string");
+    expect(failure.expected).toBe("numeric");
+    expect(failure.actual).toBe('"nothing"');
 });
 
 Deno.test("Device name is used to determine if properties have been set", () => {

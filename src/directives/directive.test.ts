@@ -145,8 +145,8 @@ Deno.test("A number directive can't have a non-numeric string parameter", () => 
     const failure = failures[0] as TypeFailure;
     expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({ "parameter": 0 });
-    expect(failure.expected).toBe("number");
-    expect(failure.actual).toBe("string");
+    expect(failure.expected).toBe("numeric");
+    expect(failure.actual).toBe('"five"');
 });
 
 Deno.test("A NumberDirective has a single number or numeric string parameter", () => {
@@ -174,12 +174,20 @@ Deno.test("A value directive can't have a number as the first parameter", () => 
     const wrongNumber = untyped(23, "plop");
     expect(wrongNumber.type).toBe("failures");
     const failures = wrongNumber.it as Array<Failure>;
-    expect(failures.length).toBe(1);
-    const failure = failures[0] as TypeFailure;
-    expect(failure.kind).toBe("type_failure");
-    expect(failure.location).toEqual({ "parameter": 0 });
-    expect(failure.expected).toBe("string");
-    expect(failure.actual).toBe("number");
+
+    expect(failures.length).toBe(2);
+
+    const firstFailure = failures[0] as TypeFailure;
+    expect(firstFailure.kind).toBe("type_failure");
+    expect(firstFailure.location).toEqual({ "parameter": 0 });
+    expect(firstFailure.expected).toBe("string");
+    expect(firstFailure.actual).toBe("number");
+
+    const secondFailure = failures[1] as TypeFailure;
+    expect(secondFailure.kind).toBe("type_failure");
+    expect(secondFailure.location).toEqual({ "parameter": 1 });
+    expect(secondFailure.expected).toBe("numeric");
+    expect(secondFailure.actual).toBe('"plop"');
 });
 
 Deno.test("A value directive can't have a string as the second parameter", () => {
@@ -196,8 +204,8 @@ Deno.test("A value directive can't have a string as the second parameter", () =>
     const failure = failures[0] as TypeFailure;
     expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 1});
-    expect(failure.expected).toBe("number");
-    expect(failure.actual).toBe("string");
+    expect(failure.expected).toBe("numeric");
+    expect(failure.actual).toBe('"plop"');
 });
 
 Deno.test("A value directive has a string and a numeric parameter", () => {
@@ -323,7 +331,7 @@ Deno.test("A function-define directive can't have boolean parameters", () => {
     expect(failure.actual).toBe("boolean");
 });
 
-Deno.test("A function-define directive can't have obejct or array parameters", () => {
+Deno.test("A function-define directive can't have object or array parameters", () => {
     const untyped = directiveFunction(irrelevantName, {
         "type": "functionDefineDirective",
         "it": (_name: string, _parameters: Array<string | number>) => emptyBag()
