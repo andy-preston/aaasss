@@ -3,7 +3,6 @@ import { emptyBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import type { FunctionUseDirective, StringDirective } from "../directives/bags.ts";
-import { directiveList } from "../directives/directive-list.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -42,10 +41,9 @@ const mockFileStack = () => {
 };
 
 export const systemUnderTest = () => {
-    const directives = directiveList();
     const thePass = pass();
     const symbols = symbolTable(
-        directives, deviceProperties().public, cpuRegisters(), thePass
+        deviceProperties().public, cpuRegisters(), thePass
     );
     const fileStack = mockFileStack();
     const macroProcessor = macros(symbols, fileStack);

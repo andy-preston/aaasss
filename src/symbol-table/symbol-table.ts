@@ -3,7 +3,6 @@ import type { Pass } from "../assembler/pass.ts";
 import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { ValueDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { DirectiveList } from "../directives/directive-list.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
 import { bagOfFailures, clueFailure } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
@@ -15,7 +14,6 @@ type CountList = Map<string, number>;
 type DefinitionList = Map<string, string>;
 
 export const symbolTable = (
-    directiveList: DirectiveList,
     deviceProperties: DevicePropertiesInterface,
     cpuRegisters: CpuRegisters,
     _pass: Pass
@@ -33,7 +31,7 @@ export const symbolTable = (
 
     const isDefinedSymbol = (symbolName: string) =>
         constSymbols.has(symbolName) || varSymbols.has(symbolName)
-        || directiveList.has(symbolName) || deviceProperties.has(symbolName);
+        || deviceProperties.has(symbolName);
 
     const alreadyInUse = (symbolName: string) =>
         cpuRegisters.has(symbolName) || isDefinedSymbol(symbolName);
@@ -86,6 +84,17 @@ export const symbolTable = (
         return emptyBag();
     };
 
+    const builtInSymbol = (
+        symbolName: string, value: SymbolBag
+    ) => {
+        if (alreadyInUse(symbolName)) {
+            throw new Error(`Redefined built in symbol: ${symbolName}`);
+        }
+        constSymbols.set(symbolName, value);
+        definitions.set(symbolName, "BUILT_IN");
+        return emptyBag();
+    };
+
     const defineDirective: ValueDirective = {
         // This is the directive for doing a "define" operation
         // not a function for defining directives.
@@ -103,14 +112,13 @@ export const symbolTable = (
     };
 
     const increment = (symbolName: string) => {
-        counts.set(symbolName, count(symbolName) + 1);
+        const counted = counts.get(symbolName);
+        if (counted != undefined) {
+            counts.set(symbolName, counted + 1);
+        }
     }
 
     const use = (symbolName: string): SymbolBag => {
-        if (directiveList.has(symbolName)) {
-            return directiveList.use(symbolName);
-        }
-
         if (constSymbols.has(symbolName)) {
             increment(symbolName);
             return constSymbols.get(symbolName)!;
@@ -172,6 +180,7 @@ export const symbolTable = (
         "alreadyInUse": alreadyInUse,
         "variableSymbol": variableSymbol,
         "constantSymbol": constantSymbol,
+        "builtInSymbol": builtInSymbol,
         "use": use,
         "notCounted": notCounted,
         "count": count,

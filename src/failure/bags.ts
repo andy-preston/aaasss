@@ -64,8 +64,7 @@ export const clueFailure = (
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown"
         | "operand_count" | "parameter_count"
-        | "symbol_alreadyExists"
-        | "symbol_nameIsDirective" | "symbol_nameIsRegister",
+        | "symbol_alreadyExists",
     clue: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,

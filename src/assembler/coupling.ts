@@ -4,7 +4,6 @@ import type { DeviceFileOperations } from "../device/device-file.ts";
 import { deviceProperties } from "../device/properties.ts";
 import type { BaggedDirective } from "../directives/bags.ts";
 import { functionDirectives } from "../directives/function-directives.ts";
-import { directiveList } from "../directives/directive-list.ts";
 import { illegalStateFailures, type IllegalStateCallback } from "../failure/illegal-state.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { jSExpression } from "../javascript/expression.ts";
@@ -32,8 +31,12 @@ export const coupling = (
     deviceFileOperations: DeviceFileOperations
 ) => {
     const currentPass = pass();
-    const directives = directiveList();
     const illegalState = illegalStateFailures();
+    const registers = cpuRegisters();
+    const device = deviceProperties();
+    const symbols = symbolTable(
+        device.public, registers, currentPass
+    );
 
     const link = <ComponentType extends object>(component: ComponentType) => {
         for (const property in component) {
@@ -43,7 +46,7 @@ export const coupling = (
                 );
             }
             if (property.endsWith("Directive")) {
-                directives.includes(
+                symbols.builtInSymbol(
                     property.replace("Directive", ""),
                     component[property] as BaggedDirective
                 );
@@ -58,12 +61,11 @@ export const coupling = (
     }
 
     link(functionDirectives);
-    const registers = link(cpuRegisters());
-    const device = link(deviceProperties());
+    link(registers);
+    link(device);
+    link(symbols);
+
     link(deviceChooser(device, registers, deviceFileOperations));
-    const symbols = link(symbolTable(
-        directives, device.public, registers, currentPass
-    ));
     link(dataMemory(device.public));
     const poke = link(pokeBuffer());
     const sourceFiles = link(fileStack(readerMethod, fileName));

@@ -1,6 +1,5 @@
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { directiveList } from "../directives/directive-list.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
@@ -18,7 +17,7 @@ export const systemUnderTest = () => {
     const currentPass = pass();
     const device = deviceProperties();
     const symbols = symbolTable(
-        directiveList(), device.public, cpuRegisters() ,currentPass
+        device.public, cpuRegisters() ,currentPass
     );
     return {
         "pass": currentPass,

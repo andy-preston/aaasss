@@ -2,7 +2,6 @@ import { expect } from "jsr:@std/expect";
 import { numberBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { directiveList } from "../directives/directive-list.ts";
 import type { ExceptionFailure, Failure } from "../failure/bags.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
@@ -11,7 +10,7 @@ import { jSExpression } from "./expression.ts";
 const systemUnderTest = () => {
     const registers = cpuRegisters();
     const symbols = symbolTable(
-        directiveList(), deviceProperties().public, registers, pass()
+        deviceProperties().public, registers, pass()
     );
     return {
         "symbols": symbols,

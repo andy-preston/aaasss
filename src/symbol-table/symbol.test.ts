@@ -4,7 +4,6 @@ import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
 import type { VoidDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { directiveList } from "../directives/directive-list.ts";
 import type { Failure } from "../failure/bags.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "./symbol-table.ts";
@@ -13,16 +12,14 @@ const irrelevantName = "testing";
 
 export const systemUnderTest = () => {
     const currentPass = pass();
-    const directives = directiveList();
     const device = deviceProperties();
     const registers = cpuRegisters();
     const symbols = symbolTable(
-        directives, device.public, registers, currentPass
+        device.public, registers, currentPass
     );
     currentPass.resetStateCallback(symbols.resetState);
     return {
         "symbolTable": symbols,
-        "directiveList": directives,
         "deviceProperties": device,
         "cpuRegisters": registers,
         "pass": currentPass
@@ -63,13 +60,13 @@ Deno.test("A symbol can only be redefined if it's value has not changed", () => 
     }
 });
 
-Deno.test("A symbol can't be defined with the same name as a directive", () => {
+Deno.test("A symbol can't be defined with the same name as a built-in symbol", () => {
     const system = systemUnderTest();
     const define = directiveFunction(
         irrelevantName, system.symbolTable.defineDirective
     );
 
-    system.directiveList.includes("redefineMe", {
+    system.symbolTable.builtInSymbol("redefineMe", {
         "type": "voidDirective", "it": () => emptyBag()
     });
     const result = define("redefineMe", 57);
@@ -86,7 +83,7 @@ Deno.test("A symbol is returned but not counted if it's a directive", () => {
     const fakeDirective: VoidDirective = {
         "type": "voidDirective", "it": () => emptyBag()
     };
-    system.directiveList.includes("findMe", fakeDirective);
+    system.symbolTable.builtInSymbol("findMe", fakeDirective);
     expect(system.symbolTable.use("findMe")).toEqual(fakeDirective);
     expect(system.symbolTable.count("findMe")).toBe(0);
 });
@@ -104,16 +101,6 @@ Deno.test("A symbol can't be defined with the same name as a register", () => {
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect(failure.kind).toBe("symbol_alreadyExists");
-});
-
-Deno.test("A symbol is returned and counted if it's a register", () => {
-    const system = systemUnderTest();
-    system.cpuRegisters.initialise(false);
-
-    for (const expectedCount of [1, 2, 3]) {
-        expect(system.symbolTable.use("R3")).toEqual(numberBag(3));
-        expect(system.symbolTable.count("R3")).toBe(expectedCount);
-    }
 });
 
 Deno.test("A symbol can't be defined with the same name as a device property", () => {

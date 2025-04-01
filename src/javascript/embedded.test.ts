@@ -1,7 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { pass } from "../assembler/pass.ts";
 import { deviceProperties } from "../device/properties.ts";
-import { directiveList } from "../directives/directive-list.ts";
 import type { Failure } from "../failure/bags.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import type { SourceCode } from "../source-code/data-types.ts";
@@ -16,7 +15,7 @@ const testLine = (source: SourceCode) =>
 const systemUnderTest = () => {
     const registers = cpuRegisters();
     const symbols = symbolTable(
-        directiveList(), deviceProperties().public, registers, pass()
+        deviceProperties().public, registers, pass()
     );
     return {
         "cpuRegisters": registers,
