@@ -119,6 +119,15 @@ export const symbolTable = (
     }
 
     const use = (symbolName: string): SymbolBag => {
+        if (cpuRegisters.has(symbolName)) {
+            if (counts.get(symbolName) == undefined) {
+                counts.set(symbolName, 1);
+            } else {
+                increment(symbolName);
+            }
+            return numberBag(cpuRegisters.value(symbolName)!);
+        }
+
         if (constSymbols.has(symbolName)) {
             increment(symbolName);
             return constSymbols.get(symbolName)!;
@@ -131,7 +140,11 @@ export const symbolTable = (
 
         const property = deviceProperties.value(symbolName);
         if (property.type == "string") {
-            increment(symbolName);
+            if (counts.get(symbolName) == undefined) {
+                counts.set(symbolName, 1);
+            } else {
+                increment(symbolName);
+            }
             return property;
         }
 
