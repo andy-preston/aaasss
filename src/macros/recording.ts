@@ -28,7 +28,7 @@ export const recording = (
         if (theMacro != undefined) {
             return bagOfFailures([clueFailure("macro_multiDefine", macroName)]);
         }
-        if (symbolTable.has(newName, "withRegisters")) {
+        if (symbolTable.alreadyInUse(newName)) {
             return bagOfFailures([clueFailure("macro_name", newName)]);
         }
         macroName = newName;
@@ -46,7 +46,7 @@ export const recording = (
             return bagOfFailures([boringFailure("macro_end")]);
         }
         macros.set(macroName, theMacro!);
-        symbolTable.add(
+        symbolTable.variableSymbol(
             macroName, useMacroDirective,
             currentFileName(), currentLineNumber()
         );

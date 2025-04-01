@@ -21,7 +21,6 @@ Deno.test("If a macro has parameters, they are substituted", () => {
 
     expect(macro("testMacro", "a", "b").type).not.toBe("failures");
     expect(end().type).not.toBe("failures");
-
     const testMacro = directiveFunction(
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );

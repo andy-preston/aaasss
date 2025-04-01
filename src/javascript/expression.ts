@@ -1,7 +1,10 @@
-import { emptyBag, NumberBag, StringBag, stringBag } from "../assembler/bags.ts";
+import { emptyBag, stringBag, type NumberBag, type StringBag } from "../assembler/bags.ts";
 import type { BaggedDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { bagOfFailures, exceptionFailure , type BagOfFailures, type BagOrFailures, type StringOrFailures } from "../failure/bags.ts";
+import {
+    bagOfFailures, exceptionFailure,
+    type BagOfFailures, type BagOrFailures, type StringOrFailures
+} from "../failure/bags.ts";
 import type { SymbolBag } from "../symbol-table/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
@@ -42,7 +45,7 @@ export const jSExpression = (symbolTable: SymbolTable) => {
         has(_target: object, symbolName: string) {
             return symbolName in globalThis || typeof symbolName != "string"
                 ? false
-                : symbolTable.has(symbolName, "notRegisters");
+                : symbolTable.isDefinedSymbol(symbolName);
         },
         get(_target: object, symbolName: string) {
             return typeof symbolName == "string"

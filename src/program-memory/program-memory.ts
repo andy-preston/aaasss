@@ -63,7 +63,7 @@ export const programMemory = (
 
     const addressed = (line: LineWithObjectCode) => {
         if (line.label) {
-            const result = symbolTable.add(
+            const result = symbolTable.constantSymbol(
                 line.label, numberBag(address),
                 line.fileName, line.lineNumber
             );

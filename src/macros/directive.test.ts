@@ -100,3 +100,33 @@ Deno.test("Parameter count mismatches result in a failure", () => {
     expect(failure.kind).toBe("macro_params");
     expect(failure.clue).toBe("3");
 });
+
+Deno.test("A macro can be defined in both passes", () => {
+    const system = systemUnderTest();
+    const macro = directiveFunction(
+        irrelevantName, system.macros.macroDirective
+    );
+    const end = directiveFunction(
+        irrelevantName, system.macros.endDirective
+    );
+    {
+        expect(macro("testMacro").type).not.toBe("failures");
+        expect(end().type).not.toBe("failures");
+        const testMacro = directiveFunction(
+            "testMacro", macroFromTable(system.symbolTable, "testMacro")
+        );
+        const result = testMacro();
+        expect(result.type).not.toBe("failures");
+    } {
+        system.pass.second();
+        expect(system.symbolTable.alreadyInUse("testMacro")).toBeFalsy();
+
+        expect(macro("testMacro").type).not.toBe("failures");
+        expect(end().type).not.toBe("failures");
+        const testMacro = directiveFunction(
+            "testMacro", macroFromTable(system.symbolTable, "testMacro")
+        );
+        const result = testMacro();
+        expect(result.type).not.toBe("failures");
+    }
+});

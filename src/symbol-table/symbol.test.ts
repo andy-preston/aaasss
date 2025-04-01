@@ -19,6 +19,7 @@ export const systemUnderTest = () => {
     const symbols = symbolTable(
         directives, device.public, registers, currentPass
     );
+    currentPass.resetStateCallback(symbols.resetState);
     return {
         "symbolTable": symbols,
         "directiveList": directives,
@@ -43,19 +44,23 @@ Deno.test("A symbol can only be redefined if it's value has not changed", () => 
     const define = directiveFunction(
         irrelevantName, system.symbolTable.defineDirective
     );
-
-    expect(define("plop", 57).type).not.toBe("failures");
-    expect(system.symbolTable.use("plop")).toEqual(numberBag(57));
-
-    system.pass.second();
-    expect(define("plop", 57).type).not.toBe("failures");
-
-    const result = define("plop", 75);
-    expect(result.type).toBe("failures");
-    const failures = result.it as Array<Failure>;
-    expect(failures.length).toBe(1);
-    const failure = failures[0]!;
-    expect(failure.kind).toBe("symbol_alreadyExists");
+    {
+        const definition = define("plop", 57);
+        expect(definition.type).not.toBe("failures");
+        const result = system.symbolTable.use("plop");
+        expect(result.type).toBe("number");
+        expect(result.it).toBe(57);
+    } {
+        system.pass.second();
+        const definition = define("plop", 57);
+        expect(definition.type).not.toBe("failures");
+        const result = define("plop", 75);
+        expect(result.type).toBe("failures");
+        const failures = result.it as Array<Failure>;
+        expect(failures.length).toBe(1);
+        const failure = failures[0]!;
+        expect(failure.kind).toBe("symbol_alreadyExists");
+    }
 });
 
 Deno.test("A symbol can't be defined with the same name as a directive", () => {
@@ -72,7 +77,7 @@ Deno.test("A symbol can't be defined with the same name as a directive", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect(failure.kind).toBe("symbol_nameIsDirective");
+    expect(failure.kind).toBe("symbol_alreadyExists");
 });
 
 Deno.test("A symbol is returned but not counted if it's a directive", () => {
@@ -98,7 +103,7 @@ Deno.test("A symbol can't be defined with the same name as a register", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
-    expect(failure.kind).toBe("symbol_nameIsRegister");
+    expect(failure.kind).toBe("symbol_alreadyExists");
 });
 
 Deno.test("A symbol is returned and counted if it's a register", () => {
@@ -116,7 +121,7 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
     const define = directiveFunction(irrelevantName, system.symbolTable.defineDirective);
 
     system.deviceProperties.property("test", "57");
-    const result = define("test", 57);
+    const result = define("test", 418);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);

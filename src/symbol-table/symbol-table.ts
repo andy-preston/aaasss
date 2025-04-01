@@ -5,72 +5,96 @@ import type { ValueDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { DirectiveList } from "../directives/directive-list.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { bagOfFailures, clueFailure, type StringOrFailures } from "../failure/bags.ts";
+import { bagOfFailures, clueFailure } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { FileName, LineNumber } from "../source-code/data-types.ts";
 import type { SymbolBag } from "./bags.ts";
+
+type SymbolList = Map<string, SymbolBag>;
+type CountList = Map<string, number>;
+type DefinitionList = Map<string, string>;
 
 export const symbolTable = (
     directiveList: DirectiveList,
     deviceProperties: DevicePropertiesInterface,
     cpuRegisters: CpuRegisters,
-    pass: Pass
+    _pass: Pass
 ) => {
-    const values: Map<string, SymbolBag> = new Map();
+    const varSymbols:   SymbolList     = new Map();
+    const constSymbols: SymbolList     = new Map();
+    const counts:       CountList      = new Map();
+    const definitions:  DefinitionList = new Map();
 
-    const counts: Map<string, number> = new Map();
-
-    const definitionLocations: Map<string, string> = new Map();
-
-    const has = (
-        symbolName: string, option: "withRegisters" | "notRegisters"
-    ) => {
-        const isRegister = cpuRegisters.has(symbolName);
-        const hasSymbol = values.has(symbolName) ||
-            directiveList.has(symbolName) || deviceProperties.has(symbolName);
-        return hasSymbol && (
-            (option == "withRegisters" && isRegister) ||
-            (option == "notRegisters" && !isRegister)
-        );
+    const resetState = () => {
+        counts.clear();
+        definitions.clear();
+        varSymbols.clear();
     };
 
-    const inOtherLists = (symbolName: string): StringOrFailures =>
-        directiveList.has(symbolName)
-            ? bagOfFailures([clueFailure("symbol_nameIsDirective", symbolName)])
-            : cpuRegisters.has(symbolName)
-            ? bagOfFailures([clueFailure("symbol_nameIsRegister", symbolName)])
-            : deviceProperties.has(symbolName)
-            ? bagOfFailures([clueFailure("symbol_alreadyExists", symbolName)])
-            : emptyBag();
+    const isDefinedSymbol = (symbolName: string) =>
+        constSymbols.has(symbolName) || varSymbols.has(symbolName)
+        || directiveList.has(symbolName) || deviceProperties.has(symbolName);
 
-    const add = (
+    const alreadyInUse = (symbolName: string) =>
+        cpuRegisters.has(symbolName) || isDefinedSymbol(symbolName);
+
+    const existingValue = (
+        symbolName: string
+    ) => constSymbols.has(symbolName)
+        ? constSymbols.get(symbolName)!
+        : varSymbols.get(symbolName)!;
+
+    const existingValueIs = (
+        symbolName: string, value: SymbolBag
+    ) => {
+        const existing = existingValue(symbolName);
+        return existing != undefined
+            && existing.type == value.type && existing.it == value.it;
+    }
+
+    const variableSymbol = (
         symbolName: string, value: SymbolBag,
         fileName: FileName, lineNumber: LineNumber
     ): DirectiveResult => {
-        const inUse = inOtherLists(symbolName);
-        if (inUse.type == "failures") {
-            return inUse;
+        if (alreadyInUse(symbolName)) {
+            return bagOfFailures([
+                clueFailure("symbol_alreadyExists", symbolName)
+            ]);
         }
-
-        if (values.has(symbolName) && !pass.ignoreErrors()) {
-            const existing = values.get(symbolName)!.it;
-            if (value.it != existing) {
-                return bagOfFailures([
-                    clueFailure("symbol_alreadyExists", `${existing}`)
-                ]);
-            }
-        }
-
-        values.set(symbolName, value);
+        varSymbols.set(symbolName, value);
         counts.set(symbolName, 0);
-        definitionLocations.set(
+        definitions.set(
             symbolName, fileName ? `${fileName}:${lineNumber}` : ""
         );
         return emptyBag();
     };
 
-    const resetState = () => {
-        counts.clear();
+    const constantSymbol = (
+        symbolName: string, value: SymbolBag,
+        fileName: FileName, lineNumber: LineNumber
+    ) => {
+        if (alreadyInUse(symbolName) && !existingValueIs(symbolName, value)) {
+            return bagOfFailures([
+                clueFailure("symbol_alreadyExists", symbolName)
+            ]);
+        }
+        constSymbols.set(symbolName, value);
+        counts.set(symbolName, 0);
+        definitions.set(
+            symbolName, fileName ? `${fileName}:${lineNumber}` : ""
+        );
+        return emptyBag();
+    };
+
+    const defineDirective: ValueDirective = {
+        // This is the directive for doing a "define" operation
+        // not a function for defining directives.
+        // The number of times I've assumed the wrong thing is ridiculous!
+        "type": "valueDirective",
+        "it": (symbolName: string, value: number) => constantSymbol(
+            symbolName, numberBag(value),
+            currentFileName(), currentLineNumber()
+        )
     };
 
     const count = (symbolName: string) => {
@@ -87,9 +111,14 @@ export const symbolTable = (
             return directiveList.use(symbolName);
         }
 
-        if (values.has(symbolName)) {
+        if (constSymbols.has(symbolName)) {
             increment(symbolName);
-            return values.get(symbolName)!;
+            return constSymbols.get(symbolName)!;
+        }
+
+        if (varSymbols.has(symbolName)) {
+            increment(symbolName);
+            return varSymbols.get(symbolName)!;
         }
 
         const property = deviceProperties.value(symbolName);
@@ -102,7 +131,7 @@ export const symbolTable = (
         return numberBag(cpuRegisters.value(symbolName));
     };
 
-    const notCounted = (symbolName: string) => values.get(symbolName)!;
+    const notCounted = (symbolName: string) => constSymbols.get(symbolName)!;
 
     const listValue = (symbolName: string) => {
         const property = deviceProperties.value(symbolName);
@@ -117,7 +146,7 @@ export const symbolTable = (
     };
 
     const listDefinition = (symbolName: string) => {
-        const fromList = definitionLocations.get(symbolName);
+        const fromList = definitions.get(symbolName);
         return fromList == undefined ? "" : fromList;
     };
 
@@ -137,23 +166,17 @@ export const symbolTable = (
         return asArray;
     }
 
-    const defineDirective: ValueDirective = {
-        "type": "valueDirective",
-        "it": (symbolName: string, value: number) => add(
-            symbolName, numberBag(value),
-            currentFileName(), currentLineNumber()
-        )
-    };
-
     return {
-        "has": has,
-        "add": add,
+        "defineDirective": defineDirective,
+        "isDefinedSymbol": isDefinedSymbol,
+        "alreadyInUse": alreadyInUse,
+        "variableSymbol": variableSymbol,
+        "constantSymbol": constantSymbol,
         "use": use,
         "notCounted": notCounted,
         "count": count,
         "list": list,
         "resetState": resetState,
-        "defineDirective": defineDirective,
     };
 };
 

@@ -43,15 +43,18 @@ const mockFileStack = () => {
 
 export const systemUnderTest = () => {
     const directives = directiveList();
+    const thePass = pass();
     const symbols = symbolTable(
-        directives, deviceProperties().public, cpuRegisters(), pass()
+        directives, deviceProperties().public, cpuRegisters(), thePass
     );
     const fileStack = mockFileStack();
     const macroProcessor = macros(symbols, fileStack);
+    thePass.resetStateCallback(symbols.resetState);
     return {
         "symbolTable": symbols,
         "macros": macroProcessor,
-        "mockFileStack": fileStack
+        "mockFileStack": fileStack,
+        "pass": thePass
     };
 };
 

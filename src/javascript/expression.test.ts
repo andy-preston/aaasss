@@ -66,7 +66,7 @@ Deno.test("Javascript can contain newlines", () => {
 
 Deno.test("Javascript can get value from the symbol table", () => {
     const system = systemUnderTest();
-    system.symbols.add("plop", numberBag(23), "mock.asm", 10);
+    system.symbols.constantSymbol("plop", numberBag(23), "mock.asm", 10);
     const result = system.jsExpression("plop");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("23");
