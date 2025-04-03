@@ -23,9 +23,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "macro_end": (_line: LineWithAddress) => [
         "Can't end macro definition when a macro is not being defined"
     ],
-    "macro_name": (_line: LineWithAddress) => [
-        "Macro already exists"
-    ],
     "macro_params": (_line: LineWithAddress) => [
         "Parameter count mismatch"
     ],

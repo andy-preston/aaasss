@@ -2,7 +2,7 @@ import { emptyBag, numberBag } from "../assembler/bags.ts";
 import type { ValueDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { bagOfFailures, boringFailure, clueFailure } from "../failure/bags.ts";
+import { bagOfFailures, boringFailure, definitionFailure } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolBag } from "./bags.ts";
 
@@ -26,7 +26,10 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         constSymbols.has(symbolName) || varSymbols.has(symbolName);
 
     const alreadyInUse = (symbolName: string) =>
-        cpuRegisters.has(symbolName) || isDefinedSymbol(symbolName);
+        cpuRegisters.has(symbolName) || isDefinedSymbol(symbolName) ?
+            bagOfFailures([definitionFailure(
+                "symbol_alreadyExists", symbolName, definition(symbolName)
+            )]) : emptyBag();
 
     const symbolValue = (symbolName: string) =>
         constSymbols.has(symbolName) ? constSymbols.get(symbolName)!
@@ -76,58 +79,62 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         return result == undefined ? 0 : result;
     };
 
-    const definition = (symbolName: string) => {
+    const newDefinition = (symbolName: string) => {
         const fileName = currentFileName();
         if (fileName) {
             definitions.set(symbolName, `${fileName}:${currentLineNumber()}`);
         }
     };
 
+    const definition = (symbolName: string) => {
+        const definition = definitions.get(symbolName);
+        return definition != undefined ? definition
+            : cpuRegisters.has(symbolName) ? "REGISTER"
+            : "BUILT_IN";
+    };
+
     const userSymbol = (
         symbolName: string, value: SymbolBag
     ): DirectiveResult => {
-        if (alreadyInUse(symbolName)) {
-            return bagOfFailures([
-                clueFailure("symbol_alreadyExists", symbolName)
-            ]);
+        const inUse = alreadyInUse(symbolName);
+        if (inUse.type == "failures") {
+            return inUse;
         }
         varSymbols.set(symbolName, value);
         counts.set(symbolName, 0);
-        definition(symbolName);
+        newDefinition(symbolName);
         return emptyBag();
     };
 
     const deviceSymbol = (
         symbolName: string, value: SymbolBag
     ): DirectiveResult => {
-        if (alreadyInUse(symbolName)) {
-            return bagOfFailures([
-                clueFailure("symbol_alreadyExists", symbolName)
-            ]);
+        const inUse = alreadyInUse(symbolName);
+        if (inUse.type == "failures") {
+            return inUse;
         }
         varSymbols.set(symbolName, value);
-        definition(symbolName);
+        newDefinition(symbolName);
         return emptyBag();
     };
 
     const persistentSymbol = (
         symbolName: string, value: SymbolBag
     ) => {
-        if (alreadyInUse(symbolName) && !existingValueIs(symbolName, value)) {
-            return bagOfFailures([
-                clueFailure("symbol_alreadyExists", symbolName)
-            ]);
+        const inUse = alreadyInUse(symbolName);
+        if (inUse.type == "failures" && !existingValueIs(symbolName, value)) {
+            return inUse;
         }
         constSymbols.set(symbolName, value);
         counts.set(symbolName, 0);
-        definition(symbolName);
+        newDefinition(symbolName);
         return emptyBag();
     };
 
     const builtInSymbol = (
         symbolName: string, value: SymbolBag
     ) => {
-        if (alreadyInUse(symbolName)) {
+        if (constSymbols.has(symbolName) || varSymbols.has(symbolName)) {
             throw new Error(`Redefined built in symbol: ${symbolName}`);
         }
         constSymbols.set(symbolName, value);
@@ -163,11 +170,6 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         return emptyBag();
     };
 
-    const listDefinition = (symbolName: string) => {
-        const definition = definitions.get(symbolName);
-        return definition == undefined ? "" : definition;
-    };
-
     const listValue = (symbolName: string) => {
         const value = symbolValue(symbolName);
         return ["number", "string"].includes(value.type) ? `${value.it}` : "";
@@ -182,8 +184,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         ]> = [];
         counts.forEach((count: number, symbolName: string) => {
             asArray.push([
-                symbolName, count,
-                listValue(symbolName), listDefinition(symbolName)
+                symbolName, count, listValue(symbolName), definition(symbolName)
             ]);
         });
         return asArray;

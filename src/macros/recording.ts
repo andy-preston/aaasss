@@ -27,8 +27,9 @@ export const recording = (
         if (theMacro != undefined) {
             return bagOfFailures([clueFailure("macro_multiDefine", macroName)]);
         }
-        if (symbolTable.alreadyInUse(newName)) {
-            return bagOfFailures([clueFailure("macro_name", newName)]);
+        const inUse = symbolTable.alreadyInUse(newName);
+        if (inUse.type == "failures") {
+            return inUse;
         }
         macroName = newName;
         theMacro = macro(parameters);

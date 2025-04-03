@@ -60,11 +60,11 @@ export type NumericTypeFailure = ReturnType<typeof numericTypeFailure>;
 
 export const clueFailure = (
     kind: "file_notFound" | "device_notFound"
-        | "macro_multiDefine" | "macro_name"  | "macro_params"
+        | "macro_multiDefine" | "macro_params"
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown"
         | "operand_count" | "parameter_count"
-        | "symbol_alreadyExists" | "symbol_notFound",
+        | "symbol_notFound",
     clue: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -72,6 +72,15 @@ export const clueFailure = (
 });
 
 export type ClueFailure = ReturnType<typeof clueFailure>;
+
+export const definitionFailure = (
+    kind: "symbol_alreadyExists", name: string, definition: string
+) => ({
+    "kind": kind, "location": undefined as FailureLocation,
+    "name": name, "definition": definition
+});
+
+export type DefinitionFailure = ReturnType<typeof definitionFailure>;
 
 export const exceptionFailure = (
     kind: "js_error",
@@ -96,7 +105,7 @@ export const memoryRangeFailure = (
 export type MemoryRangeFailure = ReturnType<typeof memoryRangeFailure>;
 
 export type Failure = BoringFailure | ClueFailure | ComparisonFailure
-    | ExceptionFailure | MemoryRangeFailure
+    | DefinitionFailure | ExceptionFailure | MemoryRangeFailure
     | NumericTypeFailure | TypeFailure;
 
 export type FailureKind = Failure["kind"];

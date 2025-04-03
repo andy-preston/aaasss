@@ -16,7 +16,7 @@ Deno.test("Device demo", () => {
         "Symbol Table",
         "============",
         "",
-        "R30 (1)"
+        "R30 (1) REGISTER"
     ]);
     expectFileExists(".hex").toBeTruthy();
 });

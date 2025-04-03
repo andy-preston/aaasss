@@ -10,7 +10,6 @@ Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", 
     const macro = directiveFunction(
         irrelevantName, system.macros.macroDirective
     );
-
     expect(macro("plop").type).not.toBe("failures");
     const result = system.macros.leftInIllegalState();
     expect(result.type).toBe("failures");
@@ -25,7 +24,6 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
     const macro = directiveFunction(
         irrelevantName, system.macros.macroDirective
     );
-
     expect(macro("aMacro").type).not.toBe("failures");
     const result = macro("anotherOne");
     expect(result.type).toBe("failures");
@@ -43,7 +41,6 @@ Deno.test("Multiple macros can be defined", () => {
     const end = directiveFunction(
         irrelevantName, system.macros.endDirective
     );
-
     for (const macroName of ["aMacro", "anotherOne", "yetAnotherOne"]) {
         expect(macro(macroName).type).not.toBe("failures");
         expect(end().type).not.toBe("failures");
@@ -55,7 +52,6 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
     const end = directiveFunction(
         irrelevantName, system.macros.endDirective
     );
-
     const result = end();
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;

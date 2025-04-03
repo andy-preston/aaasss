@@ -119,7 +119,8 @@ Deno.test("A macro can be defined in both passes", () => {
         expect(result.type).not.toBe("failures");
     } {
         system.pass.second();
-        expect(system.symbolTable.alreadyInUse("testMacro")).toBeFalsy();
+        const inUse = system.symbolTable.alreadyInUse("testMacro");
+        expect(inUse.type).not.toBe("failures");
 
         expect(macro("testMacro").type).not.toBe("failures");
         expect(end().type).not.toBe("failures");

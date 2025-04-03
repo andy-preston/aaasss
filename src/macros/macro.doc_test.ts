@@ -33,7 +33,7 @@ Deno.test("Macro demo", () => {
         "============",
         "",
         "aMacro (2) /var/tmp/demo.asm:5",
-        "R30 (2)"
+        "R30 (2) REGISTER"
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",
@@ -85,7 +85,7 @@ Deno.test("A macro can be called from inside another macro", () => {
         "",
         "innerMacro (4) /var/tmp/demo.asm:5",
         "outerMacro (1) /var/tmp/demo.asm:10",
-        "R30 (2)"
+        "R30 (2) REGISTER"
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",
