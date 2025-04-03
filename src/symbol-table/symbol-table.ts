@@ -1,23 +1,16 @@
 import { emptyBag, numberBag } from "../assembler/bags.ts";
-import type { Pass } from "../assembler/pass.ts";
-import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { ValueDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
-import { bagOfFailures, clueFailure } from "../failure/bags.ts";
+import { bagOfFailures, boringFailure, clueFailure } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
-import type { FileName, LineNumber } from "../source-code/data-types.ts";
 import type { SymbolBag } from "./bags.ts";
 
 type SymbolList = Map<string, SymbolBag>;
 type CountList = Map<string, number>;
 type DefinitionList = Map<string, string>;
 
-export const symbolTable = (
-    deviceProperties: DevicePropertiesInterface,
-    cpuRegisters: CpuRegisters,
-    _pass: Pass
-) => {
+export const symbolTable = (cpuRegisters: CpuRegisters) => {
     const varSymbols:   SymbolList     = new Map();
     const constSymbols: SymbolList     = new Map();
     const counts:       CountList      = new Map();
@@ -30,29 +23,68 @@ export const symbolTable = (
     };
 
     const isDefinedSymbol = (symbolName: string) =>
-        constSymbols.has(symbolName) || varSymbols.has(symbolName)
-        || deviceProperties.has(symbolName);
+        constSymbols.has(symbolName) || varSymbols.has(symbolName);
 
     const alreadyInUse = (symbolName: string) =>
         cpuRegisters.has(symbolName) || isDefinedSymbol(symbolName);
 
-    const existingValue = (
-        symbolName: string
-    ) => constSymbols.has(symbolName)
-        ? constSymbols.get(symbolName)!
-        : varSymbols.get(symbolName)!;
+    const symbolValue = (symbolName: string) =>
+        constSymbols.has(symbolName) ? constSymbols.get(symbolName)!
+        : varSymbols.has(symbolName) ? varSymbols.get(symbolName)!
+        : emptyBag();
 
-    const existingValueIs = (
-        symbolName: string, value: SymbolBag
+    const deviceSymbolValue = (
+        symbolName: string, expectedType: "string" | "number"
     ) => {
-        const existing = existingValue(symbolName);
+        if (!varSymbols.has("deviceName")) {
+            return bagOfFailures([boringFailure("device_notSelected")]);
+        }
+        const value = symbolValue(symbolName);
+        if (value.type != expectedType) {
+            const device = varSymbols.get("deviceName");
+            const suffix = [
+                device == undefined || device.type != "string"
+                    ? undefined :  device.it,
+                symbolName, expectedType, value.type
+            ].join(" - ");
+            throw new Error(`Device configuration error ${suffix}`);
+        }
+        return value;
+    };
+
+    const existingValueIs = (symbolName: string, value: SymbolBag) => {
+        const existing = symbolValue(symbolName);
         return existing != undefined
             && existing.type == value.type && existing.it == value.it;
-    }
+    };
 
-    const variableSymbol = (
-        symbolName: string, value: SymbolBag,
-        fileName: FileName, lineNumber: LineNumber
+    const increment = (
+        symbolName: string, exposure: "revealIfHidden" | "keepHidden"
+    ) => {
+        const count = counts.get(symbolName);
+        if (count != undefined) {
+            counts.set(symbolName, count + 1);
+            return;
+        }
+        if (exposure == "revealIfHidden") {
+            counts.set(symbolName, 1);
+        }
+    };
+
+    const count = (symbolName: string) => {
+        const result = counts.get(symbolName);
+        return result == undefined ? 0 : result;
+    };
+
+    const definition = (symbolName: string) => {
+        const fileName = currentFileName();
+        if (fileName) {
+            definitions.set(symbolName, `${fileName}:${currentLineNumber()}`);
+        }
+    };
+
+    const userSymbol = (
+        symbolName: string, value: SymbolBag
     ): DirectiveResult => {
         if (alreadyInUse(symbolName)) {
             return bagOfFailures([
@@ -61,15 +93,25 @@ export const symbolTable = (
         }
         varSymbols.set(symbolName, value);
         counts.set(symbolName, 0);
-        definitions.set(
-            symbolName, fileName ? `${fileName}:${lineNumber}` : ""
-        );
+        definition(symbolName);
         return emptyBag();
     };
 
-    const constantSymbol = (
-        symbolName: string, value: SymbolBag,
-        fileName: FileName, lineNumber: LineNumber
+    const deviceSymbol = (
+        symbolName: string, value: SymbolBag
+    ): DirectiveResult => {
+        if (alreadyInUse(symbolName)) {
+            return bagOfFailures([
+                clueFailure("symbol_alreadyExists", symbolName)
+            ]);
+        }
+        varSymbols.set(symbolName, value);
+        definition(symbolName);
+        return emptyBag();
+    };
+
+    const persistentSymbol = (
+        symbolName: string, value: SymbolBag
     ) => {
         if (alreadyInUse(symbolName) && !existingValueIs(symbolName, value)) {
             return bagOfFailures([
@@ -78,9 +120,7 @@ export const symbolTable = (
         }
         constSymbols.set(symbolName, value);
         counts.set(symbolName, 0);
-        definitions.set(
-            symbolName, fileName ? `${fileName}:${lineNumber}` : ""
-        );
+        definition(symbolName);
         return emptyBag();
     };
 
@@ -91,7 +131,6 @@ export const symbolTable = (
             throw new Error(`Redefined built in symbol: ${symbolName}`);
         }
         constSymbols.set(symbolName, value);
-        definitions.set(symbolName, "BUILT_IN");
         return emptyBag();
     };
 
@@ -100,75 +139,38 @@ export const symbolTable = (
         // not a function for defining directives.
         // The number of times I've assumed the wrong thing is ridiculous!
         "type": "valueDirective",
-        "it": (symbolName: string, value: number) => constantSymbol(
-            symbolName, numberBag(value),
-            currentFileName(), currentLineNumber()
+        "it": (symbolName: string, value: number) => persistentSymbol(
+            symbolName, numberBag(value)
         )
     };
 
-    const count = (symbolName: string) => {
-        const result = counts.get(symbolName);
-        return result == undefined ? 0 : result;
-    };
-
-    const increment = (symbolName: string) => {
-        const counted = counts.get(symbolName);
-        if (counted != undefined) {
-            counts.set(symbolName, counted + 1);
-        }
-    }
-
     const use = (symbolName: string): SymbolBag => {
         if (cpuRegisters.has(symbolName)) {
-            if (counts.get(symbolName) == undefined) {
-                counts.set(symbolName, 1);
-            } else {
-                increment(symbolName);
-            }
+            increment(symbolName, "revealIfHidden");
             return numberBag(cpuRegisters.value(symbolName)!);
         }
 
         if (constSymbols.has(symbolName)) {
-            increment(symbolName);
+            increment(symbolName, "keepHidden");
             return constSymbols.get(symbolName)!;
         }
 
         if (varSymbols.has(symbolName)) {
-            increment(symbolName);
+            increment(symbolName, "revealIfHidden");
             return varSymbols.get(symbolName)!;
         }
 
-        const property = deviceProperties.value(symbolName);
-        if (property.type == "string") {
-            if (counts.get(symbolName) == undefined) {
-                counts.set(symbolName, 1);
-            } else {
-                increment(symbolName);
-            }
-            return property;
-        }
-
-        increment(symbolName);
-        return numberBag(cpuRegisters.value(symbolName));
-    };
-
-    const notCounted = (symbolName: string) => constSymbols.get(symbolName)!;
-
-    const listValue = (symbolName: string) => {
-        const property = deviceProperties.value(symbolName);
-        if (property.type == "string") {
-            return property.it;
-        }
-        const fromList = notCounted(symbolName);
-        return fromList != undefined
-            && (fromList.type == "string" || fromList.type == "number")
-            ? fromList.it
-            : undefined;
+        return emptyBag();
     };
 
     const listDefinition = (symbolName: string) => {
-        const fromList = definitions.get(symbolName);
-        return fromList == undefined ? "" : fromList;
+        const definition = definitions.get(symbolName);
+        return definition == undefined ? "" : definition;
+    };
+
+    const listValue = (symbolName: string) => {
+        const value = symbolValue(symbolName);
+        return ["number", "string"].includes(value.type) ? `${value.it}` : "";
     };
 
     const list = () => {
@@ -185,17 +187,19 @@ export const symbolTable = (
             ]);
         });
         return asArray;
-    }
+    };
 
     return {
         "defineDirective": defineDirective,
         "isDefinedSymbol": isDefinedSymbol,
         "alreadyInUse": alreadyInUse,
-        "variableSymbol": variableSymbol,
-        "constantSymbol": constantSymbol,
+        "userSymbol": userSymbol,
+        "persistentSymbol": persistentSymbol,
         "builtInSymbol": builtInSymbol,
+        "deviceSymbol": deviceSymbol,
+        "symbolValue": symbolValue,
+        "deviceSymbolValue": deviceSymbolValue,
         "use": use,
-        "notCounted": notCounted,
         "count": count,
         "list": list,
         "resetState": resetState,

@@ -5,16 +5,21 @@ import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { objectCode } from "./object-code.ts";
 import { pokeBuffer } from "./poke.ts";
+import { stringBag } from "../assembler/bags.ts";
 
 const systemUnderTest = () => {
-    const device = deviceProperties();
+    const symbols = symbolTable(cpuRegisters());
+    const device = deviceProperties(symbols);
     return {
-        "device": device,
+        "deviceProperties": device,
+        "symbolTable": symbols,
         "objectCode": objectCode(device.public, pokeBuffer())
     };
 };
@@ -54,8 +59,8 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
 
 Deno.test("Lines with unsupported instructions fail", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
-    system.device.unsupportedInstructions(["DES"]);
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.deviceProperties.unsupportedInstructions(["DES"]);
     const line = testLine("", "DES", [], [], [], false);
     const result = system.objectCode(line);
     expect(result.failed()).toBeTruthy();
@@ -68,7 +73,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
 
 Deno.test("Lines with unknown instructions fail", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
 
     const line = testLine("", "NOT_REAL", [], [], [], false);
     const result = system.objectCode(line);
@@ -82,7 +87,7 @@ Deno.test("Lines with unknown instructions fail", () => {
 
 Deno.test("Lines with real/supported instructions produce code", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     const line = testLine("", "DES", ["15"], [15], ["number"], false);
     const result = system.objectCode(line);
     expect(result.failed()).toBeFalsy();
@@ -91,7 +96,7 @@ Deno.test("Lines with real/supported instructions produce code", () => {
 
 Deno.test("If a line has `isRecordingMacro == true`, no code is generated", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     const line = testLine("", "DES", ["15"], [15], ["number"], true);
     const result = system.objectCode(line);
     expect(result.failed()).toBeFalsy();

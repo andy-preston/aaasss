@@ -1,8 +1,10 @@
 import { emptyBag, numberBag } from "../assembler/bags.ts";
-import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { bagOfFailures, boringFailure, memoryRangeFailure, type StringOrFailures } from "../failure/bags.ts";
+import {
+    bagOfFailures, boringFailure, memoryRangeFailure,
+    type StringOrFailures
+} from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
@@ -10,9 +12,7 @@ import { lineWithAddress } from "./line-types.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
 
-export const programMemory = (
-    symbolTable: SymbolTable, device: DevicePropertiesInterface
-) => {
+export const programMemory = (symbolTable: SymbolTable) => {
     let address = 0;
 
     const resetState = () => {
@@ -20,21 +20,22 @@ export const programMemory = (
     };
 
     const pastEnd = (newAddress: number): StringOrFailures => {
-        const bytes = device.numericValue("programMemoryBytes");
-        if (bytes.type == "failures") {
-            const notSelected = bytes.it.find(
-                failure => failure.kind == "device_notSelected"
-            );
-            if (notSelected != undefined) {
-                bytes.it.push(boringFailure("programMemory_sizeUnknown"));
+        const bytes = symbolTable.deviceSymbolValue(
+            "programMemoryBytes", "number"
+        );
+        const failures = bytes.type == "failures" ? bytes : bagOfFailures([]);
+        if (bytes.type == "number") {
+            const words = bytes.it / 2;
+            if (newAddress > words) {
+                failures.it.push(memoryRangeFailure(
+                    "programMemory_outOfRange",
+                    bytes.it, (newAddress - address) * 2
+                ));
             }
-            return bytes;
+        } else {
+            failures.it.push(boringFailure("programMemory_sizeUnknown"));
         }
-
-        const words = bytes.it / 2
-        return newAddress > words ? bagOfFailures([memoryRangeFailure(
-            "programMemory_outOfRange", bytes.it, (newAddress - address) * 2
-        )]) : emptyBag()
+        return failures.it.length > 0 ? failures : emptyBag();
     };
 
     const origin = (newAddress: number): DirectiveResult => {
@@ -63,9 +64,8 @@ export const programMemory = (
 
     const addressed = (line: LineWithObjectCode) => {
         if (line.label) {
-            const result = symbolTable.constantSymbol(
-                line.label, numberBag(address),
-                line.fileName, line.lineNumber
+            const result = symbolTable.persistentSymbol(
+                line.label, numberBag(address)
             );
             if (result.type == "failures") {
                 line.withFailures(result.it);

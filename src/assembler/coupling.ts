@@ -33,10 +33,7 @@ export const coupling = (
     const currentPass = pass();
     const illegalState = illegalStateFailures();
     const registers = cpuRegisters();
-    const device = deviceProperties();
-    const symbols = symbolTable(
-        device.public, registers, currentPass
-    );
+    const symbols = symbolTable(registers);
 
     const link = <ComponentType extends object>(component: ComponentType) => {
         for (const property in component) {
@@ -60,13 +57,13 @@ export const coupling = (
         return component;
     }
 
+    link(symbols);
     link(functionDirectives);
     link(registers);
-    link(device);
-    link(symbols);
+    const device = link(deviceProperties(symbols));
 
-    link(deviceChooser(device, registers, deviceFileOperations));
-    link(dataMemory(device.public));
+    link(deviceChooser(device, registers, symbols, deviceFileOperations));
+    link(dataMemory(symbols));
     const poke = link(pokeBuffer());
     const sourceFiles = link(fileStack(readerMethod, fileName));
     const expression = link(jSExpression(symbols));
@@ -79,7 +76,7 @@ export const coupling = (
         link(macros(symbols, sourceFiles)).lines,
         link(symbolicToNumeric(symbols, registers, expression)),
         link(objectCode(device.public, poke)),
-        link(programMemory(symbols, device.public)).addressed,
+        link(programMemory(symbols)).addressed,
         link(listing(outputFile, fileName, failureMessageTranslator, symbols)),
         link(hexFile(outputFile, fileName)),
         illegalState

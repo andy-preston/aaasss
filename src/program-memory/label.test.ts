@@ -1,5 +1,5 @@
 import { expect } from "jsr:@std/expect";
-import { numberBag, StringBag } from "../assembler/bags.ts";
+import { numberBag, stringBag, StringBag } from "../assembler/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { systemUnderTest, testLine } from "./testing.ts";
 
@@ -11,8 +11,8 @@ Deno.test("A label is stored in the symbol table with the current address", () =
         irrelevantName, system.programMemory.originDirective
     );
 
-    system.deviceProperties.property("deviceName", "test");
-    system.deviceProperties.property("programMemoryBytes", "FF");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     expect(origin(10).type).not.toBe("failures");
 
     const line = testLine("A_LABEL", [], []);
@@ -28,8 +28,8 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
         irrelevantName, system.programMemory.originDirective
     );
 
-    system.deviceProperties.property("deviceName", "test");
-    system.deviceProperties.property("programMemoryBytes", "FF");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     const line = testLine("A_LABEL", [], []);
 
     expect(origin(10).type).not.toBe("failures");
@@ -51,8 +51,8 @@ Deno.test("Labels are available to javascript", () => {
         irrelevantName, system.programMemory.originDirective
     );
 
-    system.deviceProperties.property("deviceName", "test");
-    system.deviceProperties.property("programMemoryBytes", "FF");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
 
     system.pass.second();
     expect(origin(10).type).not.toBe("failures");

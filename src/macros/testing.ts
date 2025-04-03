@@ -1,7 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { emptyBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
-import { deviceProperties } from "../device/properties.ts";
 import type { FunctionUseDirective, StringDirective } from "../directives/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
@@ -42,9 +41,7 @@ const mockFileStack = () => {
 
 export const systemUnderTest = () => {
     const thePass = pass();
-    const symbols = symbolTable(
-        deviceProperties().public, cpuRegisters(), thePass
-    );
+    const symbols = symbolTable(cpuRegisters());
     const fileStack = mockFileStack();
     const macroProcessor = macros(symbols, fileStack);
     thePass.resetStateCallback(symbols.resetState);

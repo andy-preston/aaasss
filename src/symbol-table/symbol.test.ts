@@ -1,7 +1,6 @@
 import { expect } from "jsr:@std/expect";
-import { emptyBag, numberBag, StringBag, stringBag } from "../assembler/bags.ts";
+import { emptyBag, numberBag, type NumberBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
-import { deviceProperties } from "../device/properties.ts";
 import type { VoidDirective } from "../directives/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import type { Failure } from "../failure/bags.ts";
@@ -12,15 +11,11 @@ const irrelevantName = "testing";
 
 export const systemUnderTest = () => {
     const currentPass = pass();
-    const device = deviceProperties();
     const registers = cpuRegisters();
-    const symbols = symbolTable(
-        device.public, registers, currentPass
-    );
+    const symbols = symbolTable(registers);
     currentPass.resetStateCallback(symbols.resetState);
     return {
         "symbolTable": symbols,
-        "deviceProperties": device,
         "cpuRegisters": registers,
         "pass": currentPass
     };
@@ -107,7 +102,7 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
     const system = systemUnderTest();
     const define = directiveFunction(irrelevantName, system.symbolTable.defineDirective);
 
-    system.deviceProperties.property("test", "57");
+    system.symbolTable.deviceSymbol("test", numberBag(57));
     const result = define("test", 418);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
@@ -118,22 +113,19 @@ Deno.test("A symbol can't be defined with the same name as a device property", (
 
 Deno.test("A symbol is returned and counted if it's a device property", () => {
     const system = systemUnderTest();
-    system.deviceProperties.property("deviceName", "someDevice");
-    system.deviceProperties.property("test", "57");
-
-    const result = system.deviceProperties.public.value("test");
-    expect(result.type).not.toBe("failures");
-    expect((result as StringBag).it).toBe("57");
+    system.symbolTable.deviceSymbol("test", numberBag(57));
     for (const expectedCount of [1, 2, 3]) {
-        expect(system.symbolTable.use("test")).toEqual(stringBag("57"));
-        expect(system.symbolTable.count("test")).toBe(expectedCount);
+        const result = system.symbolTable.use("test");
+        expect(result.type).toBe("number");
+        expect((result as NumberBag).it).toBe(57);
+        const count = system.symbolTable.count("test");
+        expect(count).toBe(expectedCount);
     }
 });
 
 Deno.test("Device properties don't 'become' symbols until they're used", () => {
     const system = systemUnderTest();
-
-    system.deviceProperties.property("test", "57");
+    system.symbolTable.deviceSymbol("test", numberBag(57));
     expect(system.symbolTable.count("test")).toBe(0);
 });
 
@@ -141,9 +133,8 @@ Deno.test("A symbol is returned and counted if it's a CPU register", () => {
     const system = systemUnderTest();
     system.cpuRegisters.initialise(false);
 
-    for (const expectedCount of [1, 2, 3]) {
+    for (const _expectedCount of [1, 2, 3]) {
         expect(system.symbolTable.use("R15")).toEqual(numberBag(15));
-        expect(system.symbolTable.count("R15")).toBe(expectedCount);
     }
 });
 

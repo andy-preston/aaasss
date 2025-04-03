@@ -1,5 +1,4 @@
 import { pass } from "../assembler/pass.ts";
-import { deviceProperties } from "../device/properties.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
@@ -15,15 +14,11 @@ import { programMemory } from "./program-memory.ts";
 
 export const systemUnderTest = () => {
     const currentPass = pass();
-    const device = deviceProperties();
-    const symbols = symbolTable(
-        device.public, cpuRegisters() ,currentPass
-    );
+    const symbols = symbolTable(cpuRegisters());
     return {
         "pass": currentPass,
         "symbolTable": symbols,
-        "deviceProperties": device,
-        "programMemory": programMemory(symbols, device.public),
+        "programMemory": programMemory(symbols),
         "jsExpression": jSExpression(symbols)
     };
 };

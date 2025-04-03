@@ -24,17 +24,19 @@ Deno.test("Choosing multiple devices results in failure", () => {
     const device = directiveFunction(
         irrelevantName, system.deviceChooser.deviceDirective
     );
-    const firstTry = device(firstName);
-    expect(firstTry.type).not.toBe("failures");
-
-    const secondTry = device(secondName);
-    expect(secondTry.type).toBe("failures");
-    const failures = secondTry.it as Array<Failure>;
-    expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("device_multiple");
-    const failure = failures[0] as ComparisonFailure;
-    expect(failure.before).toBe(firstName)
-    expect(failure.after).toBe(secondName);
+    {
+        const result = device(firstName);
+        expect(result.type).not.toBe("failures");
+    } {
+        const result = device(secondName);
+        expect(result.type).toBe("failures");
+        const failures = result.it as Array<Failure>;
+        expect(failures.length).toBe(1);
+        expect(failures[0]!.kind).toBe("device_multiple");
+        const failure = failures[0] as ComparisonFailure;
+        expect(failure.before).toBe(firstName)
+        expect(failure.after).toBe(secondName);
+    }
 });
 
 Deno.test("Choosing the same device by different names is also a failure", () => {
@@ -46,18 +48,19 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
     const device = directiveFunction(
         irrelevantName, system.deviceChooser.deviceDirective
     );
-
-    const firstTry = device(firstName);
-    expect(firstTry.type).not.toBe("failures");
-
-    const secondTry = device(secondName);
-    expect(secondTry.type, "failures");
-    const failures = secondTry.it as Array<Failure>;
-    expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("device_multiple");
-    const failure = failures[0] as ComparisonFailure;
-    expect(failure.before).toBe(firstName)
-    expect(failure.after).toBe(secondName);
+    {
+        const result = device(firstName);
+        expect(result.type).not.toBe("failures");
+    } {
+        const result = device(secondName);
+        expect(result.type, "failures");
+        const failures = result.it as Array<Failure>;
+        expect(failures.length).toBe(1);
+        expect(failures[0]!.kind).toBe("device_multiple");
+        const failure = failures[0] as ComparisonFailure;
+        expect(failure.before).toBe(firstName)
+        expect(failure.after).toBe(secondName);
+    }
 });
 
 Deno.test("Choosing an non-existant device returns a Failure", () => {
@@ -65,7 +68,6 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
     const device = directiveFunction(
         irrelevantName, system.deviceChooser.deviceDirective
     );
-
     const result = device("notARealDevice");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
@@ -80,7 +82,6 @@ Deno.test("The device name must be present", () => {
     const device = directiveFunction(
         irrelevantName, system.deviceChooser.deviceDirective
     );
-
     const result = device();
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
@@ -98,4 +99,17 @@ Deno.test("The device name must be present and a string", () => {
     const result = device("at tiny 24");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("");
+});
+
+Deno.test("It correctly interprets the hex stings in the JSON files", () => {
+    const system = systemUnderTest();
+    const device = directiveFunction(
+        irrelevantName, system.deviceChooser.deviceDirective
+    );
+    const result = device("ATTiny2313");
+    expect(result.type).not.toBe("failures");
+    expect(result.it).toBe("");
+    const value = system.symbolTable.symbolValue("TCCR1A");
+    expect(value.type).toBe("number");
+    expect(value.it).toBe(0x4f);
 });

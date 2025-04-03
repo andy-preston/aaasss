@@ -1,10 +1,11 @@
 import { expect } from "jsr:@std/expect";
 import { systemUnderTest, testLine } from "./testing.ts";
+import { numberBag, stringBag } from "../assembler/bags.ts";
 
 Deno.test("If a line has no code the address remains unchanged", () => {
     const system = systemUnderTest();
-    system.deviceProperties.property("deviceName", "test");
-    system.deviceProperties.property("programMemoryBytes", "FF");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     expect(system.programMemory.address()).toBe(0);
     system.programMemory.addressed(testLine("", [], []));
     expect(system.programMemory.address()).toBe(0);
@@ -12,8 +13,8 @@ Deno.test("If a line has no code the address remains unchanged", () => {
 
 Deno.test("The program counter advances by the number of words poked", () => {
     const system = systemUnderTest();
-    system.deviceProperties.property("deviceName", "test");
-    system.deviceProperties.property("programMemoryBytes", "FF");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     expect(system.programMemory.address()).toBe(0);
     system.programMemory.addressed(testLine(
         "",
@@ -25,8 +26,8 @@ Deno.test("The program counter advances by the number of words poked", () => {
 
 Deno.test("... or by the number of words of code", () => {
     const system = systemUnderTest();
-    system.deviceProperties.property("deviceName", "test");
-    system.deviceProperties.property("programMemoryBytes", "FF");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     expect(system.programMemory.address()).toBe(0);
     system.programMemory.addressed(testLine("", [], [1, 2]));
     expect(system.programMemory.address()).toBe(1);
@@ -34,8 +35,8 @@ Deno.test("... or by the number of words of code", () => {
 
 Deno.test("... or both", () => {
     const system = systemUnderTest();
-    system.deviceProperties.property("deviceName", "test");
-    system.deviceProperties.property("programMemoryBytes", "FF");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     expect(system.programMemory.address()).toBe(0);
     system.programMemory.addressed(testLine("",
         [[1, 2, 3, 4], [5, 6]],
@@ -47,8 +48,8 @@ Deno.test("... or both", () => {
 
 Deno.test("Insufficient program memory causes generation to fail", () => {
     const system = systemUnderTest();
-    system.deviceProperties.property("deviceName", "test");
-    system.deviceProperties.property("programMemoryBytes", "00");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0x00));
     const preFailureAddress = system.programMemory.address();
 
     const line = testLine("", [[1, 2, 3, 4]], [1, 2]);
@@ -67,8 +68,8 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
 
 Deno.test("Advancing beyond the end of program memory causes failure", () => {
     const system = systemUnderTest();
-    system.deviceProperties.property("deviceName", "test");
-    system.deviceProperties.property("programMemoryBytes", "06");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0x06));
 
     const firstLine = testLine("", [[1, 2, 3, 4]], [1, 2]);
     const firstResult = system.programMemory.addressed(firstLine);

@@ -1,7 +1,6 @@
 import { emptyBag } from "../assembler/bags.ts";
 import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
 import { bagOfFailures, boringFailure, clueFailure, type StringOrFailures } from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
@@ -46,10 +45,7 @@ export const recording = (
             return bagOfFailures([boringFailure("macro_end")]);
         }
         macros.set(macroName, theMacro!);
-        symbolTable.variableSymbol(
-            macroName, useMacroDirective,
-            currentFileName(), currentLineNumber()
-        );
+        symbolTable.userSymbol(macroName, useMacroDirective);
         resetState();
         return emptyBag();
     };

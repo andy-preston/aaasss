@@ -14,7 +14,7 @@ export const sortedSymbolTable = (symbolTable: SymbolTable) => {
     );
 
     return symbols.map(([symbolName, usageCount, symbolValue, definition]) => {
-        const formatted = symbolValue == undefined  ? "" : ` = ${symbolValue}`;
+        const formatted = symbolValue ? ` = ${symbolValue}` : "";
         return `${symbolName}${formatted} (${usageCount}) ${definition}`.trim();
     });
 };

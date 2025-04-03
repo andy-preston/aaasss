@@ -1,10 +1,13 @@
 import { emptyBag, numberBag, stringBag, type NumberBag } from "../assembler/bags.ts";
-import type { DevicePropertiesInterface } from "../device/properties.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { bagOfFailures, boringFailure, memoryRangeFailure, type Failure, type NumberOrFailures } from "../failure/bags.ts";
+import {
+    bagOfFailures, boringFailure, memoryRangeFailure,
+    type Failure, type NumberOrFailures
+} from "../failure/bags.ts";
+import { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-export const dataMemory = (device: DevicePropertiesInterface) => {
+export const dataMemory = (symbolTable: SymbolTable) => {
     let stack = 0;
     let allocated = 0;
 
@@ -14,8 +17,8 @@ export const dataMemory = (device: DevicePropertiesInterface) => {
     };
 
     const availableAddress = (bytesRequested: number): NumberOrFailures => {
-        const ramStart = device.numericValue("ramStart");
-        const ramEnd = device.numericValue("ramEnd");
+        const ramStart = symbolTable.deviceSymbolValue("ramStart", "number");
+        const ramEnd = symbolTable.deviceSymbolValue("ramEnd", "number");
         const failures: Array<Failure> = (
             ramStart.type == "failures" ? ramStart.it : []
         ).concat(

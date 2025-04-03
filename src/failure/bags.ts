@@ -64,7 +64,7 @@ export const clueFailure = (
         | "mnemonic_unknown"
         | "mnemonic_notSupported" | "mnemonic_supportedUnknown"
         | "operand_count" | "parameter_count"
-        | "symbol_alreadyExists",
+        | "symbol_alreadyExists" | "symbol_notFound",
     clue: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -72,16 +72,6 @@ export const clueFailure = (
 });
 
 export type ClueFailure = ReturnType<typeof clueFailure>;
-
-export const deviceFailure = (
-    kind: "device_internalFormat" | "symbol_notFound",
-    device: string, clue: string
-) => ({
-    "kind": kind, "location": undefined as FailureLocation,
-    "device": device, "clue": clue
-});
-
-export type DeviceFailure = ReturnType<typeof deviceFailure>;
 
 export const exceptionFailure = (
     kind: "js_error",
@@ -106,7 +96,7 @@ export const memoryRangeFailure = (
 export type MemoryRangeFailure = ReturnType<typeof memoryRangeFailure>;
 
 export type Failure = BoringFailure | ClueFailure | ComparisonFailure
-    | DeviceFailure | ExceptionFailure | MemoryRangeFailure
+    | ExceptionFailure | MemoryRangeFailure
     | NumericTypeFailure | TypeFailure;
 
 export type FailureKind = Failure["kind"];

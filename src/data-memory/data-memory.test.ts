@@ -1,20 +1,22 @@
 import { expect } from "jsr:@std/expect";
+import { numberBag, stringBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
-import { deviceProperties } from "../device/properties.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { DeviceFailure, Failure, MemoryRangeFailure } from "../failure/bags.ts";
+import type { Failure, MemoryRangeFailure } from "../failure/bags.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { dataMemory } from "./data-memory.ts";
 
 const irrelevantName = "testing";
 
 const systemUnderTest = () => {
     const currentPass = pass();
-    const device = deviceProperties();
-    const memory = dataMemory(device.public);
+    const symbols = symbolTable(cpuRegisters());
+    const memory = dataMemory(symbols);
     currentPass.resetStateCallback(memory.resetState);
     return {
         "pass": currentPass,
-        "device": device,
+        "symbolTable": symbols,
         "dataMemory": memory
     };
 };
@@ -24,34 +26,24 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
-
     system.pass.second();
     const result = alloc(23);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
-    expect(failures.length).toBe(5);
+    expect(failures.length).toBe(3);
     expect(failures[0]!.kind).toBe("device_notSelected");
-    expect(failures[1]!.kind).toBe("symbol_notFound");
-    const startFailure = failures[1] as DeviceFailure;
-    expect(startFailure.device).toBe(undefined);
-    expect(startFailure.clue).toBe("ramStart");
-    expect(failures[2]!.kind).toBe("device_notSelected");
-    expect(failures[3]!.kind).toBe("symbol_notFound");
-    const endFailure = failures[3] as DeviceFailure;
-    expect(endFailure.device).toBe(undefined);
-    expect(endFailure.clue).toBe("ramEnd");
-    expect(failures[4]!.kind).toBe("ram_sizeUnknown");
+    expect(failures[1]!.kind).toBe("device_notSelected");
+    expect(failures[2]!.kind).toBe("ram_sizeUnknown");
 });
 
 Deno.test("A stack allocation can't be beyond available SRAM", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
-    system.device.property("ramStart", "00");
-    system.device.property("ramEnd", "F0");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("ramStart", numberBag(0));
+    system.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
     const allocStack = directiveFunction(
         irrelevantName, system.dataMemory.allocStackDirective
     );
-
     system.pass.second();
     const bytesRequested = 0xf2;
     const result = allocStack(bytesRequested);
@@ -66,13 +58,12 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
 
 Deno.test("A memory allocation can't be beyond available SRAM", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
-    system.device.property("ramStart", "00");
-    system.device.property("ramEnd", "F0");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("ramStart", numberBag(0));
+    system.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
-
     system.pass.second();
     const bytesRequested = 0xf2;
     const result = alloc(bytesRequested);
@@ -87,13 +78,12 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
 
 Deno.test("Memory allocations start at the top of SRAM and work down", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
-    system.device.property("ramStart", "00");
-    system.device.property("ramEnd", "FF");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("ramStart", numberBag(0));
+    system.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
-
     system.pass.second();
     ["0", "25", "50"].forEach((expectedStartAddress) => {
         const result = alloc(25);
@@ -104,9 +94,9 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
 
 Deno.test("Stack allocations decrease the available SRAM", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
-    system.device.property("ramStart", "00");
-    system.device.property("ramEnd", "1F");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
+    system.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
@@ -133,9 +123,9 @@ Deno.test("Stack allocations decrease the available SRAM", () => {
 
 Deno.test("Memory allocations decrease the available SRAM", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
-    system.device.property("ramStart", "00");
-    system.device.property("ramEnd", "1F");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
+    system.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
@@ -159,9 +149,9 @@ Deno.test("Memory allocations decrease the available SRAM", () => {
 
 Deno.test("Allocations don't get repeated on the second pass", () => {
     const system = systemUnderTest();
-    system.device.property("deviceName", "test");
-    system.device.property("ramStart", "00");
-    system.device.property("ramEnd", "FF");
+    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
+    system.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );

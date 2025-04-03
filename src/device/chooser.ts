@@ -1,7 +1,8 @@
-import { emptyBag } from "../assembler/bags.ts";
+import { emptyBag, numberBag, stringBag, StringBag } from "../assembler/bags.ts";
 import type { StringDirective } from "../directives/bags.ts";
 import { bagOfFailures, comparisonFailure, type StringOrFailures } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
+import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
 import type { DeviceProperties } from "./properties.ts";
@@ -9,6 +10,7 @@ import type { DeviceProperties } from "./properties.ts";
 export const deviceChooser = (
     deviceProperties: DeviceProperties,
     cpuRegisters: CpuRegisters,
+    symbolTable: SymbolTable,
     fileOperations: DeviceFileOperations
 ) => {
     const [deviceFinder, loadJsonFile] = fileOperations;
@@ -25,16 +27,16 @@ export const deviceChooser = (
     const choose = (
         deviceName: string, fullSpec: FullSpec
     ): StringOrFailures => {
-        const previousName = deviceProperties.deviceName();
-        if (previousName == deviceName) {
+        const previousName = symbolTable.symbolValue("deviceName");
+        if (previousName.it == deviceName) {
             return emptyBag()
         }
-        if (previousName != undefined) {
-            return bagOfFailures([
-                comparisonFailure("device_multiple", previousName, deviceName)
-            ]);
+        if (previousName.it != "") {
+            return bagOfFailures([comparisonFailure(
+                "device_multiple", (previousName as StringBag).it, deviceName
+            )]);
         }
-        deviceProperties.property("deviceName", deviceName);
+        symbolTable.deviceSymbol("deviceName", stringBag(deviceName));
         for (const [key, value] of Object.entries(fullSpec)) {
             switch (key) {
                 case "unsupportedInstructions":
@@ -47,7 +49,11 @@ export const deviceChooser = (
                     cpuRegisters.initialise(value as boolean);
                     break;
                 default:
-                    deviceProperties.property(key, `${value}`);
+                    symbolTable.deviceSymbol(
+                        key,
+                        typeof value == "number"
+                            ? numberBag(value) : stringBag(`${value}`)
+                    );
                     break;
             }
         }
