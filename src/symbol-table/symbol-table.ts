@@ -47,7 +47,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
             const device = varSymbols.get("deviceName");
             const suffix = [
                 device == undefined || device.type != "string"
-                    ? undefined :  device.it,
+                    ? undefined : device.it,
                 symbolName, expectedType, value.type
             ].join(" - ");
             throw new Error(`Device configuration error ${suffix}`);
@@ -57,8 +57,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
 
     const existingValueIs = (symbolName: string, value: SymbolBag) => {
         const existing = symbolValue(symbolName);
-        return existing != undefined
-            && existing.type == value.type && existing.it == value.it;
+        return existing.type == value.type && existing.it == value.it;
     };
 
     const increment = (
@@ -67,9 +66,8 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         const count = counts.get(symbolName);
         if (count != undefined) {
             counts.set(symbolName, count + 1);
-            return;
         }
-        if (exposure == "revealIfHidden") {
+        else if (exposure == "revealIfHidden") {
             counts.set(symbolName, 1);
         }
     };
@@ -146,9 +144,8 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         // not a function for defining directives.
         // The number of times I've assumed the wrong thing is ridiculous!
         "type": "valueDirective",
-        "it": (symbolName: string, value: number) => persistentSymbol(
-            symbolName, numberBag(value)
-        )
+        "it": (symbolName: string, value: number) =>
+            persistentSymbol(symbolName, numberBag(value))
     };
 
     const use = (symbolName: string): SymbolBag => {
@@ -156,17 +153,14 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
             increment(symbolName, "revealIfHidden");
             return numberBag(cpuRegisters.value(symbolName)!);
         }
-
         if (constSymbols.has(symbolName)) {
             increment(symbolName, "keepHidden");
             return constSymbols.get(symbolName)!;
         }
-
         if (varSymbols.has(symbolName)) {
             increment(symbolName, "revealIfHidden");
             return varSymbols.get(symbolName)!;
         }
-
         return emptyBag();
     };
 
@@ -175,20 +169,11 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         return ["number", "string"].includes(value.type) ? `${value.it}` : "";
     };
 
-    const list = () => {
-        const asArray: Array<[
-            string,
-            number,
-            string | number | undefined,
-            string
-        ]> = [];
-        counts.forEach((count: number, symbolName: string) => {
-            asArray.push([
-                symbolName, count, listValue(symbolName), definition(symbolName)
-            ]);
-        });
-        return asArray;
-    };
+    const list = () => counts.entries().toArray().map(
+        ([symbolName, count]) => [
+            symbolName, count, listValue(symbolName), definition(symbolName)
+        ] as [string, number, string, string]
+    );
 
     return {
         "defineDirective": defineDirective,
