@@ -5,19 +5,27 @@ import { currentFileName, currentLineNumber } from "../directives/global-line.ts
 import { bagOfFailures, boringFailure, definitionFailure } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolBag } from "./bags.ts";
+import { counting } from "./counting.ts";
 
 type SymbolList = Map<string, SymbolBag>;
-type CountList = Map<string, number>;
 type DefinitionList = Map<string, string>;
+
+////////////////////////////////////////////////////////////////////////////////
+//
+// If we're going to have filename and line number in the symbol table it would
+// be nice to auto-format it into a nicely spaced out table too!
+//
+////////////////////////////////////////////////////////////////////////////////
 
 export const symbolTable = (cpuRegisters: CpuRegisters) => {
     const varSymbols:   SymbolList     = new Map();
     const constSymbols: SymbolList     = new Map();
-    const counts:       CountList      = new Map();
     const definitions:  DefinitionList = new Map();
 
+    const counts = counting();
+
     const resetState = () => {
-        counts.clear();
+        counts.reset();
         definitions.clear();
         varSymbols.clear();
     };
@@ -60,23 +68,6 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         return existing.type == value.type && existing.it == value.it;
     };
 
-    const increment = (
-        symbolName: string, exposure: "revealIfHidden" | "keepHidden"
-    ) => {
-        const count = counts.get(symbolName);
-        if (count != undefined) {
-            counts.set(symbolName, count + 1);
-        }
-        else if (exposure == "revealIfHidden") {
-            counts.set(symbolName, 1);
-        }
-    };
-
-    const count = (symbolName: string) => {
-        const result = counts.get(symbolName);
-        return result == undefined ? 0 : result;
-    };
-
     const newDefinition = (symbolName: string) => {
         const fileName = currentFileName();
         if (fileName) {
@@ -99,7 +90,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
             return inUse;
         }
         varSymbols.set(symbolName, value);
-        counts.set(symbolName, 0);
+        counts.set(symbolName);
         newDefinition(symbolName);
         return emptyBag();
     };
@@ -124,7 +115,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
             return inUse;
         }
         constSymbols.set(symbolName, value);
-        counts.set(symbolName, 0);
+        counts.set(symbolName);
         newDefinition(symbolName);
         return emptyBag();
     };
@@ -150,15 +141,15 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
 
     const use = (symbolName: string): SymbolBag => {
         if (cpuRegisters.has(symbolName)) {
-            increment(symbolName, "revealIfHidden");
+            counts.increment(symbolName, "revealIfHidden");
             return numberBag(cpuRegisters.value(symbolName)!);
         }
         if (constSymbols.has(symbolName)) {
-            increment(symbolName, "keepHidden");
+            counts.increment(symbolName, "keepHidden");
             return constSymbols.get(symbolName)!;
         }
         if (varSymbols.has(symbolName)) {
-            increment(symbolName, "revealIfHidden");
+            counts.increment(symbolName, "revealIfHidden");
             return varSymbols.get(symbolName)!;
         }
         return emptyBag();
@@ -169,7 +160,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         return ["number", "string"].includes(value.type) ? `${value.it}` : "";
     };
 
-    const list = () => counts.entries().toArray().map(
+    const list = () => counts.list().map(
         ([symbolName, count]) => [
             symbolName, count, listValue(symbolName), definition(symbolName)
         ] as [string, number, string, string]
@@ -186,7 +177,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         "symbolValue": symbolValue,
         "deviceSymbolValue": deviceSymbolValue,
         "use": use,
-        "count": count,
+        "count": counts.count,
         "list": list,
         "resetState": resetState,
     };
