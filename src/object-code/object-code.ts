@@ -40,7 +40,7 @@ export const objectCode = (
         return emptyLine(intermediate);
     }
 
-    const isUnsupported = device.isUnsupported(line.mnemonic);
+    const isUnsupported = instructionSet.isUnsupported(line.mnemonic);
     if (isUnsupported.type == "failures") {
         return emptyLine(intermediate).withFailures(isUnsupported.it);
     }
@@ -52,7 +52,7 @@ export const objectCode = (
         );
     }
 
-    return generatedCode(device);
+    return generatedCode(instructionSet);
 };
 
 export type ObjectCode = ReturnType<typeof objectCode>;

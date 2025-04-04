@@ -27,10 +27,16 @@ export const symbolicToNumeric = (
         symbolic: SymbolicOperand
     ): [NumberOrFailures, OperandType] => {
         if (indexMapping.has(symbolic)) {
-            return [numberBag(indexMapping.get(symbolic)!), "index_offset"];
+            return [
+                numberBag(indexMapping.get(symbolic)!),
+                "index_offset"
+            ];
         }
         if (cpuRegisters.has(symbolic)) {
-            return [numberBag(symbolTable.use(symbolic).it as number), "register"];
+            return [
+                numberBag(symbolTable.use(symbolic).it as number),
+                "register"
+            ];
         }
         const numeric = jsExpression(symbolic);
         return numeric.type == "failures"

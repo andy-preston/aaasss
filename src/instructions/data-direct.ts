@@ -27,7 +27,7 @@ export const dataDirect = (
 ): EncodedInstruction | undefined => {
     const codeGenerator = (instructionSet: InstructionSet) => {
         const hasReducedCore = (): boolean => {
-            const reducedCore = device.hasReducedCore();
+            const reducedCore = instructionSet.hasReducedCore();
             if (reducedCore.type == "failures") {
                 line.withFailures(reducedCore.it);
                 return false;
