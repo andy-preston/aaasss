@@ -1,4 +1,4 @@
-import type { DevicePropertiesInterface } from "../device/properties.ts";
+import type { InstructionSet } from "../device/instruction-set.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
@@ -25,7 +25,7 @@ const options = (hasReducedCore: boolean): [
 export const dataDirect = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
-    const codeGenerator = (device: DevicePropertiesInterface) => {
+    const codeGenerator = (instructionSet: InstructionSet) => {
         const hasReducedCore = (): boolean => {
             const reducedCore = device.hasReducedCore();
             if (reducedCore.type == "failures") {

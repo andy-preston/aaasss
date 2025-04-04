@@ -1,4 +1,4 @@
-import type { DevicePropertiesInterface } from "../device/properties.ts";
+import type { InstructionSet } from "../device/instruction-set.ts";
 import { clueFailure } from "../failure/bags.ts";
 import type { LineWithOperands } from "../operands/line-types.ts";
 import { instructionEncoderList } from "./instruction-encoder-list.ts";
@@ -9,7 +9,7 @@ import {
 import type { PokeBuffer } from "./poke.ts";
 
 export type EncodedInstruction =
-    (device: DevicePropertiesInterface) => LineWithObjectCode;
+    (instructionSet: InstructionSet) => LineWithObjectCode;
 
 const addressingMode = (
     line: LineWithPokedBytes
@@ -26,7 +26,7 @@ const addressingMode = (
 const emptyLine = (line: LineWithPokedBytes) => lineWithObjectCode(line, []);
 
 export const objectCode = (
-    device: DevicePropertiesInterface,
+    instructionSet: InstructionSet,
     pokeBuffer: PokeBuffer
 ) => (line: LineWithOperands) => {
     if (line.isRecordingMacro) {

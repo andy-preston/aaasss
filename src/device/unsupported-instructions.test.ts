@@ -1,22 +1,51 @@
 import { expect } from "jsr:@std/expect";
-import { unsupportedInstructions } from "./unsupported-instructions.ts";
+import { stringBag } from "../assembler/bags.ts";
+import { ClueFailure, Failure } from "../failure/bags.ts";
+import { systemUnderTest } from "./testing.ts";
+
+Deno.test("Unsupported instructions fails when no device is selected", () => {
+    const system = systemUnderTest();
+    const result = system.instructionSet.isUnsupported("MUL");
+    expect(result.type).toBe("failures");
+    const failures = result.it as Array<Failure>;
+    expect(failures.length).toBe(2);
+    expect(failures[0]!.kind).toBe("device_notSelected");
+    expect(failures[1]!.kind).toBe("mnemonic_supportedUnknown");
+});
+
+Deno.test("Returns default unsupported instruction flags once a device name is selected", () => {
+    const system = systemUnderTest();
+    system.symbolTable.deviceSymbol("deviceName", stringBag("imaginaryDevice"));
+    const result = system.instructionSet.isUnsupported("MUL");
+    expect(result.type).toBe("boolean");
+    expect(result.it).toBe(false);
+});
 
 Deno.test("Instructions are added to the unsupported list in groups", () => {
-    const unsupported = unsupportedInstructions();
-    unsupported.choose(["readModifyWrite"]);
-    for (const instruction of ["LAC", "LAS", "LAT", "XCH"]) {
-        expect(unsupported.isUnsupported(instruction)).toBeTruthy();
+    const system = systemUnderTest();
+    system.symbolTable.deviceSymbol("deviceName", stringBag("imaginaryDevice"));
+    system.instructionSet.unsupportedGroups(["readModifyWrite"]);
+    for (const mnemonic of ["LAC", "LAS", "LAT", "XCH"]) {
+        const result = system.instructionSet.isUnsupported(mnemonic);
+        expect(result.type).toBe("failures");
+        const failures = result.it as Array<Failure>;
+        expect (failures.length).toBe(1);
+        const failure = failures[0] as ClueFailure;
+        expect (failure.kind).toBe("mnemonic_notSupported");
+        expect(failure.clue).toBe(mnemonic);
     }
-    for (const instruction of ["MUL", "MULS", "MULSU"]) {
-        expect(unsupported.isUnsupported(instruction)).toBeFalsy();
+    for (const mnemonic of ["MUL", "MULS", "MULSU"]) {
+        const result = system.instructionSet.isUnsupported(mnemonic);
+        expect(result.type).toBe("boolean");
+        expect(result.it).toBe(false);
     }
 });
 
 Deno.test("An unknown group throws an error", () => {
-    const unsupported = unsupportedInstructions();
+    const system = systemUnderTest();
     // cSpell:words wibbly-wobbly
     expect(
-        () => { unsupported.choose(["wibbly-wobbly"]); }
+        () => { system.instructionSet.unsupportedGroups(["wibbly-wobbly"]); }
     ).toThrow<Error>(
         "Unknown unsupported instruction group: wibbly-wobbly"
     );

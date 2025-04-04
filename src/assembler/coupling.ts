@@ -1,7 +1,7 @@
 import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser } from "../device/chooser.ts";
 import type { DeviceFileOperations } from "../device/device-file.ts";
-import { deviceProperties } from "../device/properties.ts";
+import { instructionSet } from "../device/instruction-set.ts";
 import type { BaggedDirective } from "../directives/bags.ts";
 import { functionDirectives } from "../directives/function-directives.ts";
 import { illegalStateFailures, type IllegalStateCallback } from "../failure/illegal-state.ts";
@@ -60,9 +60,9 @@ export const coupling = (
     link(symbols);
     link(functionDirectives);
     link(registers);
-    const device = link(deviceProperties(symbols));
+    const instructions = link(instructionSet(symbols));
 
-    link(deviceChooser(device, registers, symbols, deviceFileOperations));
+    link(deviceChooser(instructions, registers, symbols, deviceFileOperations));
     link(dataMemory(symbols));
     const poke = link(pokeBuffer());
     const sourceFiles = link(fileStack(readerMethod, fileName));
@@ -75,7 +75,7 @@ export const coupling = (
         tokenise,
         link(macros(symbols, sourceFiles)).lines,
         link(symbolicToNumeric(symbols, registers, expression)),
-        link(objectCode(device.public, poke)),
+        link(objectCode(instructions, poke)),
         link(programMemory(symbols)).addressed,
         link(listing(outputFile, fileName, failureMessageTranslator, symbols)),
         link(hexFile(outputFile, fileName)),

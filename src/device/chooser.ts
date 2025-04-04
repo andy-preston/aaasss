@@ -5,10 +5,10 @@ import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
-import type { DeviceProperties } from "./properties.ts";
+import type { InstructionSet } from "./instruction-set.ts";
 
 export const deviceChooser = (
-    deviceProperties: DeviceProperties,
+    instructionSet: InstructionSet,
     cpuRegisters: CpuRegisters,
     symbolTable: SymbolTable,
     fileOperations: DeviceFileOperations
@@ -22,6 +22,22 @@ export const deviceChooser = (
             throw new Error(`expected ${value} to be a hex number`);
         }
         return asNumber;
+    };
+
+    const unsupported = (groups: Array<string>) => {
+        instructionSet.unsupportedGroups(groups);
+    };
+
+    const reducedCore = (isReduced: boolean) => {
+        instructionSet.reducedCore(isReduced);
+        cpuRegisters.initialise(isReduced);
+    };
+
+    const symbol = (symbolName: string, value: unknown) => {
+        const bag = typeof value == "number"
+            ? numberBag(value)
+            : stringBag(`${value}`)
+        symbolTable.deviceSymbol(symbolName, bag);
     };
 
     const choose = (
@@ -40,20 +56,13 @@ export const deviceChooser = (
         for (const [key, value] of Object.entries(fullSpec)) {
             switch (key) {
                 case "unsupportedInstructions":
-                    deviceProperties.unsupportedInstructions(
-                        value as Array<string>
-                    );
+                    unsupported(value as Array<string>);
                     break;
                 case "reducedCore":
-                    deviceProperties.reducedCore(value as boolean);
-                    cpuRegisters.initialise(value as boolean);
+                    reducedCore(value as boolean);
                     break;
                 default:
-                    symbolTable.deviceSymbol(
-                        key,
-                        typeof value == "number"
-                            ? numberBag(value) : stringBag(`${value}`)
-                    );
+                    symbol(key, value);
                     break;
             }
         }

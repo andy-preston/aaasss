@@ -1,4 +1,4 @@
-import type { DevicePropertiesInterface } from "../device/properties.ts";
+import type { InstructionSet } from "../device/instruction-set.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
@@ -13,7 +13,7 @@ const mapping: Map<string, [string, OperandIndex, OperandIndex]> = new Map([
 export const ioByte = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
-    const codeGenerator = (_device: DevicePropertiesInterface) => {
+    const codeGenerator = (_instructionSet: InstructionSet) => {
         const [operationBit, registerPosition, portPosition] = mapping.get(
             line.mnemonic
         )!;

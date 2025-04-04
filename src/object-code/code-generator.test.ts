@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { stringBag } from "../assembler/bags.ts";
-import { deviceProperties } from "../device/properties.ts";
+import { instructionSet } from "../device/instruction-set.ts";
 import type { BoringFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
@@ -16,11 +16,11 @@ import { pokeBuffer } from "./poke.ts";
 
 const systemUnderTest = () => {
     const symbols = symbolTable(cpuRegisters());
-    const device = deviceProperties(symbols);
+    const instructions = instructionSet(symbols);
     return {
-        "deviceProperties": device,
+        "instructionSet": instructions,
         "symbolTable": symbols,
-        "objectCode": objectCode(device.public, pokeBuffer())
+        "objectCode": objectCode(instructions, pokeBuffer())
     };
 };
 
@@ -60,7 +60,7 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
 Deno.test("Lines with unsupported instructions fail", () => {
     const system = systemUnderTest();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    system.deviceProperties.unsupportedInstructions(["DES"]);
+    system.instructionSet.unsupportedGroups(["DES"]);
     const line = testLine("", "DES", [], [], [], false);
     const result = system.objectCode(line);
     expect(result.failed()).toBeTruthy();

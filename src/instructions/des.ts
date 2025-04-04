@@ -1,4 +1,4 @@
-import type { DevicePropertiesInterface } from "../device/properties.ts";
+import type { InstructionSet } from "../device/instruction-set.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
@@ -8,7 +8,7 @@ import { validScaledOperands } from "../operands/valid-scaled.ts";
 export const des = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
-    const codeGenerator = (_device: DevicePropertiesInterface) => {
+    const codeGenerator = (_instructionSet: InstructionSet) => {
         const [operand] = validScaledOperands(line, [
             ["number", "type_nybble", 0]
         ]);
