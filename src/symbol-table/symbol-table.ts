@@ -1,14 +1,13 @@
 import { emptyBag, numberBag } from "../assembler/bags.ts";
 import type { ValueDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
 import { bagOfFailures, boringFailure, definitionFailure } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolBag } from "./bags.ts";
 import { counting } from "./counting.ts";
+import { definitionList } from "./definition-list.ts";
 
 type SymbolList = Map<string, SymbolBag>;
-type DefinitionList = Map<string, string>;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -18,26 +17,32 @@ type DefinitionList = Map<string, string>;
 ////////////////////////////////////////////////////////////////////////////////
 
 export const symbolTable = (cpuRegisters: CpuRegisters) => {
-    const varSymbols:   SymbolList     = new Map();
-    const constSymbols: SymbolList     = new Map();
-    const definitions:  DefinitionList = new Map();
+    const varSymbols:   SymbolList = new Map();
+    const constSymbols: SymbolList = new Map();
 
     const counts = counting();
+    const definitions = definitionList();
 
     const resetState = () => {
         counts.reset();
-        definitions.clear();
+        definitions.reset();
         varSymbols.clear();
     };
 
     const isDefinedSymbol = (symbolName: string) =>
         constSymbols.has(symbolName) || varSymbols.has(symbolName);
 
+    const useFailure = (symbolName: string, definition: string) =>
+        bagOfFailures([definitionFailure(
+            "symbol_alreadyExists", symbolName, definition
+        )]);
+
     const alreadyInUse = (symbolName: string) =>
-        cpuRegisters.has(symbolName) || isDefinedSymbol(symbolName) ?
-            bagOfFailures([definitionFailure(
-                "symbol_alreadyExists", symbolName, definition(symbolName)
-            )]) : emptyBag();
+        cpuRegisters.has(symbolName)
+        ? useFailure(symbolName, "REGISTER")
+        : isDefinedSymbol(symbolName)
+        ? useFailure(symbolName, definitions.text(symbolName, 'BUILT_IN'))
+        : emptyBag();
 
     const symbolValue = (symbolName: string) =>
         constSymbols.has(symbolName) ? constSymbols.get(symbolName)!
@@ -68,20 +73,6 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         return existing.type == value.type && existing.it == value.it;
     };
 
-    const newDefinition = (symbolName: string) => {
-        const fileName = currentFileName();
-        if (fileName) {
-            definitions.set(symbolName, `${fileName}:${currentLineNumber()}`);
-        }
-    };
-
-    const definition = (symbolName: string) => {
-        const definition = definitions.get(symbolName);
-        return definition != undefined ? definition
-            : cpuRegisters.has(symbolName) ? "REGISTER"
-            : "BUILT_IN";
-    };
-
     const userSymbol = (
         symbolName: string, value: SymbolBag
     ): DirectiveResult => {
@@ -91,7 +82,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         }
         varSymbols.set(symbolName, value);
         counts.set(symbolName);
-        newDefinition(symbolName);
+        definitions.set(symbolName);
         return emptyBag();
     };
 
@@ -103,7 +94,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
             return inUse;
         }
         varSymbols.set(symbolName, value);
-        newDefinition(symbolName);
+        definitions.set(symbolName);
         return emptyBag();
     };
 
@@ -116,7 +107,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         }
         constSymbols.set(symbolName, value);
         counts.set(symbolName);
-        newDefinition(symbolName);
+        definitions.set(symbolName);
         return emptyBag();
     };
 
@@ -162,7 +153,10 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
 
     const list = () => counts.list().map(
         ([symbolName, count]) => [
-            symbolName, count, listValue(symbolName), definition(symbolName)
+            symbolName, count, listValue(symbolName), definitions.text(
+                symbolName,
+                cpuRegisters.has(symbolName) ? "REGISTER" : "BUILT_IN"
+            )
         ] as [string, number, string, string]
     );
 
