@@ -175,6 +175,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         "count": counts.count,
         "list": list,
         "resetState": resetState,
+        "definingLine": definitions.definingLine
     };
 };
 

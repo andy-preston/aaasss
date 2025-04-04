@@ -1,16 +1,20 @@
-import { currentFileName, currentLineNumber } from "../directives/global-line.ts";
+import type { LineWithRawSource } from "../source-code/line-types.ts";
 
 export const definitionList = () => {
     const list: Map<string, string> = new Map();
+    let currentPosition: string = "";
 
     const reset = () => {
         list.clear();
     }
 
+    const definingLine = (line: LineWithRawSource) => {
+        currentPosition = `${line.fileName}:${line.lineNumber}`;
+    };
+
     const set = (symbolName: string) => {
-        const fileName = currentFileName();
-        if (fileName) {
-            list.set(symbolName, `${fileName}:${currentLineNumber()}`);
+        if (currentPosition) {
+            list.set(symbolName, currentPosition);
         }
     };
 
@@ -22,6 +26,7 @@ export const definitionList = () => {
     return {
         "reset": reset,
         "set": set,
-        "text": text
+        "text": text,
+        "definingLine": definingLine
     };
 };

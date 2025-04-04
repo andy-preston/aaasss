@@ -1,13 +1,15 @@
 import { emptyBag } from "../assembler/bags.ts";
-import { saveGlobalLineForDirectives } from "../directives/global-line.ts";
 import { bagOfFailures, boringFailure, type StringOrFailures } from "../failure/bags.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
-import { JsExpression } from "./expression.ts";
+import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+import type { JsExpression } from "./expression.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";
 
 const scriptDelimiter = /({{|}})/;
 
-export const embeddedJs = (expression: JsExpression) => {
+export const embeddedJs = (
+    expression: JsExpression, symbolTable: SymbolTable
+) => {
     const buffer = {
         "javascript": [] as Array<string>,
         "assembler": [] as Array<string>,
@@ -28,8 +30,7 @@ export const embeddedJs = (expression: JsExpression) => {
         : emptyBag();
 
     const rendered = (line: LineWithRawSource) => {
-        saveGlobalLineForDirectives(line);
-
+        symbolTable.definingLine(line);
         let itFailed = false;
 
         const actions = new Map([[

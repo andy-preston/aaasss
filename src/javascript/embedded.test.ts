@@ -16,7 +16,7 @@ const systemUnderTest = () => {
     return {
         "cpuRegisters": registers,
         "symbolTable": symbols,
-        "js": embeddedJs(jSExpression(symbols))
+        "js": embeddedJs(jSExpression(symbols), symbols)
     };
 };
 
