@@ -1,5 +1,5 @@
 export const cpuRegisters = () => {
-    const registers: Map<string, number> = new Map([]);
+    const registers: Map<string, number> = new Map();
 
     const initialise = (reducedCore: boolean) => {
         let register = reducedCore ? 16 : 0;

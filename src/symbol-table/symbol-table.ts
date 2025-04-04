@@ -7,8 +7,6 @@ import type { SymbolBag } from "./bags.ts";
 import { counting } from "./counting.ts";
 import { definitionList } from "./definition-list.ts";
 
-type SymbolList = Map<string, SymbolBag>;
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 // If we're going to have filename and line number in the symbol table it would
@@ -17,8 +15,8 @@ type SymbolList = Map<string, SymbolBag>;
 ////////////////////////////////////////////////////////////////////////////////
 
 export const symbolTable = (cpuRegisters: CpuRegisters) => {
-    const varSymbols:   SymbolList = new Map();
-    const constSymbols: SymbolList = new Map();
+    const varSymbols:   Map<string, SymbolBag> = new Map();
+    const constSymbols: Map<string, SymbolBag> = new Map();
 
     const counts = counting();
     const definitions = definitionList();
@@ -49,6 +47,12 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         : varSymbols.has(symbolName) ? varSymbols.get(symbolName)!
         : emptyBag();
 
+    const deviceNameForError = () => {
+        const device = varSymbols.get("deviceName");
+        return device == undefined || device.type != "string"
+            ? undefined : device.it;
+    };
+
     const deviceSymbolValue = (
         symbolName: string, expectedType: "string" | "number"
     ) => {
@@ -57,13 +61,10 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         }
         const value = symbolValue(symbolName);
         if (value.type != expectedType) {
-            const device = varSymbols.get("deviceName");
-            const suffix = [
-                device == undefined || device.type != "string"
-                    ? undefined : device.it,
-                symbolName, expectedType, value.type
-            ].join(" - ");
-            throw new Error(`Device configuration error ${suffix}`);
+            throw new Error([
+                "Device configuration error",
+                deviceNameForError(), symbolName, expectedType, value.type
+            ].join(" - "));
         }
         return value;
     };
@@ -100,7 +101,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
 
     const persistentSymbol = (
         symbolName: string, value: SymbolBag
-    ) => {
+    ): DirectiveResult => {
         const inUse = alreadyInUse(symbolName);
         if (inUse.type == "failures" && !existingValueIs(symbolName, value)) {
             return inUse;
@@ -113,8 +114,8 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
 
     const builtInSymbol = (
         symbolName: string, value: SymbolBag
-    ) => {
-        if (constSymbols.has(symbolName) || varSymbols.has(symbolName)) {
+    ): DirectiveResult => {
+        if (isDefinedSymbol(symbolName)) {
             throw new Error(`Redefined built in symbol: ${symbolName}`);
         }
         constSymbols.set(symbolName, value);
@@ -135,13 +136,13 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
             counts.increment(symbolName, "revealIfHidden");
             return numberBag(cpuRegisters.value(symbolName)!);
         }
-        if (constSymbols.has(symbolName)) {
-            counts.increment(symbolName, "keepHidden");
-            return constSymbols.get(symbolName)!;
-        }
         if (varSymbols.has(symbolName)) {
             counts.increment(symbolName, "revealIfHidden");
             return varSymbols.get(symbolName)!;
+        }
+        if (constSymbols.has(symbolName)) {
+            counts.increment(symbolName, "keepHidden");
+            return constSymbols.get(symbolName)!;
         }
         return emptyBag();
     };

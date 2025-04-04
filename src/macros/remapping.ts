@@ -6,19 +6,26 @@ import type { LineWithTokens } from "../tokens/line-types.ts";
 import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
 import { lineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
 
-export const remapping = (macros: MacroList) => {
+export const remapping = (macroList: MacroList) => {
+    const mapping: Map<string, MacroParameters> = new Map();
 
-    const parameterMap: Map<MacroName, MacroParameters> = new Map([]);
+    const mapKey = (macroName: MacroName, macroCount: number) =>
+        `${macroName}_${macroCount}`;
 
-    const parameterSetup = (
-        macroName: MacroName, macro: Macro, actualParameters: MacroParameters
+    const completed = (macroName: MacroName, macroCount: number) => {
+        mapping.delete(mapKey(macroName, macroCount));
+    };
+
+    const prepared = (
+        macroName: MacroName, macroCount: number,
+        macro: Macro, actualParameters: MacroParameters
     ): StringOrFailures => {
         if (macro.parameters.length != actualParameters.length) {
             return bagOfFailures([
                 clueFailure("macro_params", `${macro.parameters.length}`)
             ]);
         }
-        parameterMap.set(macroName, actualParameters);
+        mapping.set(mapKey(macroName, macroCount), actualParameters);
         return emptyBag();
     };
 
@@ -29,8 +36,8 @@ export const remapping = (macros: MacroList) => {
         line.label ? expandedLabel(line, line.label) : "";
 
     const remappedParameters = (line: LineWithTokens) => {
-        const macro = macros.get(line.macroName)!;
-        const actualParameters = parameterMap.get(line.macroName)!;
+        const macro = macroList.get(line.macroName)!;
+        const actual = mapping.get(mapKey(line.macroName, line.macroCount))!;
 
         const isLabel = (parameter: SymbolicOperand) =>
             macro.lines.find(line => line.label == parameter) != undefined;
@@ -41,7 +48,7 @@ export const remapping = (macros: MacroList) => {
             }
             const parameterIndex = macro.parameters.indexOf(symbolicOperand);
             if (parameterIndex >= 0) {
-                return `${actualParameters[parameterIndex]}`;
+                return `${actual[parameterIndex]}`;
             }
             return symbolicOperand;
         });
@@ -54,8 +61,9 @@ export const remapping = (macros: MacroList) => {
         );
 
     return {
-        "parameterSetup": parameterSetup,
-        "remapped": remapped
+        "prepared": prepared,
+        "remapped": remapped,
+        "completed": completed
     };
 };
 

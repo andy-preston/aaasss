@@ -4,11 +4,14 @@ import type { DirectiveResult } from "../directives/data-types.ts";
 import { bagOfFailures, boringFailure, clueFailure, type StringOrFailures } from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
-import { macro, MacroList, MacroParameters, type Macro, type MacroName } from "./data-types.ts";
+import {
+    macro,
+    type MacroList, type MacroParameters, type Macro, type MacroName
+} from "./data-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 
 export const recording = (
-    macros: MacroList,
+    macroList: MacroList,
     symbolTable: SymbolTable,
     useMacroDirective: FunctionUseDirective
 ) => {
@@ -45,7 +48,7 @@ export const recording = (
         if (theMacro == undefined) {
             return bagOfFailures([boringFailure("macro_end")]);
         }
-        macros.set(macroName, theMacro!);
+        macroList.set(macroName, theMacro!);
         symbolTable.userSymbol(macroName, useMacroDirective);
         resetState();
         return emptyBag();

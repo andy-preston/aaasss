@@ -80,6 +80,6 @@ Deno.test("Device dependent property values are type checked", () => {
     expect(
         () => { system.symbolTable.deviceSymbolValue("PORTD", "number"); }
     ).toThrow<Error>(
-        "Device configuration error imaginaryDevice - PORTD - number - string"
+        "Device configuration error - imaginaryDevice - PORTD - number - string"
     );
 });

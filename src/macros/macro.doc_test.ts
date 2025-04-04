@@ -42,6 +42,44 @@ Deno.test("Macro demo", () => {
     ]);
 });
 
+Deno.test("Playing back multiple copies of a macro with JS", () => {
+    const demo = docTest();
+    demo.source([
+        '    {{ device("ATTiny24"); }}',
+        "",
+        '    {{ macro("aMacro", "address"); }}',
+        "    LDS R30, address",
+        "    {{ end(); }}",
+        "",
+        "    {{ [2048, 1024].forEach(a => aMacro(a)); }}",
+    ]);
+    demo.assemble();
+    expectFileContents(".lst").toEqual([
+        "/var/tmp/demo.asm",
+        "=================",
+        '                      1     {{ device("ATTiny24"); }}',
+        "                      2",
+        '                      3     {{ macro("aMacro", "address"); }}',
+        "                      4     LDS R30, address",
+        "                      5     {{ end(); }}",
+        "                      6",
+        "                      7     {{ [2048, 1024].forEach(a => aMacro(a)); }}",
+        "000000 91 E0 04 00    7     LDS R30, address",
+        "000002 91 E0 08 00    7     LDS R30, address",
+        "",
+        "Symbol Table",
+        "============",
+        "",
+        "aMacro (2) /var/tmp/demo.asm:5",
+        "R30 (2) REGISTER"
+    ]);
+    expectFileContents(".hex").toEqual([
+        ":020000020000FC",
+        ":08000000E0910004E09100080A",
+        ":00000001FF"
+    ]);
+});
+
 Deno.test("A macro can be called from inside another macro", () => {
     const demo = docTest();
     demo.source([

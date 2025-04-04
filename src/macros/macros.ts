@@ -12,14 +12,16 @@ import { remapping } from "./remapping.ts";
 export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     const macroList: MacroList = new Map();
 
-    function* imaginaryFile(macroName: string): FileLineIterator {
-        const macroCount = symbolTable.count(macroName);
+    const remap = remapping(macroList);
+
+    function* imaginaryFile(
+        macroName: string, macroCount: number
+    ): FileLineIterator {
         for (const line of macroList.get(macroName)!.lines) {
             yield [line.rawSource, macroName, macroCount!, false];
         }
+        remap.completed(macroName, macroCount);
     }
-
-    const remap = remapping(macroList);
 
     const useMacro = (
         macroName: string, parameters: MacroParameters
@@ -31,13 +33,14 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
             ]);
         }
 
-        const setup = remap.parameterSetup(macroName, macro, parameters);
-        if (setup.type == "failures") {
-            return setup;
+        const macroCount = symbolTable.count(macroName);
+        const prepared = remap.prepared(macroName, macroCount, macro, parameters);
+        if (prepared.type == "failures") {
+            return prepared;
         }
 
         if (!record.isRecording()) {
-            fileStack.pushImaginary(imaginaryFile(macroName));
+            fileStack.pushImaginary(imaginaryFile(macroName, macroCount));
         }
         return emptyBag();
     };
