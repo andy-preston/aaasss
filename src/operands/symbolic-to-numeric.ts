@@ -12,8 +12,7 @@ import {
 } from "./data-types.ts";
 
 export const symbolicToNumeric = (
-    symbolTable: SymbolTable,
-    cpuRegisters: CpuRegisters,
+    symbolTable: SymbolTable, cpuRegisters: CpuRegisters,
     jsExpression: JsExpression
 ) => {
     const indexMapping: Map<SymbolicOperand, NumericOperand> = new Map([

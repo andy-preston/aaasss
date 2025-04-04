@@ -170,7 +170,6 @@ Deno.test("A value directive can't have a number as the first parameter", () => 
         "it": (valueName: string, actualValue: number) =>
             stringBag(`${valueName} = ${actualValue}`)
     });
-    // This error reporting could be much, much nicer!
     const wrongNumber = untyped(23, "plop");
     expect(wrongNumber.type).toBe("failures");
     const failures = wrongNumber.it as Array<Failure>;

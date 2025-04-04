@@ -14,7 +14,6 @@ export const deviceProperties = (symbolTable: SymbolTable) => {
         return deviceName.type == "string" && deviceName.it != "";
     }
 
-
     const hasReducedCore = (): BooleanOrFailures =>
         deviceIsDefined()
             ? booleanBag(reducedCore)

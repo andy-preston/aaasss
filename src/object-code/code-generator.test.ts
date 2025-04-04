@@ -1,4 +1,5 @@
 import { expect } from "jsr:@std/expect";
+import { stringBag } from "../assembler/bags.ts";
 import { deviceProperties } from "../device/properties.ts";
 import type { BoringFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
@@ -12,7 +13,6 @@ import type { Label, Mnemonic } from "../tokens/data-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { objectCode } from "./object-code.ts";
 import { pokeBuffer } from "./poke.ts";
-import { stringBag } from "../assembler/bags.ts";
 
 const systemUnderTest = () => {
     const symbols = symbolTable(cpuRegisters());

@@ -89,9 +89,6 @@ export const programMemory = (symbolTable: SymbolTable) => {
 
     return {
         "resetState": resetState,
-        // "address" isn't used in the code but it's extremely simple and it's
-        // being there makes tests SO much simpler. I'm not sure if that is
-        // haram or not but I'm keeping it, at least for now.
         "address": () => address,
         "originDirective": originDirective,
         "addressed": addressed
