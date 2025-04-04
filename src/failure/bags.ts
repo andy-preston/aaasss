@@ -74,7 +74,8 @@ export const clueFailure = (
 export type ClueFailure = ReturnType<typeof clueFailure>;
 
 export const definitionFailure = (
-    kind: "symbol_alreadyExists", name: string, definition: string
+    kind: "symbol_alreadyExists",
+    name: string, definition: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
     "name": name, "definition": definition
@@ -84,8 +85,7 @@ export type DefinitionFailure = ReturnType<typeof definitionFailure>;
 
 export const exceptionFailure = (
     kind: "js_error",
-    exception: string,
-    message: string
+    exception: string, message: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
     "exception": exception, "message": message
@@ -95,8 +95,7 @@ export type ExceptionFailure = ReturnType<typeof exceptionFailure>;
 
 export const memoryRangeFailure = (
     kind: "programMemory_outOfRange" | "ram_outOfRange",
-    bytesAvailable: number,
-    bytesRequested: number
+    bytesAvailable: number, bytesRequested: number
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
     "bytesAvailable": bytesAvailable, "bytesRequested": bytesRequested
