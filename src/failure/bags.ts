@@ -18,7 +18,7 @@ export const boringFailure = (
         | "js_jsMode" | "js_assemblerMode"
         | "macro_end" | "macro_noEnd"
         | "operand_blank" | "operand_offsetNotLdd" | "operand_offsetNotStd"
-        | "operand_offsetX"
+        | "operand_offsetX" | "operand_z"
         | "parameter_firstName"
         | "programMemory_sizeUnknown"
         | "ram_sizeUnknown" | "ram_stackAllocated"

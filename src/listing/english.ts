@@ -40,6 +40,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Index offset instructions only operate on the Y or Z registers"
     ],
     "operand_count": (_line: LineWithAddress) => [""],
+    "operand_z":  (_line: LineWithAddress) => [""],
     "parameter_firstName": (_line: LineWithAddress) => [
         "The first parameter should be a name"
     ],
