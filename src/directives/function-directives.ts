@@ -22,7 +22,13 @@ const highDirective: NumberDirective = {
     }
 };
 
+const complementDirective: NumberDirective = {
+    "type": "numberDirective",
+    "it": (value: number) => stringBag(`${value < 0 ? 0x0100 + value : value}`)
+};
+
 export const functionDirectives = {
     "lowDirective": lowDirective,
-    "highDirective": highDirective
+    "highDirective": highDirective,
+    "complementDirective": complementDirective
 };
