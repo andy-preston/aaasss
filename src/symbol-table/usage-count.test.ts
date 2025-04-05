@@ -18,10 +18,10 @@ Deno.test("A freshly added symbol has a count of zero", () => {
     system.symbolTable.persistentSymbol("plop", numberBag(23));
     const result = system.symbolTable.list();
     expect(result.length).toBe(1);
-    const [symbolName, usageCount, symbolValue, _definition] = result[0]!;
+    const [symbolName, symbolValue, _definition, usageCount] = result[0]!;
     expect(symbolName).toBe("plop");
     expect(usageCount).toBe(0);
-    expect(symbolValue).toBe("23");
+    expect(symbolValue).toBe(23);
 });
 
 Deno.test("Each call to use increments the usage", () => {
@@ -31,9 +31,9 @@ Deno.test("Each call to use increments the usage", () => {
         system.symbolTable.use("plop");
         const result = system.symbolTable.list();
         expect(result.length).toBe(1);
-        const [symbolName, usageCount, symbolValue, _definition] = result[0]!;
+        const [symbolName, symbolValue, _definition, usageCount] = result[0]!;
         expect(symbolName).toBe("plop");
         expect(usageCount).toBe(expectedCount);
-        expect(symbolValue).toBe("23");
+        expect(symbolValue).toBe(23);
     });
 });

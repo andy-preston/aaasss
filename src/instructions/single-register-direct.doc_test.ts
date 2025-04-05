@@ -34,14 +34,14 @@ Deno.test("Single Register Direct Demo", () => {
         "Symbol Table",
         "============",
         "",
-        "R6 (2) REGISTER",
-        "R7 (2) REGISTER",
-        "R10 (1) REGISTER",
-        "R11 (1) REGISTER",
-        "R14 (1) REGISTER",
-        "R19 (1) REGISTER",
-        "R20 (1) REGISTER",
-        "R22 (1) REGISTER",
+        "R6  |   |   | REGISTER | 2",
+        "R7  |   |   | REGISTER | 2",
+        "R10 |   |   | REGISTER | 1",
+        "R11 |   |   | REGISTER | 1",
+        "R14 |   |   | REGISTER | 1",
+        "R19 |   |   | REGISTER | 1",
+        "R20 |   |   | REGISTER | 1",
+        "R22 |   |   | REGISTER | 1",
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",
@@ -78,11 +78,11 @@ Deno.test("Read-Modify-Write Demo", () => {
         "Symbol Table",
         "============",
         "",
-        "R15 (1) REGISTER",
-        "R20 (1) REGISTER",
-        "R21 (1) REGISTER",
-        "R22 (1) REGISTER",
-        "Z (4) REGISTER"
+        "R15 |   |   | REGISTER | 1",
+        "R20 |   |   | REGISTER | 1",
+        "R21 |   |   | REGISTER | 1",
+        "R22 |   |   | REGISTER | 1",
+        "Z   |   |   | REGISTER | 4",
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",
@@ -121,11 +121,11 @@ Deno.test("Read-Modify-Write isn't available on all devices", () => {
         "Symbol Table",
         "============",
         "",
-        "R15 (1) REGISTER",
-        "R20 (1) REGISTER",
-        "R21 (1) REGISTER",
-        "R22 (1) REGISTER",
-        "Z (4) REGISTER"
+        "R15 |   |   | REGISTER | 1",
+        "R20 |   |   | REGISTER | 1",
+        "R21 |   |   | REGISTER | 1",
+        "R22 |   |   | REGISTER | 1",
+        "Z   |   |   | REGISTER | 4",
     ]);
     expectFileExists(".hex").toBeFalsy();
 });
@@ -163,14 +163,14 @@ Deno.test("Read-Modify-Write expects the first register to be Z", () => {
         "Symbol Table",
         "============",
         "",
-        "R15 (1) REGISTER",
-        "R20 (1) REGISTER",
-        "R21 (1) REGISTER",
-        "R22 (1) REGISTER",
-        "R30 (1) REGISTER",
-        "X (1) REGISTER",
-        "Y (1) REGISTER",
-        "Z (1) REGISTER"
+        "R15 |   |   | REGISTER | 1",
+        "R20 |   |   | REGISTER | 1",
+        "R21 |   |   | REGISTER | 1",
+        "R22 |   |   | REGISTER | 1",
+        "R30 |   |   | REGISTER | 1",
+        "X   |   |   | REGISTER | 1",
+        "Y   |   |   | REGISTER | 1",
+        "Z   |   |   | REGISTER | 1",
     ]);
     expectFileExists(".hex").toBeFalsy();
 });

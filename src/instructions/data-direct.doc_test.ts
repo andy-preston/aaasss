@@ -18,8 +18,8 @@ Deno.test("Data-direct without reduced core",() => {
         "Symbol Table",
         "============",
         "",
-        "R8 (1) REGISTER",
-        "R30 (1) REGISTER"
+        "R8  |   |   | REGISTER | 1",
+        "R30 |   |   | REGISTER | 1"
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
     expectFileContents(".hex").toEqual([
@@ -52,8 +52,8 @@ Deno.test("Data-direct with reduced core",() => {
         "Symbol Table",
         "============",
         "",
-        "R18 (1) REGISTER",
-        "R30 (1) REGISTER"
+        "R18 |   |   | REGISTER | 1",
+        "R30 |   |   | REGISTER | 1"
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
     expectFileContents(".hex").toEqual([

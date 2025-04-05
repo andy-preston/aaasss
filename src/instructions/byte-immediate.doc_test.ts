@@ -42,13 +42,13 @@ Deno.test("Byte Immediate Demo",() => {
         "Symbol Table",
         "============",
         "",
-        "R16 (2) REGISTER",
-        "R17 (4) REGISTER",
-        "R18 (1) REGISTER",
-        "R19 (4) REGISTER",
-        "R20 (1) REGISTER",
-        "R23 (1) REGISTER",
-        "R31 (1) REGISTER",
+        "R16 |   |   | REGISTER | 2",
+        "R17 |   |   | REGISTER | 4",
+        "R18 |   |   | REGISTER | 1",
+        "R19 |   |   | REGISTER | 4",
+        "R20 |   |   | REGISTER | 1",
+        "R23 |   |   | REGISTER | 1",
+        "R31 |   |   | REGISTER | 1"
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",

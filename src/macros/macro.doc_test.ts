@@ -32,8 +32,8 @@ Deno.test("Macro demo", () => {
         "Symbol Table",
         "============",
         "",
-        "aMacro (2) /var/tmp/demo.asm:5",
-        "R30 (2) REGISTER"
+        "aMacro |   |   | /var/tmp/demo.asm:5 | 2",
+        "R30    |   |   | REGISTER            | 2"
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",
@@ -70,8 +70,8 @@ Deno.test("Playing back multiple copies of a macro with JS", () => {
         "Symbol Table",
         "============",
         "",
-        "aMacro (2) /var/tmp/demo.asm:5",
-        "R30 (2) REGISTER"
+        "aMacro |   |   | /var/tmp/demo.asm:5 | 2",
+        "R30    |   |   | REGISTER            | 2"
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",
@@ -121,9 +121,9 @@ Deno.test("A macro can be called from inside another macro", () => {
         "Symbol Table",
         "============",
         "",
-        "innerMacro (4) /var/tmp/demo.asm:5",
-        "outerMacro (1) /var/tmp/demo.asm:10",
-        "R30 (2) REGISTER"
+        "innerMacro |   |   | /var/tmp/demo.asm:5  | 4",
+        "outerMacro |   |   | /var/tmp/demo.asm:10 | 1",
+        "R30        |   |   | REGISTER             | 2"
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",

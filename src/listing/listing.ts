@@ -4,7 +4,7 @@ import type { FileName } from "../source-code/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import { codeWidth, extractedCode, type ExtractedCode } from "./code.ts";
 import type { FailureMessageTranslator } from "./messages.ts";
-import { sortedSymbolTable } from "./symbols.ts";
+import { formattedSymbolTable } from "./symbols.ts";
 import { extractedText, type ExtractedText } from "./text.ts";
 
 
@@ -61,7 +61,7 @@ export const listing = (
     };
 
     const close = () => {
-        const symbols = sortedSymbolTable(symbolTable);
+        const symbols = formattedSymbolTable(symbolTable);
         if (symbols.length > 0) {
             heading("Symbol Table");
             file.write("");

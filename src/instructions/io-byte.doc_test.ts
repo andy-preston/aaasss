@@ -18,8 +18,8 @@ Deno.test("IO Byte Demo", () => {
         "Symbol Table",
         "============",
         "",
-        "R16 (1) REGISTER",
-        "R19 (1) REGISTER"
+        "R16 |   |   | REGISTER | 1",
+        "R19 |   |   | REGISTER | 1"
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
     expectFileContents(".hex").toEqual([
@@ -50,7 +50,7 @@ Deno.test("Ports > 5F are out of range", () => {
         "Symbol Table",
         "============",
         "",
-        "R19 (1) REGISTER"
+        "R19 |   |   | REGISTER | 1"
     ]);
     expectFileExists(".hex").toBeFalsy();
 });

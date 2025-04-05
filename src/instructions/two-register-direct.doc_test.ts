@@ -51,24 +51,24 @@ Deno.test("Two register direct demo",() => {
         "Symbol Table",
         "============",
         "",
-        "R0 (1) REGISTER",
-        "R1 (2) REGISTER",
-        "R2 (3) REGISTER",
-        "R3 (1) REGISTER",
-        "R4 (1) REGISTER",
-        "R5 (1) REGISTER",
-        "R7 (2) REGISTER",
-        "R8 (4) REGISTER",
-        "R12 (1) REGISTER",
-        "R13 (1) REGISTER",
-        "R14 (1) REGISTER",
-        "R15 (1) REGISTER",
-        "R16 (2) REGISTER",
-        "R17 (1) REGISTER",
-        "R18 (1) REGISTER",
-        "R20 (3) REGISTER",
-        "R21 (1) REGISTER",
-        "R23 (1) REGISTER"
+        "R0  |   |   | REGISTER | 1",
+        "R1  |   |   | REGISTER | 2",
+        "R2  |   |   | REGISTER | 3",
+        "R3  |   |   | REGISTER | 1",
+        "R4  |   |   | REGISTER | 1",
+        "R5  |   |   | REGISTER | 1",
+        "R7  |   |   | REGISTER | 2",
+        "R8  |   |   | REGISTER | 4",
+        "R12 |   |   | REGISTER | 1",
+        "R13 |   |   | REGISTER | 1",
+        "R14 |   |   | REGISTER | 1",
+        "R15 |   |   | REGISTER | 1",
+        "R16 |   |   | REGISTER | 2",
+        "R17 |   |   | REGISTER | 1",
+        "R18 |   |   | REGISTER | 1",
+        "R20 |   |   | REGISTER | 3",
+        "R21 |   |   | REGISTER | 1",
+        "R23 |   |   | REGISTER | 1",
     ]);
     // This comes from the last version of GAVRAsm that I could get hold of.
     expectFileContents(".hex").toEqual([
@@ -97,8 +97,8 @@ Deno.test("Many chips do not support 8-bit multiply",() => {
         "Symbol Table",
         "============",
         "",
-        "R0 (1) REGISTER",
-        "R1 (1) REGISTER",
+        "R0 |   |   | REGISTER | 1",
+        "R1 |   |   | REGISTER | 1"
     ]);
     expectFileExists(".hex").toBeFalsy();
 });

@@ -149,16 +149,16 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
 
     const listValue = (symbolName: string) => {
         const value = symbolValue(symbolName);
-        return ["number", "string"].includes(value.type) ? `${value.it}` : "";
+        return ["number", "string"].includes(value.type) ? value.it : "";
     };
 
     const list = () => counts.list().map(
         ([symbolName, count]) => [
-            symbolName, count, listValue(symbolName), definitions.text(
+            symbolName, listValue(symbolName), definitions.text(
                 symbolName,
                 cpuRegisters.has(symbolName) ? "REGISTER" : "BUILT_IN"
-            )
-        ] as [string, number, string, string]
+            ), count
+        ] as [string, number | string, string, number]
     );
 
     return {
