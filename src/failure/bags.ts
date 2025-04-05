@@ -1,6 +1,7 @@
-import type { OperandIndex } from "../operands/data-types.ts";
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
+import type { OperandIndex } from "../operands/data-types.ts";
+import { failureKinds } from "./kinds.ts";
 
 type OperandLocation = {
     "operand": OperandIndex
@@ -13,15 +14,7 @@ type ParameterLocation = {
 type FailureLocation = undefined | OperandLocation | ParameterLocation;
 
 export const boringFailure = (
-    kind: "syntax_invalidLabel"
-        | "device_notSelected"
-        | "js_jsMode" | "js_assemblerMode"
-        | "macro_end" | "macro_noEnd"
-        | "operand_blank" | "operand_offsetNotLdd" | "operand_offsetNotStd"
-        | "operand_offsetX" | "operand_z"
-        | "parameter_firstName"
-        | "programMemory_sizeUnknown"
-        | "ram_sizeUnknown" | "ram_stackAllocated"
+    kind: typeof failureKinds["boring"][number]
 ) => ({
     "kind": kind, "location": undefined as FailureLocation
 });
@@ -29,7 +22,7 @@ export const boringFailure = (
 export type BoringFailure = ReturnType<typeof boringFailure>;
 
 export const comparisonFailure = (
-    kind: "device_multiple",
+    kind: typeof failureKinds["comparison"][number],
     before: string, after: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -39,7 +32,7 @@ export const comparisonFailure = (
 export type ComparisonFailure = ReturnType<typeof comparisonFailure>;
 
 export const typeFailure = (
-    kind: "type_failure",
+    kind: typeof failureKinds["type"][number],
     expected: string, actual: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -49,7 +42,7 @@ export const typeFailure = (
 export type TypeFailure = ReturnType<typeof typeFailure>;
 
 export const numericTypeFailure = (
-    kind: NumericType | "type_bytesOrString",
+    kind: typeof failureKinds["numericType"][number] | NumericType,
     value: unknown, min: number, max: number | undefined
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -59,12 +52,7 @@ export const numericTypeFailure = (
 export type NumericTypeFailure = ReturnType<typeof numericTypeFailure>;
 
 export const clueFailure = (
-    kind: "file_notFound" | "device_notFound"
-        | "macro_multiDefine" | "macro_params"
-        | "mnemonic_unknown"
-        | "mnemonic_notSupported" | "mnemonic_supportedUnknown"
-        | "operand_count" | "parameter_count"
-        | "symbol_notFound",
+    kind: typeof failureKinds["clue"][number],
     clue: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -74,7 +62,7 @@ export const clueFailure = (
 export type ClueFailure = ReturnType<typeof clueFailure>;
 
 export const definitionFailure = (
-    kind: "symbol_alreadyExists",
+    kind: typeof failureKinds["definition"][number],
     name: string, definition: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -84,7 +72,7 @@ export const definitionFailure = (
 export type DefinitionFailure = ReturnType<typeof definitionFailure>;
 
 export const exceptionFailure = (
-    kind: "js_error",
+    kind: typeof failureKinds["exception"][number],
     exception: string, message: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -94,7 +82,7 @@ export const exceptionFailure = (
 export type ExceptionFailure = ReturnType<typeof exceptionFailure>;
 
 export const memoryRangeFailure = (
-    kind: "programMemory_outOfRange" | "ram_outOfRange",
+    kind: typeof failureKinds["memoryRange"][number],
     bytesAvailable: number, bytesRequested: number
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -106,8 +94,6 @@ export type MemoryRangeFailure = ReturnType<typeof memoryRangeFailure>;
 export type Failure = BoringFailure | ClueFailure | ComparisonFailure
     | DefinitionFailure | ExceptionFailure | MemoryRangeFailure
     | NumericTypeFailure | TypeFailure;
-
-export type FailureKind = Failure["kind"];
 
 export const bagOfFailures = (failures: Array<Failure>) =>
     ({ "type": "failures" as const, "it": failures });
