@@ -16,7 +16,7 @@ export const formattedSymbolTable = (symbolTable: SymbolTable) => {
     const stringSymbols = symbols.map(
         symbol => {
             const [decimal, hex] = typeof symbol[1] == "number"
-                ? [symbol[1].toString(10), symbol[1].toString(16)]
+                ? [symbol[1].toString(10), symbol[1].toString(16).toUpperCase()]
                 : [symbol[1], ""];
             return [symbol[0], decimal, hex, symbol[2], `${symbol[3]}`];
         }
