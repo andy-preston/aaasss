@@ -1,6 +1,5 @@
 {
     "tasks": {
-        "cache": "bash -c \"rm -rf ~/.cache/deno\"",
         "run": "deno run -A ./src/cli.ts",
         "check": "deno test --allow-read --ignore=\"**/*doc_test*\" && deno lint",
         "doctest": "deno test --allow-read --allow-write --ignore=\"**/*.test*\"",

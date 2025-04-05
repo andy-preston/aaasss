@@ -102,7 +102,6 @@ Deno.test("serial-send Demo", () => {
         "000000 94 F8         10     cli",
         "000001 24 00         11     clr R0",
         "000002 24 11         12     clr R1",
-
         "000003 94 1A         13     dec R1",
         "                     14",
         "                     15 setup_timer:",
