@@ -1,15 +1,23 @@
-import { boringFailure, clueFailure, type Failure } from "../failure/bags.ts";
-import {
-    operands, type OperandIndex, type SymbolicOperands
-} from "../operands/data-types.ts"
+import { boringFailure, clueFailure } from "../failure/bags.ts";
 import type { LineWithRenderedJavascript } from "../javascript/line-types.ts";
-import { clean } from "./clean.ts";
-import { indexRegisterWithPlus } from "./index-offset.ts";
-import { invalidLabel } from "./invalid-label.ts";
+import { operands, type OperandIndex, type SymbolicOperands } from "../operands/data-types.ts"
+import { indexOffsetRules } from "./index-offset.ts";
 import { lineWithTokens } from "./line-types.ts";
-import { splitOperands } from "./split-operands.ts";
 import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
+
+const anyWhitespace = /\s+/g;
+const comment = /;.*$/;
+
+const clean = (sourceLine: string) =>
+    sourceLine.replace(comment, "").replace(anyWhitespace, " ").trim();
+
+const validLabel = /^\w*$/;
+
+const invalidLabel = (label: string) => !validLabel.test(label);
+
+const splitOperands = (text: string): Array<string> =>
+    text == "" ? [] : text.split(",").map(operand => operand.trim());
 
 export const tokenise = (line: LineWithRenderedJavascript) => {
     const cleaned = clean(line.assemblySource);
@@ -30,39 +38,10 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
 
     const fullOperands: Array<string> = [];
 
-    const addFailure = (failure: Failure) => {
-        failure.location = {"operand": fullOperands.length as OperandIndex};
-        line.withFailure(failure);
-    };
-
-    operandsList.slice(0, 2).forEach((operand) => {
-        const indexing = indexRegisterWithPlus(operand);
-        if (indexing == "") {
-            fullOperands.push(operand);
-            return;
-        }
-
-        if (indexing == "X+") {
-            addFailure(boringFailure("operand_offsetX"));
-            fullOperands.push(operand);
-            return;
-        }
-
-        if (fullOperands.length == 0 && mnemonic != "STD") {
-            addFailure(boringFailure("operand_offsetNotStd"));
-            fullOperands.push(operand);
-            return;
-        }
-
-        if (fullOperands.length == 1 && mnemonic != "LDD") {
-            addFailure(boringFailure("operand_offsetNotLdd"));
-            fullOperands.push(operand);
-            return;
-        }
-
-        fullOperands.push(indexing);
-        fullOperands.push(operand.substring(2));
+    operandsList.slice(0, 2).forEach(operand => {
+        indexOffsetRules(operand, mnemonic, fullOperands, line);
     });
+
     fullOperands.forEach((operand, index) => {
         if (operand == "") {
             const failure = boringFailure("operand_blank");
