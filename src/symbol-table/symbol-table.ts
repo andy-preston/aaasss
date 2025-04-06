@@ -7,13 +7,6 @@ import type { SymbolBag } from "./bags.ts";
 import { counting } from "./counting.ts";
 import { definitionList } from "./definition-list.ts";
 
-////////////////////////////////////////////////////////////////////////////////
-//
-// If we're going to have filename and line number in the symbol table it would
-// be nice to auto-format it into a nicely spaced out table too!
-//
-////////////////////////////////////////////////////////////////////////////////
-
 export const symbolTable = (cpuRegisters: CpuRegisters) => {
     const varSymbols:   Map<string, SymbolBag> = new Map();
     const constSymbols: Map<string, SymbolBag> = new Map();
@@ -30,16 +23,16 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
     const isDefinedSymbol = (symbolName: string) =>
         constSymbols.has(symbolName) || varSymbols.has(symbolName);
 
-    const useFailure = (symbolName: string, definition: string) =>
+    const inUseFailure = (symbolName: string, definition: string) =>
         bagOfFailures([definitionFailure(
             "symbol_alreadyExists", symbolName, definition
         )]);
 
     const alreadyInUse = (symbolName: string) =>
         cpuRegisters.has(symbolName)
-        ? useFailure(symbolName, "REGISTER")
+        ? inUseFailure(symbolName, "REGISTER")
         : isDefinedSymbol(symbolName)
-        ? useFailure(symbolName, definitions.text(symbolName, 'BUILT_IN'))
+        ? inUseFailure(symbolName, definitions.text(symbolName, 'BUILT_IN'))
         : emptyBag();
 
     const symbolValue = (symbolName: string) =>
