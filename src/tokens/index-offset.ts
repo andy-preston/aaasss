@@ -10,7 +10,7 @@ const indexRegisterWithPlus = (operand: string) => {
     return match == null ? "" : match[0];
 };
 
-export const indexOffsetRules = (
+export const pushOperandCheckingIndexOffset = (
     operand: string,
     mnemonic: Mnemonic,
     fullOperands: Array<string>,
@@ -21,8 +21,11 @@ export const indexOffsetRules = (
         line.withFailure(failure);
     };
 
+    const operandPositionIs = (position: number) =>
+        fullOperands.length == position;
+
     const indexing = indexRegisterWithPlus(operand);
-    if (indexing == "") {
+    if (indexing == "" || indexing == operand) {
         fullOperands.push(operand);
         return;
     }
@@ -33,13 +36,13 @@ export const indexOffsetRules = (
         return;
     }
 
-    if (fullOperands.length == 0 && mnemonic != "STD") {
+    if (operandPositionIs(0) && mnemonic != "STD") {
         addFailure(boringFailure("operand_offsetNotStd"));
         fullOperands.push(operand);
         return;
     }
 
-    if (fullOperands.length == 1 && !["LDD"/*, "LPM"*/].includes(mnemonic)) {
+    if (operandPositionIs(1) && mnemonic != "LDD") {
         addFailure(boringFailure("operand_offsetNotLdd"));
         fullOperands.push(operand);
         return;

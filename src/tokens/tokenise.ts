@@ -1,7 +1,7 @@
 import { boringFailure, clueFailure } from "../failure/bags.ts";
 import type { LineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { operands, type OperandIndex, type SymbolicOperands } from "../operands/data-types.ts"
-import { indexOffsetRules } from "./index-offset.ts";
+import { pushOperandCheckingIndexOffset } from "./index-offset.ts";
 import { lineWithTokens } from "./line-types.ts";
 import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
@@ -27,7 +27,9 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
         line.withFailure(boringFailure("syntax_invalidLabel"));
     }
 
-    const [mnemonic, operandsText] = splitSource("before", " ", withoutLabel);
+    const mnemonicAndOperands = splitSource("before", " ", withoutLabel);
+    const mnemonic = mnemonicAndOperands[0].toUpperCase();
+    const operandsText = mnemonicAndOperands[1];
 
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
@@ -39,7 +41,7 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
     const fullOperands: Array<string> = [];
 
     operandsList.slice(0, 2).forEach(operand => {
-        indexOffsetRules(operand, mnemonic, fullOperands, line);
+        pushOperandCheckingIndexOffset(operand, mnemonic, fullOperands, line);
     });
 
     fullOperands.forEach((operand, index) => {
@@ -53,8 +55,7 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
     const mappedOperands = fullOperands.map(upperCaseRegisters);
 
     return lineWithTokens(
-        line, label, mnemonic.toUpperCase(),
-        operands<SymbolicOperands>(mappedOperands)
+        line, label, mnemonic, operands<SymbolicOperands>(mappedOperands)
     );
 };
 

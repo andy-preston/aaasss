@@ -192,8 +192,6 @@ Deno.test("serial-send Demo", () => {
         "                     80",
         "                     81 get_next_char:",
         "                     82     lpm R20, Z+",
-        "                        operand_offsetNotLdd",
-        "                        location.operand: 1",
         "                        mnemonic_unknown",
         "                        clue: LPM",
         '000020 32 40         83     cpi R20, " ".charCodeAt(0)',

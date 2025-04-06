@@ -87,12 +87,39 @@ Deno.test("Z+q operands can appear as the second operand of an LDD instruction",
     expect(tokenised.symbolicOperands).toEqual(["R14", "Z+", "offset"]);
 });
 
+Deno.test("... but not the first", () => {
+    const line = testLine("LDD Z+offset, R14");
+    const tokenised = tokenise(line);
+    expect(tokenised.mnemonic).toBe("LDD");
+    expect(tokenised.symbolicOperands).toEqual(["Z+offset", "R14"]);
+    expect(tokenised.failed()).toBeTruthy();
+    const failures = tokenised.failures().toArray();
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect(failure.kind).toBe("operand_offsetNotStd");
+    expect(failure.location).toEqual({"operand": 0});
+});
+
 Deno.test("... or the first operand of a STD instruction", () => {
     const line = testLine("STD Y+0xa7, R17");
     const tokenised = tokenise(line);
+    expect(tokenised.failed()).toBeFalsy();
     expect(tokenised.label).toBe("");
     expect(tokenised.mnemonic).toBe("STD");
     expect(tokenised.symbolicOperands).toEqual(["Y+", "0xa7", "R17"]);
+});
+
+Deno.test("... but not the second", () => {
+    const line = testLine("STD R17, Y+0xa7");
+    const tokenised = tokenise(line);
+    expect(tokenised.mnemonic).toBe("STD");
+    expect(tokenised.symbolicOperands).toEqual(["R17", "Y+0xa7"]);
+    expect(tokenised.failed()).toBeTruthy();
+    const failures = tokenised.failures().toArray();
+    expect(failures.length).toBe(1);
+    const failure = failures[0]!;
+    expect(failure.kind).toBe("operand_offsetNotLdd");
+    expect(failure.location).toEqual({"operand": 1});
 });
 
 Deno.test("... but not as the first operand of any other instruction", () => {
@@ -119,4 +146,12 @@ Deno.test("... or the second operand", () => {
     const failure = failures[0]!;
     expect(failure.kind).toBe("operand_offsetNotLdd");
     expect(failure.location).toEqual({"operand": 1});
+});
+Deno.test("Post-increment is not mistaken for an index offset", () => {
+    const line = testLine("LDI R14, Z+");
+    const tokenised = tokenise(line);
+    expect(tokenised.failed()).toBeFalsy();
+    expect(tokenised.label).toBe("");
+    expect(tokenised.mnemonic).toBe("LDI");
+    expect(tokenised.symbolicOperands).toEqual(["R14", "Z+"]);
 });
