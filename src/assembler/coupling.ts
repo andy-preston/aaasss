@@ -20,7 +20,7 @@ import type { FileName } from "../source-code/data-types.ts";
 import { fileStack, type ReaderMethod } from "../source-code/file-stack.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { tokenise } from "../tokens/tokenise.ts";
-import { assemblyPipeline } from "./assembler.ts";
+import { assemblyPipeline } from "./assembly-pipeline.ts";
 import { outputFile } from "./output-file.ts";
 import { pass, type ResetStateCallback } from "./pass.ts";
 
