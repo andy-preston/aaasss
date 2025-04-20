@@ -26,6 +26,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "macro_params": (_line: LineWithAddress) => [
         "Parameter count mismatch"
     ],
+    "mnemonic_implicitElpmNotLpm": (_line: LineWithAddress) => [
+        "If a device has an implicit ELPM instruction, it can't have an implicit LPM instruction",
+        "The opcodes for the two instructions are identical, but ELPM uses the RAMPZ register",
+        "And it's better to use ELPM to explicitly state that in your code."
+    ],
     "mnemonic_notSupported": (_line: LineWithAddress) => [""],
     "mnemonic_supportedUnknown": (_line: LineWithAddress) => [""],
     "mnemonic_unknown": (_line: LineWithAddress) => [""],
@@ -40,7 +45,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Index offset instructions only operate on the Y or Z registers"
     ],
     "operand_count": (_line: LineWithAddress) => [""],
-    "operand_z":  (_line: LineWithAddress) => [""],
+    "operand_symbolic":  (_line: LineWithAddress) => [""],
     "parameter_firstName": (_line: LineWithAddress) => [
         "The first parameter should be a name"
     ],
@@ -57,6 +62,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "syntax_invalidLabel": (_line: LineWithAddress) => [
         "A label must only contain alphanumeric characters and underscore"
     ],
+    "syntax_invalidMnemonic": (_line: LineWithAddress) => [""],
     "type_16BitDataAddress": (_line: LineWithAddress) => [""],
     "type_7BitDataAddress": (_line: LineWithAddress) => [""],
     "type_bitIndex": (_line: LineWithAddress) => [""],
@@ -68,6 +74,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "The type of the operands / parameters don't match the requirements"
     ],
     "type_ioPort": (_line: LineWithAddress) => [""],
+    "type_nothing": (_line: LineWithAddress) => [""],
     "type_nybble": (_line: LineWithAddress) => [""],
     "type_positive": (_line: LineWithAddress) => [""],
     "type_register": (_line: LineWithAddress) => [""],

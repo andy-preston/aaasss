@@ -2,7 +2,7 @@ import type { InstructionSet } from "../device/instruction-set.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands, type Requirements } from "../operands/valid-scaled.ts";
+import { validScaledOperands, type OperandRequirements } from "../operands/valid-scaled.ts";
 
 const mapping: Map<string, string> = new Map([
     ["CPI",  "0011"],
@@ -20,13 +20,13 @@ export const byteImmediate = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
     const codeGenerator = (_instructionSet: InstructionSet) => {
-        const operandsRequired: Requirements = [
+        const operandRequirements: OperandRequirements = [
             ["register", "type_registerImmediate", 0]
         ];
         if (line.mnemonic != "SER") {
-            operandsRequired.push(["number", "type_byte", 1]);
+            operandRequirements.push(["number", "type_byte", 1]);
         }
-        const actualOperands = validScaledOperands(line, operandsRequired);
+        const actualOperands = validScaledOperands(line, operandRequirements);
         const register = actualOperands[0]!;
 
         const byte =

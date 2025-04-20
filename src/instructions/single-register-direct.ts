@@ -1,9 +1,9 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import { boringFailure } from "../failure/bags.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands, type Requirements } from "../operands/valid-scaled.ts";
+import { validScaledOperands, type OperandRequirements } from "../operands/valid-scaled.ts";
+import { validSymbolic } from "../operands/valid-symbolic.ts";
 
 const mapping: Map<string, [string, string]> = new Map([
     ["POP",  ["00", "1111"]],
@@ -25,26 +25,25 @@ const mapping: Map<string, [string, string]> = new Map([
 export const singleRegisterDirect = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
+
     const codeGenerator = (_instructionSet: InstructionSet) => {
         const usesZ = ["LAC", "LAS", "LAT", "XCH"].includes(line.mnemonic);
-        const operandsRequired: Requirements = [
-            ["register", "type_register", usesZ ? 1 : 0]
-        ];
+        const registerPosition = usesZ ? 1 : 0;
+        const operandRequirements: OperandRequirements =
+            usesZ ? [["index", "type_nothing", 0]] : [];
+        operandRequirements.push(
+            ["register", "type_register", registerPosition]
+        );
+        const actualOperands = validScaledOperands(line, operandRequirements);
         if (usesZ) {
-            if (line.symbolicOperands[0] != "Z") {
-                const failure = boringFailure("operand_z");
-                failure.location = { "operand": 0 };
-                line.withFailure(failure);
-            }
-            operandsRequired.push(["register", "type_register", 0]);
+            validSymbolic(line, [ ["Z"], [] ]);
         }
-        const actualOperands = validScaledOperands(line, operandsRequired);
         const [operationBits, suffix] = mapping.get(line.mnemonic)!;
         // In the official documentation, some of these have
         // "#### ###r rrrr ####" as their template rather than "d dddd".
         // e.g. `SWAP Rd` has "d dddd" but `LAC Rd` has "r rrrr".
         const code = template(`1001_0${operationBits}d dddd_${suffix}`, [
-            ["d", actualOperands[0]!]
+            ["d", actualOperands[registerPosition]!]
         ]);
         return lineWithObjectCode(line, code);
     };

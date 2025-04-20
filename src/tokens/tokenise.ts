@@ -31,6 +31,10 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
     const mnemonic = mnemonicAndOperands[0].toUpperCase();
     const operandsText = mnemonicAndOperands[1];
 
+    if (mnemonic != "" && !mnemonic.match("^[A-Z]+$")) {
+        line.withFailure(boringFailure("syntax_invalidMnemonic"));
+    }
+
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
         line.withFailure(

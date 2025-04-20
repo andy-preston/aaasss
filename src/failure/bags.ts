@@ -43,7 +43,7 @@ export type TypeFailure = ReturnType<typeof typeFailure>;
 
 export const numericTypeFailure = (
     kind: typeof failureKinds["numericType"][number] | NumericType,
-    value: unknown, min: number, max: number | undefined
+    value: unknown, min: number | undefined, max: number | undefined
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
     "value": value, "min": min, "max": max

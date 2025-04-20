@@ -3,7 +3,7 @@ import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
 import type { OperandIndex } from "../operands/data-types.ts";
-import { validScaledOperands, type Requirements } from "../operands/valid-scaled.ts";
+import { validScaledOperands, type OperandRequirements } from "../operands/valid-scaled.ts";
 
 const mapping: Map<string, [string, OperandIndex, OperandIndex]> = new Map([
     ["IN",  ["0", 0, 1]],
@@ -18,11 +18,11 @@ export const ioByte = (
             line.mnemonic
         )!;
 
-        const operandsRequired: Requirements = [
+        const operandRequirements: OperandRequirements = [
             ["register", "type_register", registerPosition],
             ["number",   "type_ioPort",   portPosition]
         ];
-        const actualOperands = validScaledOperands(line, operandsRequired);
+        const actualOperands = validScaledOperands(line, operandRequirements);
 
         const code = template(`1011_${operationBit}AAd dddd_AAAA`, [
             ["d", actualOperands[0]!],

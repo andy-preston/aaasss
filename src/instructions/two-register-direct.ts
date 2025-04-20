@@ -2,7 +2,7 @@ import type { InstructionSet } from "../device/instruction-set.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands, type Requirements } from "../operands/valid-scaled.ts";
+import { validScaledOperands, type OperandRequirements } from "../operands/valid-scaled.ts";
 
 const mapping: Map<string, [string, number]> = new Map([
     ["CPC",  ["0000_01", 1]],
@@ -29,13 +29,13 @@ export const twoRegisterDirect = (
     const codeGenerator = (_instructionSet: InstructionSet) => {
         const [prefix, secondOperandIndex] = mapping.get(line.mnemonic)!;
 
-        const operandsRequired: Requirements = [
+        const operandRequirements: OperandRequirements = [
             ["register", "type_register", 0]
         ];
         if (secondOperandIndex == 1) {
-            operandsRequired.push(["register", "type_register", 1]);
+            operandRequirements.push(["register", "type_register", 1]);
         }
-        const actualOperands = validScaledOperands(line, operandsRequired);
+        const actualOperands = validScaledOperands(line, operandRequirements);
 
         const code = template(`${prefix}rd dddd_rrrr`, [
             ["d", actualOperands[0]!],

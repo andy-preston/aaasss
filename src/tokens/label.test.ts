@@ -28,10 +28,10 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
     for (const line of badLines) {
         const tokenised = tokenise(testLine(line));
         expect(tokenised.failed()).toBeTruthy();
-        tokenised.failures().forEach((failure, index) => {
-            expect(index).toBe(0);
-            expect(failure.kind).toBe("syntax_invalidLabel");
-        });
+        const failures = tokenised.failures().toArray();
+        expect (failures.length).toBe(1);
+        const failure = failures[0]!;
+        expect(failure.kind).toBe("syntax_invalidLabel");
     }
     const goodLines = [
         "countBytes:",
@@ -40,7 +40,7 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
     ];
     for (const line of goodLines) {
         const tokenised = tokenise(testLine(line));
-        expect(tokenised.failures.length).toBe(0);
+        expect(tokenised.failed()).toBeFalsy();
     }
 });
 

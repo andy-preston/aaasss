@@ -14,20 +14,22 @@ const scalers: Map<NumericType, Scaler> = new Map([
     ["type_ioPort", (value) => value - 0x20]
 ]);
 
-type Requirement = [OperandType, NumericType, OperandIndex];
+type OperandRequirement = [
+    OperandType, NumericType, OperandIndex
+];
 
-export type Requirements = Array<Requirement>;
+export type OperandRequirements = Array<OperandRequirement>;
 
 export const validScaledOperands = (
-    line: LineWithOperands, requirements: Requirements
+    line: LineWithOperands, operandRequirements: OperandRequirements
 ): NumericOperands => {
-    const count = requirements.length;
+    const count = operandRequirements.length;
     if (count != line.numericOperands.length) {
         line.withFailure(clueFailure("operand_count", `${count}`));
     }
 
-    const mapped = requirements.map((requirement: Requirement) => {
-        const [requiredType, numericType, operandIndex] = requirement;
+    const mapped = operandRequirements.map(operandRequirement => {
+        const [requiredType, numericType, operandIndex] = operandRequirement;
 
         const numeric = line.numericOperands[operandIndex]!;
         const actualType = line.operandTypes[operandIndex];

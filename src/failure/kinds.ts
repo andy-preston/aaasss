@@ -2,12 +2,13 @@ import { numericTypes, type NumericType } from "../numeric-values/types.ts";
 
 export const failureKinds = {
     "boring": [
-        "syntax_invalidLabel",
+        "syntax_invalidLabel", "syntax_invalidMnemonic",
         "device_notSelected",
         "js_jsMode", "js_assemblerMode",
         "macro_end", "macro_noEnd",
+        "mnemonic_implicitElpmNotLpm",
         "operand_blank", "operand_offsetNotLdd", "operand_offsetNotStd",
-        "operand_offsetX", "operand_z",
+        "operand_offsetX",
         "parameter_firstName",
         "programMemory_sizeUnknown",
         "ram_sizeUnknown", "ram_stackAllocated"
@@ -16,7 +17,7 @@ export const failureKinds = {
         "device_multiple"
     ],
     "type": [
-        "type_failure"
+        "type_failure", "operand_symbolic"
     ],
     "numericType": [
         "type_bytesOrString"
@@ -26,7 +27,7 @@ export const failureKinds = {
         "macro_multiDefine", "macro_params",
         "mnemonic_unknown",
         "mnemonic_notSupported", "mnemonic_supportedUnknown",
-        "operand_count",  "parameter_count",
+        "operand_count", "parameter_count",
         "symbol_notFound"
     ],
     "definition": [
