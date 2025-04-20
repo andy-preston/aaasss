@@ -147,11 +147,12 @@ Deno.test("... or the second operand", () => {
     expect(failure.kind).toBe("operand_offsetNotLdd");
     expect(failure.location).toEqual({"operand": 1});
 });
+
 Deno.test("Post-increment is not mistaken for an index offset", () => {
-    const line = testLine("LDI R14, Z+");
+    const line = testLine("LPM R14, Z+");
     const tokenised = tokenise(line);
     expect(tokenised.failed()).toBeFalsy();
     expect(tokenised.label).toBe("");
-    expect(tokenised.mnemonic).toBe("LDI");
+    expect(tokenised.mnemonic).toBe("LPM");
     expect(tokenised.symbolicOperands).toEqual(["R14", "Z+"]);
 });
