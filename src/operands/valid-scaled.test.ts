@@ -1,5 +1,5 @@
 import { expect } from "jsr:@std/expect";
-import type { ClueFailure, NumericTypeFailure, TypeFailure } from "../failure/bags.ts";
+import type { ClueFailure, NumericTypeFailure, AssertionFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericType } from "../numeric-values/types.ts";
@@ -45,25 +45,25 @@ Deno.test("The number of operands much match", () => {
         expect(failure.location).toBe(undefined);
         expect(failure.clue).toBe("3");
     } {
-        const failure = failures[1] as TypeFailure;
+        const failure = failures[1] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({ "operand": 0 });
         expect(failure.expected).toBe("number | string");
         expect(failure.actual).toBe("undefined");
     } {
-        const failure = failures[2] as TypeFailure;
+        const failure = failures[2] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({ "operand": 1 });
         expect(failure.expected).toBe("number | string");
         expect(failure.actual).toBe("undefined");
     } {
-        const failure = failures[3] as TypeFailure;
+        const failure = failures[3] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({ "operand": 2 });
         expect(failure.expected).toBe("number");
         expect(failure.actual).toBe("undefined");
     } {
-        const failure = failures[4] as TypeFailure;
+        const failure = failures[4] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({ "operand": 2 });
         expect(failure.expected).toBe("number | string");
@@ -103,12 +103,12 @@ Deno.test("If they don't match the line is marked with a failure", () => {
     expect(failures.length).toBe(2);
     failures.forEach((failure, index) => {
         expect(failure.kind).toBe("type_failure");
-        const typeFailure = failure as TypeFailure;
-        expect(typeFailure.location).toEqual({
+        const assertionFailure = failure as AssertionFailure;
+        expect(assertionFailure.location).toEqual({
             "operand": index as OperandIndex
         });
-        expect(typeFailure.expected).toBe(operandRequirements[index]![0]);
-        expect(typeFailure.actual).toBe(line.operandTypes[index]!);
+        expect(assertionFailure.expected).toBe(operandRequirements[index]![0]);
+        expect(assertionFailure.actual).toBe(line.operandTypes[index]!);
     });
 });
 

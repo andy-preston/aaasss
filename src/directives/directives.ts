@@ -1,6 +1,6 @@
 import { emptyBag } from "../assembler/bags.ts";
 import {
-    bagOfFailures, boringFailure, clueFailure, typeFailure,
+    assertionFailure, bagOfFailures, boringFailure, clueFailure,
     type BagOrFailures, type Failure
 } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
@@ -32,7 +32,7 @@ const parameterTypes = (
         }
         const typeOf = Array.isArray(parameter) ? "array" : typeof parameter;
         if (!requiredIncludes(typeOf)) {
-            const failure = typeFailure(
+            const failure = assertionFailure(
                 "type_failure", requiredTypes.join(", "), typeOf
             );
             failure.location = { "parameter": index };
@@ -99,7 +99,7 @@ export const valueDirective = (
 
     const typeOfFirst = typeof parameters[0];
     if (typeOfFirst != "string") {
-        const failure = typeFailure("type_failure", "string", typeOfFirst);
+        const failure = assertionFailure("type_failure", "string", typeOfFirst);
         failure.location = { "parameter": 0 };
         failures.push(failure);
     }

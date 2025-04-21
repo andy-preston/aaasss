@@ -1,4 +1,4 @@
-import { clueFailure, typeFailure, type Failure } from "../failure/bags.ts";
+import { assertionFailure, clueFailure, type Failure } from "../failure/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import {
@@ -35,7 +35,7 @@ export const validScaledOperands = (
         const actualType = line.operandTypes[operandIndex];
 
         if (actualType != requiredType) {
-            const failure = typeFailure(
+            const failure = assertionFailure(
                 "type_failure", requiredType, `${actualType}`
             );
             failure.location = {"operand": operandIndex};

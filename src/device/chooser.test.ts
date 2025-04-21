@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { ClueFailure, ComparisonFailure, Failure } from "../failure/bags.ts";
+import type { AssertionFailure, ClueFailure, Failure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -33,9 +33,9 @@ Deno.test("Choosing multiple devices results in failure", () => {
         const failures = result.it as Array<Failure>;
         expect(failures.length).toBe(1);
         expect(failures[0]!.kind).toBe("device_multiple");
-        const failure = failures[0] as ComparisonFailure;
-        expect(failure.before).toBe(firstName)
-        expect(failure.after).toBe(secondName);
+        const failure = failures[0] as AssertionFailure;
+        expect(failure.expected).toBe(firstName)
+        expect(failure.actual).toBe(secondName);
     }
 });
 
@@ -57,9 +57,9 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
         const failures = result.it as Array<Failure>;
         expect(failures.length).toBe(1);
         expect(failures[0]!.kind).toBe("device_multiple");
-        const failure = failures[0] as ComparisonFailure;
-        expect(failure.before).toBe(firstName)
-        expect(failure.after).toBe(secondName);
+        const failure = failures[0] as AssertionFailure;
+        expect(failure.expected).toBe(firstName)
+        expect(failure.actual).toBe(secondName);
     }
 });
 

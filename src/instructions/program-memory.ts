@@ -1,5 +1,5 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import { boringFailure, clueFailure, typeFailure } from "../failure/bags.ts";
+import { assertionFailure, boringFailure, clueFailure } from "../failure/bags.ts";
 import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
@@ -28,7 +28,7 @@ export const programMemory = (
 
             const indexRegister = line.symbolicOperands[0];
             if (indexRegister != "Z+") {
-                const failure = typeFailure(
+                const failure = assertionFailure(
                     "operand_symbolic", "Z+", indexRegister
                 );
                 failure.location = { "operand": 0 };
@@ -59,7 +59,7 @@ export const programMemory = (
 
             const indexRegister = line.symbolicOperands[1];
             if (!["Z", "Z+"].includes(indexRegister)) {
-                const failure = typeFailure(
+                const failure = assertionFailure(
                     "operand_symbolic", "Z/Z+", indexRegister
                 );
                 failure.location = { "operand": 1 };

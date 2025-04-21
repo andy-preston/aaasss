@@ -13,11 +13,10 @@ export const failureKinds = {
         "programMemory_sizeUnknown",
         "ram_sizeUnknown", "ram_stackAllocated"
     ],
-    "comparison": [
-        "device_multiple"
-    ],
-    "type": [
-        "type_failure", "operand_symbolic"
+    "assertion": [
+        "device_multiple",
+        "operand_symbolic",
+        "type_failure"
     ],
     "numericType": [
         "type_bytesOrString"

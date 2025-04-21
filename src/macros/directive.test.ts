@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { ClueFailure, Failure, TypeFailure } from "../failure/bags.ts";
+import type { AssertionFailure, ClueFailure, Failure } from "../failure/bags.ts";
 import { macroFromTable, systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -14,7 +14,7 @@ Deno.test("The macro directive name must be a string", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as TypeFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 0});
     expect(failure.expected).toBe("string");
@@ -31,13 +31,13 @@ Deno.test("The parameters in a definition must be strings", () => {
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(2);
     {
-        const failure = failures[0] as TypeFailure;
+        const failure = failures[0] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({"parameter": 2});
         expect(failure.expected).toEqual("string");
         expect(failure.actual).toEqual("number");
     } {
-        const failure = failures[1] as TypeFailure;
+        const failure = failures[1] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({"parameter": 4});
         expect(failure.expected).toBe("string");
@@ -64,13 +64,13 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(2);
     {
-        const failure = failures[0] as TypeFailure;
+        const failure = failures[0] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({"parameter": 0});
         expect(failure.expected).toBe("string, number");
         expect(failure.actual).toBe("boolean");
     } {
-        const failure = failures[1] as TypeFailure;
+        const failure = failures[1] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({"parameter": 1});
         expect(failure.expected).toBe("string, number");

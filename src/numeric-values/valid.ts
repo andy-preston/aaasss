@@ -1,5 +1,5 @@
 import { numberBag } from "../assembler/bags.ts";
-import { bagOfFailures, numericTypeFailure, typeFailure, type NumberOrFailures } from "../failure/bags.ts";
+import { assertionFailure, bagOfFailures, numericTypeFailure, type NumberOrFailures } from "../failure/bags.ts";
 import type { NumericType } from "./types.ts";
 
 const minMax: Record<NumericType, [number | undefined, number | undefined]> = {
@@ -21,14 +21,14 @@ export const validNumeric = (
 ): NumberOrFailures => {
     const typeOf = Array.isArray(given) ? "array" : typeof given;
     if (!["number", "string"].includes(typeOf)) {
-        return bagOfFailures([typeFailure(
+        return bagOfFailures([assertionFailure(
             "type_failure", "number | string", typeOf
         )]);
     }
 
     const numeric = typeOf == "number" ? given as number : parseInt(`${given}`);
     if (`${numeric}` != `${given}`) {
-        return bagOfFailures([typeFailure(
+        return bagOfFailures([assertionFailure(
             "type_failure", "numeric", `"${given}"`
         )]);
     }

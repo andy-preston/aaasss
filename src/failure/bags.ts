@@ -21,25 +21,15 @@ export const boringFailure = (
 
 export type BoringFailure = ReturnType<typeof boringFailure>;
 
-export const comparisonFailure = (
-    kind: typeof failureKinds["comparison"][number],
-    before: string, after: string
-) => ({
-    "kind": kind, "location": undefined as FailureLocation,
-    "before": before, "after": after
-});
-
-export type ComparisonFailure = ReturnType<typeof comparisonFailure>;
-
-export const typeFailure = (
-    kind: typeof failureKinds["type"][number],
+export const assertionFailure = (
+    kind: typeof failureKinds["assertion"][number],
     expected: string, actual: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
     "expected": expected, "actual": actual
 });
 
-export type TypeFailure = ReturnType<typeof typeFailure>;
+export type AssertionFailure = ReturnType<typeof assertionFailure>;
 
 export const numericTypeFailure = (
     kind: typeof failureKinds["numericType"][number] | NumericType,
@@ -91,9 +81,9 @@ export const memoryRangeFailure = (
 
 export type MemoryRangeFailure = ReturnType<typeof memoryRangeFailure>;
 
-export type Failure = BoringFailure | ClueFailure | ComparisonFailure
+export type Failure = AssertionFailure | BoringFailure | ClueFailure
     | DefinitionFailure | ExceptionFailure | MemoryRangeFailure
-    | NumericTypeFailure | TypeFailure;
+    | NumericTypeFailure | AssertionFailure;
 
 export const bagOfFailures = (failures: Array<Failure>) =>
     ({ "type": "failures" as const, "it": failures });
@@ -105,4 +95,4 @@ export type StringsOrFailures = StringsBag | BagOfFailures;
 export type BooleanOrFailures = BooleanBag | BagOfFailures;
 
 export type BagOrFailures =
-    NumberBag | StringBag |  StringsBag | BooleanBag | BagOfFailures;
+    NumberBag | StringBag | StringsBag | BooleanBag | BagOfFailures;
