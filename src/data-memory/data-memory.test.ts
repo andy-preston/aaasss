@@ -1,8 +1,9 @@
+import type { AssertionFailure, Failure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure, MemoryRangeFailure } from "../failure/bags.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { dataMemory } from "./data-memory.ts";
@@ -50,10 +51,10 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as MemoryRangeFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("ram_outOfRange");
-    expect(failure.bytesAvailable).toBe(0xf0);
-    expect(failure.bytesRequested).toBe(bytesRequested);
+    expect(failure.expected).toBe(`${0xf0}`);
+    expect(failure.actual).toBe(`${bytesRequested}`);
 });
 
 Deno.test("A memory allocation can't be beyond available SRAM", () => {
@@ -70,10 +71,10 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as MemoryRangeFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("ram_outOfRange");
-    expect(failure.bytesAvailable).toBe(0xf0);
-    expect(failure.bytesRequested).toBe(bytesRequested);
+    expect(failure.expected).toBe(`${0xf0}`);
+    expect(failure.actual).toBe(`${bytesRequested}`);
 });
 
 Deno.test("Memory allocations start at the top of SRAM and work down", () => {
@@ -115,10 +116,10 @@ Deno.test("Stack allocations decrease the available SRAM", () => {
     expect(failing.type).toBe("failures");
     const failures = failing.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as MemoryRangeFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("ram_outOfRange");
-    expect(failure.bytesAvailable).toBe(bytesAvailable);
-    expect(failure.bytesRequested).toBe(bytesRequested);
+    expect(failure.expected).toBe(`${bytesAvailable}`);
+    expect(failure.actual).toBe(`${bytesRequested}`);
 });
 
 Deno.test("Memory allocations decrease the available SRAM", () => {
@@ -141,10 +142,10 @@ Deno.test("Memory allocations decrease the available SRAM", () => {
     expect(failing.type).toBe("failures");
     const failures = failing.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as MemoryRangeFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("ram_outOfRange");
-    expect(failure.bytesAvailable).toBe(bytesAvailable);
-    expect(failure.bytesRequested).toBe(bytesRequested);
+    expect(failure.expected).toBe(`${bytesAvailable}`);
+    expect(failure.actual).toBe(`${bytesRequested}`);
 });
 
 Deno.test("Allocations don't get repeated on the second pass", () => {

@@ -9,7 +9,9 @@ import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { SourceOfSource } from "../source-code/file-stack.ts";
 import type { Tokenise } from "../tokens/tokenise.ts";
-import { passes, type Pass, type PassNumber } from "./pass.ts";
+import type { Pass, PassNumber } from "./pass.ts";
+
+import { passes } from "./pass.ts";
 
 export const assemblyPipeline = (
     pass: Pass,

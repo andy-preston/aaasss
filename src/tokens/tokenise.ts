@@ -1,6 +1,8 @@
-import { boringFailure, clueFailure } from "../failure/bags.ts";
 import type { LineWithRenderedJavascript } from "../javascript/line-types.ts";
-import { operands, type OperandIndex, type SymbolicOperands } from "../operands/data-types.ts"
+import type { OperandIndex, SymbolicOperands } from "../operands/data-types.ts"
+
+import { assertionFailure, boringFailure } from "../failure/bags.ts";
+import { operands } from "../operands/data-types.ts"
 import { pushOperandCheckingIndexOffset } from "./index-offset.ts";
 import { lineWithTokens } from "./line-types.ts";
 import { splitSource } from "./split-source.ts";
@@ -37,9 +39,9 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
 
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
-        line.withFailure(
-            clueFailure("operand_count", `${operandsList.length}`)
-        );
+        line.withFailure(assertionFailure(
+            "operand_count", "2", `${operandsList.length}`
+        ));
     }
 
     const fullOperands: Array<string> = [];

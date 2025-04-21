@@ -1,6 +1,7 @@
+import type { AssertionFailure, Failure, NumericTypeFailure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { AssertionFailure, Failure, MemoryRangeFailure, NumericTypeFailure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 
@@ -82,9 +83,9 @@ Deno.test("Origin addresses must be progmem size when a device is chosen", () =>
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     expect(failures[0]!.kind).toBe("programMemory_outOfRange");
-    const failure = failures[0] as MemoryRangeFailure;
-    expect(failure.bytesRequested).toBe(tryOrigin * 2);
-    expect(failure.bytesAvailable).toBe(bytesAvailable);
+    const failure = failures[0] as AssertionFailure;
+    expect(failure.expected).toBe(`${bytesAvailable / 2}`);
+    expect(failure.actual).toBe(`${tryOrigin}`);
 });
 
 Deno.test("Origin directive sets current address", () => {

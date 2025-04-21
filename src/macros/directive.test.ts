@@ -1,6 +1,7 @@
+import type { AssertionFailure, Failure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { AssertionFailure, ClueFailure, Failure } from "../failure/bags.ts";
 import { macroFromTable, systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
@@ -96,9 +97,10 @@ Deno.test("Parameter count mismatches result in a failure", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as ClueFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("macro_params");
-    expect(failure.clue).toBe("3");
+    expect(failure.expected).toBe("3");
+    expect(failure.actual).toBe("2");
 });
 
 Deno.test("A macro can be defined in both passes", () => {

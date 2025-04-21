@@ -1,4 +1,4 @@
-import type { AssertionFailure, ClueFailure } from "../failure/bags.ts";
+import type { AssertionFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { testLine } from "./test.ts";
@@ -11,9 +11,10 @@ Deno.test("Line must have at least expected parameters", () => {
     const failures = line.failures().toArray();
     expect(failures.length).toBe(2);
     {
-        const failure = failures[0] as ClueFailure;
+        const failure = failures[0] as AssertionFailure;
         expect(failure.kind).toBe("operand_count");
-        expect(failure.clue).toBe("2");
+        expect(failure.expected).toBe("2");
+        expect(failure.actual).toBe("1");
     } {
         const failure = failures[1] as AssertionFailure;
         expect(failure.kind).toBe("operand_symbolic");
@@ -29,9 +30,10 @@ Deno.test("line must not exceed expected parameters", () => {
     expect(line.failed()).toBeTruthy();
     const failures = line.failures().toArray();
     expect(failures.length).toBe(1);
-    const failure = failures[0] as ClueFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("operand_count");
-    expect(failure.clue).toBe("1");
+    expect(failure.expected).toBe("1");
+    expect(failure.actual).toBe("2");
 });
 
 Deno.test("line and expectation must not be different", () => {

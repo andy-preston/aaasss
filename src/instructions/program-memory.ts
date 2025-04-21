@@ -3,7 +3,7 @@ import type { Code } from "../object-code/data-types.ts";
 import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
 
-import { assertionFailure, boringFailure, clueFailure } from "../failure/bags.ts";
+import { assertionFailure, boringFailure } from "../failure/bags.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
@@ -24,7 +24,9 @@ export const programMemory = (
             }
 
             if (line.symbolicOperands.length > 1) {
-                line.withFailure(clueFailure("operand_count", "0/1"));
+                line.withFailure(assertionFailure(
+                    "operand_count", "0/1", `${line.symbolicOperands.length}`
+                ));
                 return "0";
             }
 
@@ -55,7 +57,9 @@ export const programMemory = (
 
         const explicitIndexBit = (): BitString => {
             if (line.symbolicOperands.length != 2) {
-                line.withFailure(clueFailure("operand_count", "0/2"));
+                line.withFailure(assertionFailure(
+                    "operand_count", "0/2", `${line.symbolicOperands.length}`
+                ));
                 return "0";
             }
 

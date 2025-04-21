@@ -1,9 +1,9 @@
+import type { StringBag } from "../assembler/bags.ts";
+import type { AssertionFailure, ClueFailure, Failure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
-import { emptyBag, stringBag, type StringBag } from "../assembler/bags.ts";
-import {
-    bagOfFailures, clueFailure,
-    type AssertionFailure, type ClueFailure, type Failure
-} from "../failure/bags.ts";
+import { emptyBag, stringBag } from "../assembler/bags.ts";
+import { bagOfFailures, clueFailure } from "../failure/bags.ts";
 import { directiveFunction } from "./directive-function.ts";
 
 const irrelevantName = "testing";
@@ -58,9 +58,10 @@ Deno.test("A VoidDirective has no parameters", () => {
     expect(failed.type).toBe("failures");
     const failures = failed.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as ClueFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("parameter_count");
-    expect(failure.clue).toBe("0");
+    expect(failure.expected).toBe("0");
+    expect(failure.actual).toBe("1");
 });
 
 Deno.test("A string directive can't have zero parameters", () => {
@@ -72,9 +73,10 @@ Deno.test("A string directive can't have zero parameters", () => {
     expect(notEnough.type).toBe("failures");
     const failures = notEnough.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as ClueFailure
+    const failure = failures[0] as AssertionFailure
     expect(failure.kind).toBe("parameter_count");
-    expect(failure.clue).toBe("1");
+    expect(failure.expected).toBe("1");
+    expect(failure.actual).toBe("0");
 });
 
 Deno.test("A string directive can't have more than 1 parameter", () => {
@@ -87,9 +89,10 @@ Deno.test("A string directive can't have more than 1 parameter", () => {
     expect(tooMany.type).toBe("failures");
     const failures = tooMany.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as ClueFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("parameter_count");
-    expect(failure.clue).toBe("1");
+    expect(failure.expected).toBe("1");
+    expect(failure.actual).toBe("2");
 });
 
 Deno.test("A string directive can't have a number parameter", () => {

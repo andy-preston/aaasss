@@ -66,18 +66,8 @@ export const exceptionFailure = (
 
 export type ExceptionFailure = ReturnType<typeof exceptionFailure>;
 
-export const memoryRangeFailure = (
-    kind: typeof failureKinds["memoryRange"][number],
-    bytesAvailable: number, bytesRequested: number
-) => ({
-    "kind": kind, "location": undefined as FailureLocation,
-    "bytesAvailable": bytesAvailable, "bytesRequested": bytesRequested
-});
-
-export type MemoryRangeFailure = ReturnType<typeof memoryRangeFailure>;
-
 export type Failure = AssertionFailure | BoringFailure | ClueFailure
-    | DefinitionFailure | ExceptionFailure | MemoryRangeFailure
+    | DefinitionFailure | ExceptionFailure
     | NumericTypeFailure | AssertionFailure;
 
 export const bagOfFailures = (failures: Array<Failure>) =>

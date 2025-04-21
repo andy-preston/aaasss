@@ -1,4 +1,6 @@
-import { numericTypes, type NumericType } from "../numeric-values/types.ts";
+import type { NumericType } from "../numeric-values/types.ts";
+
+import { numericTypes } from "../numeric-values/types.ts";
 
 export const failureKinds = {
     "boring": [
@@ -15,7 +17,11 @@ export const failureKinds = {
     ],
     "assertion": [
         "device_multiple",
-        "operand_symbolic",
+        "macro_params",
+        "operand_count", "operand_symbolic",
+        "parameter_count",
+        "programMemory_outOfRange",
+        "ram_outOfRange",
         "type_failure"
     ],
     "numericType": [
@@ -23,10 +29,9 @@ export const failureKinds = {
     ],
     "clue": [
         "file_notFound",  "device_notFound",
-        "macro_multiDefine", "macro_params",
+        "macro_multiDefine",
         "mnemonic_unknown",
         "mnemonic_notSupported", "mnemonic_supportedUnknown",
-        "operand_count", "parameter_count",
         "symbol_notFound"
     ],
     "definition": [
@@ -34,9 +39,6 @@ export const failureKinds = {
     ],
     "exception": [
         "js_error"
-    ],
-    "memoryRange": [
-        "programMemory_outOfRange", "ram_outOfRange"
     ]
 } as const;
 

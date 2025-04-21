@@ -1,13 +1,12 @@
-import { emptyBag, numberBag } from "../assembler/bags.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import {
-    bagOfFailures, boringFailure, memoryRangeFailure,
-    type StringOrFailures
-} from "../failure/bags.ts";
-import { validNumeric } from "../numeric-values/valid.ts";
+import type { StringOrFailures } from "../failure/bags.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+
+import { emptyBag, numberBag } from "../assembler/bags.ts";
+import { assertionFailure, bagOfFailures, boringFailure } from "../failure/bags.ts";
+import { validNumeric } from "../numeric-values/valid.ts";
 import { lineWithAddress } from "./line-types.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
@@ -27,9 +26,9 @@ export const programMemory = (symbolTable: SymbolTable) => {
         if (bytes.type == "number") {
             const words = bytes.it / 2;
             if (newAddress > words) {
-                failures.it.push(memoryRangeFailure(
+                failures.it.push(assertionFailure(
                     "programMemory_outOfRange",
-                    bytes.it, (newAddress - address) * 2
+                    `${bytes.it / 2}`, `${newAddress - address}`
                 ));
             }
         } else {

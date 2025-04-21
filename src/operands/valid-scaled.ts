@@ -3,7 +3,7 @@ import type { NumericType } from "../numeric-values/types.ts";
 import type { NumericOperand, NumericOperands, OperandIndex, OperandType } from "./data-types.ts";
 import type { LineWithOperands } from "./line-types.ts";
 
-import { assertionFailure, clueFailure } from "../failure/bags.ts";
+import { assertionFailure } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import { operands } from "./data-types.ts";
 
@@ -22,7 +22,9 @@ export const validScaledOperands = (
 ): NumericOperands => {
     const count = operandRequirements.length;
     if (count != line.numericOperands.length) {
-        line.withFailure(clueFailure("operand_count", `${count}`));
+        line.withFailure(assertionFailure(
+            "operand_count", `${count}`,`${line.numericOperands.length}`
+        ));
     }
 
     const withFailure = (failure: Failure, operandIndex: OperandIndex) => {
