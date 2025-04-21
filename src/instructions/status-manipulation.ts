@@ -1,8 +1,11 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
+import type { OperandRequirements } from "../operands/valid-scaled.ts";
+
+import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands, type OperandRequirements } from "../operands/valid-scaled.ts";
+import { validScaledOperands } from "../operands/valid-scaled.ts";
 
 const mapping: Map<string, [string, number?]> = new Map([
     ["BCLR", ["1", undefined]],
@@ -32,17 +35,16 @@ export const statusManipulation = (
         const [operationBit, impliedOperand] = mapping.get(line.mnemonic)!;
 
         const operandRequirements: OperandRequirements =
-            impliedOperand == undefined
-                ? [["number", "type_bitIndex", 0]]
-                : [];
+            impliedOperand == undefined ? [["number", "type_bitIndex"]] : [];
+
         const actualOperands = validScaledOperands(line, operandRequirements);
         const operand = impliedOperand == undefined
             ? actualOperands[0]
             : impliedOperand;
 
-        const code = template(`1001_0100 ${operationBit}sss_1000`, [
-            ["s", operand!]
-        ]);
+        const code = template(
+            `1001_0100 ${operationBit}vvv_1000`, {"v": operand!}
+        );
         return lineWithObjectCode(line, code);
     };
 

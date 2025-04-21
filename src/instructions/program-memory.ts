@@ -1,8 +1,10 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import { assertionFailure, boringFailure, clueFailure } from "../failure/bags.ts";
 import type { Code } from "../object-code/data-types.ts";
-import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
+
+import { assertionFailure, boringFailure, clueFailure } from "../failure/bags.ts";
+import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 
@@ -48,7 +50,7 @@ export const programMemory = (
         };
 
         const store = (): Code =>
-            template(`1001_0101 111${storeIndexBit()}_1000`, []);
+            template(`1001_0101 111${storeIndexBit()}_1000`, {});
 
 
         const explicitIndexBit = (): BitString => {
@@ -84,17 +86,17 @@ export const programMemory = (
         const load = (): Code => {
             if (line.symbolicOperands.length == 0) {
                 implicitLoad();
-                return template("1001_0101 1101_1000", []);
+                return template("1001_0101 1101_1000", {});
             }
 
             const mnemonicBit = line.mnemonic == "ELPM" ? "1" : "0";
             const actualOperands = validScaledOperands(line, [
-                ["register", "type_register", 0],
-                ["index",    "type_nothing", 1]
+                ["register", "type_register"],
+                ["index",    "type_nothing"]
             ]);
             return template(
-                `1001_000d dddd_01${mnemonicBit}${explicitIndexBit()}`,
-                [["d", actualOperands[0]!]]
+                `1001_000r rrrr_01${mnemonicBit}${explicitIndexBit()}`,
+                {"r": actualOperands[0]!}
             );
         };
 

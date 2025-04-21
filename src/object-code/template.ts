@@ -1,7 +1,7 @@
 import type { Code } from "../object-code/data-types.ts";
-import { NumericOperand } from "../operands/data-types.ts";
+import type { NumericOperand } from "../operands/data-types.ts";
 
-type BinaryDigit = "0" | "1";
+export type BinaryDigit = "0" | "1";
 type Binary = Array<BinaryDigit>;
 
 const bitSource = (decimal: number) => {
@@ -15,26 +15,19 @@ const bitSource = (decimal: number) => {
 };
 
 type TemplateOperand =
-    | "A"
-    | "b"
-    | "d"
-    | "k"
-    | "K"
-    // In some of the places we've used "d", the official documentation
-    // uses "r" but, for code simplicity, we're using "d" across the board
-    // EXCEPT where there's a two-register operation, then one is "d" and the
-    // other is "r".
-    | "r"
-    | "s"
-    | "q";
+    | "r" // register
+    | "s" // source register
+    | "d" // destination register
+    | "a" // address
+    | "v" // value
+
+type Substitutions = Partial<Record<TemplateOperand, NumericOperand>>;
 
 type TemplateDigit = TemplateOperand | BinaryDigit;
-type Substitution = [TemplateOperand, NumericOperand];
-type Substitutions = Array<Substitution>;
 
 const substitutionMap = (substitutions: Substitutions) => {
     const bitSources = new Map(
-        substitutions.map(substitution => [
+        Object.entries(substitutions).map(substitution => [
             substitution[0] as TemplateDigit,
             bitSource(substitution[1])
         ])
@@ -62,7 +55,7 @@ export const template = (
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Copyright (c) 2024, Andy Preston
+// Copyright (c) 2025, Andy Preston
 //
 // This file is based on parts of https://github.com/LingDong-/avrlass which is
 // Copyright (c) 2023 Lingdong Huang under the MIT license.

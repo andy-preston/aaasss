@@ -1,13 +1,19 @@
-import { expect } from "jsr:@std/expect";
 import type { ClueFailure, NumericTypeFailure, AssertionFailure } from "../failure/bags.ts";
+import type { NumericType } from "../numeric-values/types.ts";
+import type {
+    NumericOperand, NumericOperands,
+    OperandIndex, OperandTypes,
+    SymbolicOperands
+} from "./data-types.ts";
+import type { OperandRequirements } from "./valid-scaled.ts";
+
+import { expect } from "jsr:@std/expect";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
-import type { NumericType } from "../numeric-values/types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
-import type { NumericOperand, NumericOperands, OperandIndex, OperandTypes, SymbolicOperands } from "./data-types.ts";
 import { lineWithOperands } from "./line-types.ts";
-import { validScaledOperands, type OperandRequirements } from "./valid-scaled.ts";
+import { validScaledOperands } from "./valid-scaled.ts";
 
 const testLine = (
     symbolicOperands: SymbolicOperands,
@@ -29,9 +35,9 @@ Deno.test("The number of operands much match", () => {
     const line = testLine([], [], ["register", "number"]);
 
     const operandRequirements: OperandRequirements = [
-        ["register", someNumericType, 0],
-        ["number",   someNumericType, 1],
-        ["number",   someNumericType, 2],
+        ["register", someNumericType],
+        ["number",   someNumericType],
+        ["number",   someNumericType],
     ];
 
     const result = validScaledOperands(line, operandRequirements);
@@ -78,8 +84,8 @@ Deno.test("The required operand type must match the actual operand types", () =>
         [ "register",    "number"]
     );
     const operandRequirements: OperandRequirements = [
-        ["number",   someNumericType, 1],
-        ["register", someNumericType, 0],
+        ["register", someNumericType],
+        ["number",   someNumericType]
     ];
     const result = validScaledOperands(line, operandRequirements);
     expect(line.failed()).toBeFalsy();
@@ -93,8 +99,8 @@ Deno.test("If they don't match the line is marked with a failure", () => {
         [ "register",    "number"]
     );
     const operandRequirements: OperandRequirements = [
-        ["number",   someNumericType, 0],
-        ["register", someNumericType, 1],
+        ["number",   someNumericType],
+        ["register", someNumericType]
     ];
     const result = validScaledOperands(line, operandRequirements);
     expect(line.failed()).toBeTruthy();
@@ -130,7 +136,7 @@ Deno.test("The required numeric type must match the actual type", () => {
     for (const [key, value] of Object.entries(testData)) {
         const numericType = key as NumericType;
         const line = testLine([anySymbolic], [value], ["number"]);
-        validScaledOperands(line, [["number", numericType, 0]]);
+        validScaledOperands(line, [["number", numericType]]);
         // The result might be scaled, so we're not checking it here!
         expect(line.failed(), `${key}`).toBeFalsy();
     }
@@ -154,7 +160,7 @@ Deno.test("If numeric types don't match the line fails", () => {
     for (const [key, value] of Object.entries(testData)) {
         const numericType = key as NumericType;
         const line = testLine([anySymbolic], [value], ["number"]);
-        validScaledOperands(line, [["number", numericType, 0]]);
+        validScaledOperands(line, [["number", numericType]]);
         // The result might be scaled, so we're not checking it here!
         if (numericType == "type_nothing") {
             expect(line.failed(), numericType).toBeFalsy();

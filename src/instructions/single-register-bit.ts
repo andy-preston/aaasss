@@ -1,6 +1,8 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
+
+import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 
@@ -15,18 +17,14 @@ export const singleRegisterBit = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
     const codeGenerator = (_instructionSet: InstructionSet) => {
-        const actualOperands = validScaledOperands(line, [
-            ["register", "type_register", 0],
-            ["number",   "type_bitIndex", 1]
+        const [register, bit] = validScaledOperands(line, [
+            ["register", "type_register"],
+            ["number",   "type_bitIndex"]
         ]);
         const operationBits = mapping.get(line.mnemonic)!;
-        // In the official documentation, some of these have
-        // "#### ###r rrrr #bbb" as their template rather than "d dddd".
-        // e.g. `BLD Rd, b` has "d dddd" but `SBRS Rd, b` has "r rrrr".
-        const code = template(`1111_1${operationBits}d dddd_0bbb`, [
-            ["d", actualOperands[0]!],
-            ["b", actualOperands[1]!]
-        ]);
+        const code = template(
+            `1111_1${operationBits}r rrrr_0vvv`, {"r": register, "v": bit}
+        );
         return lineWithObjectCode(line, code);
     };
 

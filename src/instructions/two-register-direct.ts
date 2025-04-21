@@ -1,8 +1,11 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
+import type { OperandRequirements } from "../operands/valid-scaled.ts";
+
+import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands, type OperandRequirements } from "../operands/valid-scaled.ts";
+import { validScaledOperands } from "../operands/valid-scaled.ts";
 
 const mapping: Map<string, [string, number]> = new Map([
     ["CPC",  ["0000_01", 1]],
@@ -30,17 +33,17 @@ export const twoRegisterDirect = (
         const [prefix, secondOperandIndex] = mapping.get(line.mnemonic)!;
 
         const operandRequirements: OperandRequirements = [
-            ["register", "type_register", 0]
+            ["register", "type_register"]
         ];
         if (secondOperandIndex == 1) {
-            operandRequirements.push(["register", "type_register", 1]);
+            operandRequirements.push(["register", "type_register"]);
         }
         const actualOperands = validScaledOperands(line, operandRequirements);
 
-        const code = template(`${prefix}rd dddd_rrrr`, [
-            ["d", actualOperands[0]!],
-            ["r", actualOperands[secondOperandIndex]!]
-        ]);
+        const code = template(
+            `${prefix}sd dddd_ssss`,
+            {"d": actualOperands[0]!, "s": actualOperands[secondOperandIndex]!}
+        );
         return lineWithObjectCode(line, code);
     };
 
