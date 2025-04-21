@@ -31,8 +31,7 @@ export const failureKinds = {
         "file_notFound",  "device_notFound",
         "macro_multiDefine",
         "mnemonic_unknown",
-        "mnemonic_notSupported", "mnemonic_supportedUnknown",
-        "symbol_notFound"
+        "mnemonic_notSupported", "mnemonic_supportedUnknown"
     ],
     "definition": [
         "symbol_alreadyExists"

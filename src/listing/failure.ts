@@ -1,4 +1,7 @@
-import type { AssertionFailure, ClueFailure, DefinitionFailure, ExceptionFailure, Failure } from "../failure/bags.ts";
+import type {
+    AssertionFailure, ClueFailure, DefinitionFailure,
+    ExceptionFailure, Failure, NumericTypeFailure
+} from "../failure/bags.ts";
 
 export const location = (operand: string, parameter: string) =>
     (failure: Failure, messages: Array<string>) =>
@@ -35,3 +38,20 @@ export const exceptionFailure = (
 ) => messages.concat([
     `${exception}: ${failure.exception}`, `${message}: ${failure.message}`
 ]);
+
+export const numericTypeFailure = (
+    messages: Array<string>, expected: string, actual: string,
+    failure: NumericTypeFailure
+) => {
+    const extra: Array<string> = [];
+    if (failure.min != undefined || failure.max != undefined) {
+        extra.push([
+            `${expected}`,
+            failure.min == undefined ? "" : '${failure.min}',
+            " - ",
+            failure.max == undefined ? "" : '${failure.max}',
+        ].join(""));
+    };
+    extra.push(`${actual}: ${failure.value}`);
+    return messages.concat(extra);
+};

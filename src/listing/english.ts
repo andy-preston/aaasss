@@ -1,8 +1,14 @@
-import type { AssertionFailure, ClueFailure, DefinitionFailure, ExceptionFailure } from "../failure/bags.ts";
+import type {
+    AssertionFailure, ClueFailure, DefinitionFailure,
+    ExceptionFailure, NumericTypeFailure
+} from "../failure/bags.ts";
 import type { FailureKind } from "../failure/kinds.ts";
 import type { FailureMessage } from "./languages.ts";
 
-import { assertionFailure, clueFailure, definitionFailure, exceptionFailure, location } from "./failure-explanation.ts";
+import {
+    assertionFailure, clueFailure, definitionFailure,
+    exceptionFailure, location, numericTypeFailure
+} from "./failure.ts";
 
 export const listingTitles = {
     "symbolTable": "Symbol Table"
@@ -130,28 +136,75 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Symbol name", "Existing definition",
         failure as DefinitionFailure
     )),
-
-
-    "symbol_notFound": (failure) => withLocation(failure, [""]),
     "syntax_invalidLabel": (failure) => withLocation(failure, [
         "A label must only contain alphanumeric characters and underscore"
     ]),
-    "syntax_invalidMnemonic": (failure) => withLocation(failure, [""]),
-    "type_16BitDataAddress": (failure) => withLocation(failure, [""]),
-    "type_7BitDataAddress": (failure) => withLocation(failure, [""]),
-    "type_bitIndex": (failure) => withLocation(failure, [""]),
-    "type_byte":  (failure) => withLocation(failure, [""]),
-    "type_bytesOrString": (failure) => withLocation(failure, [
-        "Should be a string or an array of byte values"
+    "syntax_invalidMnemonic": (failure) => withLocation(failure, [
+        "A mnemonic should only contain letters"
     ]),
-    "type_failure": (failure) => withLocation(failure, [
-        "The type of the operands / parameters don't match the requirements"
-    ]),
-    "type_ioPort": (failure) => withLocation(failure, [""]),
-    "type_nothing": (failure) => withLocation(failure, [""]),
-    "type_nybble": (failure) => withLocation(failure, [""]),
-    "type_positive": (failure) => withLocation(failure, [""]),
-    "type_register": (failure) => withLocation(failure, [""]),
-    "type_registerImmediate": (failure) => withLocation(failure, [""]),
-    "type_word": (failure) => withLocation(failure, [""]),
+    "type_16BitDataAddress": (failure) => withLocation(failure, numericTypeFailure(
+        ["16 Bit Data Address out of range"],
+        "Defined range", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_7BitDataAddress": (failure) => withLocation(failure, numericTypeFailure(
+        ["7 Bit Data Address out of range"],
+        "Defined range", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_bitIndex": (failure) => withLocation(failure, numericTypeFailure(
+        ["Bit index out of range"],
+        "Defined range", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_byte":  (failure) => withLocation(failure, numericTypeFailure(
+        ["Byte out of range"],
+        "Defined range", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_bytesOrString": (failure) => withLocation(failure, numericTypeFailure(
+        ["Should be a string or an array of byte values"],
+        "Defined range", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_failure": (failure) => withLocation(failure, assertionFailure(
+        ["The type of the operand / parameter doesn't match the requirements"],
+        "Expected type", "Actual type",
+        failure as AssertionFailure
+    )),
+    "type_ioPort": (failure) => withLocation(failure, numericTypeFailure(
+        ["IO port address out of range"],
+        "Defined range", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_nothing": (failure) => withLocation(failure, numericTypeFailure(
+        ["This operand should only have a symbolic value"],
+        "Defined range", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_nybble": (failure) => withLocation(failure, numericTypeFailure(
+        ["Nybble (half byte) out of range"],
+        "Defined value", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_positive": (failure) => withLocation(failure, numericTypeFailure(
+        ["This should be a positive number only"],
+        "Defined value", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_register": (failure) => withLocation(failure, numericTypeFailure(
+        ["This should be a register only"],
+        "Defined value", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_registerImmediate": (failure) => withLocation(failure, numericTypeFailure(
+        ["This should be an immediate register only"],
+        "Defined value", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_word": (failure) => withLocation(failure, numericTypeFailure(
+        ["16 bit word out of range"],
+        "Defined value", "Actual value",
+        failure as NumericTypeFailure
+    )),
 } as const;
