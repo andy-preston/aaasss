@@ -1,15 +1,17 @@
-import { numberBag } from "../assembler/bags.ts";
 import type { Failure, NumberOrFailures } from "../failure/bags.ts";
 import type { JsExpression } from "../javascript/expression.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import {
-    operands,
-    type NumericOperand, type OperandType, type SymbolicOperand,
-    type NumericOperands, type OperandTypes, type OperandIndex
+import type {
+    NumericOperand, NumericOperands, OperandType, OperandTypes,
+    SymbolicOperand, OperandIndex
 } from "./data-types.ts";
-import { IndexOperand, indexOperands } from "./index-operands.ts";
+import type { IndexOperand } from "./index-operands.ts";
+
+import { numberBag } from "../assembler/bags.ts";
+import { operands } from "./data-types.ts";
+import { indexOperands } from "./index-operands.ts";
 import { lineWithOperands } from "./line-types.ts";
 
 export const symbolicToNumeric = (
@@ -32,7 +34,7 @@ export const symbolicToNumeric = (
             : [numberBag(parseInt(numeric.it)), "number"];
     };
 
-    const actualOperation = (line: LineWithProcessedMacro) => {
+    const converted = (line: LineWithProcessedMacro) => {
         const numericOperands: Array<NumericOperand> = [];
         const operandTypes: Array<OperandType> = [];
 
@@ -64,9 +66,11 @@ export const symbolicToNumeric = (
         );
     };
 
+    // If we're recording a macro - the symbolic operands are going to be
+    // re-defined on playback and the numeric operands re-calculated then.
     return (line: LineWithProcessedMacro) => line.isRecordingMacro
         ? lineWithOperands(line, [], [])
-        : actualOperation(line);
+        : converted(line);
 };
 
 export type SymbolicToNumeric = ReturnType<typeof symbolicToNumeric>;
