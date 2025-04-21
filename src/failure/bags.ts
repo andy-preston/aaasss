@@ -1,16 +1,11 @@
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import type { OperandIndex } from "../operands/data-types.ts";
+
 import { failureKinds } from "./kinds.ts";
 
-type OperandLocation = {
-    "operand": OperandIndex
-};
-
-type ParameterLocation = {
-    "parameter": number
-};
-
+type OperandLocation = { "operand": OperandIndex };
+type ParameterLocation = { "parameter": number };
 type FailureLocation = undefined | OperandLocation | ParameterLocation;
 
 export const boringFailure = (

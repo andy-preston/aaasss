@@ -1,31 +1,11 @@
 import type { ClueFailure, NumericTypeFailure, AssertionFailure } from "../failure/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
-import type {
-    NumericOperand, NumericOperands,
-    OperandIndex, OperandTypes,
-    SymbolicOperands
-} from "./data-types.ts";
+import type { NumericOperand, OperandIndex } from "./data-types.ts";
 import type { OperandRequirements } from "./valid-scaled.ts";
 
 import { expect } from "jsr:@std/expect";
-import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
-import { lineWithProcessedMacro } from "../macros/line-types.ts";
-import { lineWithRawSource } from "../source-code/line-types.ts";
-import { lineWithTokens } from "../tokens/line-types.ts";
-import { lineWithOperands } from "./line-types.ts";
+import { testLine } from "./test.ts";
 import { validScaledOperands } from "./valid-scaled.ts";
-
-const testLine = (
-    symbolicOperands: SymbolicOperands,
-    numericOperands: NumericOperands,
-    operandTypes: OperandTypes
-) => {
-    const withSource = lineWithRawSource("", 0, "", "", 0, false);
-    const withJavascript = lineWithRenderedJavascript(withSource, "");
-    const withTokens = lineWithTokens(withJavascript, "", "", symbolicOperands);
-    const postMacro = lineWithProcessedMacro(withTokens, false);
-    return lineWithOperands(postMacro, numericOperands, operandTypes);
-}
 
 const anyNumber = 15;
 const anySymbolic = "test";
