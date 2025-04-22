@@ -1,5 +1,4 @@
 import { expect } from "jsr:@std/expect";
-import { numberBag } from "../assembler/bags.ts";
 import type { ExceptionFailure } from "../failure/bags.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
@@ -41,20 +40,25 @@ Deno.test("An expression yields a value", () => {
 Deno.test("A symbol yields a value", () => {
     const system = systemUnderTest();
     system.cpuRegisters.initialise(false);
-    expect(system.symbolTable.use("R7")).toEqual(numberBag(7));
+    const useResult = system.symbolTable.use("R7");
+    expect(useResult.type).toBe("number");
+    expect(useResult.it).toBe(7);
     const result = system.symbolicToNumeric(testLine(["R7"]));
     expect(result.failed()).toBeFalsy();
     expect(result.numericOperands[0]).toBe(7);
     expect(result.operandTypes[0]).toBe("register");
 });
 
-Deno.test("An index offset operand returns special values not related to the symbol table", () => {
+Deno.test("An index prefix/postfix operand gives a zero numeric value", () => {
     const system = systemUnderTest();
-    const result = system.symbolicToNumeric(testLine(["Z+", "Y+"]));
+    system.cpuRegisters.initialise(false);
+    const result = system.symbolicToNumeric(testLine(["X+", "+Y", "Z"]));
     expect(result.failed()).toBeFalsy();
-    expect(result.numericOperands[0]).toBe(0);
-    expect(result.numericOperands[1]).toBe(1);
-    expect(result.operandTypes).toEqual(["index_offset", "index_offset"]);
+    result.operandTypes.forEach((operandType, index) => {
+        const value = result.numericOperands[index];
+        expect(operandType).toBe("index");
+        expect(value).toBe(0);
+    });
 });
 
 Deno.test("An uninitialised symbol yields a failure", () => {

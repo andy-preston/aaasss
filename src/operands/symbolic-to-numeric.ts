@@ -1,46 +1,40 @@
-import { numberBag } from "../assembler/bags.ts";
 import type { Failure, NumberOrFailures } from "../failure/bags.ts";
 import type { JsExpression } from "../javascript/expression.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import { lineWithOperands } from "./line-types.ts";
-import {
-    operands,
-    type NumericOperand, type OperandType, type SymbolicOperand,
-    type NumericOperands, type OperandTypes, type OperandIndex
+import type {
+    NumericOperand, NumericOperands, OperandType, OperandTypes,
+    SymbolicOperand, OperandIndex
 } from "./data-types.ts";
+import type { IndexOperand } from "./index-operands.ts";
+
+import { numberBag } from "../assembler/bags.ts";
+import { operands } from "./data-types.ts";
+import { indexOperands } from "./index-operands.ts";
+import { lineWithOperands } from "./line-types.ts";
 
 export const symbolicToNumeric = (
     symbolTable: SymbolTable, cpuRegisters: CpuRegisters,
     jsExpression: JsExpression
 ) => {
-    const indexMapping: Map<SymbolicOperand, NumericOperand> = new Map([
-        ["Z+", 0],
-        ["Y+", 1]
-    ]);
-
     const valueAndType = (
-        symbolic: SymbolicOperand
+        symbolicOperand: SymbolicOperand
     ): [NumberOrFailures, OperandType] => {
-        if (indexMapping.has(symbolic)) {
-            return [
-                numberBag(indexMapping.get(symbolic)!), "index_offset"
-            ];
+        if (indexOperands.includes(symbolicOperand as IndexOperand)) {
+            return [numberBag(0), "index"];
         }
-        if (cpuRegisters.has(symbolic)) {
-            return [
-                // using the symbol table to count the usage.
-                numberBag(symbolTable.use(symbolic).it as number), "register"
-            ];
+        if (cpuRegisters.has(symbolicOperand)) {
+            const usageCounted = symbolTable.use(symbolicOperand).it;
+            return [numberBag(usageCounted as number), "register"];
         }
-        const numeric = jsExpression(symbolic);
+        const numeric = jsExpression(symbolicOperand);
         return numeric.type == "failures" ? [numeric, "failure"]
             : numeric.it == "" ? [numberBag(0), "number"]
             : [numberBag(parseInt(numeric.it)), "number"];
     };
 
-    const actualOperation = (line: LineWithProcessedMacro) => {
+    const converted = (line: LineWithProcessedMacro) => {
         const numericOperands: Array<NumericOperand> = [];
         const operandTypes: Array<OperandType> = [];
 
@@ -72,9 +66,11 @@ export const symbolicToNumeric = (
         );
     };
 
+    // If we're recording a macro - the symbolic operands are going to be
+    // re-defined on playback and the numeric operands re-calculated then.
     return (line: LineWithProcessedMacro) => line.isRecordingMacro
         ? lineWithOperands(line, [], [])
-        : actualOperation(line);
+        : converted(line);
 };
 
 export type SymbolicToNumeric = ReturnType<typeof symbolicToNumeric>;

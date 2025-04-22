@@ -1,11 +1,11 @@
-import { clueFailure, typeFailure, type Failure } from "../failure/bags.ts";
+import type { Failure } from "../failure/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
-import { validNumeric } from "../numeric-values/valid.ts";
-import {
-    operands,
-    type NumericOperand, type NumericOperands, type OperandIndex, type OperandType
-} from "./data-types.ts";
+import type { NumericOperand, NumericOperands, OperandIndex, OperandType } from "./data-types.ts";
 import type { LineWithOperands } from "./line-types.ts";
+
+import { assertionFailure } from "../failure/bags.ts";
+import { validNumeric } from "../numeric-values/valid.ts";
+import { operands } from "./data-types.ts";
 
 type Scaler = (value: NumericOperand) => NumericOperand;
 
@@ -14,37 +14,42 @@ const scalers: Map<NumericType, Scaler> = new Map([
     ["type_ioPort", (value) => value - 0x20]
 ]);
 
-type Requirement = [OperandType, NumericType, OperandIndex];
-
-export type Requirements = Array<Requirement>;
+export type OperandRequirement = [OperandType, NumericType];
+export type OperandRequirements = Array<OperandRequirement>;
 
 export const validScaledOperands = (
-    line: LineWithOperands, requirements: Requirements
+    line: LineWithOperands, operandRequirements: OperandRequirements
 ): NumericOperands => {
-    const count = requirements.length;
+    const count = operandRequirements.length;
     if (count != line.numericOperands.length) {
-        line.withFailure(clueFailure("operand_count", `${count}`));
+        line.withFailure(assertionFailure(
+            "operand_count", `${count}`,`${line.numericOperands.length}`
+        ));
     }
 
-    const mapped = requirements.map((requirement: Requirement) => {
-        const [requiredType, numericType, operandIndex] = requirement;
+    const withFailure = (failure: Failure, operandIndex: OperandIndex) => {
+        failure.location = {"operand": operandIndex};
+        line.withFailure(failure);
+    }
+
+    const mapped = operandRequirements.map((operandRequirement, index) => {
+        const operandIndex = index as OperandIndex;
+        const [requiredType, numericType] = operandRequirement;
 
         const numeric = line.numericOperands[operandIndex]!;
         const actualType = line.operandTypes[operandIndex];
 
         if (actualType != requiredType) {
-            const failure = typeFailure(
-                "type_failure", requiredType, `${actualType}`
+            withFailure(
+                assertionFailure("type_failure", requiredType, `${actualType}`),
+                operandIndex
             );
-            failure.location = {"operand": operandIndex};
-            line.withFailure(failure);
         }
 
         const valid = validNumeric(numeric, numericType);
         if (valid.type == "failures") {
-            (valid.it as Array<Failure>).forEach((failure) => {
-                failure.location = {"operand": operandIndex};
-                line.withFailure(failure);
+            (valid.it as Array<Failure>).forEach(failure => {
+                withFailure(failure, operandIndex);
             });
         }
 

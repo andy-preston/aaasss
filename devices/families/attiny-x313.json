@@ -2,7 +2,7 @@
     "unsupportedInstructions": {
         "value": [
             "multiply", "readModifyWrite", "DES",
-            "FlashMore128", "FlashMore8", "ELPM", "SPM.Z"
+            "FlashMore128", "FlashMore8", "SPM.Z+"
         ]
     },
 

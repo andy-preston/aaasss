@@ -3,35 +3,44 @@ import { bagOfFailures, boringFailure, clueFailure, type BooleanOrFailures } fro
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 
+// It looks like we're assuming that everything is at least AVRe
 const instructionGroups: Map<string, Array<Mnemonic>> = new Map([
-    ["multiply", ["MUL", "MULS", "MULSU", "FMUL", "FMULS", "FMULSU"]],
+    ["FlashMore8",      ["CALL", "JMP"]],
+    // AVRe+
+    ["multiply",        ["MUL", "MULS", "MULSU", "FMUL", "FMULS", "FMULSU"]],
+    ["FlashMore128",    ["EICALL", "EIJMP", "ELPM"]],
+    // AVRxm
     ["readModifyWrite", ["LAC", "LAS", "LAT", "XCH"]],
-    ["DES", ["DES"]],
-    ["FlashMore128", ["EICALL", "EIJMP"]],
-    ["FlashMore8", ["CALL", "JMP"]],
-    // We need to understand this better to explain WHY some devices have
-    // SPM but not SPM.Z
-    ["SPM.Z", ["SPM.Z"]],
-    // ELPM needs more study!
-    ["ELPM", ["ELPM", "ELPM.Z"]],
+    ["DES",             ["DES"]],
+    ["SPM.Z+",          ["SPM.Z+"]],
 ]);
 
 export const instructionSet = (symbolTable: SymbolTable) => {
     let reducedCore = false;
     let unsupportedInstructions: Array<Mnemonic> = [];
 
-    const deviceIsDefined = () => {
+    const deviceNotDefined = () => {
         const deviceName = symbolTable.symbolValue("deviceName");
-        return deviceName.type == "string" && deviceName.it != "";
+        return deviceName.type != "string" || deviceName.it == "";
     }
 
     const hasReducedCore = (): BooleanOrFailures =>
-        deviceIsDefined()
-            ? booleanBag(reducedCore)
-            : bagOfFailures([boringFailure("device_notSelected")]);
+        deviceNotDefined()
+            ? bagOfFailures([boringFailure("device_notSelected")])
+            : booleanBag(reducedCore);
+
+    const isUnsupported = (mnemonic: Mnemonic): BooleanOrFailures =>
+        deviceNotDefined()
+        ? bagOfFailures([
+            boringFailure("device_notSelected"),
+            clueFailure("mnemonic_supportedUnknown", mnemonic)
+        ])
+        : unsupportedInstructions.includes(mnemonic)
+        ? bagOfFailures([clueFailure("mnemonic_notSupported", mnemonic)])
+        : booleanBag(false);
 
     const unsupportedGroups = (groups: Array<string>) => {
-        unsupportedInstructions = groups.flatMap((group) => {
+        unsupportedInstructions = groups.flatMap(group => {
             if (!instructionGroups.has(group)) {
                 throw new Error(
                     `Unknown unsupported instruction group: ${group}`
@@ -40,16 +49,6 @@ export const instructionSet = (symbolTable: SymbolTable) => {
             return instructionGroups.get(group)!;
         });
     };
-
-    const isUnsupported = (mnemonic: Mnemonic): BooleanOrFailures =>
-        !deviceIsDefined()
-            ? bagOfFailures([
-                boringFailure("device_notSelected"),
-                clueFailure("mnemonic_supportedUnknown", mnemonic)
-            ])
-            : unsupportedInstructions.includes(mnemonic)
-            ? bagOfFailures([clueFailure("mnemonic_notSupported", mnemonic)])
-            : booleanBag(false);
 
     const setReducedCore = (value: boolean) => {
         reducedCore = value;

@@ -2,10 +2,13 @@ import type { OutputFile } from "../assembler/output-file.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import { codeWidth, extractedCode, type ExtractedCode } from "./code.ts";
-import type { FailureMessageTranslator } from "./messages.ts";
+import type { ExtractedCode } from "./code.ts";
+import type { FailureMessageTranslator } from "./languages.ts";
+import type { ExtractedText } from "./text.ts";
+
+import { codeWidth, extractedCode } from "./code.ts";
 import { formattedSymbolTable } from "./symbols.ts";
-import { extractedText, type ExtractedText } from "./text.ts";
+import { extractedText } from "./text.ts";
 
 
 export const listing = (
@@ -34,7 +37,7 @@ export const listing = (
     const messagesForLine = (line: LineWithAddress) =>
         line.failures().reduce(
             (messages, failure) =>
-                messages.concat(failureMessages(failure, line)),
+                messages.concat(failureMessages(failure)),
             [] as Array<string>
         );
 

@@ -1,14 +1,13 @@
-import { emptyBag } from "../assembler/bags.ts";
-import {
-    bagOfFailures, boringFailure, clueFailure, typeFailure,
-    type BagOrFailures, type Failure
-} from "../failure/bags.ts";
-import { validNumeric } from "../numeric-values/valid.ts";
+import type { BagOrFailures, Failure } from "../failure/bags.ts";
 import type {
     VoidDirective, StringDirective, NumberDirective, ValueDirective,
     FunctionDefineDirective, FunctionUseDirective, DataDirective
 } from "./bags.ts";
 import type { JavaScriptFunction } from "./data-types.ts";
+
+import { emptyBag } from "../assembler/bags.ts";
+import { assertionFailure, bagOfFailures, boringFailure, } from "../failure/bags.ts";
+import { validNumeric } from "../numeric-values/valid.ts";
 
 const arrayOfStrings = (them: unknown[]) => them.map(element => `${element}`);
 
@@ -23,7 +22,9 @@ const parameterTypes = (
     const failures: Array<Failure> = [];
 
     if (length != undefined && length != givenParameters.length) {
-        failures.push(clueFailure("parameter_count", `${length}`));
+        failures.push(assertionFailure(
+            "parameter_count", `${length}`, `${givenParameters.length}`
+        ));
     }
 
     givenParameters.forEach((parameter, index) => {
@@ -32,7 +33,7 @@ const parameterTypes = (
         }
         const typeOf = Array.isArray(parameter) ? "array" : typeof parameter;
         if (!requiredIncludes(typeOf)) {
-            const failure = typeFailure(
+            const failure = assertionFailure(
                 "type_failure", requiredTypes.join(", "), typeOf
             );
             failure.location = { "parameter": index };
@@ -56,9 +57,9 @@ const numericParameter = (given: unknown, index: number) => {
 export const voidDirective = (
     directive: VoidDirective
 ): JavaScriptFunction => (...parameters: unknown[]) =>
-    parameters.length != 0
-        ? bagOfFailures([clueFailure("parameter_count", "0")])
-        : directive.it();
+    parameters.length != 0 ? bagOfFailures([assertionFailure(
+        "parameter_count", "0", `${parameters.length}`
+    )]) : directive.it();
 
 export const stringDirective = (
     directive: StringDirective
@@ -74,7 +75,9 @@ export const numberDirective = (
 ): JavaScriptFunction => (...parameters: unknown[]) => {
     const failures: Array<Failure> = [];
     if (parameters.length != 1) {
-        failures.push(clueFailure("parameter_count", `${parameters.length}`));
+        failures.push(assertionFailure(
+            "parameter_count", "1", `${parameters.length}`
+        ));
     }
 
     const numeric = numericParameter(parameters[0], 0);
@@ -94,12 +97,14 @@ export const valueDirective = (
 ): JavaScriptFunction => (...parameters: unknown[]) => {
     const failures: Array<Failure> = [];
     if (parameters.length != 2) {
-        failures.push(clueFailure("parameter_count", "2"));
+        failures.push(assertionFailure(
+            "parameter_count", "2", `${parameters.length}`
+        ));
     }
 
     const typeOfFirst = typeof parameters[0];
     if (typeOfFirst != "string") {
-        const failure = typeFailure("type_failure", "string", typeOfFirst);
+        const failure = assertionFailure("type_failure", "string", typeOfFirst);
         failure.location = { "parameter": 0 };
         failures.push(failure);
     }

@@ -81,8 +81,7 @@ Deno.test("Read-Modify-Write Demo", () => {
         "R15 |   |   | REGISTER | 1",
         "R20 |   |   | REGISTER | 1",
         "R21 |   |   | REGISTER | 1",
-        "R22 |   |   | REGISTER | 1",
-        "Z   |   |   | REGISTER | 4",
+        "R22 |   |   | REGISTER | 1"
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",
@@ -124,13 +123,12 @@ Deno.test("Read-Modify-Write isn't available on all devices", () => {
         "R15 |   |   | REGISTER | 1",
         "R20 |   |   | REGISTER | 1",
         "R21 |   |   | REGISTER | 1",
-        "R22 |   |   | REGISTER | 1",
-        "Z   |   |   | REGISTER | 4",
+        "R22 |   |   | REGISTER | 1"
     ]);
     expectFileExists(".hex").toBeFalsy();
 });
 
-Deno.test("Read-Modify-Write expects the first register to be Z", () => {
+Deno.test("Read-Modify-Write expects the index register to be Z", () => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
         "unsupportedInstructions": { "value": [] },
@@ -150,14 +148,28 @@ Deno.test("Read-Modify-Write expects the first register to be Z", () => {
         "=================",
         '                      1     {{ device("DemoDevice"); }}',
         "000000 93 46          2     LAC R30, R20",
-        "                        operand_z",
+        "                        operand_symbolic",
         "                        location.operand: 0",
+        "                        expected: Z",
+        "                        actual: R30",
+
+        "                        type_failure",
+        "                        location.operand: 0",
+        "                        expected: index",
+        "                        actual: register",
+
         "000001 93 55          3     LAS X, R21",
-        "                        operand_z",
+        "                        operand_symbolic",
         "                        location.operand: 0",
+        "                        expected: Z",
+        "                        actual: X",
+
         "000002 93 67          4     LAT Y, R22",
-        "                        operand_z",
+        "                        operand_symbolic",
         "                        location.operand: 0",
+        "                        expected: Z",
+        "                        actual: Y",
+
         "000003 92 F4          5     XCH z, R15",
         "",
         "Symbol Table",
@@ -167,10 +179,7 @@ Deno.test("Read-Modify-Write expects the first register to be Z", () => {
         "R20 |   |   | REGISTER | 1",
         "R21 |   |   | REGISTER | 1",
         "R22 |   |   | REGISTER | 1",
-        "R30 |   |   | REGISTER | 1",
-        "X   |   |   | REGISTER | 1",
-        "Y   |   |   | REGISTER | 1",
-        "Z   |   |   | REGISTER | 1",
+        "R30 |   |   | REGISTER | 1"
     ]);
     expectFileExists(".hex").toBeFalsy();
 });

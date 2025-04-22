@@ -1,69 +1,44 @@
-import { expect } from "jsr:@std/expect";
-import type { ClueFailure, NumericTypeFailure, TypeFailure } from "../failure/bags.ts";
-import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
-import { lineWithProcessedMacro } from "../macros/line-types.ts";
+import type { AssertionFailure, NumericTypeFailure } from "../failure/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
-import { lineWithRawSource } from "../source-code/line-types.ts";
-import { lineWithTokens } from "../tokens/line-types.ts";
-import type { NumericOperand, NumericOperands, OperandIndex, OperandTypes, SymbolicOperands } from "./data-types.ts";
-import { lineWithOperands } from "./line-types.ts";
-import { validScaledOperands, type Requirements } from "./valid-scaled.ts";
+import type { NumericOperand, OperandIndex } from "./data-types.ts";
+import type { OperandRequirements } from "./valid-scaled.ts";
 
-const testLine = (
-    symbolicOperands: SymbolicOperands,
-    numericOperands: NumericOperands,
-    operandTypes: OperandTypes
-) => {
-    const withSource = lineWithRawSource("", 0, "", "", 0, false);
-    const withJavascript = lineWithRenderedJavascript(withSource, "");
-    const withTokens = lineWithTokens(withJavascript, "", "", symbolicOperands);
-    const postMacro = lineWithProcessedMacro(withTokens, false);
-    return lineWithOperands(postMacro, numericOperands, operandTypes);
-}
+import { expect } from "jsr:@std/expect";
+import { testLine } from "./test.ts";
+import { validScaledOperands } from "./valid-scaled.ts";
 
 const anyNumber = 15;
 const anySymbolic = "test";
 const someNumericType: NumericType = "type_positive";
 
 Deno.test("The number of operands much match", () => {
-    const line = testLine([], [], ["register", "number"]);
+    const line = testLine(["R1", "23"], [1, 23], ["register", "number"]);
 
-    const requirements: Requirements = [
-        ["register", someNumericType, 0],
-        ["number",   someNumericType, 1],
-        ["number",   someNumericType, 2],
+    const operandRequirements: OperandRequirements = [
+        ["register", someNumericType],
+        ["number",   someNumericType],
+        ["number",   someNumericType],
     ];
 
-    const result = validScaledOperands(line, requirements);
+    const result = validScaledOperands(line, operandRequirements);
     expect(line.failed()).toBeTruthy();
-    expect(result).toEqual([0, 0, 0]);
+    expect(result).toEqual([1, 23, 0]);
     const failures = line.failures().toArray();
-    expect(failures.length).toBe(5);
+    expect(failures.length).toBe(3);
     {
-        const failure = failures[0] as ClueFailure;
+        const failure = failures[0] as AssertionFailure;
         expect(failure.kind).toBe("operand_count");
         expect(failure.location).toBe(undefined);
-        expect(failure.clue).toBe("3");
+        expect(failure.expected).toBe("3");
+        expect(failure.actual).toBe("2")
     } {
-        const failure = failures[1] as TypeFailure;
-        expect(failure.kind).toBe("type_failure");
-        expect(failure.location).toEqual({ "operand": 0 });
-        expect(failure.expected).toBe("number | string");
-        expect(failure.actual).toBe("undefined");
-    } {
-        const failure = failures[2] as TypeFailure;
-        expect(failure.kind).toBe("type_failure");
-        expect(failure.location).toEqual({ "operand": 1 });
-        expect(failure.expected).toBe("number | string");
-        expect(failure.actual).toBe("undefined");
-    } {
-        const failure = failures[3] as TypeFailure;
+        const failure = failures[1] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({ "operand": 2 });
         expect(failure.expected).toBe("number");
         expect(failure.actual).toBe("undefined");
     } {
-        const failure = failures[4] as TypeFailure;
+        const failure = failures[2] as AssertionFailure;
         expect(failure.kind).toBe("type_failure");
         expect(failure.location).toEqual({ "operand": 2 });
         expect(failure.expected).toBe("number | string");
@@ -77,11 +52,11 @@ Deno.test("The required operand type must match the actual operand types", () =>
         [  anyNumber,   anyNumber],
         [ "register",    "number"]
     );
-    const requirements: Requirements = [
-        ["number",   someNumericType, 1],
-        ["register", someNumericType, 0],
+    const operandRequirements: OperandRequirements = [
+        ["register", someNumericType],
+        ["number",   someNumericType]
     ];
-    const result = validScaledOperands(line, requirements);
+    const result = validScaledOperands(line, operandRequirements);
     expect(line.failed()).toBeFalsy();
     expect(result).toEqual([anyNumber, anyNumber]);
 });
@@ -92,29 +67,30 @@ Deno.test("If they don't match the line is marked with a failure", () => {
         [  anyNumber,   anyNumber],
         [ "register",    "number"]
     );
-    const requirements: Requirements = [
-        ["number",   someNumericType, 0],
-        ["register", someNumericType, 1],
+    const operandRequirements: OperandRequirements = [
+        ["number",   someNumericType],
+        ["register", someNumericType]
     ];
-    const result = validScaledOperands(line, requirements);
+    const result = validScaledOperands(line, operandRequirements);
     expect(line.failed()).toBeTruthy();
     expect(result).toEqual([anyNumber, anyNumber]);
     const failures = line.failures().toArray();
     expect(failures.length).toBe(2);
     failures.forEach((failure, index) => {
         expect(failure.kind).toBe("type_failure");
-        const typeFailure = failure as TypeFailure;
-        expect(typeFailure.location).toEqual({
+        const assertionFailure = failure as AssertionFailure;
+        expect(assertionFailure.location).toEqual({
             "operand": index as OperandIndex
         });
-        expect(typeFailure.expected).toBe(requirements[index]![0]);
-        expect(typeFailure.actual).toBe(line.operandTypes[index]!);
+        expect(assertionFailure.expected).toBe(operandRequirements[index]![0]);
+        expect(assertionFailure.actual).toBe(line.operandTypes[index]!);
     });
 });
 
 Deno.test("The required numeric type must match the actual type", () => {
     const anySymbolic = "test";
     const testData: Record<NumericType, NumericOperand> = {
+        "type_nothing": 0,
         "type_16BitDataAddress": 0xcafe,
         "type_7BitDataAddress": 0x4e,
         "type_bitIndex": 3,
@@ -129,7 +105,7 @@ Deno.test("The required numeric type must match the actual type", () => {
     for (const [key, value] of Object.entries(testData)) {
         const numericType = key as NumericType;
         const line = testLine([anySymbolic], [value], ["number"]);
-        validScaledOperands(line, [["number", numericType, 0]]);
+        validScaledOperands(line, [["number", numericType]]);
         // The result might be scaled, so we're not checking it here!
         expect(line.failed(), `${key}`).toBeFalsy();
     }
@@ -138,6 +114,7 @@ Deno.test("The required numeric type must match the actual type", () => {
 Deno.test("If numeric types don't match the line fails", () => {
     const anySymbolic = "test";
     const testData: Record<NumericType, NumericOperand> = {
+        "type_nothing": 1,
         "type_16BitDataAddress": 0xdeadbeef,
         "type_7BitDataAddress": 0x80,
         "type_bitIndex": 9,
@@ -152,15 +129,19 @@ Deno.test("If numeric types don't match the line fails", () => {
     for (const [key, value] of Object.entries(testData)) {
         const numericType = key as NumericType;
         const line = testLine([anySymbolic], [value], ["number"]);
-        validScaledOperands(line, [["number", numericType, 0]]);
+        validScaledOperands(line, [["number", numericType]]);
         // The result might be scaled, so we're not checking it here!
-        expect(line.failed(), numericType).toBeTruthy();
-        const failures = line.failures().toArray();
-        expect(failures.length).toBe(1);
-        const failure = failures[0] as NumericTypeFailure;
-        expect(failure.kind).toBe(numericType);
-        expect(failure.location).toEqual({"operand": 0});
-        expect(failure.value).toBe(value);
-        // There is also min and max but I'm not testing them here
+        if (numericType == "type_nothing") {
+            expect(line.failed(), numericType).toBeFalsy();
+        } else {
+            expect(line.failed(), numericType).toBeTruthy();
+            const failures = line.failures().toArray();
+            expect(failures.length).toBe(1);
+            const failure = failures[0] as NumericTypeFailure;
+            expect(failure.kind).toBe(numericType);
+            expect(failure.location).toEqual({"operand": 0});
+            expect(failure.value).toBe(value);
+            // There is also min and max but I'm not testing them here
+        }
     }
 });

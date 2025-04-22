@@ -1,16 +1,11 @@
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import type { OperandIndex } from "../operands/data-types.ts";
+
 import { failureKinds } from "./kinds.ts";
 
-type OperandLocation = {
-    "operand": OperandIndex
-};
-
-type ParameterLocation = {
-    "parameter": number
-};
-
+type OperandLocation = { "operand": OperandIndex };
+type ParameterLocation = { "parameter": number };
 type FailureLocation = undefined | OperandLocation | ParameterLocation;
 
 export const boringFailure = (
@@ -21,29 +16,19 @@ export const boringFailure = (
 
 export type BoringFailure = ReturnType<typeof boringFailure>;
 
-export const comparisonFailure = (
-    kind: typeof failureKinds["comparison"][number],
-    before: string, after: string
-) => ({
-    "kind": kind, "location": undefined as FailureLocation,
-    "before": before, "after": after
-});
-
-export type ComparisonFailure = ReturnType<typeof comparisonFailure>;
-
-export const typeFailure = (
-    kind: typeof failureKinds["type"][number],
+export const assertionFailure = (
+    kind: typeof failureKinds["assertion"][number],
     expected: string, actual: string
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
     "expected": expected, "actual": actual
 });
 
-export type TypeFailure = ReturnType<typeof typeFailure>;
+export type AssertionFailure = ReturnType<typeof assertionFailure>;
 
 export const numericTypeFailure = (
     kind: typeof failureKinds["numericType"][number] | NumericType,
-    value: unknown, min: number, max: number | undefined
+    value: unknown, min: number | undefined, max: number | undefined
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
     "value": value, "min": min, "max": max
@@ -81,19 +66,9 @@ export const exceptionFailure = (
 
 export type ExceptionFailure = ReturnType<typeof exceptionFailure>;
 
-export const memoryRangeFailure = (
-    kind: typeof failureKinds["memoryRange"][number],
-    bytesAvailable: number, bytesRequested: number
-) => ({
-    "kind": kind, "location": undefined as FailureLocation,
-    "bytesAvailable": bytesAvailable, "bytesRequested": bytesRequested
-});
-
-export type MemoryRangeFailure = ReturnType<typeof memoryRangeFailure>;
-
-export type Failure = BoringFailure | ClueFailure | ComparisonFailure
-    | DefinitionFailure | ExceptionFailure | MemoryRangeFailure
-    | NumericTypeFailure | TypeFailure;
+export type Failure = AssertionFailure | BoringFailure | ClueFailure
+    | DefinitionFailure | ExceptionFailure
+    | NumericTypeFailure | AssertionFailure;
 
 export const bagOfFailures = (failures: Array<Failure>) =>
     ({ "type": "failures" as const, "it": failures });
@@ -105,4 +80,4 @@ export type StringsOrFailures = StringsBag | BagOfFailures;
 export type BooleanOrFailures = BooleanBag | BagOfFailures;
 
 export type BagOrFailures =
-    NumberBag | StringBag |  StringsBag | BooleanBag | BagOfFailures;
+    NumberBag | StringBag | StringsBag | BooleanBag | BagOfFailures;

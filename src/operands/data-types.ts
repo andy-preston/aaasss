@@ -12,7 +12,7 @@ export type SymbolicOperands = Operands<SymbolicOperand>;
 export type NumericOperand = number;
 export type NumericOperands = Operands<NumericOperand>;
 
-export type OperandType = "index_offset" | "register" | "failure" | "number";
+export type OperandType = "index" | "register" | "failure" | "number";
 export type OperandTypes = Operands<OperandType>;
 
 type Lookup<Goal> =

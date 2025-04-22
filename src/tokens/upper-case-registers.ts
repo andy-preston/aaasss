@@ -1,5 +1,5 @@
 const registerName = /^r\d{1,2}$/;
-const indexRegisterName = /^[xyz]$/;
+const indexRegisterName = /^\+?[xyz]\+?$/;
 
 const isRegister = (operand: string) =>
     operand.match(registerName) != null

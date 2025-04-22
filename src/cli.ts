@@ -1,6 +1,6 @@
 import { coupling } from "./assembler/coupling.ts";
 import { defaultDeviceFinder, defaultJsonLoader } from "./device/device-file.ts";
-import { defaultFailureMessages } from "./listing/messages.ts";
+import { defaultFailureMessages } from "./listing/languages.ts";
 import { defaultReaderMethod } from "./source-code/file-stack.ts";
 
 const assemble = coupling(

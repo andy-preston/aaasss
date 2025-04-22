@@ -1,6 +1,6 @@
 import { emptyBag, numberBag, stringBag, StringBag } from "../assembler/bags.ts";
 import type { StringDirective } from "../directives/bags.ts";
-import { bagOfFailures, comparisonFailure, type StringOrFailures } from "../failure/bags.ts";
+import { assertionFailure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
@@ -48,7 +48,7 @@ export const deviceChooser = (
             return emptyBag()
         }
         if (previousName.it != "") {
-            return bagOfFailures([comparisonFailure(
+            return bagOfFailures([assertionFailure(
                 "device_multiple", (previousName as StringBag).it, deviceName
             )]);
         }

@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure, ClueFailure, TypeFailure } from "../failure/bags.ts";
+import type { AssertionFailure, Failure, ClueFailure } from "../failure/bags.ts";
 import type { FileName } from "./data-types.ts";
 import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
 
@@ -45,7 +45,7 @@ Deno.test("Including an 'irrational' fileName returns a failure", () => {
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
-    const failure = failures[0] as TypeFailure;
+    const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("type_failure");
     expect(failure.location).toEqual({"parameter": 0});
     expect(failure.expected).toBe("string");

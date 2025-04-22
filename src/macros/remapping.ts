@@ -1,9 +1,11 @@
-import { emptyBag } from "../assembler/bags.ts";
-import { bagOfFailures, clueFailure, type StringOrFailures } from "../failure/bags.ts";
+import type { StringOrFailures } from "../failure/bags.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
+
+import { emptyBag } from "../assembler/bags.ts";
+import { assertionFailure, bagOfFailures } from "../failure/bags.ts";
 import { lineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
 
 export const remapping = (macroList: MacroList) => {
@@ -21,9 +23,10 @@ export const remapping = (macroList: MacroList) => {
         macro: Macro, actualParameters: MacroParameters
     ): StringOrFailures => {
         if (macro.parameters.length != actualParameters.length) {
-            return bagOfFailures([
-                clueFailure("macro_params", `${macro.parameters.length}`)
-            ]);
+            return bagOfFailures([assertionFailure(
+                "macro_params",
+                `${macro.parameters.length}`, `${actualParameters.length}`
+            )]);
         }
         mapping.set(mapKey(macroName, macroCount), actualParameters);
         return emptyBag();

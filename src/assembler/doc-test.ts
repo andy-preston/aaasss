@@ -1,12 +1,15 @@
+import type { DeviceFileOperations } from "../device/device-file.ts";
+import type { FileExtension } from "./output-file.ts";
+
 import { expect } from "jsr:@std/expect/expect";
 import { existsSync } from "jsr:@std/fs/exists";
-import { defaultDeviceFinder, defaultJsonLoader, type DeviceFileOperations } from "../device/device-file.ts";
+import { defaultDeviceFinder, defaultJsonLoader } from "../device/device-file.ts";
 import { deviceMocks } from "../device/device-file-mocks.ts";
-import { mockFailureMessages } from "../listing/messages-mock.ts";
+import { mockFailureMessages } from "../listing/languages-mock.ts";
 import { FileName } from "../source-code/data-types.ts";
 import { defaultReaderMethod } from "../source-code/file-stack.ts";
 import { coupling } from "./coupling.ts";
-import { extensionSwap, type FileExtension } from "./output-file.ts";
+import { extensionSwap } from "./output-file.ts";
 
 const topFileName = "/var/tmp/demo.asm";
 

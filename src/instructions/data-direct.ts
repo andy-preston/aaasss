@@ -1,31 +1,31 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { NumericType } from "../numeric-values/types.ts";
-import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
-import { template } from "../object-code/template.ts";
+import type { OperandRequirement } from "../operands/valid-scaled.ts";
+
+import { lineWithObjectCode } from "../object-code/line-types.ts";
+import { BinaryDigit, template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
-import type { OperandIndex } from "../operands/data-types.ts";
+import { NumericOperand } from "../operands/data-types.ts";
 
-const mapping: Map<string, [string, OperandIndex, OperandIndex]> = new Map([
-    ["LDS", ["0", 0, 1]],
-    ["STS", ["1", 1, 0]]
-]);
-
-const options = (hasReducedCore: boolean): [
-    NumericType, NumericType, string, string
-] =>
-    hasReducedCore ? [
-        "type_registerImmediate", "type_7BitDataAddress",
-        "1010_", "kkk dddd_kkkk"
-    ] : [
-        "type_register", "type_16BitDataAddress",
-        "1001_00", "d dddd_0000 kkkk_kkkk kkkk_kkkk"
-    ];
+const variations = (hasReducedCore: boolean) => hasReducedCore ? {
+    "registerType": "type_registerImmediate" as NumericType,
+    "addressType": "type_7BitDataAddress" as NumericType,
+    "prefix": "1010_",
+    "suffix": "aaa rrrr_aaaa"
+} : {
+    "registerType": "type_register" as NumericType,
+    "addressType": "type_16BitDataAddress" as NumericType,
+    "prefix": "1001_00",
+    "suffix": "r rrrr_0000 aaaa_aaaa aaaa_aaaa"
+};
 
 export const dataDirect = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
     const codeGenerator = (instructionSet: InstructionSet) => {
+
         const hasReducedCore = (): boolean => {
             const reducedCore = instructionSet.hasReducedCore();
             if (reducedCore.type == "failures") {
@@ -35,23 +35,29 @@ export const dataDirect = (
             return reducedCore.it;
         };
 
-        const [operationBit, registerIndex, addressIndex] =
-            mapping.get(line.mnemonic)!;
+        const templateValues = (load: boolean) => {
+            const register: OperandRequirement = ["register", variation.registerType];
+            const address: OperandRequirement = ["number", variation.addressType];
+            const values = validScaledOperands(
+                line,
+                load ? [register, address] : [address, register]
+            );
+            return {
+                "register": values[load ? 0 : 1] as NumericOperand,
+                "address": values[load ? 1 : 0] as NumericOperand,
+                "operation": load ? "0": "1" as BinaryDigit
+            };
+        };
 
-        const [registerType, addressType, prefix, suffix] =
-            options(hasReducedCore());
+        const variation = variations(hasReducedCore());
+        const values = templateValues(line.mnemonic == "LDS");
 
-        const [register, address] = validScaledOperands(line, [
-            ["register", registerType, registerIndex],
-            ["number", addressType, addressIndex],
-        ]);
-
-        const code = template(`${prefix}${operationBit}${suffix}`, [
-            ["d", register!],
-            ["k", address!]
-        ]);
+        const code = template(
+            `${variation.prefix}${values.operation}${variation.suffix}`,
+            {"r": values.register, "a": values.address}
+        );
         return lineWithObjectCode(line, code);
     };
 
-    return mapping.has(line.mnemonic) ? codeGenerator : undefined;
+    return ["LDS", "STS"].includes(line.mnemonic) ? codeGenerator : undefined;
 };

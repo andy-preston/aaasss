@@ -1,8 +1,11 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import { lineWithObjectCode, type LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { EncodedInstruction } from "../object-code/object-code.ts";
+import type { OperandRequirements } from "../operands/valid-scaled.ts";
+
+import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
-import { validScaledOperands, type Requirements } from "../operands/valid-scaled.ts";
+import { validScaledOperands } from "../operands/valid-scaled.ts";
 
 const mapping: Map<string, string> = new Map([
     ["CPI",  "0011"],
@@ -20,16 +23,16 @@ export const byteImmediate = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
     const codeGenerator = (_instructionSet: InstructionSet) => {
-        const operandsRequired: Requirements = [
-            ["register", "type_registerImmediate", 0]
+        const operandRequirements: OperandRequirements = [
+            ["register", "type_registerImmediate"]
         ];
         if (line.mnemonic != "SER") {
-            operandsRequired.push(["number", "type_byte", 1]);
+            operandRequirements.push(["number", "type_byte"]);
         }
-        const actualOperands = validScaledOperands(line, operandsRequired);
+        const actualOperands = validScaledOperands(line, operandRequirements);
         const register = actualOperands[0]!;
 
-        const byte =
+        const value =
             // Set all bits is basically an LDI with FF
             line.mnemonic == "SER" ? 0xff
             // Clear bits is an AND with the inverse of the operand
@@ -38,9 +41,9 @@ export const byteImmediate = (
             : actualOperands[1]!;
 
         const prefix = mapping.get(line.mnemonic)!;
-        const code = template(`${prefix}_KKKK dddd_KKKK`, [
-            ["d", register], ["K", byte]
-        ]);
+        const code = template(
+            `${prefix}_vvvv rrrr_vvvv`, {"r": register, "v": value}
+        );
         return lineWithObjectCode(line, code);
     };
 

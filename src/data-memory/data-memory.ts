@@ -1,11 +1,11 @@
-import { emptyBag, numberBag, stringBag, type NumberBag } from "../assembler/bags.ts";
+import type { NumberBag } from "../assembler/bags.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import {
-    bagOfFailures, boringFailure, memoryRangeFailure,
-    type Failure, type NumberOrFailures
-} from "../failure/bags.ts";
-import { SymbolTable } from "../symbol-table/symbol-table.ts";
+import type { Failure, NumberOrFailures } from "../failure/bags.ts";
+import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+
+import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
+import { assertionFailure, bagOfFailures, boringFailure } from "../failure/bags.ts";
 
 export const dataMemory = (symbolTable: SymbolTable) => {
     let stack = 0;
@@ -33,9 +33,11 @@ export const dataMemory = (symbolTable: SymbolTable) => {
         const endAddress = (ramEnd as NumberBag).it;
         const currentAddress = startAddress + allocated;
         const bytesAvailable = endAddress - stack - currentAddress;
-        return bytesRequested > bytesAvailable ? bagOfFailures([
-            memoryRangeFailure("ram_outOfRange", bytesAvailable, bytesRequested)
-        ]) : numberBag(currentAddress);
+        return bytesRequested > bytesAvailable
+            ? bagOfFailures([assertionFailure(
+                "ram_outOfRange", `${bytesAvailable}`, `${bytesRequested}`
+            )])
+            : numberBag(currentAddress);
     };
 
     const alloc = (bytes: number): DirectiveResult => {
