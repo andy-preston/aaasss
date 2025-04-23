@@ -1,11 +1,14 @@
-import { emptyBag, numberBag, stringBag, StringBag } from "../assembler/bags.ts";
+import type { StringBag } from "../assembler/bags.ts";
 import type { StringDirective } from "../directives/bags.ts";
-import { assertionFailure, bagOfFailures, type StringOrFailures } from "../failure/bags.ts";
+import type { StringOrFailures } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { DeviceSpec, FullSpec, RawItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./device-file.ts";
 import type { InstructionSet } from "./instruction-set.ts";
+
+import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
+import { assertionFailure, bagOfFailures } from "../failure/bags.ts";
 
 export const deviceChooser = (
     instructionSet: InstructionSet,
