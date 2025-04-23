@@ -1,15 +1,17 @@
+import type { FunctionUseDirective, StringDirective } from "../directives/bags.ts";
+import type { SymbolicOperands } from "../operands/data-types.ts";
+import type { FileLineIterator, AssemblyPipelineSource } from "../source-code/file-stack.ts";
+import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+import type { Label, Mnemonic } from "../tokens/data-types.ts";
+
 import { expect } from "jsr:@std/expect";
 import { emptyBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
-import type { FunctionUseDirective, StringDirective } from "../directives/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
-import type { SymbolicOperands } from "../operands/data-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { SourceCode } from "../source-code/data-types.ts";
-import type { FileLineIterator, SourceOfSource } from "../source-code/file-stack.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
-import { symbolTable, type SymbolTable } from "../symbol-table/symbol-table.ts";
-import type { Label, Mnemonic } from "../tokens/data-types.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { macros } from "./macros.ts";
 
@@ -21,7 +23,7 @@ const mockFileStack = () => {
     const pushImaginary = (iterator: FileLineIterator) => {
         lineIterator = iterator;
     };
-    const lines: SourceOfSource = function* () {
+    const assemblyPipeline: AssemblyPipelineSource = function* () {
         if (lineIterator == undefined) {
             yield lineWithRawSource("", 0, "", "", 0, false);
             return;
@@ -35,7 +37,7 @@ const mockFileStack = () => {
     return {
         "includeDirective": includeDirective,
         "pushImaginary": pushImaginary,
-        "lines": lines
+        "assemblyPipeline": assemblyPipeline
     };
 };
 

@@ -1,8 +1,10 @@
-import { expect } from "jsr:@std/expect";
-import { directiveFunction } from "../directives/directive-function.ts";
 import type { AssertionFailure, Failure, ClueFailure } from "../failure/bags.ts";
 import type { FileName } from "./data-types.ts";
-import { defaultReaderMethod, fileStack, type FileLineIterator } from "./file-stack.ts";
+import type { FileLineIterator } from "./file-stack.ts";
+
+import { expect } from "jsr:@std/expect";
+import { directiveFunction } from "../directives/directive-function.ts";
+import { defaultReaderMethod, fileStack } from "./file-stack.ts";
 
 const irrelevantName = "testing";
 
@@ -60,18 +62,18 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
         "mock.test"
     );
     let index = 0;
-    for (const line of files.lines()) {
+    files.assemblyPipeline().forEach(line => {
         expect(line.fileName).toBe("mock.test");
         expect(line.lineNumber).toBe(index + 1);
         expect(line.rawSource).toBe(expectedLines[index]);
         expect(line.failed()).toBeFalsy();
         index = index + 1;
-    }
+    });
 });
 
 Deno.test("Reading a non existant source file gives one line with a failure", () => {
     const files = fileStack(defaultReaderMethod, "does-not-exist.test");
-    const lines = files.lines().toArray();
+    const lines = files.assemblyPipeline().toArray();
     expect(lines.length).toBe(1);
     const line = lines[0]!;
     expect(line.fileName).toBe("does-not-exist.test");
@@ -90,9 +92,9 @@ Deno.test("The last line of the top source file is flagged as such", () => {
         (_path: FileName) => expectedLines,
         "mock.test"
     );
-    for (const line of files.lines()) {
+    files.assemblyPipeline().forEach(line => {
         expect(line.lastLine).toBe(line.rawSource == "last");
-    }
+    });
 });
 
 Deno.test("An included file is inserted into the source stream", () => {
@@ -103,13 +105,13 @@ Deno.test("An included file is inserted into the source stream", () => {
     const include = directiveFunction(
         irrelevantName, aFileStack.includeDirective
     );
-    const lines = aFileStack.lines();
+    const assemblyPipeline = aFileStack.assemblyPipeline();
 
-    expect(lines.next().value!.rawSource).toBe("top.file 1");
+    expect(assemblyPipeline.next().value!.rawSource).toBe("top.file 1");
 
     const result = include("plop.txt");
     expect(result.type).not.toBe("failure");
-    expect(lines.toArray().map(line => line.rawSource)).toEqual([
+    expect(assemblyPipeline.toArray().map(line => line.rawSource)).toEqual([
         "plop.txt 1", "plop.txt 2", "plop.txt 3",
         "top.file 2", "top.file 3",
     ]);
@@ -120,9 +122,9 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
         [1, 2, 3].map(line => `${path} ${line}`);
 
     const files = fileStack(mockReader, "top.file");
-    const lines = files.lines();
+    const assemblyPipeline = files.assemblyPipeline();
 
-    const firstLine = lines.next().value!;
+    const firstLine = assemblyPipeline.next().value!;
     expect(firstLine.lineNumber).toBe(1);
     expect(firstLine.rawSource).toBe("top.file 1");
 
@@ -137,10 +139,9 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
         [1, "one"], [1, "two"], [1, "three"],
         [2, "top.file 2"], [3, "top.file 3"],
     ];
-
-    for (const [index, line] of lines.toArray().entries()) {
+    assemblyPipeline.forEach((line, index) => {
         expect(line.fileName).toBe("top.file");
         expect(line.lineNumber).toBe(expected[index]![0]);
         expect(line.rawSource).toBe(expected[index]![1]);
-    }
+    });
 });

@@ -1,9 +1,12 @@
-import { emptyBag, stringsBag } from "../assembler/bags.ts";
 import type { StringDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { bagOfFailures, clueFailure, type StringsOrFailures } from "../failure/bags.ts";
+import type { StringsOrFailures } from "../failure/bags.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
-import { lineWithRawSource, type LineWithRawSource } from "./line-types.ts";
+import type { LineWithRawSource } from "./line-types.ts";
+
+import { emptyBag, stringsBag } from "../assembler/bags.ts";
+import { bagOfFailures, clueFailure } from "../failure/bags.ts";
+import { lineWithRawSource } from "./line-types.ts";
 
 export type FileLineIterator =
     Generator<[SourceCode, string, number, boolean], void, unknown>;
@@ -13,7 +16,8 @@ type StackEntry = {
     "iterator": FileLineIterator;
 };
 
-export type SourceOfSource = () => Generator<LineWithRawSource, void, void>;
+export type AssemblyPipelineSource = () =>
+    Generator<LineWithRawSource, void, never>;
 
 export const defaultReaderMethod = (fileName: FileName) =>
     Deno.readTextFileSync(fileName).split("\n");
@@ -74,7 +78,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         });
     };
 
-    const lines: SourceOfSource = function* () {
+    const assemblyPipeline: AssemblyPipelineSource = function* () {
         const topFile = include(topFileName);
         if (topFile.type == "failures") {
             yield lineWithRawSource(
@@ -102,7 +106,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     return {
         "includeDirective": includeDirective,
         "pushImaginary": pushImaginary,
-        "lines": lines,
+        "assemblyPipeline": assemblyPipeline,
     };
 };
 

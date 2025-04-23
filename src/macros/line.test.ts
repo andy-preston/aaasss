@@ -78,7 +78,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
         "testMacro", macroFromTable(system.symbolTable, "testMacro")
     );
     expect(testMacro().type).not.toBe("failures");
-    const lines = system.mockFileStack.lines();
+    const lines = system.mockFileStack.assemblyPipeline();
     for (const [label, mnemonic] of testLines) {
         const lineSourceCode = lines.next().value!.rawSource;
         expect(lineSourceCode).toContain(label);
@@ -110,11 +110,11 @@ Deno.test("Lines with failures are not recorded in the macro", () => {
     );
     expect(testMacro().type).not.toBe("failures");
     let count = 0;
-    for (const line of system.mockFileStack.lines()) {
+    system.mockFileStack.assemblyPipeline().forEach(line => {
         count = count + 1;
         expect(line.rawSource).not.toBe("I have failed!");
         expect(line.rawSource).toBe("OK!");
-    }
+    });
     expect(count).toBe(1);
 });
 
@@ -140,9 +140,9 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
             "testMacro", macroFromTable(system.symbolTable, "testMacro")
         );
         expect(testMacro().type).not.toBe("failures");
-        for (const line of system.mockFileStack.lines()) {
+        system.mockFileStack.assemblyPipeline().forEach(line => {
             expect(line.macroName).toBe("testMacro");
             expect(line.macroCount).toBe(expectedCount);
-        }
+        });
     }
 });

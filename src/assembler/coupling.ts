@@ -74,7 +74,7 @@ export const coupling = (
 
     return assemblyPipeline(
         currentPass,
-        sourceFiles.lines,
+        sourceFiles,
         link(embeddedJs(expression, symbols)).rendered,
         tokenise,
         link(macros(symbols, sourceFiles)).lines,

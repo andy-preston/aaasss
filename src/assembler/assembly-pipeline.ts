@@ -7,7 +7,7 @@ import type { ObjectCode } from "../object-code/object-code.ts";
 import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
-import type { SourceOfSource } from "../source-code/file-stack.ts";
+import type { FileStack } from "../source-code/file-stack.ts";
 import type { Tokenise } from "../tokens/tokenise.ts";
 import type { Pass, PassNumber } from "./pass.ts";
 
@@ -15,7 +15,7 @@ import { passes } from "./pass.ts";
 
 export const assemblyPipeline = (
     pass: Pass,
-    lines: SourceOfSource,
+    source: FileStack,
     embeddedJs: EmbeddedJs["rendered"],
     tokenise: Tokenise,
     macro: Macros["lines"],
@@ -41,7 +41,7 @@ export const assemblyPipeline = (
         if (passNumber == 2) {
             pass.second();
         }
-        lines().forEach(line =>
+        source.assemblyPipeline().forEach(line =>
             output(addressed(code(operands(macro(tokenise(embeddedJs(line)))))))
         );
     };
