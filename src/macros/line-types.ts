@@ -1,12 +1,13 @@
 import type { ImmutableLine, MutableLine } from "../assembler/line.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import { operands } from "../operands/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 
-export type LineWithProcessedMacro = Readonly<Pick<
-    ImmutableLine, keyof LineWithTokens | "isRecordingMacro"
->>;
+import { operands } from "../operands/data-types.ts";
+
+export interface LineWithProcessedMacro extends LineWithTokens {
+    "isRecordingMacro": ImmutableLine["isRecordingMacro"];
+};
 
 export const lineWithProcessedMacro = (
     line: LineWithTokens, isRecordingMacro: boolean

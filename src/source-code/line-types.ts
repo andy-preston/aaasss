@@ -1,12 +1,17 @@
-import { line, type ImmutableLine } from "../assembler/line.ts";
+import type { ImmutableLine } from "../assembler/line.ts";
 import type { LineWithFailures } from "../failure/line-types.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 
-export type LineWithRawSource = Readonly<Pick<
-    ImmutableLine,
-    keyof LineWithFailures | "fileName" | "lineNumber" | "rawSource"
-        | "macroName" | "macroCount" | "lastLine"
->>;
+import { line } from "../assembler/line.ts";
+
+export interface LineWithRawSource extends LineWithFailures {
+    "fileName": ImmutableLine["fileName"];
+    "lineNumber": ImmutableLine["lineNumber"];
+    "rawSource": ImmutableLine["rawSource"];
+    "macroName": ImmutableLine["macroName"];
+    "macroCount": ImmutableLine["macroCount"];
+    "lastLine": ImmutableLine["lastLine"];
+};
 
 export const lineWithRawSource = (
     name: FileName, number: LineNumber, source: SourceCode,

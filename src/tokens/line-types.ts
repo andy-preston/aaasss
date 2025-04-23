@@ -1,12 +1,13 @@
-import type { MutableLine } from "../assembler/line.ts";
+import type { ImmutableLine, MutableLine } from "../assembler/line.ts";
 import type { LineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Label, Mnemonic } from "./data-types.ts";
 
-export type LineWithTokens = Readonly<Pick<
-    MutableLine,
-    keyof LineWithRenderedJavascript | "label" | "mnemonic" | "symbolicOperands"
->>;
+export interface LineWithTokens extends LineWithRenderedJavascript {
+    "label": ImmutableLine["label"];
+    "mnemonic": ImmutableLine["mnemonic"];
+    "symbolicOperands": ImmutableLine["symbolicOperands"];
+};
 
 export const lineWithTokens = (
     line: LineWithRenderedJavascript,

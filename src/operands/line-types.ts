@@ -1,10 +1,11 @@
-import type { MutableLine } from "../assembler/line.ts";
-import { LineWithProcessedMacro } from "../macros/line-types.ts";
+import type { ImmutableLine, MutableLine } from "../assembler/line.ts";
+import type { LineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericOperands, OperandTypes } from "./data-types.ts";
 
-export type LineWithOperands = Readonly<Pick<
-    MutableLine, keyof LineWithProcessedMacro | "numericOperands" | "operandTypes"
->>;
+export interface LineWithOperands extends LineWithProcessedMacro {
+    "numericOperands": ImmutableLine["numericOperands"];
+    "operandTypes": ImmutableLine["operandTypes"];
+};
 
 export const lineWithOperands = (
     line: LineWithProcessedMacro, operands: NumericOperands, types: OperandTypes
