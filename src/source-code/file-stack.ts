@@ -1,4 +1,4 @@
-import type { AssemblyPipelineSource } from "../assembler/types.ts";
+import type { AssemblyPipelineSource } from "../assembler/data-types.ts";
 import type { StringDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { StringsOrFailures } from "../failure/bags.ts";

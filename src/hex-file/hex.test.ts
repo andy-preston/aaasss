@@ -1,8 +1,9 @@
+import type { Code } from "../object-code/data-types.ts";
+
 import { expect } from "jsr:@std/expect";
 import { boringFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
-import type { Code } from "../object-code/data-types.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
 import { lineWithAddress } from "../program-memory/line-types.ts";

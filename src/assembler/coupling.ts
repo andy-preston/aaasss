@@ -16,7 +16,7 @@ import { jSExpression } from "../javascript/expression.ts";
 import { embeddedJs } from "../javascript/embedded.ts";
 import { listing } from "../listing/listing.ts";
 import { macros } from "../macros/macros.ts";
-import { objectCode } from "../object-code/object-code.ts";
+import { objectCode } from "../object-code/assembly-pipeline.ts";
 import { pokeBuffer } from "../object-code/poke.ts";
 import { symbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
@@ -97,7 +97,7 @@ export const coupling = (
         tokensAssemblyPipeline,
         $macros.assemblyPipeline,
         $symbolicToNumeric,
-        $objectCode,
+        $objectCode.assemblyPipeline,
         $programMemory.assemblyPipeline,
         $listing,
         $hexFile,

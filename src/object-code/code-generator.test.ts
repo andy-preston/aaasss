@@ -12,16 +12,17 @@ import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
-import { objectCode } from "./object-code.ts";
+import { objectCode } from "./assembly-pipeline.ts";
 import { pokeBuffer } from "./poke.ts";
 
 const systemUnderTest = () => {
-    const symbols = symbolTable(cpuRegisters());
-    const instructions = instructionSet(symbols);
+    const $symbolTable = symbolTable(cpuRegisters());
+    const $instructionSet = instructionSet($symbolTable);
+    const $objectCode = objectCode($instructionSet, pokeBuffer());
     return {
-        "instructionSet": instructions,
-        "symbolTable": symbols,
-        "objectCode": objectCode(instructions, pokeBuffer())
+        "instructionSet": $instructionSet,
+        "symbolTable": $symbolTable,
+        "assemblyPipeline": $objectCode.assemblyPipeline
     };
 };
 
@@ -48,7 +49,7 @@ const testLine = (
 Deno.test("Lines with no mnemonic don't bother generating code", () => {
     const system = systemUnderTest();
     const line = testLine("", "", [], [], [], false);
-    const result = system.objectCode(line);
+    const result = system.assemblyPipeline(line);
     expect(result.failed()).toBeFalsy();
     expect(result.failures.length).toBe(0);
     expect(result.code.length).toBe(0);
@@ -57,7 +58,7 @@ Deno.test("Lines with no mnemonic don't bother generating code", () => {
 Deno.test("Attempting to generate code with no device selected fails", () => {
     const system = systemUnderTest();
     const line = testLine("", "DES", [], [], [], false);
-    const result = system.objectCode(line);
+    const result = system.assemblyPipeline(line);
     expect(result.failed()).toBeTruthy();
     const failures = result.failures().toArray();
     expect(failures.length).toBe(2);
@@ -71,7 +72,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.instructionSet.unsupportedGroups(["DES"]);
     const line = testLine("", "DES", [], [], [], false);
-    const result = system.objectCode(line);
+    const result = system.assemblyPipeline(line);
     expect(result.failed()).toBeTruthy();
     const failures = result.failures().toArray();
     expect(failures.length).toBe(1);
@@ -85,7 +86,7 @@ Deno.test("Lines with unknown instructions fail", () => {
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
 
     const line = testLine("", "NOT_REAL", [], [], [], false);
-    const result = system.objectCode(line);
+    const result = system.assemblyPipeline(line);
     expect(result.failed()).toBeTruthy();
     const failures = result.failures().toArray();
     expect(failures.length).toBe(1);
@@ -98,7 +99,7 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     const system = systemUnderTest();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     const line = testLine("", "DES", ["15"], [15], ["number"], false);
-    const result = system.objectCode(line);
+    const result = system.assemblyPipeline(line);
     expect(result.failed()).toBeFalsy();
     expect(result.code).toEqual([[0x94, 0xfb]]);
 });
@@ -107,7 +108,7 @@ Deno.test("If a line has `isRecordingMacro == true`, no code is generated", () =
     const system = systemUnderTest();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     const line = testLine("", "DES", ["15"], [15], ["number"], true);
-    const result = system.objectCode(line);
+    const result = system.assemblyPipeline(line);
     expect(result.failed()).toBeFalsy();
     expect(result.code.length).toBe(0);
 });

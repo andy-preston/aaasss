@@ -1,13 +1,12 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
+import type { BinaryDigit, EncodedInstruction } from "../object-code/data-types.ts";
 import type { LineWithPokedBytes } from "../object-code/line-types.ts";
-import type { EncodedInstruction } from "../object-code/object-code.ts";
-import type { BinaryDigit } from "../object-code/template.ts";
+import type { NumericOperand } from "../operands/data-types.ts";
 import type { OperandRequirement } from "../operands/valid-scaled.ts";
 
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
-import { NumericOperand } from "../operands/data-types.ts";
 
 export const ioByte = (
     line: LineWithPokedBytes

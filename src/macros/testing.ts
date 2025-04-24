@@ -1,6 +1,8 @@
+import type { AssemblyPipelineSource } from "../assembler/data-types.ts";
 import type { FunctionUseDirective, StringDirective } from "../directives/bags.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import type { FileLineIterator, AssemblyPipelineSource } from "../source-code/file-stack.ts";
+import type { SourceCode } from "../source-code/data-types.ts";
+import type { FileLineIterator } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
 
@@ -9,7 +11,6 @@ import { emptyBag } from "../assembler/bags.ts";
 import { pass } from "../assembler/pass.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
-import { SourceCode } from "../source-code/data-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";

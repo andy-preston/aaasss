@@ -3,7 +3,7 @@ import type { HexFile } from "../hex-file/hex.ts";
 import type { EmbeddedJs } from "../javascript/embedded.ts";
 import type { Listing } from "../listing/listing.ts";
 import type { Macros } from "../macros/macros.ts";
-import type { ObjectCode } from "../object-code/object-code.ts";
+import type { ObjectCode } from "../object-code/assembly-pipeline.ts";
 import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
@@ -20,7 +20,7 @@ export const assemblyPipeline = (
     tokens: TokensAssemblyPipeline,
     macros: Macros["assemblyPipeline"],
     operands: SymbolicToNumeric,
-    code: ObjectCode,
+    objectCode: ObjectCode["assemblyPipeline"],
     programMemory: ProgramMemory["assemblyPipeline"],
     listing: Listing,
     hex: HexFile,
@@ -46,7 +46,7 @@ export const assemblyPipeline = (
             source().forEach(line =>
                 output(
                 programMemory(
-                code(
+                objectCode(
                 operands(
                 macros(
                 tokens(

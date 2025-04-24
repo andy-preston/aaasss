@@ -1,7 +1,6 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import type { Code } from "../object-code/data-types.ts";
+import type { Code, EncodedInstruction } from "../object-code/data-types.ts";
 import type { LineWithPokedBytes } from "../object-code/line-types.ts";
-import type { EncodedInstruction } from "../object-code/object-code.ts";
 
 import { assertionFailure, boringFailure } from "../failure/bags.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";

@@ -1,7 +1,6 @@
-import type { Code } from "../object-code/data-types.ts";
+import type { BinaryDigit, Code } from "../object-code/data-types.ts";
 import type { NumericOperand } from "../operands/data-types.ts";
 
-export type BinaryDigit = "0" | "1";
 type Binary = Array<BinaryDigit>;
 
 const bitSource = (decimal: number) => {

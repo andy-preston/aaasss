@@ -1,13 +1,13 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { NumericType } from "../numeric-values/types.ts";
+import type { BinaryDigit, EncodedInstruction } from "../object-code/data-types.ts";
 import type { LineWithPokedBytes } from "../object-code/line-types.ts";
-import type { EncodedInstruction } from "../object-code/object-code.ts";
+import type { NumericOperand } from "../operands/data-types.ts";
 import type { OperandRequirement } from "../operands/valid-scaled.ts";
 
 import { lineWithObjectCode } from "../object-code/line-types.ts";
-import { BinaryDigit, template } from "../object-code/template.ts";
+import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
-import { NumericOperand } from "../operands/data-types.ts";
 
 const variations = (hasReducedCore: boolean) => hasReducedCore ? {
     "registerType": "type_registerImmediate" as NumericType,
