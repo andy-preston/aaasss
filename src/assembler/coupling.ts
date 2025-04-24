@@ -23,7 +23,7 @@ import { programMemory } from "../program-memory/program-memory.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { fileStack } from "../source-code/file-stack.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { tokenise } from "../tokens/tokenise.ts";
+import { tokensAssemblyPipeline } from "../tokens/assembly-pipeline.ts";
 import { assemblyPipeline } from "./assembly-pipeline.ts";
 import { outputFile } from "./output-file.ts";
 import { pass } from "./pass.ts";
@@ -94,7 +94,7 @@ export const coupling = (
         $pass,
         $fileStack.assemblyPipeline,
         $embeddedJs.assemblyPipeline,
-        tokenise,
+        tokensAssemblyPipeline,
         $macros.assemblyPipeline,
         $symbolicToNumeric,
         $objectCode,

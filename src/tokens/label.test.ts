@@ -1,21 +1,21 @@
 import { expect } from "jsr:@std/expect";
 import { testLine } from "./testing.ts";
-import { tokenise } from "./tokenise.ts";
+import { tokensAssemblyPipeline } from "./assembly-pipeline.ts";
 
 Deno.test("A line containing a colon contains a label", () => {
     const line = testLine("label: LDI R16, 23");
-    const tokenised = tokenise(line);
-    expect(tokenised.label).toBe("label");
-    expect(tokenised.mnemonic).toBe("LDI");
-    expect(tokenised.symbolicOperands).toEqual(["R16", "23"]);
+    const result = tokensAssemblyPipeline(line);
+    expect(result.label).toBe("label");
+    expect(result.mnemonic).toBe("LDI");
+    expect(result.symbolicOperands).toEqual(["R16", "23"]);
 });
 
 Deno.test("A line can contain JUST a label", () => {
     const line = testLine("label:");
-    const tokenised = tokenise(line);
-    expect(tokenised.label).toBe("label");
-    expect(tokenised.mnemonic).toBe("");
-    expect(tokenised.symbolicOperands.length).toBe(0);
+    const result = tokensAssemblyPipeline(line);
+    expect(result.label).toBe("label");
+    expect(result.mnemonic).toBe("");
+    expect(result.symbolicOperands.length).toBe(0);
 });
 
 Deno.test("A label must only contain alphanumerics or underscore", () => {
@@ -26,9 +26,9 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
         "count?bytes:"
     ];
     for (const line of badLines) {
-        const tokenised = tokenise(testLine(line));
-        expect(tokenised.failed()).toBeTruthy();
-        const failures = tokenised.failures().toArray();
+        const result = tokensAssemblyPipeline(testLine(line));
+        expect(result.failed()).toBeTruthy();
+        const failures = result.failures().toArray();
         expect (failures.length).toBe(1);
         const failure = failures[0]!;
         expect(failure.kind).toBe("syntax_invalidLabel");
@@ -39,8 +39,8 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
         "count_8bit:"
     ];
     for (const line of goodLines) {
-        const tokenised = tokenise(testLine(line));
-        expect(tokenised.failed()).toBeFalsy();
+        const result = tokensAssemblyPipeline(testLine(line));
+        expect(result.failed()).toBeFalsy();
     }
 });
 

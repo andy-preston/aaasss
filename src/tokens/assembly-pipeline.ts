@@ -10,18 +10,17 @@ import { upperCaseRegisters } from "./upper-case-registers.ts";
 
 const anyWhitespace = /\s+/g;
 const comment = /;.*$/;
+const validLabel = /^\w*$/;
 
 const clean = (sourceLine: string) =>
     sourceLine.replace(comment, "").replace(anyWhitespace, " ").trim();
-
-const validLabel = /^\w*$/;
 
 const invalidLabel = (label: string) => !validLabel.test(label);
 
 const splitOperands = (text: string): Array<string> =>
     text == "" ? [] : text.split(",").map(operand => operand.trim());
 
-export const tokenise = (line: LineWithRenderedJavascript) => {
+export const tokensAssemblyPipeline = (line: LineWithRenderedJavascript) => {
     const cleaned = clean(line.assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
@@ -65,4 +64,4 @@ export const tokenise = (line: LineWithRenderedJavascript) => {
     );
 };
 
-export type Tokenise = typeof tokenise;
+export type TokensAssemblyPipeline = typeof tokensAssemblyPipeline;

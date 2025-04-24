@@ -8,7 +8,7 @@ import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
-import type { Tokenise } from "../tokens/tokenise.ts";
+import type { TokensAssemblyPipeline } from "../tokens/assembly-pipeline.ts";
 import type { Pass, PassNumber } from "./pass.ts";
 
 import { passes } from "./pass.ts";
@@ -17,7 +17,7 @@ export const assemblyPipeline = (
     pass: Pass,
     source: FileStack["assemblyPipeline"],
     embeddedJs: EmbeddedJs["assemblyPipeline"],
-    tokenise: Tokenise,
+    tokens: TokensAssemblyPipeline,
     macros: Macros["assemblyPipeline"],
     operands: SymbolicToNumeric,
     code: ObjectCode,
@@ -49,7 +49,7 @@ export const assemblyPipeline = (
                 code(
                 operands(
                 macros(
-                tokenise(
+                tokens(
                 embeddedJs(line)
             )))))));
         });

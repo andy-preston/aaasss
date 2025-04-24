@@ -1,8 +1,8 @@
+import type { AssemblyPipelineSource } from "../assembler/types.ts";
 import type { StringDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { StringsOrFailures } from "../failure/bags.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
-import type { LineWithRawSource } from "./line-types.ts";
 
 import { emptyBag, stringsBag } from "../assembler/bags.ts";
 import { bagOfFailures, clueFailure } from "../failure/bags.ts";
@@ -15,9 +15,6 @@ type StackEntry = {
     "fileName": FileName;
     "iterator": FileLineIterator;
 };
-
-export type AssemblyPipelineSource = () =>
-    Generator<LineWithRawSource, void, never>;
 
 export const defaultReaderMethod = (fileName: FileName) =>
     Deno.readTextFileSync(fileName).split("\n");
