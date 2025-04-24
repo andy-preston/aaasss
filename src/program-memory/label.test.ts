@@ -16,7 +16,7 @@ Deno.test("A label is stored in the symbol table with the current address", () =
     expect(origin(10).type).not.toBe("failures");
 
     const line = testLine("A_LABEL", [], []);
-    const second = system.programMemory.addressed(line);
+    const second = system.programMemory.assemblyPipeline(line);
     expect(second.failed(), "Unexpected failure").toBeFalsy();
     expect(second.failures.length).toBe(0);
     expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
@@ -33,15 +33,15 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
     const line = testLine("A_LABEL", [], []);
 
     expect(origin(10).type).not.toBe("failures");
-    system.programMemory.addressed(line);
+    system.programMemory.assemblyPipeline(line);
 
     system.pass.second();
     expect(origin(10).type).not.toBe("failures");
-    expect(system.programMemory.addressed(line).failed()).toBeFalsy();
+    expect(system.programMemory.assemblyPipeline(line).failed()).toBeFalsy();
     expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
 
     expect(origin(20).type).not.toBe("failures");
-    expect(system.programMemory.addressed(line).failed()).toBeTruthy();
+    expect(system.programMemory.assemblyPipeline(line).failed()).toBeTruthy();
     expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
 });
 
@@ -56,7 +56,7 @@ Deno.test("Labels are available to javascript", () => {
 
     system.pass.second();
     expect(origin(10).type).not.toBe("failures");
-    system.programMemory.addressed(testLine("A_LABEL", [], []));
+    system.programMemory.assemblyPipeline(testLine("A_LABEL", [], []));
     const result = system.jsExpression("A_LABEL");
     expect(result.type).not.toBe("failures");
     expect((result as StringBag).it).toBe("10");

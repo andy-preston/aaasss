@@ -34,55 +34,73 @@ export const coupling = (
     failureMessageTranslator: FailureMessageTranslator,
     deviceFileOperations: DeviceFileOperations
 ) => {
-    const currentPass = pass();
-    const illegalState = illegalStateFailures();
-    const registers = cpuRegisters();
-    const symbols = symbolTable(registers);
 
-    const link = <ComponentType extends object>(component: ComponentType) => {
+    const $pass = pass();
+    const $illegalStateFailures = illegalStateFailures();
+    const $cpuRegisters = cpuRegisters();
+    const $symbolTable = symbolTable($cpuRegisters);
+
+    const couple = <ComponentType extends object>(component: ComponentType) => {
+        if ("resetState" in component) {
+            $pass.resetStateCallback(
+                component.resetState as ResetStateCallback
+            );
+        }
+        if ("leftInIllegalState" in component) {
+            $illegalStateFailures.useCallback(
+                component.leftInIllegalState as IllegalStateCallback
+            );
+        }
         for (const property in component) {
-            if (property == "resetState") {
-                currentPass.resetStateCallback(
-                    component[property] as ResetStateCallback
-                );
-            }
             if (property.endsWith("Directive")) {
-                symbols.builtInSymbol(
-                    property.replace("Directive", ""),
-                    component[property] as BaggedDirective
-                );
-            }
-            if (property == "leftInIllegalState") {
-                illegalState.useCallback(
-                    component[property] as IllegalStateCallback
+                const symbolName = property.replace("Directive", "");
+                $symbolTable.builtInSymbol(
+                    symbolName, component[property] as BaggedDirective
                 );
             }
         }
         return component;
     }
 
-    link(symbols);
-    link(functionDirectives);
-    link(registers);
-    const instructions = link(instructionSet(symbols));
+    couple($symbolTable);
+    couple($cpuRegisters);
 
-    link(deviceChooser(instructions, registers, symbols, deviceFileOperations));
-    link(dataMemory(symbols));
-    const poke = link(pokeBuffer());
-    const sourceFiles = link(fileStack(readerMethod, fileName));
-    const expression = link(jSExpression(symbols));
+    const $fileStack = couple(fileStack(readerMethod, fileName));
+    const $macros = couple(macros($symbolTable, $fileStack));
+
+    const $jsExpression = couple(jSExpression($symbolTable));
+    const $embeddedJs = couple(embeddedJs($jsExpression, $symbolTable));
+    const $symbolicToNumeric = couple(symbolicToNumeric(
+        $symbolTable, $cpuRegisters, $jsExpression
+    ));
+
+    const $instructionSet = couple(instructionSet($symbolTable));
+    const $pokeBuffer = couple(pokeBuffer());
+    const $objectCode = couple(objectCode($instructionSet, $pokeBuffer));
+    const $programMemory = couple(programMemory($symbolTable));
+
+    const $listing = couple(listing(
+        outputFile, fileName, failureMessageTranslator, $symbolTable
+    ));
+    const $hexFile = couple(hexFile(outputFile, fileName));
+
+    couple(functionDirectives);
+    couple(dataMemory($symbolTable));
+    couple(deviceChooser(
+        $instructionSet, $cpuRegisters, $symbolTable, deviceFileOperations
+    ));
 
     return assemblyPipeline(
-        currentPass,
-        sourceFiles,
-        link(embeddedJs(expression, symbols)).rendered,
+        $pass,
+        $fileStack.assemblyPipeline,
+        $embeddedJs.assemblyPipeline,
         tokenise,
-        link(macros(symbols, sourceFiles)).lines,
-        link(symbolicToNumeric(symbols, registers, expression)),
-        link(objectCode(instructions, poke)),
-        link(programMemory(symbols)).addressed,
-        link(listing(outputFile, fileName, failureMessageTranslator, symbols)),
-        link(hexFile(outputFile, fileName)),
-        illegalState
+        $macros.assemblyPipeline,
+        $symbolicToNumeric,
+        $objectCode,
+        $programMemory.assemblyPipeline,
+        $listing,
+        $hexFile,
+        $illegalStateFailures
     );
 };

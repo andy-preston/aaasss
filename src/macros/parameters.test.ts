@@ -26,7 +26,7 @@ Deno.test("If a macro has parameters, they are substituted", () => {
     );
     expect(testMacro("1", "2").type).not.toBe("failures");
 
-    const result = system.macros.lines(
+    const result = system.macros.assemblyPipeline(
         testLine("testMacro", 1, "", "TST", ["a", "b"])
     );
     expect(result.failed()).toBeFalsy();

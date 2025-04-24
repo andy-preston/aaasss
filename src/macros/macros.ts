@@ -53,9 +53,8 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
 
     const record = recording(macroList, symbolTable, useMacroDirective);
 
-    const lines = (line: LineWithTokens) => record.isRecording()
-        ? record.recorded(line)
-        : remap.remapped(line);
+    const assemblyPipeline = (line: LineWithTokens) =>
+        record.isRecording() ? record.recorded(line) : remap.remapped(line);
 
     const resetState = () => {
         macroList.clear();
@@ -68,7 +67,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         "useMacroDirective": useMacroDirective,
         "macroDirective": record.macroDirective,
         "endDirective": record.endDirective,
-        "lines": lines
+        "assemblyPipeline": assemblyPipeline
     };
 };
 

@@ -16,7 +16,7 @@ const noPlaybackCount = 0;
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
     const system = systemUnderTest();
     for (const [label, mnemonic] of testLines) {
-        const line = system.macros.lines(
+        const line = system.macros.assemblyPipeline(
             testLine("", 0, label, mnemonic, [])
         );
         expect(line.isRecordingMacro).toBe(false);
@@ -38,7 +38,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
 
     expect(macro("testMacro").type).not.toBe("failures");
     for (const [label, mnemonic] of testLines) {
-        const line = system.macros.lines(
+        const line = system.macros.assemblyPipeline(
             testLine("", 0, label, mnemonic, [])
         );
         expect(line.isRecordingMacro).toBe(true);
@@ -46,7 +46,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
     expect(end().type).not.toBe("failures");
 
     for (const [label, mnemonic] of testLines) {
-        const line = system.macros.lines(
+        const line = system.macros.assemblyPipeline(
             testLine("", 0, label, mnemonic, [])
         );
         expect(line.isRecordingMacro).toBe(false);
@@ -63,12 +63,12 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     );
 
     expect(macro("testMacro").type).not.toBe("failures");
-    const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
+    const skipFirstLine = system.macros.assemblyPipeline(testLine("", 0, "", "", []));
     expect(skipFirstLine.isRecordingMacro).toBeTruthy();
     for (const [label, mnemonic] of testLines) {
         const reconstructedLabel = label ? `${label}: ` : "";
         const reconstructedSource = `${reconstructedLabel}${mnemonic}`;
-        system.macros.lines(
+        system.macros.assemblyPipeline(
             testLineWithSource(reconstructedSource, label, mnemonic, [])
         );
     }
@@ -96,13 +96,13 @@ Deno.test("Lines with failures are not recorded in the macro", () => {
     );
 
     expect(macro("testMacro").type).not.toBe("failures");
-    const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
+    const skipFirstLine = system.macros.assemblyPipeline(testLine("", 0, "", "", []));
     expect(skipFirstLine.isRecordingMacro).toBeTruthy();
 
     const failingLine = testLineWithSource("I have failed!", "", "", []);
     failingLine.withFailure(boringFailure("js_jsMode"));
-    system.macros.lines(failingLine);
-    system.macros.lines(testLineWithSource("OK!", "", "", []));
+    system.macros.assemblyPipeline(failingLine);
+    system.macros.assemblyPipeline(testLineWithSource("OK!", "", "", []));
     expect(end().type).not.toBe("failures");
 
     const testMacro = directiveFunction(
@@ -129,7 +129,7 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
 
     expect(macro("testMacro").type).not.toBe("failures");
     for (const [label, mnemonic] of testLines) {
-        system.macros.lines(
+        system.macros.assemblyPipeline(
             testLine("", 0, label, mnemonic, [])
         );
     }

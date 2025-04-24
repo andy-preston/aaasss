@@ -14,9 +14,9 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     );
 
     expect(macro("testMacro").type).not.toBe("failures");
-    const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
+    const skipFirstLine = system.macros.assemblyPipeline(testLine("", 0, "", "", []));
     expect(skipFirstLine.isRecordingMacro).toBeTruthy();
-    const lineWithLabel = system.macros.lines(
+    const lineWithLabel = system.macros.assemblyPipeline(
         testLine("", 0, "aLabel", "", [])
     );
     expect(lineWithLabel.failed()).toBeFalsy();
@@ -28,7 +28,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     expect(testMacro().type).not.toBe("failures");
     const mockCount = 2;
 
-    const line = system.macros.lines(
+    const line = system.macros.assemblyPipeline(
         testLine("testMacro", mockCount, "", "JMP", ["aLabel"])
     );
     expect(line.symbolicOperands[0]).toBe(`testMacro$${mockCount}$aLabel`);
@@ -44,9 +44,9 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     );
 
     expect(macro("testMacro").type).not.toBe("failures");
-    const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
+    const skipFirstLine = system.macros.assemblyPipeline(testLine("", 0, "", "", []));
     expect(skipFirstLine.isRecordingMacro).toBeTruthy();
-    const lineWithLabel = system.macros.lines(
+    const lineWithLabel = system.macros.assemblyPipeline(
         testLine("", 0, "aLabel", "", [])
     );
     expect(lineWithLabel.failed()).toBeFalsy();
@@ -57,7 +57,7 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     );
     expect(testMacro().type).not.toBe("failures");
     const mockCount = 2;
-    const line = system.macros.lines(
+    const line = system.macros.assemblyPipeline(
         testLine("testMacro", mockCount, "", "JMP", ["differentLabel"])
     );
     expect(line.symbolicOperands[0]).toBe("differentLabel");
@@ -73,7 +73,9 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
     );
 
     expect(macro("testMacro").type).not.toBe("failures");
-    const skipFirstLine = system.macros.lines(testLine("", 0, "", "", []));
+    const skipFirstLine = system.macros.assemblyPipeline(
+        testLine("", 0, "", "", [])
+    );
     expect(skipFirstLine.isRecordingMacro).toBeTruthy();
     expect(end().type).not.toBe("failures");
 
@@ -82,7 +84,7 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
     );
     expect(testMacro().type).not.toBe("failures");
     const mockCount = 2;
-    const line = system.macros.lines(
+    const line = system.macros.assemblyPipeline(
         testLine("testMacro", mockCount, "aLabel", "TST", [])
     );
     expect(line.label).toBe(`testMacro$${mockCount}$aLabel`);

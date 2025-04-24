@@ -15,17 +15,18 @@ import { passes } from "./pass.ts";
 
 export const assemblyPipeline = (
     pass: Pass,
-    source: FileStack,
-    embeddedJs: EmbeddedJs["rendered"],
+    source: FileStack["assemblyPipeline"],
+    embeddedJs: EmbeddedJs["assemblyPipeline"],
     tokenise: Tokenise,
-    macro: Macros["lines"],
+    macros: Macros["assemblyPipeline"],
     operands: SymbolicToNumeric,
     code: ObjectCode,
-    addressed: ProgramMemory["addressed"],
+    programMemory: ProgramMemory["assemblyPipeline"],
     listing: Listing,
     hex: HexFile,
     illegalState: IllegalState
 ) => {
+
     const output = (line: LineWithAddress) => {
         if (!pass.produceOutput()) {
             return;
@@ -37,17 +38,21 @@ export const assemblyPipeline = (
         hex.line(line);
     };
 
-    const allSource = (passNumber: PassNumber) => {
-        if (passNumber == 2) {
-            pass.second();
-        }
-        source.assemblyPipeline().forEach(line =>
-            output(addressed(code(operands(macro(tokenise(embeddedJs(line)))))))
-        );
-    };
-
     return () => {
-        passes.forEach(allSource);
+        passes.forEach((passNumber: PassNumber) => {
+            if (passNumber == 2) {
+                pass.second();
+            }
+            source().forEach(line =>
+                output(
+                programMemory(
+                code(
+                operands(
+                macros(
+                tokenise(
+                embeddedJs(line)
+            )))))));
+        });
         listing.close();
         hex.save();
     };

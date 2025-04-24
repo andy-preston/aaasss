@@ -1,7 +1,8 @@
-import { expect } from "jsr:@std/expect";
 import type { Failure } from "../failure/bags.ts";
-import { cpuRegisters } from "../registers/cpu-registers.ts";
 import type { SourceCode } from "../source-code/data-types.ts";
+
+import { expect } from "jsr:@std/expect";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { embeddedJs } from "./embedded.ts";
@@ -22,7 +23,7 @@ const systemUnderTest = () => {
 
 Deno.test("A symbol assignment does not pollute the `this` context object", () => {
     const system = systemUnderTest();
-    const rendered = system.js.rendered(testLine(
+    const rendered = system.js.assemblyPipeline(testLine(
         "{{ plop = 27; this.plop; }}"
     ));
     expect(rendered.failed()).toBeFalsy();
@@ -32,7 +33,7 @@ Deno.test("A symbol assignment does not pollute the `this` context object", () =
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {
     const system = systemUnderTest();
-    const rendered = system.js.rendered(testLine(
+    const rendered = system.js.assemblyPipeline(testLine(
         "MOV {{ const test = 27; test; }}, R2"
     ));
     expect(rendered.failed()).toBeFalsy();
@@ -46,7 +47,7 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
         testLine('const message = "hello";'),
         testLine("message; }} matey!"),
     ];
-    const rendered = lines.map(system.js.rendered);
+    const rendered = lines.map(system.js.assemblyPipeline);
     expect(rendered[0]!.failed()).toBeFalsy();
     expect(rendered[0]!.assemblySource).toBe("some ordinary stuff");
     expect(rendered[1]!.failed()).toBeFalsy();
@@ -57,7 +58,7 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
 
 Deno.test("Multiple opening moustaches are illegal", () => {
     const system = systemUnderTest();
-    const rendered = system.js.rendered(testLine("{{ {{ }}"));
+    const rendered = system.js.assemblyPipeline(testLine("{{ {{ }}"));
     expect(rendered.failed()).toBeTruthy();
     const failures = rendered.failures().toArray();
     expect(failures.length).toBe(1);
@@ -66,7 +67,7 @@ Deno.test("Multiple opening moustaches are illegal", () => {
 
 Deno.test("Multiple closing moustaches are illegal", () => {
     const system = systemUnderTest();
-    const rendered = system.js.rendered(testLine("{{ }} }}"));
+    const rendered = system.js.assemblyPipeline(testLine("{{ }} }}"));
     expect(rendered.failed()).toBeTruthy();
     const failures = rendered.failures().toArray();
     expect(failures.length).toBe(1);
@@ -75,7 +76,7 @@ Deno.test("Multiple closing moustaches are illegal", () => {
 
 Deno.test("Omitting a closing moustache is illegal", () => {
     const system = systemUnderTest();
-    const rendered = system.js.rendered(testLine("{{"));
+    const rendered = system.js.assemblyPipeline(testLine("{{"));
     expect(rendered.failed()).toBeFalsy();
     expect(rendered.failures.length).toBe(0);
     const result = system.js.leftInIllegalState();

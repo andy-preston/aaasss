@@ -61,7 +61,7 @@ export const programMemory = (symbolTable: SymbolTable) => {
         "type": "numberDirective", "it": origin
     };
 
-    const addressed = (line: LineWithObjectCode) => {
+    const assemblyPipeline = (line: LineWithObjectCode) => {
         if (line.label) {
             const result = symbolTable.persistentSymbol(
                 line.label, numberBag(address)
@@ -90,7 +90,7 @@ export const programMemory = (symbolTable: SymbolTable) => {
         "resetState": resetState,
         "address": () => address,
         "originDirective": originDirective,
-        "addressed": addressed
+        "assemblyPipeline": assemblyPipeline
     };
 };
 

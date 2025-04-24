@@ -29,7 +29,7 @@ export const embeddedJs = (
         ? bagOfFailures([boringFailure("js_jsMode")])
         : emptyBag();
 
-    const rendered = (line: LineWithRawSource) => {
+    const assemblyPipeline = (line: LineWithRawSource) => {
         symbolTable.definingLine(line);
         let itFailed = false;
 
@@ -83,7 +83,7 @@ export const embeddedJs = (
     return {
         "resetState": resetState,
         "leftInIllegalState": leftInIllegalState,
-        "rendered": rendered
+        "assemblyPipeline": assemblyPipeline
     }
 };
 
