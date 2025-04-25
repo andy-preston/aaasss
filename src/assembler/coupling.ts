@@ -96,7 +96,7 @@ export const coupling = (
         $embeddedJs.assemblyPipeline,
         tokensAssemblyPipeline,
         $macros.assemblyPipeline,
-        $symbolicToNumeric,
+        $symbolicToNumeric.assemblyPipeline,
         $objectCode.assemblyPipeline,
         $programMemory.assemblyPipeline,
         $listing,

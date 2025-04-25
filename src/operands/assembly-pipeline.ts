@@ -66,11 +66,18 @@ export const symbolicToNumeric = (
         );
     };
 
-    // If we're recording a macro - the symbolic operands are going to be
-    // re-defined on playback and the numeric operands re-calculated then.
-    return (line: LineWithProcessedMacro) => line.isRecordingMacro
+    const assemblyPipeline = (
+        // If we're recording a macro - the symbolic operands are going to be
+        // re-defined on playback and the numeric operands re-calculated then
+        // and there's nothing much to do here.
+        line: LineWithProcessedMacro
+    ) => line.isRecordingMacro
         ? lineWithOperands(line, [], [])
         : converted(line);
+
+    return {
+        "assemblyPipeline": assemblyPipeline
+    };
 };
 
 export type SymbolicToNumeric = ReturnType<typeof symbolicToNumeric>;

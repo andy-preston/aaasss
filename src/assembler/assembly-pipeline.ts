@@ -19,7 +19,7 @@ export const assemblyPipeline = (
     embeddedJs: EmbeddedJs["assemblyPipeline"],
     tokens: TokensAssemblyPipeline,
     macros: Macros["assemblyPipeline"],
-    operands: SymbolicToNumeric,
+    operands: SymbolicToNumeric["assemblyPipeline"],
     objectCode: ObjectCode["assemblyPipeline"],
     programMemory: ProgramMemory["assemblyPipeline"],
     listing: Listing,
