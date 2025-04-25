@@ -8,7 +8,7 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import type { SymbolicOperands } from "./data-types.ts";
-import { symbolicToNumeric } from "./symbolic-to-numeric.ts";
+import { symbolicToNumeric } from "./assembly-pipeline.ts";
 
 const systemUnderTest = () => {
     const registers = cpuRegisters();

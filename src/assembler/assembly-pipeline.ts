@@ -4,7 +4,7 @@ import type { EmbeddedJs } from "../javascript/embedded.ts";
 import type { Listing } from "../listing/listing.ts";
 import type { Macros } from "../macros/macros.ts";
 import type { ObjectCode } from "../object-code/assembly-pipeline.ts";
-import type { SymbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
+import type { SymbolicToNumeric } from "../operands/assembly-pipeline.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
