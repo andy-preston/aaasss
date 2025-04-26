@@ -18,4 +18,4 @@ export const lineWithRawSource = (
     macroName: string, macroCount: number, isLast: boolean
 ) => line(
     name, number, source, macroName, macroCount, isLast
-) as LineWithRawSource;
+) as ImmutableLine;

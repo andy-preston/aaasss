@@ -62,13 +62,13 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
         "mock.test"
     );
     let index = 0;
-    files.assemblyPipeline().forEach(line => {
+    for (const line of files.assemblyPipeline()) {
         expect(line.fileName).toBe("mock.test");
         expect(line.lineNumber).toBe(index + 1);
         expect(line.rawSource).toBe(expectedLines[index]);
         expect(line.failed()).toBeFalsy();
         index = index + 1;
-    });
+    }
 });
 
 Deno.test("Reading a non existant source file gives one line with a failure", () => {
@@ -92,9 +92,9 @@ Deno.test("The last line of the top source file is flagged as such", () => {
         (_path: FileName) => expectedLines,
         "mock.test"
     );
-    files.assemblyPipeline().forEach(line => {
+    for (const line of files.assemblyPipeline()) {
         expect(line.lastLine).toBe(line.rawSource == "last");
-    });
+    }
 });
 
 Deno.test("An included file is inserted into the source stream", () => {

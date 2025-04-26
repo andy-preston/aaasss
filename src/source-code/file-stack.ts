@@ -1,4 +1,3 @@
-import type { AssemblyPipelineSource } from "../assembler/data-types.ts";
 import type { StringDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { StringsOrFailures } from "../failure/bags.ts";
@@ -75,7 +74,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         });
     };
 
-    const assemblyPipeline: AssemblyPipelineSource = function* () {
+    const assemblyPipeline = function* () {
         const topFile = include(topFileName);
         if (topFile.type == "failures") {
             yield lineWithRawSource(
