@@ -1,14 +1,11 @@
 import { expect } from "jsr:@std/expect";
 import { numberBag } from "../assembler/bags.ts";
-import { pass } from "../assembler/pass.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "./symbol-table.ts";
 
 const systemUnderTest = () => {
-    const currentPass = pass();
     const symbols = symbolTable(cpuRegisters());
     return {
-        "pass": currentPass,
         "symbolTable": symbols
     };
 };

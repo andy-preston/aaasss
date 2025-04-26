@@ -1,22 +1,19 @@
+import type { Failure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
-import { pass } from "../assembler/pass.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure } from "../failure/bags.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "./symbol-table.ts";
 
 const irrelevantName = "testing";
 
 export const systemUnderTest = () => {
-    const currentPass = pass();
-    const registers = cpuRegisters();
-    const symbols = symbolTable(registers);
-    currentPass.resetStateCallback(symbols.resetState);
+    const $cpuRegisters = cpuRegisters();
+    const $symbolTable = symbolTable($cpuRegisters);
     return {
-        "symbolTable": symbols,
-        "cpuRegisters": registers,
-        "pass": currentPass
+        "symbolTable": $symbolTable,
+        "cpuRegisters": $cpuRegisters,
     };
 };
 
@@ -42,7 +39,6 @@ Deno.test("A symbol can only be redefined if it's value has not changed", () => 
         expect(result.type).toBe("number");
         expect(result.it).toBe(57);
     } {
-        system.pass.second();
         const definition = define("plop", 57);
         expect(definition.type).not.toBe("failures");
         const result = define("plop", 75);

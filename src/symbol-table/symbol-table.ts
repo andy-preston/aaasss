@@ -1,9 +1,11 @@
-import { emptyBag, numberBag } from "../assembler/bags.ts";
+import type { ImmutableLine } from "../assembler/line.ts";
 import type { ValueDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { bagOfFailures, boringFailure, definitionFailure } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolBag } from "./bags.ts";
+
+import { emptyBag, numberBag } from "../assembler/bags.ts";
+import { bagOfFailures, boringFailure, definitionFailure } from "../failure/bags.ts";
 import { counting } from "./counting.ts";
 import { definitionList } from "./definition-list.ts";
 
@@ -14,10 +16,17 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
     const counts = counting();
     const definitions = definitionList();
 
-    const resetState = () => {
-        counts.reset();
-        definitions.reset();
-        varSymbols.clear();
+    const assemblyPipeline = function* (
+        lines: IterableIterator<ImmutableLine>
+    ) {
+        for (const line of lines) {
+            if (line.lastLine) {
+                counts.reset();
+                definitions.reset();
+                varSymbols.clear();
+            }
+            yield line;
+        }
     };
 
     const isDefinedSymbol = (symbolName: string) =>
@@ -167,7 +176,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         "use": use,
         "count": counts.count,
         "list": list,
-        "resetState": resetState,
+        "assemblyPipeline": assemblyPipeline,
         "definingLine": definitions.definingLine
     };
 };
