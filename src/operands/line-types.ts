@@ -12,5 +12,5 @@ export const lineWithOperands = (
 ) => {
     (line as MutableLine).numericOperands = operands;
     (line as MutableLine).operandTypes = types;
-    return line as LineWithOperands;
+    return line as ImmutableLine;
 };

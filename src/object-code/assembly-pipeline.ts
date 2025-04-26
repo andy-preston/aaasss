@@ -1,3 +1,4 @@
+import type { ImmutableLine } from "../assembler/line.ts";
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { LineWithOperands } from "../operands/line-types.ts";
 import type { EncodedInstruction } from "./data-types.ts";
@@ -23,10 +24,9 @@ const addressingMode = (
 const emptyLine = (line: LineWithPokedBytes) => lineWithObjectCode(line, []);
 
 export const objectCode = (
-    instructionSet: InstructionSet,
-    pokeBuffer: PokeBuffer
+    instructionSet: InstructionSet, pokeBuffer: PokeBuffer
 ) => {
-    const assemblyPipeline = (line: LineWithOperands) => {
+    const processedLine = (line: LineWithOperands) => {
         if (line.isRecordingMacro) {
             return emptyLine(lineWithPokedBytes(line, []));
         }
@@ -52,6 +52,15 @@ export const objectCode = (
 
         return generatedCode(instructionSet);
     };
+
+    const assemblyPipeline = function* (
+        lines: IterableIterator<ImmutableLine>
+    ) {
+        for (const line of lines) {
+            yield processedLine(line);
+        }
+    };
+
 
     return {
         "assemblyPipeline": assemblyPipeline

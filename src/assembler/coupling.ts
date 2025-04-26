@@ -81,8 +81,8 @@ export const coupling = (
         .andThen($macros.assemblyPipeline)
         /*
         .andThen($symbolicToNumeric.assemblyPipeline)
-        .andThen($objectCode.assemblyPipeline)
         */
+        .andThen($objectCode.assemblyPipeline)
         .andThen($programMemory.assemblyPipeline)
         .andThen($dataMemory.assemblyPipeline)
         .andThen($symbolTable.assemblyPipeline)
