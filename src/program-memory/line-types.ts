@@ -9,5 +9,5 @@ export const lineWithAddress = (
     line: LineWithObjectCode, address: number
 ) => {
     (line as MutableLine).address = address;
-    return line as LineWithAddress;
+    return line as ImmutableLine;
 };

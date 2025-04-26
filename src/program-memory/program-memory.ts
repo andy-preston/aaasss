@@ -1,3 +1,4 @@
+import type { ImmutableLine } from "../assembler/line.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { StringOrFailures } from "../failure/bags.ts";
@@ -13,10 +14,6 @@ const bytesToWords = (byteCount: number): number => byteCount / 2;
 
 export const programMemory = (symbolTable: SymbolTable) => {
     let address = 0;
-
-    const resetState = () => {
-        address = 0;
-    };
 
     const pastEnd = (newAddress: number): StringOrFailures => {
         const bytes = symbolTable.deviceSymbolValue(
@@ -61,7 +58,8 @@ export const programMemory = (symbolTable: SymbolTable) => {
         "type": "numberDirective", "it": origin
     };
 
-    const assemblyPipeline = (line: LineWithObjectCode) => {
+
+    const addressStep = (line: LineWithObjectCode) => {
         if (line.label) {
             const result = symbolTable.persistentSymbol(
                 line.label, numberBag(address)
@@ -86,8 +84,18 @@ export const programMemory = (symbolTable: SymbolTable) => {
         return newLine;
     };
 
+    const assemblyPipeline = function* (
+        lines: IterableIterator<ImmutableLine>
+    ) {
+        for (const line of lines) {
+            if (line.lastLine) {
+                address = 0;
+            }
+            yield addressStep(line);
+        }
+    };
+
     return {
-        "resetState": resetState,
         "address": () => address,
         "originDirective": originDirective,
         "assemblyPipeline": assemblyPipeline
