@@ -9,8 +9,8 @@ export interface LineWithPokedBytes extends LineWithOperands {
 export const lineWithPokedBytes = (
     line: LineWithOperands, poked: Array<Code>
 ) => {
-    (line as MutableLine).code = poked;
-    return line as LineWithPokedBytes;
+    (line as MutableLine).code = [...poked];
+    return line as ImmutableLine;
 };
 
 export interface LineWithObjectCode extends LineWithPokedBytes {
@@ -20,5 +20,5 @@ export const lineWithObjectCode = (line: LineWithPokedBytes, code: Code) => {
     if (code.length > 0) {
         (line as MutableLine).code.push(code);
     }
-    return line as LineWithObjectCode;
+    return line as ImmutableLine;
 };
