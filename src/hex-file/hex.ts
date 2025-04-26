@@ -37,7 +37,7 @@ export const hexFile = (outputFile: OutputFile, topFileName: FileName) => {
         }
     };
 
-    const save = () => {
+    const close = () => {
         const file = outputFile(topFileName, '.hex');
         if (noHexFile) {
             file.remove();
@@ -54,10 +54,7 @@ export const hexFile = (outputFile: OutputFile, topFileName: FileName) => {
         file.close();
     };
 
-    return {
-        "line": line,
-        "save": save
-    };
+    return { "line": line, "close": close };
 }
 
 export type HexFile = ReturnType<typeof hexFile>;

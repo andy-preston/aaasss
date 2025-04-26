@@ -82,14 +82,14 @@ Deno.test("If there are any failures, no hex is produced", () => {
     system.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
     system.hex.line(testLineWithFailure());
     system.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
-    system.hex.save();
+    system.hex.close();
     expect(system.mockFileContents.length).toBe(0);
 });
 
 Deno.test("If no lines have code, no hex is produced", () => {
     const system = systemUnderTest();
     system.hex.line(testLine([0x000000, []]));
-    system.hex.save();
+    system.hex.close();
     expect(system.mockFileContents.length).toBe(0);
 });
 
@@ -104,7 +104,7 @@ Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
     for (const test of testCode) {
         system.hex.line(testLine(test));
     }
-    system.hex.save();
+    system.hex.close();
     for (const [index, line] of system.mockFileContents.entries()) {
         expect(line).toBe(expectedResults[index]);
     }
@@ -113,14 +113,14 @@ Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
 Deno.test("Every file starts with an extended segment address of zero", () => {
     const system = systemUnderTest();
     system.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
-    system.hex.save();
+    system.hex.close();
     expect(system.mockFileContents[0]).toBe(":020000020000FC");
 });
 
 Deno.test("Every file ends with an end-of-file marker", () => {
     const system = systemUnderTest();
     system.hex.line(testLine([0x000000, [1, 2, 3, 4]]));
-    system.hex.save();
+    system.hex.close();
     expect(system.mockFileContents.pop()).toBe(":00000001FF");
 });
 
@@ -129,7 +129,7 @@ Deno.test("Each record begins with a start code", () => {
     for (const test of testCode) {
         system.hex.line(testLine(test));
     }
-    system.hex.save();
+    system.hex.close();
     for (const line of system.mockFileContents) {
         expect(line.startsWith(":")).toBeTruthy();
     }
@@ -140,7 +140,7 @@ Deno.test("Each record contains a maximum of 0x10 bytes", () => {
     for (const test of testCode) {
         system.hex.line(testLine(test));
     }
-    system.hex.save();
+    system.hex.close();
     const firstRecord = system.mockFileContents[1]!;
     expect(firstRecord.substring(1, 3)).toBe("10");
     expect(firstRecord.length).toBe(recordLength(16));
@@ -151,7 +151,7 @@ Deno.test("The remainder of the bytes form the last record", () => {
     for (const test of testCode) {
         system.hex.line(testLine(test));
     }
-    system.hex.save();
+    system.hex.close();
     const lastRecord = system.mockFileContents[2]!;
     expect(lastRecord.substring(1, 3)).toBe("06");
     expect(lastRecord.length).toBe(recordLength(6));
@@ -163,7 +163,7 @@ Deno.test("If the address jumps out of sequence, a new record starts", () => {
     system.hex.line(testLine([0x000001, [0x04, 0x03]]));
     system.hex.line(testLine([0x000010, [0x06, 0x05]]));
     system.hex.line(testLine([0x000011, [0x08, 0x07]]));
-    system.hex.save();
+    system.hex.close();
     expect(system.mockFileContents[1]).toBe(
         ":04" + "0000" + "00" + "01020304" + "F2"
     );
@@ -189,7 +189,7 @@ Deno.test("Long strings of bytes are stored in multiple records", () => {
     system.hex.line(testLine([0x000014, [0x4B, 0x4E, 0x20, 0x59]]));
     system.hex.line(testLine([0x000016, [0x4F, 0x54, 0x4B, 0x4E]]));
     system.hex.line(testLine([0x000018, [0x21, 0x53]]));
-    system.hex.save();
+    system.hex.close();
     expect(system.mockFileContents[1]).toEqual([
         ":10", "0000", "00",
             "00", "01", "02", "03",
