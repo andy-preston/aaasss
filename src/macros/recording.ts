@@ -1,13 +1,12 @@
-import { emptyBag } from "../assembler/bags.ts";
 import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import { bagOfFailures, boringFailure, clueFailure, type StringOrFailures } from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
-import {
-    macro,
-    type MacroList, type MacroParameters, type Macro, type MacroName
-} from "./data-types.ts";
+import type { MacroList, MacroParameters, Macro, MacroName } from "./data-types.ts";
+
+import { emptyBag } from "../assembler/bags.ts";
+import { bagOfFailures, boringFailure, clueFailure } from "../failure/bags.ts";
+import { macro } from "./data-types.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 
 export const recording = (

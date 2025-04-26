@@ -1,6 +1,5 @@
 import type { FunctionUseDirective, StringDirective } from "../directives/bags.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import type { SourceCode } from "../source-code/data-types.ts";
 import type { FileLineIterator } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
