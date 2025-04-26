@@ -1,87 +1,101 @@
-import type { Failure } from "../failure/bags.ts";
 import type { SourceCode } from "../source-code/data-types.ts";
 
 import { expect } from "jsr:@std/expect";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { embeddedJs } from "./embedded.ts";
+import { assemblyPipeline } from "./embedded.ts";
 import { jSExpression } from "./expression.ts";
 
-const testLine = (source: SourceCode) =>
-    lineWithRawSource("", 0, source, "", 0, false);
+const systemUnderTest = (...sourceLines: Array<SourceCode>) => {
+    const testLines = function* () {
+        for (const sourceCode of sourceLines) {
+            yield lineWithRawSource("", 0, sourceCode, "", 0, false);
+        }
+    };
 
-const systemUnderTest = () => {
-    const registers = cpuRegisters();
-    const symbols = symbolTable(registers);
+    const $cpuRegisters = cpuRegisters();
+    const $symbolTable = symbolTable($cpuRegisters);
+    const $jsExpression = jSExpression($symbolTable);
+    const $assemblyPipeline = assemblyPipeline($jsExpression, $symbolTable);
     return {
-        "cpuRegisters": registers,
-        "symbolTable": symbols,
-        "js": embeddedJs(jSExpression(symbols), symbols)
+        "cpuRegisters": $cpuRegisters,
+        "symbolTable": $symbolTable,
+        "assemblyPipeline": $assemblyPipeline(testLines())
     };
 };
 
 Deno.test("A symbol assignment does not pollute the `this` context object", () => {
-    const system = systemUnderTest();
-    const rendered = system.js.assemblyPipeline(testLine(
+    const system = systemUnderTest(
         "{{ plop = 27; this.plop; }}"
-    ));
-    expect(rendered.failed()).toBeFalsy();
-    expect(rendered.assemblySource).not.toBe("27");
-    expect(rendered.assemblySource).toBe("");
+    );
+    const result = system.assemblyPipeline.next().value!;
+    expect(result.failed()).toBeFalsy();
+    expect(result.assemblySource).not.toBe("27");
+    expect(result.assemblySource).toBe("");
 });
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {
-    const system = systemUnderTest();
-    const rendered = system.js.assemblyPipeline(testLine(
+    const system = systemUnderTest(
         "MOV {{ const test = 27; test; }}, R2"
-    ));
-    expect(rendered.failed()).toBeFalsy();
-    expect(rendered.assemblySource).toBe("MOV 27, R2");
+    );
+    const result = system.assemblyPipeline.next().value!;
+    expect(result.failed()).toBeFalsy();
+    expect(result.assemblySource).toBe("MOV 27, R2");
 });
 
 Deno.test("JS can be delimited by moustaches across several lines", () => {
-    const system = systemUnderTest();
-    const lines = [
-        testLine("some ordinary stuff {{ const test = 27;"),
-        testLine('const message = "hello";'),
-        testLine("message; }} matey!"),
-    ];
-    const rendered = lines.map(system.js.assemblyPipeline);
-    expect(rendered[0]!.failed()).toBeFalsy();
-    expect(rendered[0]!.assemblySource).toBe("some ordinary stuff");
-    expect(rendered[1]!.failed()).toBeFalsy();
-    expect(rendered[1]!.assemblySource).toBe("");
-    expect(rendered[2]!.failed()).toBeFalsy();
-    expect(rendered[2]!.assemblySource).toBe("hello matey!");
+    const system = systemUnderTest(
+        "some ordinary stuff {{ const test = 27;",
+        'const message = "hello";',
+        "message; }} matey!",
+    );
+    const result = [...system.assemblyPipeline];
+    expect(result[0]!.failed()).toBeFalsy();
+    expect(result[0]!.assemblySource).toBe("some ordinary stuff");
+    expect(result[1]!.failed()).toBeFalsy();
+    expect(result[1]!.assemblySource).toBe("");
+    expect(result[2]!.failed()).toBeFalsy();
+    expect(result[2]!.assemblySource).toBe("hello matey!");
 });
 
 Deno.test("Multiple opening moustaches are illegal", () => {
-    const system = systemUnderTest();
-    const rendered = system.js.assemblyPipeline(testLine("{{ {{ }}"));
-    expect(rendered.failed()).toBeTruthy();
-    const failures = rendered.failures().toArray();
+    const system = systemUnderTest(
+        "{{ {{ }}"
+    );
+    const result = system.assemblyPipeline.next().value!;
+    expect(result.failed()).toBeTruthy();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     expect(failures[0]!.kind).toBe("js_jsMode");
 });
 
 Deno.test("Multiple closing moustaches are illegal", () => {
-    const system = systemUnderTest();
-    const rendered = system.js.assemblyPipeline(testLine("{{ }} }}"));
-    expect(rendered.failed()).toBeTruthy();
-    const failures = rendered.failures().toArray();
+    const system = systemUnderTest(
+        "{{ }} }}"
+    );
+    const result = system.assemblyPipeline.next().value!;
+    expect(result.failed()).toBeTruthy();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     expect(failures[0]!.kind).toBe("js_assemblerMode");
 });
 
 Deno.test("Omitting a closing moustache is illegal", () => {
-    const system = systemUnderTest();
-    const rendered = system.js.assemblyPipeline(testLine("{{"));
-    expect(rendered.failed()).toBeFalsy();
-    expect(rendered.failures.length).toBe(0);
-    const result = system.js.leftInIllegalState();
+    const system = systemUnderTest(
+        "{{"
+    );
+    const result = system.assemblyPipeline.next().value!;
+    expect(result.failed()).toBeFalsy();
+    expect(result.failures.length).toBe(0);
+    expect("the new pipeline uses lastLine").toBe(
+        "and we don't use it here!"
+    );
+    /*
+    const check = system.js.leftInIllegalState();
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     expect(failures[0]!.kind).toBe("js_jsMode");
+    */
 });

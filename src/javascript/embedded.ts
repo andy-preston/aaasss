@@ -1,90 +1,80 @@
-import { emptyBag } from "../assembler/bags.ts";
-import { bagOfFailures, boringFailure, type StringOrFailures } from "../failure/bags.ts";
+import type { ImmutableLine } from "../assembler/line.ts";
+import type { StringOrFailures } from "../failure/bags.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { JsExpression } from "./expression.ts";
+
+import { emptyBag } from "../assembler/bags.ts";
+import { bagOfFailures, boringFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "./line-types.ts";
 
 const scriptDelimiter = /({{|}})/;
 
-export const embeddedJs = (
+export const assemblyPipeline = (
     expression: JsExpression, symbolTable: SymbolTable
-) => {
+) => function* (
+    lines: IterableIterator<ImmutableLine>
+) {
     const buffer = {
         "javascript": [] as Array<string>,
         "assembler": [] as Array<string>,
     };
+    let current: keyof typeof buffer = "assembler";
 
-    type BufferName = keyof typeof buffer;
-
-    let current: BufferName = "assembler";
-
-    const resetState = () => {
-        buffer.javascript = [];
-        buffer.assembler = [];
-        current = "assembler";
-    };
-
-    const leftInIllegalState = (): StringOrFailures => current == "javascript"
+    const stillInJsMode = (): StringOrFailures => current == "javascript"
         ? bagOfFailures([boringFailure("js_jsMode")])
         : emptyBag();
 
-    const assemblyPipeline = (line: LineWithRawSource) => {
-        symbolTable.definingLine(line);
-        let itFailed = false;
-
-        const actions = new Map([[
-            "{{", () => {
-                const alreadyInJs = leftInIllegalState();
-                if (alreadyInJs.type == "failures") {
-                    itFailed = true;
-                    line.withFailures(alreadyInJs.it);
-                } else {
-                    current = "javascript";
-                }
-            }
-        ], [
-            "}}", () => {
-                if (current == "assembler") {
-                    itFailed = true;
-                    line.withFailure(boringFailure("js_assemblerMode"));
-                } else {
-                    const javascriptCode = buffer.javascript.join("\n").trim();
-                    buffer.javascript = [];
-                    const result = expression(javascriptCode);
-                    if (result.type == "failures") {
-                        itFailed = true;
-                        line.withFailures(result.it);
-                    } else {
-                        buffer.assembler.push(result.it);
-                    }
-                    current = "assembler";
-                }
-            }
-        ]]);
-
-        line.rawSource.split(scriptDelimiter).forEach(
-            (part: string) => {
-                if (actions.has(part)) {
-                    actions.get(part)!();
-                } else {
-                    buffer[current]!.push(part);
-                }
-            }
-        );
-
-        const result = lineWithRenderedJavascript(
-            line, itFailed ? "" : buffer.assembler.join("").trimEnd()
-        );
-        buffer.assembler = [];
-        return result;
+    const openMoustache = (line: LineWithRawSource) => {
+        const alreadyInJs = stillInJsMode();
+        if (alreadyInJs.type == "failures") {
+            line.withFailures(alreadyInJs.it);
+        } else {
+            current = "javascript";
+        }
     };
 
-    return {
-        "resetState": resetState,
-        "leftInIllegalState": leftInIllegalState,
-        "assemblyPipeline": assemblyPipeline
+    const closeMoustache = (line: LineWithRawSource) => {
+        if (current == "assembler") {
+            line.withFailure(boringFailure("js_assemblerMode"));
+            return;
+        }
+
+        const javascriptCode = buffer.javascript.join("\n").trim();
+        buffer.javascript = [];
+        const result = expression(javascriptCode);
+        if (result.type == "failures") {
+            line.withFailures(result.it);
+        } else {
+            buffer.assembler.push(result.it);
+        }
+        current = "assembler";
+    };
+
+    const actions = new Map([
+        ["{{", openMoustache], ["}}", closeMoustache]
+    ]);
+
+    const assemblerSource = (line: LineWithRawSource) => {
+        symbolTable.definingLine(line);
+        line.rawSource.split(scriptDelimiter).forEach(part => {
+            if (actions.has(part)) {
+                actions.get(part)!(line);
+            } else {
+                buffer[current]!.push(part);
+            }
+        });
+        if (line.lastLine) {
+            const check = stillInJsMode();
+            if (check.type == "failures") {
+                line.withFailures(check.it);
+            }
+        }
+        return buffer.assembler.join("").trimEnd();
+    };
+
+    for (const line of lines) {
+        yield lineWithRenderedJavascript(line, assemblerSource(line));
+        buffer.assembler = [];
     }
 };
-
-export type EmbeddedJs = ReturnType<typeof embeddedJs>;

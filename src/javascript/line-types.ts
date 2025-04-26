@@ -11,5 +11,5 @@ export const lineWithRenderedJavascript = (
     line: LineWithRawSource, source: SourceCode
 ) => {
     (line as MutableLine).assemblySource = source;
-    return line as LineWithRenderedJavascript;
+    return line as ImmutableLine;
 };
