@@ -60,7 +60,7 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
     const line = testLine("", "DES", [], [], [], false);
     const result = system.assemblyPipeline(line);
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(2);
     expect(failures[0]!.kind).toBe("device_notSelected");
     expect(failures[1]!.kind).toBe("mnemonic_supportedUnknown");
@@ -74,7 +74,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
     const line = testLine("", "DES", [], [], [], false);
     const result = system.assemblyPipeline(line);
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0] as BoringFailure;
     expect(failure.kind).toBe("mnemonic_notSupported");
@@ -88,7 +88,7 @@ Deno.test("Lines with unknown instructions fail", () => {
     const line = testLine("", "NOT_REAL", [], [], [], false);
     const result = system.assemblyPipeline(line);
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0] as BoringFailure;
     expect(failure.kind).toBe("mnemonic_unknown");

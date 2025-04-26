@@ -73,14 +73,14 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
 
 Deno.test("Reading a non existant source file gives one line with a failure", () => {
     const files = fileStack(defaultReaderMethod, "does-not-exist.test");
-    const lines = files.assemblyPipeline().toArray();
+    const lines = [...files.assemblyPipeline()];
     expect(lines.length).toBe(1);
     const line = lines[0]!;
     expect(line.fileName).toBe("does-not-exist.test");
     expect(line.lineNumber).toBe(0);
     expect(line.rawSource).toBe("");
     expect(line.failed()).toBeTruthy();
-    const failures = line.failures().toArray();
+    const failures = [...line.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect(failure.kind).toBe("file_notFound");
@@ -111,7 +111,7 @@ Deno.test("An included file is inserted into the source stream", () => {
 
     const result = include("plop.txt");
     expect(result.type).not.toBe("failure");
-    expect(assemblyPipeline.toArray().map(line => line.rawSource)).toEqual([
+    expect([...assemblyPipeline].map(line => line.rawSource)).toEqual([
         "plop.txt 1", "plop.txt 2", "plop.txt 3",
         "top.file 2", "top.file 3",
     ]);

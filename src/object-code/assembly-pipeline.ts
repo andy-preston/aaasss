@@ -32,7 +32,7 @@ export const objectCode = (
         }
 
         const intermediate = lineWithPokedBytes(
-            line, pokeBuffer.contents().toArray()
+            line, [...pokeBuffer.contents()]
         );
         if (line.mnemonic == "") {
             return emptyLine(intermediate);

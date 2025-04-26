@@ -26,7 +26,7 @@ export const counting = () => {
         return result == undefined ? 0 : result;
     };
 
-    const list = () => counts.entries().toArray();
+    const list = () => [...counts.entries()];
 
     return {
         "reset": reset,

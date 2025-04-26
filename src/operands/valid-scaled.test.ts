@@ -23,7 +23,7 @@ Deno.test("The number of operands much match", () => {
     const result = validScaledOperands(line, operandRequirements);
     expect(line.failed()).toBeTruthy();
     expect(result).toEqual([1, 23, 0]);
-    const failures = line.failures().toArray();
+    const failures = [...line.failures()];
     expect(failures.length).toBe(3);
     {
         const failure = failures[0] as AssertionFailure;
@@ -74,7 +74,7 @@ Deno.test("If they don't match the line is marked with a failure", () => {
     const result = validScaledOperands(line, operandRequirements);
     expect(line.failed()).toBeTruthy();
     expect(result).toEqual([anyNumber, anyNumber]);
-    const failures = line.failures().toArray();
+    const failures = [...line.failures()];
     expect(failures.length).toBe(2);
     failures.forEach((failure, index) => {
         expect(failure.kind).toBe("type_failure");
@@ -135,7 +135,7 @@ Deno.test("If numeric types don't match the line fails", () => {
             expect(line.failed(), numericType).toBeFalsy();
         } else {
             expect(line.failed(), numericType).toBeTruthy();
-            const failures = line.failures().toArray();
+            const failures = [...line.failures()];
             expect(failures.length).toBe(1);
             const failure = failures[0] as NumericTypeFailure;
             expect(failure.kind).toBe(numericType);

@@ -68,7 +68,7 @@ Deno.test("An uninitialised symbol yields a failure", () => {
     const system = systemUnderTest();
     const result = system.assemblyPipeline(testLine(["notDefined"]));
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     expect(failures[0]!.kind).toBe("js_error");
     const failure = failures[0] as ExceptionFailure;

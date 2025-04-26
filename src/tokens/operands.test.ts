@@ -25,7 +25,7 @@ Deno.test("No instruction has three (or more) operands", () => {
     const result = tokensAssemblyPipeline(line);
     expect(result.symbolicOperands).toEqual(["R16", "23"]);
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("operand_count");
@@ -38,7 +38,7 @@ Deno.test("An operand must not be empty", () => {
     const result = tokensAssemblyPipeline(line);
     expect(result.symbolicOperands).toEqual(["", "23"]);
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect(failure.kind).toBe("operand_blank");
@@ -95,7 +95,7 @@ Deno.test("... but not the first", () => {
     expect(result.mnemonic).toBe("LDD");
     expect(result.symbolicOperands).toEqual(["Z+offset", "R14"]);
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect(failure.kind).toBe("operand_offsetNotStd");
@@ -117,7 +117,7 @@ Deno.test("... but not the second", () => {
     expect(result.mnemonic).toBe("STD");
     expect(result.symbolicOperands).toEqual(["R17", "Y+0xa7"]);
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect(failure.kind).toBe("operand_offsetNotLdd");
@@ -130,7 +130,7 @@ Deno.test("... but not as the first operand of any other instruction", () => {
     expect(result.mnemonic).toBe("ST");
     expect(result.symbolicOperands).toEqual(["Z+19", "R17"]);
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect(failure.kind).toBe("operand_offsetNotStd");
@@ -143,7 +143,7 @@ Deno.test("... or the second operand", () => {
     expect(result.mnemonic).toBe("LDI");
     expect(result.symbolicOperands).toEqual(["R14", "Z+offset"]);
     expect(result.failed()).toBeTruthy();
-    const failures = result.failures().toArray();
+    const failures = [...result.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect(failure.kind).toBe("operand_offsetNotLdd");
