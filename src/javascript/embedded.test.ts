@@ -12,6 +12,7 @@ const systemUnderTest = (...sourceLines: Array<SourceCode>) => {
         for (const sourceCode of sourceLines) {
             yield lineWithRawSource("", 0, sourceCode, "", 0, false);
         }
+        yield lineWithRawSource("", 0, "", "", 0, true);
     };
 
     const $cpuRegisters = cpuRegisters();
@@ -88,14 +89,10 @@ Deno.test("Omitting a closing moustache is illegal", () => {
     const result = system.assemblyPipeline.next().value!;
     expect(result.failed()).toBeFalsy();
     expect(result.failures.length).toBe(0);
-    expect("the new pipeline uses lastLine").toBe(
-        "and we don't use it here!"
-    );
-    /*
-    const check = system.js.leftInIllegalState();
-    expect(result.type).toBe("failures");
-    const failures = result.it as Array<Failure>;
+
+    const lastLine = system.assemblyPipeline.next().value!;
+    expect(lastLine.failed()).toBeTruthy();
+    const failures = [...lastLine.failures()];
     expect(failures.length).toBe(1);
     expect(failures[0]!.kind).toBe("js_jsMode");
-    */
 });
