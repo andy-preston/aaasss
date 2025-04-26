@@ -1,59 +1,34 @@
-import type { IllegalState } from "../failure/illegal-state.ts";
-import type { HexFile } from "../hex-file/hex.ts";
-import type { EmbeddedJs } from "../javascript/embedded.ts";
-import type { Listing } from "../listing/listing.ts";
-import type { Macros } from "../macros/macros.ts";
-import type { ObjectCode } from "../object-code/assembly-pipeline.ts";
-import type { SymbolicToNumeric } from "../operands/assembly-pipeline.ts";
-import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { LineWithAddress } from "../program-memory/line-types.ts";
-import type { FileStack } from "../source-code/file-stack.ts";
-import type { TokensAssemblyPipeline } from "../tokens/assembly-pipeline.ts";
-import type { Pass, PassNumber } from "./pass.ts";
+import type { ImmutableLine } from "./line.ts";
 
-import { passes } from "./pass.ts";
+type Pipe = IterableIterator<ImmutableLine, void, undefined>;
+type Source = () => Pipe;
+type Stage = (pipe: Pipe) => Pipe;
+type Sink = {
+    "line": (line: LineWithAddress) => void;
+    "close": () => void;
+};
 
-export const assemblyPipeline = (
-    pass: Pass,
-    source: FileStack["assemblyPipeline"],
-    embeddedJs: EmbeddedJs["assemblyPipeline"],
-    tokens: TokensAssemblyPipeline,
-    macros: Macros["assemblyPipeline"],
-    operands: SymbolicToNumeric["assemblyPipeline"],
-    objectCode: ObjectCode["assemblyPipeline"],
-    programMemory: ProgramMemory["assemblyPipeline"],
-    listing: Listing,
-    hex: HexFile,
-    illegalState: IllegalState
-) => {
+export const assemblyPipeline = (source: Source) => {
+    let pipe : Pipe = source();
 
-    const output = (line: LineWithAddress) => {
-        if (!pass.produceOutput()) {
-            return;
-        }
-        if (line.lastLine) {
-            illegalState.check(line);
-        }
-        listing.line(line);
-        hex.line(line);
-    };
-
-    return () => {
-        passes.forEach((passNumber: PassNumber) => {
-            if (passNumber == 2) {
-                pass.second();
+    const results = (...output: Array<Sink>) => {
+        for (const pass of [1, 2]) {
+            for (const line of pipe) {
+                if (pass == 2) {
+                    output.forEach(sink => sink.line(line));
+                }
             }
-            source().forEach(line =>
-                output(
-                programMemory(
-                objectCode(
-                operands(
-                macros(
-                tokens(
-                embeddedJs(line)
-            )))))));
-        });
-        listing.close();
-        hex.save();
+        }
+        output.forEach(sink => sink.close());
     };
+
+    const andThen = (stage: Stage) => {
+        pipe = stage(pipe);
+        return pipeline;
+    };
+
+    const pipeline = { "results": results, "andThen": andThen };
+
+    return pipeline;
 };
