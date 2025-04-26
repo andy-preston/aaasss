@@ -1,46 +1,44 @@
 import { expect } from "jsr:@std/expect";
-import { testLine } from "./testing.ts";
-import { tokensAssemblyPipeline } from "./assembly-pipeline.ts";
+import { systemUnderTest } from "./testing.ts";
 
 Deno.test("A line containing a colon contains a label", () => {
-    const line = testLine("label: LDI R16, 23");
-    const result = tokensAssemblyPipeline(line);
+    const system = systemUnderTest(
+        "label: LDI R16, 23"
+    );
+    const result = system.assemblyPipeline.next().value!;
     expect(result.label).toBe("label");
     expect(result.mnemonic).toBe("LDI");
     expect(result.symbolicOperands).toEqual(["R16", "23"]);
 });
 
 Deno.test("A line can contain JUST a label", () => {
-    const line = testLine("label:");
-    const result = tokensAssemblyPipeline(line);
+    const system = systemUnderTest(
+        "label:"
+    );
+    const result = system.assemblyPipeline.next().value!;
     expect(result.label).toBe("label");
     expect(result.mnemonic).toBe("");
     expect(result.symbolicOperands.length).toBe(0);
 });
 
 Deno.test("A label must only contain alphanumerics or underscore", () => {
-    const badLines = [
-        "count bytes:",
-        "count-bytes:",
-        "count$bytes:",
-        "count?bytes:"
-    ];
-    for (const line of badLines) {
-        const result = tokensAssemblyPipeline(testLine(line));
+    const badSystem = systemUnderTest(
+        "count bytes:", "count-bytes:", "count$bytes:", "count?bytes:"
+    );
+    for (const result of badSystem.assemblyPipeline) {
         expect(result.failed()).toBeTruthy();
-        const failures = result.failures().toArray();
+        const failures = [...result.failures()];
         expect (failures.length).toBe(1);
         const failure = failures[0]!;
         expect(failure.kind).toBe("syntax_invalidLabel");
     }
-    const goodLines = [
-        "countBytes:",
-        "count_bytes:",
-        "count_8bit:"
-    ];
-    for (const line of goodLines) {
-        const result = tokensAssemblyPipeline(testLine(line));
+
+    const goodSystem = systemUnderTest(
+        "countBytes:", "count_bytes:", "count_8bit:"
+    );
+    for (const result of goodSystem.assemblyPipeline) {
         expect(result.failed()).toBeFalsy();
+        expect([...result.failures()].length).toBe(0);
     }
 });
 

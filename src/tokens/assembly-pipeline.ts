@@ -7,6 +7,7 @@ import { pushOperandCheckingIndexOffset } from "./index-offset.ts";
 import { lineWithTokens } from "./line-types.ts";
 import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
+import { ImmutableLine } from "../assembler/line.ts";
 
 const anyWhitespace = /\s+/g;
 const comment = /;.*$/;
@@ -20,7 +21,7 @@ const invalidLabel = (label: string) => !validLabel.test(label);
 const splitOperands = (text: string): Array<string> =>
     text == "" ? [] : text.split(",").map(operand => operand.trim());
 
-export const tokensAssemblyPipeline = (line: LineWithRenderedJavascript) => {
+const tokenise = (line: LineWithRenderedJavascript) => {
     const cleaned = clean(line.assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
@@ -64,4 +65,10 @@ export const tokensAssemblyPipeline = (line: LineWithRenderedJavascript) => {
     );
 };
 
-export type TokensAssemblyPipeline = typeof tokensAssemblyPipeline;
+export const assemblyPipeline = function* (
+    lines: IterableIterator<ImmutableLine>
+) {
+    for (const line of lines) {
+        yield tokenise(line);
+    }
+};

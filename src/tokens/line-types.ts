@@ -16,5 +16,5 @@ export const lineWithTokens = (
     (line as MutableLine).label = label;
     (line as MutableLine).mnemonic = mnemonic;
     (line as MutableLine).symbolicOperands = symbolicOperands;
-    return line as LineWithTokens;
+    return line as ImmutableLine;
 };

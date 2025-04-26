@@ -1,8 +1,22 @@
-import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SourceCode } from "../source-code/data-types.ts";
-import { lineWithRawSource } from "../source-code/line-types.ts";
 
-export const testLine = (source: SourceCode) => {
-    const raw = lineWithRawSource("", 0, source, "", 0, false);
-    return lineWithRenderedJavascript(raw, source);
+import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
+import { assemblyPipeline } from "./assembly-pipeline.ts";
+
+export const systemUnderTest = (...sourceLines: Array<SourceCode>) => {
+    const testLines = function* () {
+        for (const sourceCode of sourceLines) {
+            const $lineWithRawSource = lineWithRawSource(
+                "", 0, sourceCode, "", 0, false
+            );
+            yield lineWithRenderedJavascript(
+                $lineWithRawSource, sourceCode
+            );
+        }
+    };
+
+    return {
+        "assemblyPipeline": assemblyPipeline(testLines())
+    };
 };
