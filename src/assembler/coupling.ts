@@ -79,9 +79,7 @@ export const coupling = (
         .andThen($embeddedJs)
         .andThen(tokens)
         .andThen($macros.assemblyPipeline)
-        /*
         .andThen($symbolicToNumeric.assemblyPipeline)
-        */
         .andThen($objectCode.assemblyPipeline)
         .andThen($programMemory.assemblyPipeline)
         .andThen($dataMemory.assemblyPipeline)

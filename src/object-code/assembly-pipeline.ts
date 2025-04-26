@@ -61,7 +61,6 @@ export const objectCode = (
         }
     };
 
-
     return {
         "assemblyPipeline": assemblyPipeline
     };

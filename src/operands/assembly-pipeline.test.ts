@@ -11,51 +11,62 @@ import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { symbolicToNumeric } from "./assembly-pipeline.ts";
 
-const systemUnderTest = () => {
+export const systemUnderTest = (...lines: Array<SymbolicOperands>) => {
+    const testLines = function* () {
+        for (const symbolic of lines) {
+            const $lineWithRawSource = lineWithRawSource(
+                "", 0, "", "", 0, false
+            );
+            const $lineWithRenderedJavascript = lineWithRenderedJavascript(
+                $lineWithRawSource, ""
+            );
+            const $lineWithTokens = lineWithTokens(
+                $lineWithRenderedJavascript, "", "", symbolic
+            );
+            yield lineWithProcessedMacro(
+                $lineWithTokens, false
+            );
+        }
+    };
+
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($cpuRegisters);
     const $jsExpression = jSExpression($symbolTable);
     const $symbolicToNumeric = symbolicToNumeric(
         $symbolTable, $cpuRegisters, $jsExpression
     );
+    const assemblyPipeline = $symbolicToNumeric.assemblyPipeline(testLines());
     return {
         "cpuRegisters": $cpuRegisters,
         "symbolTable": $symbolTable,
-        "assemblyPipeline": $symbolicToNumeric.assemblyPipeline
+        "assemblyPipeline": assemblyPipeline
     };
 };
 
-const testLine = (symbolic: SymbolicOperands) => {
-    const withSource = lineWithRawSource("", 0, "", "", 0, false);
-    const withJavascript = lineWithRenderedJavascript(withSource, "");
-    const withTokens = lineWithTokens(withJavascript, "", "", symbolic)
-    return lineWithProcessedMacro(withTokens, false);
-}
-
 Deno.test("An expression yields a value", () => {
-    const system = systemUnderTest();
-    const result = system.assemblyPipeline(testLine(["20 / 2"]));
+    const system = systemUnderTest(["20 / 2"]);
+    const result = system.assemblyPipeline.next().value!;
     expect(result.failed()).toBeFalsy();
     expect(result.numericOperands[0]).toBe(10);
     expect(result.operandTypes[0]).toBe("number");
 });
 
 Deno.test("A symbol yields a value", () => {
-    const system = systemUnderTest();
+    const system = systemUnderTest(["R7"]);
     system.cpuRegisters.initialise(false);
     const useResult = system.symbolTable.use("R7");
     expect(useResult.type).toBe("number");
     expect(useResult.it).toBe(7);
-    const result = system.assemblyPipeline(testLine(["R7"]));
+    const result = system.assemblyPipeline.next().value!;
     expect(result.failed()).toBeFalsy();
     expect(result.numericOperands[0]).toBe(7);
     expect(result.operandTypes[0]).toBe("register");
 });
 
 Deno.test("An index prefix/postfix operand gives a zero numeric value", () => {
-    const system = systemUnderTest();
+    const system = systemUnderTest(["X+", "+Y", "Z"]);
     system.cpuRegisters.initialise(false);
-    const result = system.assemblyPipeline(testLine(["X+", "+Y", "Z"]));
+    const result = system.assemblyPipeline.next().value!;
     expect(result.failed()).toBeFalsy();
     result.operandTypes.forEach((operandType, index) => {
         const value = result.numericOperands[index];
@@ -65,8 +76,8 @@ Deno.test("An index prefix/postfix operand gives a zero numeric value", () => {
 });
 
 Deno.test("An uninitialised symbol yields a failure", () => {
-    const system = systemUnderTest();
-    const result = system.assemblyPipeline(testLine(["notDefined"]));
+    const system = systemUnderTest(["notDefined"]);
+    const result = system.assemblyPipeline.next().value!;
     expect(result.failed()).toBeTruthy();
     const failures = [...result.failures()];
     expect(failures.length).toBe(1);
