@@ -1,4 +1,5 @@
 import type { NumberBag } from "../assembler/bags.ts";
+import type { ImmutableLine } from "../assembler/line.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { Failure, NumberOrFailures } from "../failure/bags.ts";
@@ -10,11 +11,6 @@ import { assertionFailure, bagOfFailures, boringFailure } from "../failure/bags.
 export const dataMemory = (symbolTable: SymbolTable) => {
     let stack = 0;
     let allocated = 0;
-
-    const resetState = () => {
-        stack = 0;
-        allocated = 0;
-    };
 
     const availableAddress = (bytesRequested: number): NumberOrFailures => {
         const ramStart = symbolTable.deviceSymbolValue("ramStart", "number");
@@ -73,10 +69,22 @@ export const dataMemory = (symbolTable: SymbolTable) => {
         "type": "numberDirective", "it": allocStack
     };
 
+    const assemblyPipeline = function* (
+        lines: IterableIterator<ImmutableLine>
+    ) {
+        for (const line of lines) {
+            if (line.lastLine) {
+                stack = 0;
+                allocated = 0;
+            }
+            yield line;
+        }
+    };
+
     return {
-        "resetState": resetState,
+        "allocDirective": allocDirective,
         "allocStackDirective": allocStackDirective,
-        "allocDirective": allocDirective
+        "assemblyPipeline": assemblyPipeline
     };
 };
 

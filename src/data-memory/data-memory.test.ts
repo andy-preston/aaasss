@@ -2,7 +2,7 @@ import type { AssertionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
-import { pass } from "../assembler/pass.ts";
+import { mockLastLine } from "../assembler/testing.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
@@ -11,14 +11,12 @@ import { dataMemory } from "./data-memory.ts";
 const irrelevantName = "testing";
 
 const systemUnderTest = () => {
-    const currentPass = pass();
-    const symbols = symbolTable(cpuRegisters());
-    const memory = dataMemory(symbols);
-    currentPass.resetStateCallback(memory.resetState);
+    const $cpuRegisters = cpuRegisters();
+    const $symbolTable = symbolTable($cpuRegisters);
+    const $dataMemory = dataMemory($symbolTable);
     return {
-        "pass": currentPass,
-        "symbolTable": symbols,
-        "dataMemory": memory
+        "symbolTable": $symbolTable,
+        "dataMemory": $dataMemory
     };
 };
 
@@ -27,7 +25,6 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
-    system.pass.second();
     const result = alloc(23);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
@@ -45,7 +42,6 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
     const allocStack = directiveFunction(
         irrelevantName, system.dataMemory.allocStackDirective
     );
-    system.pass.second();
     const bytesRequested = 0xf2;
     const result = allocStack(bytesRequested);
     expect(result.type).toBe("failures");
@@ -65,7 +61,6 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
-    system.pass.second();
     const bytesRequested = 0xf2;
     const result = alloc(bytesRequested);
     expect(result.type).toBe("failures");
@@ -85,7 +80,6 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
-    system.pass.second();
     ["0", "25", "50"].forEach((expectedStartAddress) => {
         const result = alloc(25);
         expect(result.type).not.toBe("failures");
@@ -106,7 +100,6 @@ Deno.test("Stack allocations decrease the available SRAM", () => {
     );
     const bytesRequested = 0x19;
 
-    system.pass.second();
     const allocation = allocStack(bytesRequested);
     expect(allocation.type).not.toBe("failures");
     expect(allocation.it).toBe("");
@@ -132,7 +125,6 @@ Deno.test("Memory allocations decrease the available SRAM", () => {
     );
     const bytesRequested = 0x19;
 
-    system.pass.second();
     const allocation = alloc(bytesRequested);
     expect(allocation.type).not.toBe("failures");
     expect(allocation.it).toBe("0");
@@ -148,7 +140,7 @@ Deno.test("Memory allocations decrease the available SRAM", () => {
     expect(failure.actual).toBe(`${bytesRequested}`);
 });
 
-Deno.test("Allocations don't get repeated on the second pass", () => {
+Deno.test("Allocations aren't considered repeated on the second pass", () => {
     const system = systemUnderTest();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
@@ -156,15 +148,12 @@ Deno.test("Allocations don't get repeated on the second pass", () => {
     const alloc = directiveFunction(
         irrelevantName, system.dataMemory.allocDirective
     );
-
-    [1, 2].forEach((pass) => {
-        if (pass == 2) {
-            system.pass.second();
-        }
-        ["0", "25"].forEach((expectedStartAddress) => {
+    [1, 2].forEach(_pass => {
+        ["0", "25"].forEach(expectedStartAddress => {
             const result = alloc(25);
             expect(result.type).not.toBe("failures");
             expect(result.it).toBe(expectedStartAddress);
         });
+        system.dataMemory.assemblyPipeline(mockLastLine()).next();
     });
 });
