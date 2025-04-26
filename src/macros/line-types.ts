@@ -13,7 +13,7 @@ export const lineWithProcessedMacro = (
     line: LineWithTokens, isRecordingMacro: boolean
 ) => {
     (line as MutableLine).isRecordingMacro = isRecordingMacro;
-    return line as LineWithProcessedMacro;
+    return line as ImmutableLine;
 };
 
 export const lineWithRemappedMacro = (

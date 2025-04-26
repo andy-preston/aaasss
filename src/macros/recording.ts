@@ -17,7 +17,6 @@ export const recording = (
 ) => {
     let theMacro: Macro | undefined = undefined;
     let macroName: MacroName = "";
-    let skipFirstLine = false;
 
     const resetState = () => {
         theMacro = undefined;
@@ -36,7 +35,6 @@ export const recording = (
         }
         macroName = newName;
         theMacro = macro(parameters);
-        skipFirstLine = true;
         return emptyBag();
     };
 
@@ -61,25 +59,18 @@ export const recording = (
     const isRecording = () => theMacro != undefined;
 
     const recorded = (line: LineWithTokens) => {
-        if (skipFirstLine) {
-            skipFirstLine = false;
-        } else if (!line.failed()) {
+        if (line.assemblySource != "") {
             theMacro!.lines.push(line);
         }
         return lineWithProcessedMacro(line, true);
     };
-
-    const leftInIllegalState = (): StringOrFailures => isRecording()
-        ? bagOfFailures([boringFailure("macro_noEnd")])
-        : emptyBag()
 
     return {
         "resetState": resetState,
         "macroDirective": macroDirective,
         "endDirective": endDirective,
         "isRecording": isRecording,
-        "recorded": recorded,
-        "leftInIllegalState": leftInIllegalState
+        "recorded": recorded
     };
 };
 

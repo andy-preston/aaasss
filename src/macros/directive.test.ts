@@ -1,6 +1,7 @@
 import type { AssertionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
+import { mockLastLine } from "../assembler/testing.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { macroFromTable, systemUnderTest } from "./testing.ts";
 
@@ -112,15 +113,19 @@ Deno.test("A macro can be defined in both passes", () => {
         irrelevantName, system.macros.endDirective
     );
     {
-        expect(macro("testMacro").type).not.toBe("failures");
-        expect(end().type).not.toBe("failures");
+        const startDefinition = macro("testMacro");
+        expect(startDefinition.type).not.toBe("failures");
+        const endDefinition = end();
+        expect(endDefinition.type).not.toBe("failures");
         const testMacro = directiveFunction(
             "testMacro", macroFromTable(system.symbolTable, "testMacro")
         );
-        const result = testMacro();
-        expect(result.type).not.toBe("failures");
-    } {
-        system.pass.second();
+        const execution = testMacro();
+        expect(execution.type).not.toBe("failures");
+    }
+    const pipeline = system.symbolTable.assemblyPipeline(mockLastLine());
+    [...pipeline];
+    {
         const inUse = system.symbolTable.alreadyInUse("testMacro");
         expect(inUse.type).not.toBe("failures");
 

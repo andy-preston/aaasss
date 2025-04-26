@@ -1,19 +1,24 @@
-import { expect } from "jsr:@std/expect";
-import { directiveFunction } from "../directives/directive-function.ts";
 import type { Failure } from "../failure/bags.ts";
+
+import { expect } from "jsr:@std/expect";
+import { mockLastLine } from "../assembler/testing.ts";
+import { directiveFunction } from "../directives/directive-function.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
 
-Deno.test("leftInIllegalState returns a failure is a definition wasn't closed", () => {
+Deno.test("the last line has a failure is a definition wasn't closed", () => {
     const system = systemUnderTest();
     const macro = directiveFunction(
         irrelevantName, system.macros.macroDirective
     );
-    expect(macro("plop").type).not.toBe("failures");
-    const result = system.macros.leftInIllegalState();
-    expect(result.type).toBe("failures");
-    const failures = result.it as Array<Failure>;
+    const unfinishedDefinition = macro("plop");
+    expect(unfinishedDefinition.type).not.toBe("failures");
+
+    const pipeline = system.macros.assemblyPipeline(mockLastLine());
+    const lastLine = pipeline.next().value!;
+    expect(lastLine.failed).toBeTruthy();
+    const failures = [...lastLine.failures()];
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect(failure.kind).toBe("macro_noEnd");

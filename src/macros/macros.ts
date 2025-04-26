@@ -1,3 +1,4 @@
+import type { ImmutableLine } from "../assembler/line.ts";
 import type { FunctionUseDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { FileLineIterator, FileStack } from "../source-code/file-stack.ts";
@@ -6,7 +7,7 @@ import type { LineWithTokens } from "../tokens/line-types.ts";
 import type { MacroList, MacroParameters } from "./data-types.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
-import { assertionFailure, bagOfFailures } from "../failure/bags.ts";
+import { assertionFailure, bagOfFailures, boringFailure } from "../failure/bags.ts";
 import { recording } from "./recording.ts";
 import { remapping } from "./remapping.ts";
 
@@ -15,7 +16,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
 
     const remap = remapping(macroList);
 
-    function* imaginaryFile(
+    const imaginaryFile = function* (
         macroName: string, macroCount: number
     ): FileLineIterator {
         for (const line of macroList.get(macroName)!.lines) {
@@ -53,17 +54,28 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
 
     const record = recording(macroList, symbolTable, useMacroDirective);
 
-    const assemblyPipeline = (line: LineWithTokens) =>
-        record.isRecording() ? record.recorded(line) : remap.remapped(line);
+    const processedLine = (line: LineWithTokens) => {
+        if (line.lastLine) {
+            if (record.isRecording()) {
+                line.withFailure(boringFailure("macro_noEnd"));
+            }
+            macroList.clear();
+            record.resetState();
+        }
+        return record.isRecording()
+            ? record.recorded(line)
+            : remap.remapped(line);
+    }
 
-    const resetState = () => {
-        macroList.clear();
-        record.resetState();
+    const assemblyPipeline = function* (
+        lines: IterableIterator<ImmutableLine>
+    ) {
+        for (const line of lines) {
+            yield processedLine(line);
+        }
     };
 
     return {
-        "resetState": resetState,
-        "leftInIllegalState": record.leftInIllegalState,
         "useMacroDirective": useMacroDirective,
         "macroDirective": record.macroDirective,
         "endDirective": record.endDirective,

@@ -1,4 +1,3 @@
-import type { AssemblyPipelineSource } from "../assembler/data-types.ts";
 import type { FunctionUseDirective, StringDirective } from "../directives/bags.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { SourceCode } from "../source-code/data-types.ts";
@@ -8,7 +7,6 @@ import type { Label, Mnemonic } from "../tokens/data-types.ts";
 
 import { expect } from "jsr:@std/expect";
 import { emptyBag } from "../assembler/bags.ts";
-import { pass } from "../assembler/pass.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
@@ -24,7 +22,7 @@ const mockFileStack = () => {
     const pushImaginary = (iterator: FileLineIterator) => {
         lineIterator = iterator;
     };
-    const assemblyPipeline: AssemblyPipelineSource = function* () {
+    const assemblyPipeline = function* () {
         if (lineIterator == undefined) {
             yield lineWithRawSource("", 0, "", "", 0, false);
             return;
@@ -43,35 +41,39 @@ const mockFileStack = () => {
 };
 
 export const systemUnderTest = () => {
-    const thePass = pass();
-    const symbols = symbolTable(cpuRegisters());
-    const fileStack = mockFileStack();
-    const macroProcessor = macros(symbols, fileStack);
-    thePass.resetStateCallback(symbols.resetState);
+    const $cpuRegisters = cpuRegisters();
+    const $symbolTable = symbolTable($cpuRegisters);
+    const $mockFileStack = mockFileStack();
+    const $macros = macros($symbolTable, $mockFileStack);
     return {
-        "symbolTable": symbols,
-        "macros": macroProcessor,
-        "mockFileStack": fileStack,
-        "pass": thePass
+        "symbolTable": $symbolTable,
+        "macros": $macros,
+        "mockFileStack": $mockFileStack
     };
 };
 
-export const testLine = (
-    macroName: string, macroCount: number,
-    label: Label, mnemonic: Mnemonic, operands: SymbolicOperands
-) => {
-    const raw = lineWithRawSource("", 0, "", macroName, macroCount, false);
-    const rendered = lineWithRenderedJavascript(raw, "");
-    return lineWithTokens(rendered, label, mnemonic, operands);
+export type TestLine = {
+    "macroName": string; "macroCount": number;
+    "label": Label; "mnemonic": Mnemonic; "symbolicOperands": SymbolicOperands;
 };
 
-export const testLineWithSource = (
-    sourceCode: SourceCode,
-    label: Label, mnemonic: Mnemonic, operands: SymbolicOperands
-) => {
-    const raw = lineWithRawSource("", 0, sourceCode, "", 0, false);
-    const rendered = lineWithRenderedJavascript(raw, "");
-    return lineWithTokens(rendered, label, mnemonic, operands);
+export const testLines = function* (
+    lines: Array<TestLine>
+) {
+    for (const line of lines) {
+        const label = line.label ? `${line.label}: ` : "";
+        const reconstructedSource = `${label}${line.mnemonic}`;
+        const $lineWithRawSource = lineWithRawSource(
+            "", 0, reconstructedSource, line.macroName, line.macroCount, false
+        );
+        const $lineWithRenderedJavascript = lineWithRenderedJavascript(
+            $lineWithRawSource, reconstructedSource
+        );
+        yield lineWithTokens(
+            $lineWithRenderedJavascript,
+            line.label, line.mnemonic, line.symbolicOperands
+        );
+    }
 };
 
 export const macroFromTable = (symbolTable: SymbolTable, macroName: string) => {
