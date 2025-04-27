@@ -73,11 +73,11 @@ export const dataMemory = (symbolTable: SymbolTable) => {
         lines: IterableIterator<ImmutableLine>
     ) {
         for (const line of lines) {
+            yield line;
             if (line.lastLine) {
                 stack = 0;
                 allocated = 0;
             }
-            yield line;
         }
     };
 

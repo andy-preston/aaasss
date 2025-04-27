@@ -70,7 +70,6 @@ export const coupling = (
     const $hexFile = withDirectives(hexFile(outputFile, fileName));
 
     withDirectives(functionDirectives);
-    withDirectives(dataMemory($symbolTable));
     withDirectives(deviceChooser(
         $instructionSet, $cpuRegisters, $symbolTable, deviceFileOperations
     ));

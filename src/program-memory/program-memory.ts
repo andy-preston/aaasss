@@ -58,7 +58,6 @@ export const programMemory = (symbolTable: SymbolTable) => {
         "type": "numberDirective", "it": origin
     };
 
-
     const addressStep = (line: LineWithObjectCode) => {
         if (line.label) {
             const result = symbolTable.persistentSymbol(
@@ -88,10 +87,10 @@ export const programMemory = (symbolTable: SymbolTable) => {
         lines: IterableIterator<ImmutableLine>
     ) {
         for (const line of lines) {
+            yield addressStep(line);
             if (line.lastLine) {
                 address = 0;
             }
-            yield addressStep(line);
         }
     };
 

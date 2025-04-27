@@ -56,7 +56,6 @@ export const assemblyPipeline = (
     ]);
 
     const assemblerSource = (line: LineWithRawSource) => {
-        symbolTable.definingLine(line);
         line.rawSource.split(scriptDelimiter).forEach(part => {
             if (actions.has(part)) {
                 actions.get(part)!(line);
@@ -64,17 +63,24 @@ export const assemblyPipeline = (
                 buffer[current]!.push(part);
             }
         });
+        const assembler = buffer.assembler.join("").trimEnd();
+        buffer.assembler = [];
+        return assembler;
+    }
+
+    const processedLine = (line: LineWithRawSource) => {
+        symbolTable.definingLine(line);
+        const assembler = assemblerSource(line);
         if (line.lastLine) {
             const check = stillInJsMode();
             if (check.type == "failures") {
                 line.withFailures(check.it);
             }
         }
-        return buffer.assembler.join("").trimEnd();
+        return lineWithRenderedJavascript(line, assembler);
     };
 
     for (const line of lines) {
-        yield lineWithRenderedJavascript(line, assemblerSource(line));
-        buffer.assembler = [];
+        yield processedLine(line);
     }
 };

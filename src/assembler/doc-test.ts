@@ -56,15 +56,12 @@ export const docTest = () => {
         theFile.close();
     };
 
-    const assemble = () => {
-        const assembler = coupling(
-            topFileName,
-            defaultReaderMethod,
-            mockFailureMessages,
-            deviceFile
-        );
-        assembler();
-    };
+    const assemble = coupling(
+        topFileName,
+        defaultReaderMethod,
+        mockFailureMessages,
+        deviceFile
+    );
 
     return {
         "source": source,

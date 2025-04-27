@@ -10,14 +10,20 @@ type Sink = {
 };
 
 export const assemblyPipeline = (source: Source) => {
-    let pipe : Pipe = source();
+    let pass: number;
 
-    const results = (...output: Array<Sink>) => {
-        for (const pass of [1, 2]) {
-            for (const line of pipe) {
-                if (pass == 2) {
-                    output.forEach(sink => sink.line(line));
-                }
+    const twoPasses = function* () {
+        for (pass of [1, 2]) {
+            yield* source();
+        }
+    };
+
+    let pipe : Pipe = twoPasses();
+
+    const results = (...output: Array<Sink>) => () => {
+        for (const line of pipe) {
+            if (pass == 2) {
+                output.forEach(sink => sink.line(line));
             }
         }
         output.forEach(sink => sink.close());
@@ -28,7 +34,7 @@ export const assemblyPipeline = (source: Source) => {
         return pipeline;
     };
 
-    const pipeline = { "results": results, "andThen": andThen };
+    const pipeline = { "andThen": andThen, "results": results };
 
     return pipeline;
 };

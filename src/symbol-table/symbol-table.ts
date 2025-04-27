@@ -20,12 +20,12 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         lines: IterableIterator<ImmutableLine>
     ) {
         for (const line of lines) {
+            yield line;
             if (line.lastLine) {
                 counts.reset();
                 definitions.reset();
                 varSymbols.clear();
             }
-            yield line;
         }
     };
 

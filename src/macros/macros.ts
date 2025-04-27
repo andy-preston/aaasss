@@ -55,16 +55,15 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     const record = recording(macroList, symbolTable, useMacroDirective);
 
     const processedLine = (line: LineWithTokens) => {
-        if (line.lastLine) {
-            if (record.isRecording()) {
-                line.withFailure(boringFailure("macro_noEnd"));
-            }
-            macroList.clear();
-            record.resetState();
-        }
-        return record.isRecording()
+        const processed = record.isRecording()
             ? record.recorded(line)
             : remap.remapped(line);
+        if (line.lastLine) {
+            if (record.isRecording()) {
+                processed.withFailure(boringFailure("macro_noEnd"));
+            }
+        }
+        return processed;
     }
 
     const assemblyPipeline = function* (
@@ -72,6 +71,10 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     ) {
         for (const line of lines) {
             yield processedLine(line);
+            if (line.lastLine) {
+                macroList.clear();
+                record.resetState();
+            }
         }
     };
 
