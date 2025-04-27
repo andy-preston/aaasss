@@ -89,8 +89,8 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             } else {
                 const [rawSource, macroName, macroCount, lastLine] = next.value;
                 yield lineWithRawSource(
-                    file.fileName, lineNumber, rawSource,
-                    macroName, macroCount, lastLine
+                    file.fileName, lineNumber,
+                    rawSource, macroName, macroCount, lastLine
                 );
             }
             // Another file could have been pushed by an include directive

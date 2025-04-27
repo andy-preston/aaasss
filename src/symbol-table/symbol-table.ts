@@ -19,12 +19,14 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
     const assemblyPipeline = function* (
         lines: IterableIterator<ImmutableLine>
     ) {
+        let bodgeResetForSecondPass = false;
         for (const line of lines) {
             yield line;
-            if (line.lastLine) {
+            if (line.lastLine && !bodgeResetForSecondPass) {
                 counts.reset();
                 definitions.reset();
                 varSymbols.clear();
+                bodgeResetForSecondPass = true;
             }
         }
     };
