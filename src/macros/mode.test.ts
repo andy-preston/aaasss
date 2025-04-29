@@ -1,7 +1,7 @@
 import type { Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { mockLastLine } from "../assembler/testing.ts";
+import { mockNextPass } from "../assembler/testing.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { systemUnderTest } from "./testing.ts";
 
@@ -15,7 +15,7 @@ Deno.test("the last line has a failure is a definition wasn't closed", () => {
     const unfinishedDefinition = macro("plop");
     expect(unfinishedDefinition.type).not.toBe("failures");
 
-    const pipeline = system.macros.assemblyPipeline(mockLastLine());
+    const pipeline = system.macros.assemblyPipeline(mockNextPass());
     const lastLine = pipeline.next().value!;
     expect(lastLine.failed).toBeTruthy();
     const failures = [...lastLine.failures()];

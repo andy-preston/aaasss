@@ -2,7 +2,7 @@ import type { AssertionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
-import { mockLastLine } from "../assembler/testing.ts";
+import { mockNextPass } from "../assembler/testing.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
@@ -154,6 +154,6 @@ Deno.test("Allocations aren't considered repeated on the second pass", () => {
             expect(result.type).not.toBe("failures");
             expect(result.it).toBe(expectedStartAddress);
         });
-        system.dataMemory.assemblyPipeline(mockLastLine()).next();
+        [...system.dataMemory.assemblyPipeline(mockNextPass())];
     });
 });
