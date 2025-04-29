@@ -26,7 +26,7 @@ const tokenise = (line: LineWithRenderedJavascript) => {
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
     if (invalidLabel(label)) {
-        line.withFailure(boringFailure("syntax_invalidLabel"));
+        line.withFailures([boringFailure("syntax_invalidLabel")]);
     }
 
     const mnemonicAndOperands = splitSource("before", " ", withoutLabel);
@@ -34,14 +34,14 @@ const tokenise = (line: LineWithRenderedJavascript) => {
     const operandsText = mnemonicAndOperands[1];
 
     if (mnemonic != "" && !mnemonic.match("^[A-Z]+$")) {
-        line.withFailure(boringFailure("syntax_invalidMnemonic"));
+        line.withFailures([boringFailure("syntax_invalidMnemonic")]);
     }
 
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
-        line.withFailure(assertionFailure(
+        line.withFailures([assertionFailure(
             "operand_count", "2", `${operandsList.length}`
-        ));
+        )]);
     }
 
     const fullOperands: Array<string> = [];
@@ -54,7 +54,7 @@ const tokenise = (line: LineWithRenderedJavascript) => {
         if (operand == "") {
             const failure = boringFailure("operand_blank");
             failure.location = {"operand": index as OperandIndex};
-            line.withFailure(failure);
+            line.withFailures([failure]);
         }
     });
 

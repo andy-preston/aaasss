@@ -23,9 +23,9 @@ export const programMemory = (
             }
 
             if (line.symbolicOperands.length > 1) {
-                line.withFailure(assertionFailure(
+                line.withFailures([assertionFailure(
                     "operand_count", "0/1", `${line.symbolicOperands.length}`
-                ));
+                )]);
                 return "0";
             }
 
@@ -35,7 +35,7 @@ export const programMemory = (
                     "operand_symbolic", "Z+", indexRegister
                 );
                 failure.location = { "operand": 0 };
-                line.withFailure(failure);
+                line.withFailures([failure]);
                 return "0";
             }
 
@@ -56,9 +56,9 @@ export const programMemory = (
 
         const explicitIndexBit = (): BitString => {
             if (line.symbolicOperands.length != 2) {
-                line.withFailure(assertionFailure(
+                line.withFailures([assertionFailure(
                     "operand_count", "0/2", `${line.symbolicOperands.length}`
-                ));
+                )]);
                 return "0";
             }
 
@@ -68,7 +68,7 @@ export const programMemory = (
                     "operand_symbolic", "Z/Z+", indexRegister
                 );
                 failure.location = { "operand": 1 };
-                line.withFailure(failure);
+                line.withFailures([failure]);
                 return "0";
             }
 
@@ -83,7 +83,7 @@ export const programMemory = (
             if (unsupported.type == "failures") {
                 return;
             }
-            line.withFailure(boringFailure("mnemonic_implicitElpmNotLpm"));
+            line.withFailures([boringFailure("mnemonic_implicitElpmNotLpm")]);
         };
 
         const load = (): Code => {

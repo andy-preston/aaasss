@@ -36,7 +36,7 @@ export const assemblyPipeline = (
 
     const closeMoustache = (line: LineWithRawSource) => {
         if (current == "assembler") {
-            line.withFailure(boringFailure("js_assemblerMode"));
+            line.withFailures([boringFailure("js_assemblerMode")]);
             return;
         }
 

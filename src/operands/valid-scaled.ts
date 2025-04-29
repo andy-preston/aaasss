@@ -22,14 +22,14 @@ export const validScaledOperands = (
 ): NumericOperands => {
     const count = operandRequirements.length;
     if (count != line.numericOperands.length) {
-        line.withFailure(assertionFailure(
+        line.withFailures([assertionFailure(
             "operand_count", `${count}`,`${line.numericOperands.length}`
-        ));
+        )]);
     }
 
     const withFailure = (failure: Failure, operandIndex: OperandIndex) => {
         failure.location = {"operand": operandIndex};
-        line.withFailure(failure);
+        line.withFailures([failure]);
     }
 
     const mapped = operandRequirements.map((operandRequirement, index) => {

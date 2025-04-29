@@ -42,10 +42,10 @@ export const symbolicToNumeric = (
         const numericFailed = (
             failures: Array<Failure>, operandIndex: OperandIndex
         ) => {
-            (failures).forEach(failure => {
+            line.withFailures(failures.map(failure => {
                 failure.location = { "operand": operandIndex };
-                line.withFailure(failure);
-            });
+                return failure;
+            }));
         };
 
         for (const [index, symbolic] of line.symbolicOperands.entries()) {

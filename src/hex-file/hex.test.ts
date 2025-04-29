@@ -30,8 +30,8 @@ const testLineWithFailure = () => {
     const withOperands = lineWithOperands(withMacro, [], []);
     const withPoked = lineWithPokedBytes(withOperands, []);
     const withObject = lineWithObjectCode(withPoked, []);
-    return lineWithAddress(withObject, 0).withFailure(
-        boringFailure("syntax_invalidLabel")
+    return lineWithAddress(withObject, 0).withFailures(
+        [boringFailure("syntax_invalidLabel")]
     );
 }
 

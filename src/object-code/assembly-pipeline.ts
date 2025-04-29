@@ -45,9 +45,9 @@ export const objectCode = (
 
         const generatedCode = addressingMode(intermediate);
         if (generatedCode == undefined) {
-            return emptyLine(intermediate).withFailure(
+            return emptyLine(intermediate).withFailures([
                 clueFailure("mnemonic_unknown", line.mnemonic)
-            );
+            ]);
         }
 
         return generatedCode(instructionSet);

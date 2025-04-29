@@ -60,7 +60,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
             : remap.remapped(line);
         if (line.lastLine) {
             if (record.isRecording()) {
-                processed.withFailure(boringFailure("macro_noEnd"));
+                processed.withFailures([boringFailure("macro_noEnd")]);
             }
         }
         return processed;

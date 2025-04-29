@@ -10,10 +10,6 @@ export const line = (
 ) => {
     const failures: Array<Failure> = [];
 
-    const withFailure = (failure: Failure) => {
-        failures.push(failure);
-        return theLine;
-    };
     const withFailures = (moreFailures: Array<Failure>) => {
         moreFailures.forEach(failure => failures.push(failure));
         return theLine;
@@ -28,7 +24,6 @@ export const line = (
     const theLine = {
         "failures": failureMap,
         "failed": failed,
-        "withFailure": withFailure,
         "withFailures": withFailures,
         "fileName": fileName as FileName,
         "lineNumber": lineNumber as LineNumber,
