@@ -1,8 +1,11 @@
 import type { LineWithAddress } from "../program-memory/line-types.ts";
+import type { Pass } from "./data-types.ts";
 import type { ImmutableLine } from "./line.ts";
 
+import { passes } from "./data-types.ts";
+
 type Pipe = IterableIterator<ImmutableLine, void, undefined>;
-type Source = () => Pipe;
+type Source = (pass: Pass) => Pipe;
 type Stage = (pipe: Pipe) => Pipe;
 type Sink = {
     "line": (line: LineWithAddress) => void;
@@ -10,11 +13,9 @@ type Sink = {
 };
 
 export const assemblyPipeline = (source: Source) => {
-    let pass: number;
-
     const twoPasses = function* () {
-        for (pass of [1, 2]) {
-            yield* source();
+        for (const pass of passes) {
+            yield* source(pass);
         }
     };
 
@@ -22,7 +23,7 @@ export const assemblyPipeline = (source: Source) => {
 
     const results = (...output: Array<Sink>) => () => {
         for (const line of pipe) {
-            if (pass == 2) {
+            if (line.isPass(2)) {
                 output.forEach(sink => sink.line(line));
             }
         }

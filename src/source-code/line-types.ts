@@ -7,6 +7,7 @@ import { line } from "../assembler/line.ts";
 export interface LineWithRawSource extends LineWithFailures {
     "fileName": ImmutableLine["fileName"];
     "lineNumber": ImmutableLine["lineNumber"];
+    "isPass": ImmutableLine["isPass"];
     "rawSource": ImmutableLine["rawSource"];
     "macroName": ImmutableLine["macroName"];
     "macroCount": ImmutableLine["macroCount"];

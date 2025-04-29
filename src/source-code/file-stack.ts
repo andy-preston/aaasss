@@ -1,3 +1,4 @@
+import type { Pass } from "../assembler/data-types.ts";
 import type { StringDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { StringsOrFailures } from "../failure/bags.ts";
@@ -74,28 +75,39 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         });
     };
 
-    const assemblyPipeline = function* () {
+    const nextLine = (file: StackEntry) => {
+        const next = file.iterator.next();
+        if (next.done) {
+            fileStack.pop();
+            return undefined;
+        } else {
+            const [rawSource, macroName, macroCount, lastLine] = next.value;
+            return lineWithRawSource(
+                file.fileName, lineNumber,
+                rawSource, macroName, macroCount, lastLine
+            );
+        }
+    };
+
+    const assemblyPipeline = function* (pass: Pass) {
         const topFile = include(topFileName);
         if (topFile.type == "failures") {
             yield lineWithRawSource(
                 topFileName, 0, "", "", 0, false
             ).withFailures(topFile.it);
+            return;
         }
-        let file = fileStack[0];
-        while (file != undefined) {
-            const next = file.iterator.next();
-            if (next.done) {
-                fileStack.pop();
-            } else {
-                const [rawSource, macroName, macroCount, lastLine] = next.value;
-                yield lineWithRawSource(
-                    file.fileName, lineNumber,
-                    rawSource, macroName, macroCount, lastLine
-                );
-            }
+        while (true) {
             // Another file could have been pushed by an include directive
             // "whilst we weren't watching".
-            file = currentFile();
+            const file = currentFile();
+            if (file == undefined) {
+                return;
+            }
+            const next = nextLine(file);
+            if (next != undefined) {
+                yield next.withPass(pass);
+            }
         }
     };
 

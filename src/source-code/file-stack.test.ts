@@ -62,7 +62,7 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
         "mock.test"
     );
     let index = 0;
-    for (const line of files.assemblyPipeline()) {
+    for (const line of files.assemblyPipeline(1)) {
         expect(line.fileName).toBe("mock.test");
         expect(line.lineNumber).toBe(index + 1);
         expect(line.rawSource).toBe(expectedLines[index]);
@@ -73,7 +73,7 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
 
 Deno.test("Reading a non existant source file gives one line with a failure", () => {
     const files = fileStack(defaultReaderMethod, "does-not-exist.test");
-    const lines = [...files.assemblyPipeline()];
+    const lines = [...files.assemblyPipeline(1)];
     expect(lines.length).toBe(1);
     const line = lines[0]!;
     expect(line.fileName).toBe("does-not-exist.test");
@@ -92,7 +92,7 @@ Deno.test("The last line of the top source file is flagged as such", () => {
         (_path: FileName) => expectedLines,
         "mock.test"
     );
-    for (const line of files.assemblyPipeline()) {
+    for (const line of files.assemblyPipeline(1)) {
         expect(line.lastLine).toBe(line.rawSource == "last");
     }
 });
@@ -105,7 +105,7 @@ Deno.test("An included file is inserted into the source stream", () => {
     const include = directiveFunction(
         irrelevantName, aFileStack.includeDirective
     );
-    const assemblyPipeline = aFileStack.assemblyPipeline();
+    const assemblyPipeline = aFileStack.assemblyPipeline(1);
 
     expect(assemblyPipeline.next().value!.rawSource).toBe("top.file 1");
 
@@ -122,7 +122,7 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
         [1, 2, 3].map(line => `${path} ${line}`);
 
     const files = fileStack(mockReader, "top.file");
-    const assemblyPipeline = files.assemblyPipeline();
+    const assemblyPipeline = files.assemblyPipeline(1);
 
     const firstLine = assemblyPipeline.next().value!;
     expect(firstLine.lineNumber).toBe(1);
