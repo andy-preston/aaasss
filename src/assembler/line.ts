@@ -19,7 +19,6 @@ export const line = (
         yield* failures;
     };
 
-    const hasAssembly = () => theLine.assemblySource.trim() != "";
 
     const theLine = {
         "failures": failureMap,
@@ -30,7 +29,6 @@ export const line = (
         "lastLine": lastLine,
         "rawSource": source as SourceCode,
         "assemblySource": "" as SourceCode,
-        "hasAssembly": hasAssembly,
         "label": "" as Label,
         "mnemonic": "" as Mnemonic,
         "isRecordingMacro": false,

@@ -4,7 +4,6 @@ import type { LineWithRawSource } from "../source-code/line-types.ts";
 
 export interface LineWithRenderedJavascript extends LineWithRawSource {
     "assemblySource": ImmutableLine["assemblySource"];
-    "hasAssembly":  ImmutableLine["hasAssembly"];
 };
 
 export const lineWithRenderedJavascript = (

@@ -30,7 +30,6 @@ export const coupling = (
     failureMessageTranslator: FailureMessageTranslator,
     deviceFileOperations: DeviceFileOperations
 ) => {
-
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($cpuRegisters);
 
