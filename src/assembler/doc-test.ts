@@ -43,7 +43,7 @@ export const docTest = () => {
     let deviceFile: DeviceFileOperations =
         [defaultDeviceFinder, defaultJsonLoader];
 
-    const mockDevice = (spec: object) => {
+    const mockUnsupportedDevice = (spec: object) => {
         deviceFile = deviceMocks(spec);
     };
 
@@ -56,16 +56,19 @@ export const docTest = () => {
         theFile.close();
     };
 
-    const assemble = coupling(
-        topFileName,
-        defaultReaderMethod,
-        mockFailureMessages,
-        deviceFile
-    );
+
+    const assemble = () => {
+        coupling(
+            topFileName,
+            defaultReaderMethod,
+            mockFailureMessages,
+            deviceFile
+        )();
+    };
 
     return {
         "source": source,
-        "mockUnsupportedDevice": mockDevice,
+        "mockUnsupportedDevice": mockUnsupportedDevice,
         "assemble": assemble
     };
 };
