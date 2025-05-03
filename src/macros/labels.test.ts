@@ -1,15 +1,12 @@
 import { expect } from "jsr:@std/expect";
-import { macroFromTable, systemUnderTest, testLines } from "./testing.ts";
-import { directiveFunction } from "../directives/directive-function.ts";
+import { systemUnderTest, testLines } from "./testing.ts";
 
 Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction("plop", system.macros.macroDirective);
-    const end = directiveFunction("plop", system.macros.endDirective);
     const labelToBeExpanded = "aLabel";
 
-    const startDefinition = macro("testMacro");
-    expect(startDefinition.type).not.toBe("failures");
+    const define = system.macros.define("testMacro", []);
+    expect(define.type).not.toBe("failures");
     {
         const pipeline = system.macros.assemblyPipeline(testLines([{
             "macroName": "", "macroCount": 0,
@@ -19,13 +16,10 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
         const result = pipeline.next().value!;
         expect(result.failed()).toBeFalsy();
     }
-    const endDefinition = end();
-    expect(endDefinition.type).not.toBe("failures");
-    const testMacro = directiveFunction(
-        "testMacro", macroFromTable(system.symbolTable, "testMacro")
-    );
-    const execution = testMacro();
-    expect(execution.type).not.toBe("failures");
+    const end = system.macros.end();
+    expect(end.type).not.toBe("failures");
+    const use = system.macros.use("testMacro", []);
+    expect(use.type).not.toBe("failures");
     const mockCount = 2;
     {
         const pipeline = system.macros.assemblyPipeline(testLines([{
@@ -43,13 +37,11 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
 
 Deno.test("But label operands from outside the macro are left as is", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction("plop", system.macros.macroDirective);
-    const end = directiveFunction("plop", system.macros.endDirective);
     const labelThatCouldBeExpanded = "aLabel";
     const labelThatWillNotBeExpanded = "aDifferentLabel"
 
-    const startDefinition = macro("testMacro");
-    expect(startDefinition.type).not.toBe("failures");
+    const define = system.macros.define("testMacro", []);
+    expect(define.type).not.toBe("failures");
     {
         const pipeline = system.macros.assemblyPipeline(testLines([{
             "macroName": "", "macroCount": 0,
@@ -60,13 +52,10 @@ Deno.test("But label operands from outside the macro are left as is", () => {
         expect(result.failed()).toBeFalsy();
 
     }
-    const endDefinition = end();
-    expect(endDefinition.type).not.toBe("failures");
-    const testMacro = directiveFunction(
-        "testMacro", macroFromTable(system.symbolTable, "testMacro")
-    );
-    const execution = testMacro();
-    expect(execution.type).not.toBe("failures");
+    const end = system.macros.end();
+    expect(end.type).not.toBe("failures");
+    const use = system.macros.use("testMacro", []);
+    expect(use.type).not.toBe("failures");
     const mockCount = 3;
     {
         const pipeline = system.macros.assemblyPipeline(testLines([{
@@ -82,18 +71,13 @@ Deno.test("But label operands from outside the macro are left as is", () => {
 
 Deno.test("Actual labels in macros are also expanded on playback", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction("plop", system.macros.macroDirective);
-    const end = directiveFunction("plop", system.macros.endDirective);
 
-    const startDefinition = macro("testMacro");
-    expect(startDefinition.type).not.toBe("failures");
-    const endDefinition = end();
-    expect(endDefinition.type).not.toBe("failures");
-    const testMacro = directiveFunction(
-        "testMacro", macroFromTable(system.symbolTable, "testMacro")
-    );
-    const execution = testMacro();
-    expect(execution.type).not.toBe("failures");
+    const define = system.macros.define("testMacro", []);
+    expect(define.type).not.toBe("failures");
+    const end = system.macros.end();
+    expect(end.type).not.toBe("failures");
+    const use = system.macros.use("testMacro", []);
+    expect(use.type).not.toBe("failures");
     const mockCount = 4;
     {
         const pipeline = system.macros.assemblyPipeline(testLines([{

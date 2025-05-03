@@ -1,10 +1,9 @@
-import type { FunctionUseDirective, StringDirective } from "../directives/bags.ts";
+import type { StringDirective } from "../directives/bags.ts";
+import type { FileLineIterator } from "../source-code/data-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
-import type { FileLineIterator } from "../source-code/file-stack.ts";
-import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
+import type { MacroName, MacroParameters } from "./data-types.ts";
 
-import { expect } from "jsr:@std/expect";
 import { emptyBag } from "../assembler/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -12,6 +11,7 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { macros } from "./macros.ts";
+import { DirectiveResult } from "../directives/data-types.ts";
 
 const mockFileStack = () => {
     let lineIterator: FileLineIterator | undefined;
@@ -37,15 +37,22 @@ const mockFileStack = () => {
     };
 };
 
+const mockUse = (
+    _macroName: MacroName, _macroParameters: MacroParameters
+): DirectiveResult => emptyBag();
+
 export const systemUnderTest = () => {
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($cpuRegisters);
     const $mockFileStack = mockFileStack();
     const $macros = macros($symbolTable, $mockFileStack);
+    $macros.directiveForMacroUse({
+        "type": "functionUseDirective", "it": mockUse
+    });
     return {
         "symbolTable": $symbolTable,
+        "mockFileStack": $mockFileStack,
         "macros": $macros,
-        "mockFileStack": $mockFileStack
     };
 };
 
@@ -71,10 +78,4 @@ export const testLines = function* (
             line.label, line.mnemonic, line.symbolicOperands
         );
     }
-};
-
-export const macroFromTable = (symbolTable: SymbolTable, macroName: string) => {
-    const fromTable = symbolTable.use(macroName);
-    expect(fromTable.type).toBe("functionUseDirective");
-    return fromTable as FunctionUseDirective;
 };

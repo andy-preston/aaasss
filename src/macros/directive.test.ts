@@ -1,18 +1,49 @@
+import type { FunctionUseDirective } from "../directives/bags.ts";
 import type { AssertionFailure, Failure } from "../failure/bags.ts";
+import type { MacroName } from "./data-types.ts";
 
 import { expect } from "jsr:@std/expect";
 import { mockNextPass } from "../assembler/testing.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { macroFromTable, systemUnderTest } from "./testing.ts";
+import { macroPipeline } from "./assembly-pipeline.ts";
+import { systemUnderTest } from "./testing.ts";
 
-const irrelevantName = "testing";
+const testDirectives = (system: ReturnType<typeof systemUnderTest>) => {
+    const $macroPipeline = macroPipeline(system.macros);
+
+    const macro = directiveFunction("macro", $macroPipeline.macroDirective);
+
+    const end = directiveFunction("end", $macroPipeline.endDirective);
+
+    const use = (macroName: MacroName) => {
+        const fromTable = system.symbolTable.use(macroName);
+        expect(fromTable.type).toBe("functionUseDirective");
+        return directiveFunction(
+            macroName, fromTable as FunctionUseDirective
+        );
+    };
+
+    return {
+        "macro": macro,
+        "end": end,
+        "use": use
+    }
+};
+
+Deno.test("The macro doesn't have to have parameters", () => {
+    const system = systemUnderTest();
+    const directives = testDirectives(system);
+
+    const define = directives.macro("testMacro");
+    expect(define.type).not.toBe("failures");
+});
+
 
 Deno.test("The macro directive name must be a string", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction(
-        irrelevantName, system.macros.macroDirective
-    );
-    const result = macro(47);
+    const directives = testDirectives(system);
+
+    const result = directives.macro(47);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -25,10 +56,9 @@ Deno.test("The macro directive name must be a string", () => {
 
 Deno.test("The parameters in a definition must be strings", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction(
-        irrelevantName, system.macros.macroDirective
-    );
-    const result = macro("testMacro", "a", 2, "b", 3);
+    const directives = testDirectives(system);
+
+    const result = directives.macro("testMacro", "a", 2, "b", 3);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(2);
@@ -49,18 +79,14 @@ Deno.test("The parameters in a definition must be strings", () => {
 
 Deno.test("On calling a macro, the parameters must be strings or numbers", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction(
-        irrelevantName, system.macros.macroDirective
-    );
-    const end = directiveFunction(
-        irrelevantName, system.macros.endDirective
-    );
+    const directives = testDirectives(system);
 
-    expect(macro("testMacro", "a", "b").type).not.toBe("failures");
-    expect(end().type).not.toBe("failures");
-    const testMacro = directiveFunction(
-        "testMacro", macroFromTable(system.symbolTable, "testMacro")
-    );
+    const define = directives.macro("testMacro", "a", "b");
+    expect(define.type).not.toBe("failures");
+    const end = directives.end();
+    expect(end.type).not.toBe("failures");
+
+    const testMacro = directives.use("testMacro");
     const result = testMacro(true, {"c": "c"});
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
@@ -82,18 +108,14 @@ Deno.test("On calling a macro, the parameters must be strings or numbers", () =>
 
 Deno.test("Parameter count mismatches result in a failure", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction(
-        irrelevantName, system.macros.macroDirective
-    );
-    const end = directiveFunction(
-        irrelevantName, system.macros.endDirective
-    );
+    const directives = testDirectives(system);
 
-    expect(macro("testMacro", "a", "b", "C").type).not.toBe("failures");
-    expect(end().type).not.toBe("failures");
-    const testMacro = directiveFunction(
-        "testMacro", macroFromTable(system.symbolTable, "testMacro")
-    );
+    const define = directives.macro("testMacro", "a", "b", "C");
+    expect(define.type).not.toBe("failures");
+    const end = directives.end();
+    expect(end.type).not.toBe("failures");
+
+    const testMacro = directives.use("testMacro");
     const result = testMacro("1", "2");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
@@ -106,34 +128,28 @@ Deno.test("Parameter count mismatches result in a failure", () => {
 
 Deno.test("A macro can be defined in both passes", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction(
-        irrelevantName, system.macros.macroDirective
-    );
-    const end = directiveFunction(
-        irrelevantName, system.macros.endDirective
-    );
+    const directives = testDirectives(system);
     {
-        const startDefinition = macro("testMacro");
-        expect(startDefinition.type).not.toBe("failures");
-        const endDefinition = end();
-        expect(endDefinition.type).not.toBe("failures");
-        const testMacro = directiveFunction(
-            "testMacro", macroFromTable(system.symbolTable, "testMacro")
-        );
-        const execution = testMacro();
-        expect(execution.type).not.toBe("failures");
+        const define = directives.macro("testMacro");
+        expect(define.type).not.toBe("failures");
+        const end = directives.end();
+        expect(end.type).not.toBe("failures");
+
+        const testMacro = directives.use("testMacro");
+        const use = testMacro();
+        expect(use.type).not.toBe("failures");
     }
     const pipeline = system.symbolTable.assemblyPipeline(mockNextPass());
     [...pipeline];
     {
         const inUse = system.symbolTable.alreadyInUse("testMacro");
         expect(inUse.type).not.toBe("failures");
+        const define = directives.macro("testMacro");
+        expect(define.type).not.toBe("failures");
+        const end = directives.end();
+        expect(end.type).not.toBe("failures");
 
-        expect(macro("testMacro").type).not.toBe("failures");
-        expect(end().type).not.toBe("failures");
-        const testMacro = directiveFunction(
-            "testMacro", macroFromTable(system.symbolTable, "testMacro")
-        );
+        const testMacro = directives.use("testMacro");
         const result = testMacro();
         expect(result.type).not.toBe("failures");
     }

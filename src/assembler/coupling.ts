@@ -12,6 +12,7 @@ import { hexFile } from "../hex-file/hex.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { assemblyPipeline as embeddedJs } from "../javascript/embedded.ts";
 import { listing } from "../listing/listing.ts";
+import { macroPipeline } from "../macros/assembly-pipeline.ts";
 import { macros } from "../macros/macros.ts";
 import { objectCode } from "../object-code/assembly-pipeline.ts";
 import { pokeBuffer } from "../object-code/poke.ts";
@@ -49,7 +50,9 @@ export const coupling = (
     withDirectives($cpuRegisters);
 
     const $fileStack = withDirectives(fileStack(readerMethod, fileName));
-    const $macros = withDirectives(macros($symbolTable, $fileStack));
+    const $macros = withDirectives(
+        macroPipeline(macros($symbolTable, $fileStack))
+    );
 
     const $jsExpression = withDirectives(jSExpression($symbolTable));
     const $embeddedJs = withDirectives(embeddedJs($jsExpression, $symbolTable));

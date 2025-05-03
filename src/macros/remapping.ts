@@ -1,5 +1,6 @@
 import type { StringOrFailures } from "../failure/bags.ts";
 import type { SymbolicOperand } from "../operands/data-types.ts";
+import type { FileLineIterator } from "../source-code/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
@@ -63,10 +64,19 @@ export const remapping = (macroList: MacroList) => {
             line, remappedLabel(line), remappedParameters(line)
         );
 
+    const imaginaryFile = function* (
+        macroName: string, macroCount: number
+    ): FileLineIterator {
+        for (const line of macroList.get(macroName)!.lines) {
+            yield [line.rawSource, macroName, macroCount!];
+        }
+        completed(macroName, macroCount);
+    };
+
     return {
         "prepared": prepared,
         "remapped": remapped,
-        "completed": completed
+        "imaginaryFile": imaginaryFile
     };
 };
 

@@ -2,14 +2,11 @@ import type { Pass } from "../assembler/data-types.ts";
 import type { StringDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { StringsOrFailures } from "../failure/bags.ts";
-import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
+import type { FileLineIterator, FileName, LineNumber } from "./data-types.ts";
 
 import { emptyBag, stringsBag } from "../assembler/bags.ts";
 import { bagOfFailures, clueFailure } from "../failure/bags.ts";
 import { lineWithRawSource } from "./line-types.ts";
-
-export type FileLineIterator =
-    Generator<[SourceCode, string, number], void, unknown>;
 
 type StackEntry = {
     "fileName": FileName;

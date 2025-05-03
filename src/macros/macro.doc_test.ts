@@ -1,5 +1,11 @@
 import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// What happens in the listing if the macro is defined in a different file
+// to that which it's played back in?
+//
+////////////////////////////////////////////////////////////////////////////////
 Deno.test("Macro demo", () => {
     const demo = docTest();
     demo.source([
@@ -24,6 +30,13 @@ Deno.test("Macro demo", () => {
         "                      5     {{ end(); }}",
         "                      6",
         '                      7     {{ aMacro(1024); }}',
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // Should this show `LDS R30, 1024` or `LDS R30, address`?
+        //
+        // Macro parameters should end up in the symbol table.
+        //
+        ////////////////////////////////////////////////////////////////////////
         "000000 91 E0 04 00    7     LDS R30, address",
         "                      8",
         '                      9     {{ aMacro(2048); }}',
@@ -63,6 +76,13 @@ Deno.test("Playing back multiple copies of a macro with JS", () => {
         "                      4     LDS R30, address",
         "                      5     {{ end(); }}",
         "                      6",
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // doing stuff in a loop means that the macros get expanded in
+        // reverse order - hence the addresses are in reverse order compared
+        // to the test above
+        //
+        ////////////////////////////////////////////////////////////////////////
         "                      7     {{ [2048, 1024].forEach(a => aMacro(a)); }}",
         "000000 91 E0 04 00    7     LDS R30, address",
         "000002 91 E0 08 00    7     LDS R30, address",
@@ -121,6 +141,12 @@ Deno.test("A macro can be called from inside another macro", () => {
         "Symbol Table",
         "============",
         "",
+        ////////////////////////////////////////////////////////////////////////
+        //
+        // I'm not sure if this usage count should or should not be
+        // considered "correct"... but it's fine for now
+        //
+        ////////////////////////////////////////////////////////////////////////
         "innerMacro |   |   | /var/tmp/demo.asm:5  | 4",
         "outerMacro |   |   | /var/tmp/demo.asm:10 | 1",
         "R30        |   |   | REGISTER             | 2"

@@ -1,6 +1,5 @@
 import type { AssertionFailure, Failure, ClueFailure } from "../failure/bags.ts";
-import type { FileName } from "./data-types.ts";
-import type { FileLineIterator } from "./file-stack.ts";
+import type { FileLineIterator, FileName } from "./data-types.ts";
 
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";

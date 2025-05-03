@@ -1,8 +1,7 @@
 import type { TestLine } from "./testing.ts";
 
 import { expect } from "jsr:@std/expect";
-import { directiveFunction } from "../directives/directive-function.ts";
-import { macroFromTable, systemUnderTest, testLines } from "./testing.ts";
+import { systemUnderTest, testLines } from "./testing.ts";
 
 const testInput: Array<TestLine> = [{
     "macroName": "", "macroCount": 0,
@@ -32,19 +31,17 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
 
 Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction("plop", system.macros.macroDirective);
-    const end = directiveFunction("plop", system.macros.endDirective);
 
-    const startDefinition = macro("testMacro");
-    expect(startDefinition.type).not.toBe("failures");
+    const define = system.macros.define("testMacro", []);
+    expect(define.type).not.toBe("failures");
     {
         const pipeline = system.macros.assemblyPipeline(testLines(testInput));
         pipeline.forEach(result => {
             expect(result.isRecordingMacro).toBe(true);
         });
     }
-    const endDefinition = end();
-    expect(endDefinition.type).not.toBe("failures");
+    const end = system.macros.end();
+    expect(end.type).not.toBe("failures");
     {
         const pipeline = system.macros.assemblyPipeline(testLines(testInput));
         pipeline.forEach(result => {
@@ -55,24 +52,21 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction("plop", system.macros.macroDirective);
-    const end = directiveFunction("plop", system.macros.endDirective);
 
-    const startDefinition = macro("testMacro");
-    expect(startDefinition.type).not.toBe("failures");
-    const pipeline = system.macros.assemblyPipeline(testLines(testInput));
-    expect([...pipeline].length).toBe(3);
-    const endDefinition = end();
-    expect(endDefinition.type).not.toBe("failures");
+    const define = system.macros.define("testMacro", []);
+    expect(define.type).not.toBe("failures");
+    {
+        const pipeline = system.macros.assemblyPipeline(testLines(testInput));
+        expect([...pipeline].length).toBe(3);
+    }
+    const end = system.macros.end();
+    expect(end.type).not.toBe("failures");
+    const use = system.macros.use("testMacro", []);
+    expect(use.type).not.toBe("failures");
     {
         const pipeline = system.macros.assemblyPipeline(
             system.mockFileStack.assemblyPipeline()
         );
-        const testMacro = directiveFunction(
-            "testMacro", macroFromTable(system.symbolTable, "testMacro")
-        );
-        const execution = testMacro();
-        expect(execution.type).not.toBe("failures");
         const playback = [...pipeline];
         expect(playback.length).toBe(testInput.length);
         playback.forEach((result, index) => {
@@ -101,54 +95,48 @@ Deno.test("'blank' lines are not recorded in the macro", () => {
     }] as const;
 
     const system = systemUnderTest();
-    const macro = directiveFunction("plop", system.macros.macroDirective);
-    const end = directiveFunction("plop", system.macros.endDirective);
 
-    const startDefinition = macro("testMacro");
-    expect(startDefinition.type).not.toBe("failures");
+    const define = system.macros.define("testMacro", []);
+    expect(define.type).not.toBe("failures");
     {
         const pipeline = system.macros.assemblyPipeline(
             testLines(testInputWithBlanks)
         );
         expect([...pipeline].length).toBe(5);
     }
-    const endDefinition = end();
-    expect(endDefinition.type).not.toBe("failures");
+    const end = system.macros.end();
+    expect(end.type).not.toBe("failures");
+    const use = system.macros.use("testMacro", []);
+    expect(use.type).not.toBe("failures");
     {
         const pipeline = system.macros.assemblyPipeline(
             system.mockFileStack.assemblyPipeline()
         );
-        const testMacro = directiveFunction(
-            "testMacro", macroFromTable(system.symbolTable, "testMacro")
-        );
-        const execution = testMacro();
-        expect(execution.type).not.toBe("failures");
         expect([...pipeline].length).toBe(3);
     }
 });
 
 Deno.test("Lines that are being replayed have a macro name and count", () => {
     const system = systemUnderTest();
-    const macro = directiveFunction("plop", system.macros.macroDirective);
-    const end = directiveFunction("plop", system.macros.endDirective);
 
-    const startDefinition = macro("testMacro");
-    expect(startDefinition.type).not.toBe("failures");
+    const define = system.macros.define("testMacro", []);
+    expect(define.type).not.toBe("failures");
     {
         const pipeline = system.macros.assemblyPipeline(testLines(testInput));
         expect([...pipeline].length).toBe(testInput.length);
     }
-    const endDefinition = end();
-    expect(endDefinition.type).not.toBe("failures");
+    const end = system.macros.end();
+    expect(end.type).not.toBe("failures");
+
+    const mockDirectiveUse = system.symbolTable.use("testMacro");
+    expect(mockDirectiveUse.type).toBe("functionUseDirective");
+
+    const use = system.macros.use("testMacro", []);
+    expect(use.type).not.toBe("failures");
     {
         const pipeline = system.macros.assemblyPipeline(
             system.mockFileStack.assemblyPipeline()
         );
-        const testMacro = directiveFunction(
-            "testMacro", macroFromTable(system.symbolTable, "testMacro")
-        );
-        const execution = testMacro();
-        expect(execution.type).not.toBe("failures");
         const playback = [...pipeline];
         expect(playback.length).toBe(testInput.length);
         playback.forEach(result => {
