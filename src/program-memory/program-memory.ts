@@ -1,4 +1,4 @@
-import type { ImmutableLine } from "../assembler/line.ts";
+import type { Pipe } from "../assembler/data-types.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { StringOrFailures } from "../failure/bags.ts";
@@ -83,9 +83,7 @@ export const programMemory = (symbolTable: SymbolTable) => {
         return newLine;
     };
 
-    const assemblyPipeline = function* (
-        lines: IterableIterator<ImmutableLine>
-    ) {
+    const assemblyPipeline = function* (lines: Pipe) {
         for (const line of lines) {
             yield addressStep(line);
             if (line.lastLine) {

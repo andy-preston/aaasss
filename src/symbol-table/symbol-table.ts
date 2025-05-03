@@ -1,4 +1,4 @@
-import type { ImmutableLine } from "../assembler/line.ts";
+import type { Pipe } from "../assembler/data-types.ts";
 import type { ValueDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
@@ -16,9 +16,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
     const counts = counting();
     const definitions = definitionList();
 
-    const assemblyPipeline = function* (
-        lines: IterableIterator<ImmutableLine>
-    ) {
+    const assemblyPipeline = function* (lines: Pipe) {
         for (const line of lines) {
             yield line;
             if (line.lastLine && line.isPass(1)) {

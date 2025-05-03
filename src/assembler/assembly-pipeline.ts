@@ -1,10 +1,8 @@
 import type { LineWithAddress } from "../program-memory/line-types.ts";
-import type { Pass } from "./data-types.ts";
-import type { ImmutableLine } from "./line.ts";
+import type { Pass, Pipe } from "./data-types.ts";
 
 import { passes } from "./data-types.ts";
 
-type Pipe = IterableIterator<ImmutableLine, void, undefined>;
 type Source = (pass: Pass) => Pipe;
 type Stage = (pipe: Pipe) => Pipe;
 type Sink = {

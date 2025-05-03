@@ -1,5 +1,5 @@
 import type { NumberBag } from "../assembler/bags.ts";
-import type { ImmutableLine } from "../assembler/line.ts";
+import type { Pipe } from "../assembler/data-types.ts";
 import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { Failure, NumberOrFailures } from "../failure/bags.ts";
@@ -69,9 +69,7 @@ export const dataMemory = (symbolTable: SymbolTable) => {
         "type": "numberDirective", "it": allocStack
     };
 
-    const assemblyPipeline = function* (
-        lines: IterableIterator<ImmutableLine>
-    ) {
+    const assemblyPipeline = function* (lines: Pipe) {
         for (const line of lines) {
             yield line;
             if (line.lastLine) {

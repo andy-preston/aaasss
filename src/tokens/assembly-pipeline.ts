@@ -1,3 +1,4 @@
+import type { Pipe } from "../assembler/data-types.ts";
 import type { LineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { OperandIndex, SymbolicOperands } from "../operands/data-types.ts"
 
@@ -7,7 +8,6 @@ import { pushOperandCheckingIndexOffset } from "./index-offset.ts";
 import { lineWithTokens } from "./line-types.ts";
 import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
-import { ImmutableLine } from "../assembler/line.ts";
 
 const anyWhitespace = /\s+/g;
 const comment = /;.*$/;
@@ -65,9 +65,7 @@ const tokenise = (line: LineWithRenderedJavascript) => {
     );
 };
 
-export const assemblyPipeline = function* (
-    lines: IterableIterator<ImmutableLine>
-) {
+export const assemblyPipeline = function* (lines: Pipe) {
     for (const line of lines) {
         yield tokenise(line);
     }

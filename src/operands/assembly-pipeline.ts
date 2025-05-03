@@ -1,4 +1,4 @@
-import type { ImmutableLine } from "../assembler/line.ts";
+import type { Pipe } from "../assembler/data-types.ts";
 import type { Failure, NumberOrFailures } from "../failure/bags.ts";
 import type { JsExpression } from "../javascript/expression.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
@@ -67,13 +67,11 @@ export const symbolicToNumeric = (
         );
     };
 
-    const assemblyPipeline = function* (
-        // If we're recording a macro - the symbolic operands are going to be
-        // re-defined on playback and the numeric operands re-calculated then
-        // and there's nothing much to do here.
-        lines: IterableIterator<ImmutableLine>
-    ) {
+    const assemblyPipeline = function* (lines: Pipe) {
         for (const line of lines) {
+            // If we're recording a macro - the symbolic operands are going to be
+            // re-defined on playback and the numeric operands re-calculated then
+            // and there's nothing much to do here.
             yield line.isRecordingMacro
                 ? lineWithOperands(line, [], [])
                 : converted(line);

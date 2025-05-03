@@ -1,4 +1,4 @@
-import type { ImmutableLine } from "../assembler/line.ts";
+import type { Pipe } from "../assembler/data-types.ts";
 import type { StringOrFailures } from "../failure/bags.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
@@ -12,9 +12,7 @@ const scriptDelimiter = /({{|}})/;
 
 export const assemblyPipeline = (
     expression: JsExpression, symbolTable: SymbolTable
-) => function* (
-    lines: IterableIterator<ImmutableLine>
-) {
+) => function* (lines: Pipe) {
     const buffer = {
         "javascript": [] as Array<string>,
         "assembler": [] as Array<string>,

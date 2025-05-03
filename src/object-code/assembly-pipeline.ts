@@ -1,4 +1,4 @@
-import type { ImmutableLine } from "../assembler/line.ts";
+import type { Pipe } from "../assembler/data-types.ts";
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { LineWithOperands } from "../operands/line-types.ts";
 import type { EncodedInstruction } from "./data-types.ts";
@@ -53,9 +53,7 @@ export const objectCode = (
         return generatedCode(instructionSet);
     };
 
-    const assemblyPipeline = function* (
-        lines: IterableIterator<ImmutableLine>
-    ) {
+    const assemblyPipeline = function* (lines: Pipe) {
         for (const line of lines) {
             yield processedLine(line);
         }
