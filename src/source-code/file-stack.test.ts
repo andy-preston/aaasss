@@ -62,13 +62,13 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
         "mock.test"
     );
     let index = 0;
-    for (const line of files.assemblyPipeline(1)) {
+    files.assemblyPipeline(1).filter(line => !line.lastLine).forEach(line => {
         expect(line.fileName).toBe("mock.test");
         expect(line.lineNumber).toBe(index + 1);
         expect(line.rawSource).toBe(expectedLines[index]);
         expect(line.failed()).toBeFalsy();
         index = index + 1;
-    }
+    });
 });
 
 Deno.test("Reading a non existant source file gives one line with a failure", () => {
@@ -86,20 +86,23 @@ Deno.test("Reading a non existant source file gives one line with a failure", ()
     expect(failure.kind).toBe("file_notFound");
 });
 
-Deno.test("The last line of the top source file is flagged as such", () => {
-    const expectedLines = ["not last", "not last", "not last", "last"];
+Deno.test("A mock last line is added to the end of the top file", () => {
+    const testLines = ["Real Line", "Real Line", "Real Line", "Real Line"];
     const files = fileStack(
-        (_path: FileName) => expectedLines,
+        (_path: FileName) => testLines,
         "mock.test"
     );
-    for (const line of files.assemblyPipeline(1)) {
-        expect(line.lastLine).toBe(line.rawSource == "last");
-    }
+    const lines = [...files.assemblyPipeline(1)];
+    expect(lines.length).toBe(testLines.length + 1);
+    files.assemblyPipeline(1).forEach(line => {
+        expect(line.lastLine).toBe(line.rawSource != "Real Line");
+    });
 });
 
 Deno.test("An included file is inserted into the source stream", () => {
     const mockReader = (path: FileName) =>
         [1, 2, 3].map(line => `${path} ${line}`);
+    const dummyLastLine = "";
 
     const aFileStack = fileStack(mockReader, "top.file");
     const include = directiveFunction(
@@ -113,7 +116,7 @@ Deno.test("An included file is inserted into the source stream", () => {
     expect(result.type).not.toBe("failure");
     expect([...assemblyPipeline].map(line => line.rawSource)).toEqual([
         "plop.txt 1", "plop.txt 2", "plop.txt 3",
-        "top.file 2", "top.file 3",
+        "top.file 2", "top.file 3", dummyLastLine
     ]);
 });
 
@@ -129,15 +132,15 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
     expect(firstLine.rawSource).toBe("top.file 1");
 
     const imaginaryFile = function* (): FileLineIterator {
-        yield ["one", "", 0, false];
-        yield ["two", "", 0, false];
-        yield ["three", "", 0, false];
+        yield ["one", "", 0];
+        yield ["two", "", 0];
+        yield ["three", "", 0];
     }
     files.pushImaginary(imaginaryFile());
 
     const expected = [
-        [1, "one"], [1, "two"], [1, "three"],
-        [2, "top.file 2"], [3, "top.file 3"],
+        [1, "one"       ], [1, "two"       ], [1, "three"],
+        [2, "top.file 2"], [3, "top.file 3"], [0, ""     ]
     ];
     assemblyPipeline.forEach((line, index) => {
         expect(line.fileName).toBe("top.file");

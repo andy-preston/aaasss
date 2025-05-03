@@ -26,10 +26,8 @@ const mockFileStack = () => {
             yield lineWithRawSource("", 0, "", "", 0, false);
             return;
         }
-        for (const [source, macroName, macroCount, lastLine] of lineIterator) {
-            yield lineWithRawSource(
-                "", 0, source, macroName, macroCount, lastLine
-            );
+        for (const [source, macroName, macroCount] of lineIterator) {
+            yield lineWithRawSource("", 0, source, macroName, macroCount, false);
         }
     };
     return {

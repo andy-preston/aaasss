@@ -20,7 +20,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         macroName: string, macroCount: number
     ): FileLineIterator {
         for (const line of macroList.get(macroName)!.lines) {
-            yield [line.rawSource, macroName, macroCount!, false];
+            yield [line.rawSource, macroName, macroCount!];
         }
         remap.completed(macroName, macroCount);
     }

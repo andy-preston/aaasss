@@ -9,7 +9,7 @@ import { bagOfFailures, clueFailure } from "../failure/bags.ts";
 import { lineWithRawSource } from "./line-types.ts";
 
 export type FileLineIterator =
-    Generator<[SourceCode, string, number, boolean], void, unknown>;
+    Generator<[SourceCode, string, number], void, unknown>;
 
 type StackEntry = {
     "fileName": FileName;
@@ -44,8 +44,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             // Real files provide a line number here!
             // but imaginary files just reuse this one without incrementing
             lineNumber = index + 1;
-            const lastLine = fileStack.length == 1 && lineNumber == lines.length;
-            yield [text, "", 0, lastLine];
+            yield [text, "", 0];
         }
     };
 
@@ -81,20 +80,21 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             fileStack.pop();
             return undefined;
         } else {
-            const [rawSource, macroName, macroCount, lastLine] = next.value;
+            const [rawSource, macroName, macroCount] = next.value;
             return lineWithRawSource(
                 file.fileName, lineNumber,
-                rawSource, macroName, macroCount, lastLine
+                rawSource, macroName, macroCount, false
             );
         }
     };
 
     const assemblyPipeline = function* (pass: Pass) {
+        const dummyLine  = (isLast: boolean) =>
+            lineWithRawSource(topFileName, 0, "", "", 0, isLast).withPass(pass);
+
         const topFile = include(topFileName);
         if (topFile.type == "failures") {
-            yield lineWithRawSource(
-                topFileName, 0, "", "", 0, false
-            ).withFailures(topFile.it);
+            yield dummyLine(false).withFailures(topFile.it);
             return;
         }
         while (true) {
@@ -102,6 +102,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             // "whilst we weren't watching".
             const file = currentFile();
             if (file == undefined) {
+                yield dummyLine(true);
                 return;
             }
             const next = nextLine(file);

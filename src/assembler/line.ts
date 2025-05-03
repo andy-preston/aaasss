@@ -23,7 +23,6 @@ export const line = (
 
     const withPass = (pass: Pass) => {
         passNumber = pass;
-        console.log(pass, lineNumber);
         return theLine;
     };
 
