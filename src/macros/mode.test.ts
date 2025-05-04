@@ -1,17 +1,20 @@
 import type { Failure } from "../failure/bags.ts";
+import type { LineWithTokens } from "../tokens/line-types.ts";
 
 import { expect } from "jsr:@std/expect";
-import { mockNextPass } from "../assembler/testing.ts";
+import { line } from "../assembler/line-types.ts";
 import { systemUnderTest } from "./testing.ts";
+
+const isLastLineOfPass = true;
 
 Deno.test("the last line has a failure is a definition wasn't closed", () => {
     const system = systemUnderTest();
 
     const define = system.macros.define("plop", []);
     expect(define.type).not.toBe("failures");
-
-    const pipeline = system.macros.assemblyPipeline(mockNextPass());
-    const lastLine = pipeline.next().value!;
+    const lastLine = system.macros.processedLine(
+        line("", 0, "", "", 0, isLastLineOfPass) as LineWithTokens
+    );
     expect(lastLine.failed).toBeTruthy();
     const failures = [...lastLine.failures()];
     expect(failures.length).toBe(1);

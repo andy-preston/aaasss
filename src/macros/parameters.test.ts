@@ -1,7 +1,7 @@
 import type { AssertionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { systemUnderTest, testLines } from "./testing.ts";
+import { systemUnderTest, testLine } from "./testing.ts";
 
 Deno.test("If a macro has parameters, they are substituted", () => {
     const system = systemUnderTest();
@@ -11,18 +11,18 @@ Deno.test("If a macro has parameters, they are substituted", () => {
     const end = system.macros.end();
     expect(end.type).not.toBe("failures");
 
-    const mockDirectiveUse = system.symbolTable.use("testMacro");
-    expect(mockDirectiveUse.type).toBe("functionUseDirective");
+    const forceSymbolIncrement = system.symbolTable.use("testMacro");
+    expect(forceSymbolIncrement.type).toBe("functionUseDirective");
 
     const use = system.macros.use("testMacro", ["1", "2"]);
     expect(use.type).not.toBe("failures");
 
     const firstExecution = 1;
-    const pipeline = system.macros.assemblyPipeline(testLines([{
+    const line = testLine({
         "macroName": "testMacro", "macroCount": firstExecution,
         "label": "", "mnemonic": "TST", "symbolicOperands": ["a", "b"]
-    }]));
-    const result = pipeline.next().value!;
+    });
+    const result = system.macros.processedLine(line);
     expect(result.failed()).toBeFalsy();
     expect(result.mnemonic).toBe("TST");
     expect(result.symbolicOperands).toEqual(["1", "2"]);

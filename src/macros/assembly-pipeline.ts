@@ -1,3 +1,4 @@
+import type { Pipe } from "../assembler/data-types.ts";
 import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/bags.ts";
 import type { Macros } from "./macros.ts";
 
@@ -16,8 +17,15 @@ export const macroPipeline = (macros: Macros) => {
 
     macros.directiveForMacroUse(useMacroDirective);
 
+    const assemblyPipeline = function* (lines: Pipe) {
+        for (const line of lines) {
+            yield macros.processedLine(line);
+            macros.lastLine(line);
+        }
+    };
+
     return {
-        "assemblyPipeline": macros.assemblyPipeline,
+        "assemblyPipeline": assemblyPipeline,
         "macroDirective": macroDirective,
         "endDirective": endDirective,
         "useMacroDirective": useMacroDirective

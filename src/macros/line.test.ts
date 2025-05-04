@@ -1,7 +1,7 @@
 import type { TestLine } from "./testing.ts";
 
 import { expect } from "jsr:@std/expect";
-import { systemUnderTest, testLines } from "./testing.ts";
+import { systemUnderTest, testPipeLineWithFileStack, testPipelineWithLines } from "./testing.ts";
 
 const testInput: Array<TestLine> = [{
     "macroName": "", "macroCount": 0,
@@ -19,7 +19,8 @@ const noPlaybackCount = 0;
 
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
     const system = systemUnderTest();
-    const pipeline = system.macros.assemblyPipeline(testLines(testInput));
+    const pipeline = testPipelineWithLines(system, testInput);
+
     pipeline.forEach((result, index) => {
         expect(result.isRecordingMacro).toBe(false);
         expect(result.macroName).toBe(noPlaybackName);
@@ -35,7 +36,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(testLines(testInput));
+        const pipeline = testPipelineWithLines(system, testInput);
         pipeline.forEach(result => {
             expect(result.isRecordingMacro).toBe(true);
         });
@@ -43,7 +44,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
     const end = system.macros.end();
     expect(end.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(testLines(testInput));
+        const pipeline = testPipelineWithLines(system, testInput);
         pipeline.forEach(result => {
             expect(result.isRecordingMacro).toBe(false);
         });
@@ -56,7 +57,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(testLines(testInput));
+        const pipeline = testPipelineWithLines(system, testInput);
         expect([...pipeline].length).toBe(3);
     }
     const end = system.macros.end();
@@ -64,9 +65,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const use = system.macros.use("testMacro", []);
     expect(use.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(
-            system.mockFileStack.assemblyPipeline()
-        );
+        const pipeline = testPipeLineWithFileStack(system);
         const playback = [...pipeline];
         expect(playback.length).toBe(testInput.length);
         playback.forEach((result, index) => {
@@ -99,9 +98,7 @@ Deno.test("'blank' lines are not recorded in the macro", () => {
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(
-            testLines(testInputWithBlanks)
-        );
+        const pipeline = testPipelineWithLines(system, testInputWithBlanks);
         expect([...pipeline].length).toBe(5);
     }
     const end = system.macros.end();
@@ -109,9 +106,7 @@ Deno.test("'blank' lines are not recorded in the macro", () => {
     const use = system.macros.use("testMacro", []);
     expect(use.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(
-            system.mockFileStack.assemblyPipeline()
-        );
+        const pipeline = testPipeLineWithFileStack(system);
         expect([...pipeline].length).toBe(3);
     }
 });
@@ -122,7 +117,7 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(testLines(testInput));
+        const pipeline = testPipelineWithLines(system, testInput);
         expect([...pipeline].length).toBe(testInput.length);
     }
     const end = system.macros.end();
@@ -134,9 +129,7 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
     const use = system.macros.use("testMacro", []);
     expect(use.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(
-            system.mockFileStack.assemblyPipeline()
-        );
+        const pipeline = testPipeLineWithFileStack(system);
         const playback = [...pipeline];
         expect(playback.length).toBe(testInput.length);
         playback.forEach(result => {

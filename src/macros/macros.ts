@@ -1,4 +1,3 @@
-import type { Pipe } from "../assembler/data-types.ts";
 import type { FunctionUseDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
@@ -13,8 +12,7 @@ import { remapping } from "./remapping.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
 
 export const macros = (
-    symbolTable: SymbolTable,
-    fileStack: FileStack
+    symbolTable: SymbolTable, fileStack: FileStack
 ) => {
     const macroList: MacroList = new Map();
     let definingMacro: Macro | undefined = undefined;
@@ -27,11 +25,6 @@ export const macros = (
         useMacroDirective = directive;
     };
 
-    const reset = () => {
-        definingMacro = undefined;
-        definingName = "";
-    };
-
     const isDefining = () => definingMacro != undefined || definingName != "";
 
     const define = (
@@ -42,10 +35,12 @@ export const macros = (
                 clueFailure("macro_multiDefine", definingName)
             ]);
         }
+
         const inUse = symbolTable.alreadyInUse(newName);
         if (inUse.type == "failures") {
             return inUse;
         }
+
         definingName = newName;
         definingMacro = macro(parameters);
         return emptyBag();
@@ -55,11 +50,13 @@ export const macros = (
         if (!isDefining()) {
             return bagOfFailures([boringFailure("macro_end")]);
         }
+
         macroList.set(definingName, definingMacro!);
         if (useMacroDirective != undefined) {
             symbolTable.userSymbol(definingName, useMacroDirective);
         }
-        reset();
+        definingMacro = undefined;
+        definingName = "";
         return emptyBag();
     };
 
@@ -102,15 +99,13 @@ export const macros = (
             processed.withFailures([boringFailure("macro_noEnd")]);
         }
         return processed;
-    }
+    };
 
-    const assemblyPipeline = function* (lines: Pipe) {
-        for (const line of lines) {
-            yield processedLine(line);
-            if (line.lastLine) {
-                macroList.clear();
-                reset();
-            }
+    const lastLine = (line: LineWithTokens) => {
+        if (line.lastLine) {
+            definingMacro = undefined;
+            definingName = "";
+            macroList.clear();
         }
     };
 
@@ -118,8 +113,8 @@ export const macros = (
         "define": define,
         "end": end,
         "use": use,
-        "reset": reset,
-        "assemblyPipeline": assemblyPipeline,
+        "processedLine": processedLine,
+        "lastLine": lastLine,
         "directiveForMacroUse": directiveForMacroUse
     };
 };

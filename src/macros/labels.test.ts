@@ -1,5 +1,5 @@
 import { expect } from "jsr:@std/expect";
-import { systemUnderTest, testLines } from "./testing.ts";
+import { systemUnderTest, testPipelineWithLines } from "./testing.ts";
 
 Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const system = systemUnderTest();
@@ -8,11 +8,11 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(testLines([{
+        const pipeline = testPipelineWithLines(system, [{
             "macroName": "", "macroCount": 0,
             "label": labelToBeExpanded, "mnemonic": "",
             "symbolicOperands": []
-        }]));
+        }]);
         const result = pipeline.next().value!;
         expect(result.failed()).toBeFalsy();
     }
@@ -22,11 +22,11 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     expect(use.type).not.toBe("failures");
     const mockCount = 2;
     {
-        const pipeline = system.macros.assemblyPipeline(testLines([{
+        const pipeline = testPipelineWithLines(system, [{
             "macroName": "testMacro", "macroCount": mockCount,
             "label": "", "mnemonic": "JMP",
             "symbolicOperands": [labelToBeExpanded]
-        }]));
+        }]);
         const result = pipeline.next().value!;
         expect(result.failed()).toBeFalsy();
         expect(result.symbolicOperands[0]).toBe(
@@ -43,11 +43,11 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
-        const pipeline = system.macros.assemblyPipeline(testLines([{
+        const pipeline = testPipelineWithLines(system, [{
             "macroName": "", "macroCount": 0,
             "label": labelThatCouldBeExpanded, "mnemonic": "",
             "symbolicOperands": []
-        }]));
+        }]);
         const result = pipeline.next().value!;
         expect(result.failed()).toBeFalsy();
 
@@ -58,11 +58,11 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     expect(use.type).not.toBe("failures");
     const mockCount = 3;
     {
-        const pipeline = system.macros.assemblyPipeline(testLines([{
+        const pipeline = testPipelineWithLines(system, [{
             "macroName": "testMacro", "macroCount": mockCount,
             "label": "", "mnemonic": "JMP",
             "symbolicOperands": [labelThatWillNotBeExpanded]
-        }]));
+        }]);
         const result = pipeline.next().value!;
         expect(result.failed()).toBeFalsy();
         expect(result.symbolicOperands[0]).toBe(labelThatWillNotBeExpanded);
@@ -80,11 +80,11 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
     expect(use.type).not.toBe("failures");
     const mockCount = 4;
     {
-        const pipeline = system.macros.assemblyPipeline(testLines([{
+        const pipeline = testPipelineWithLines(system, [{
             "macroName": "testMacro", "macroCount": mockCount,
             "label": "aLabel", "mnemonic": "TST",
             "symbolicOperands": []
-        }]));
+        }]);
         const result = pipeline.next().value!;
         expect(result.failed()).toBeFalsy();
         expect(result.label).toBe(`testMacro$${mockCount}$aLabel`);
