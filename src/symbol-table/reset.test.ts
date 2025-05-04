@@ -21,7 +21,9 @@ Deno.test("The symbol table is reset at the end of the first pass", () => {
         expect(use).toEqual(numberBag(57));
         expect(system.symbolTable.count("plop")).toBe(expectedCount);
     })
-    const pipeline = system.symbolTable.assemblyPipeline(testPipeline(1));
+    const pipeline = system.symbolTablePipeline.assemblyPipeline(
+        testPipeline(1)
+    );
     [...pipeline];
     expect(system.symbolTable.count("plop")).toEqual(0);
 });
@@ -37,7 +39,9 @@ Deno.test("... but left intact at the end of the second pass", () => {
         expect(use).toEqual(numberBag(57));
         expect(system.symbolTable.count("plop")).toBe(expectedCount);
     })
-    const pipeline = system.symbolTable.assemblyPipeline(testPipeline(2));
+    const pipeline = system.symbolTablePipeline.assemblyPipeline(
+        testPipeline(2)
+    );
     [...pipeline];
     expect(system.symbolTable.count("plop")).toEqual(3);
 });

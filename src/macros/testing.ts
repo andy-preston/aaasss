@@ -13,6 +13,7 @@ import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { macroPipeline } from "./assembly-pipeline.ts";
 import { macros } from "./macros.ts";
+import { symbolTablePipeline } from "../symbol-table/assembly-pipeline.ts";
 
 const mockFileStack = () => {
     let lineIterator: FileLineIterator | undefined;
@@ -45,6 +46,7 @@ const mockUse = (
 export const systemUnderTest = () => {
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($cpuRegisters);
+    const $symbolTablePipeline = symbolTablePipeline($symbolTable);
     const $mockFileStack = mockFileStack();
     const $macros = macros($symbolTable, $mockFileStack);
     $macros.directiveForMacroUse({
@@ -52,6 +54,7 @@ export const systemUnderTest = () => {
     });
     return {
         "symbolTable": $symbolTable,
+        "symbolTablePipeline": $symbolTablePipeline,
         "mockFileStack": $mockFileStack,
         "macros": $macros,
     };

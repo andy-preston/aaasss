@@ -38,7 +38,6 @@ Deno.test("The macro doesn't have to have parameters", () => {
     expect(define.type).not.toBe("failures");
 });
 
-
 Deno.test("The macro directive name must be a string", () => {
     const system = systemUnderTest();
     const directives = testDirectives(system);
@@ -139,7 +138,9 @@ Deno.test("A macro can be defined in both passes", () => {
         const use = testMacro();
         expect(use.type).not.toBe("failures");
     }
-    const pipeline = system.symbolTable.assemblyPipeline(mockNextPass());
+    const pipeline = system.symbolTablePipeline.assemblyPipeline(
+        mockNextPass()
+    );
     [...pipeline];
     {
         const inUse = system.symbolTable.alreadyInUse("testMacro");

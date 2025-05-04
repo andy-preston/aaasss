@@ -1,6 +1,5 @@
-import type { Pipe } from "../assembler/data-types.ts";
-import type { ValueDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
+import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolBag } from "./bags.ts";
 
@@ -16,14 +15,11 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
     const counts = counting();
     const definitions = definitionList();
 
-    const assemblyPipeline = function* (lines: Pipe) {
-        for (const line of lines) {
-            yield line;
-            if (line.lastLine && line.isPass(1)) {
-                counts.reset();
-                definitions.reset();
-                varSymbols.clear();
-            }
+    const reset = (line: LineWithObjectCode) => {
+        if (line.lastLine && line.isPass(1)) {
+            counts.reset();
+            definitions.reset();
+            varSymbols.clear();
         }
     };
 
@@ -122,15 +118,6 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         return emptyBag();
     };
 
-    const defineDirective: ValueDirective = {
-        // This is the directive for doing a "define" operation
-        // not a function for defining directives.
-        // The number of times I've assumed the wrong thing is ridiculous!
-        "type": "valueDirective",
-        "it": (symbolName: string, value: number) =>
-            persistentSymbol(symbolName, numberBag(value))
-    };
-
     const use = (symbolName: string): SymbolBag => {
         if (cpuRegisters.has(symbolName)) {
             counts.increment(symbolName, "revealIfHidden");
@@ -162,7 +149,6 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
     );
 
     return {
-        "defineDirective": defineDirective,
         "isDefinedSymbol": isDefinedSymbol,
         "alreadyInUse": alreadyInUse,
         "userSymbol": userSymbol,
@@ -174,7 +160,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         "use": use,
         "count": counts.count,
         "list": list,
-        "assemblyPipeline": assemblyPipeline,
+        "reset": reset,
         "definingLine": definitions.definingLine
     };
 };

@@ -20,6 +20,7 @@ import { symbolicToNumeric } from "../operands/assembly-pipeline.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { fileStack } from "../source-code/file-stack.ts";
+import { symbolTablePipeline } from "../symbol-table/assembly-pipeline.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { assemblyPipeline as tokens } from "../tokens/assembly-pipeline.ts";
 import { assemblyPipeline as startingWith } from "./assembly-pipeline.ts";
@@ -33,6 +34,7 @@ export const coupling = (
 ) => {
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($cpuRegisters);
+    const $symbolTablePipeline = symbolTablePipeline($symbolTable);
 
     const withDirectives = <Component extends object>(component: Component) => {
         for (const property in component) {
@@ -46,13 +48,12 @@ export const coupling = (
         return component;
     }
 
-    withDirectives($symbolTable);
+    withDirectives($symbolTablePipeline);
     withDirectives($cpuRegisters);
 
     const $fileStack = withDirectives(fileStack(readerMethod, fileName));
-    const $macros = withDirectives(
-        macroPipeline(macros($symbolTable, $fileStack))
-    );
+    const $macros = macros($symbolTable, $fileStack);
+    const $macroPipeline = withDirectives(macroPipeline($macros));
 
     const $jsExpression = withDirectives(jSExpression($symbolTable));
     const $embeddedJs = withDirectives(embeddedJs($jsExpression, $symbolTable));
@@ -79,11 +80,11 @@ export const coupling = (
     return startingWith($fileStack.assemblyPipeline)
         .andThen($embeddedJs)
         .andThen(tokens)
-        .andThen($macros.assemblyPipeline)
+        .andThen($macroPipeline.assemblyPipeline)
         .andThen($symbolicToNumeric.assemblyPipeline)
         .andThen($objectCode.assemblyPipeline)
         .andThen($programMemory.assemblyPipeline)
         .andThen($dataMemory.assemblyPipeline)
-        .andThen($symbolTable.assemblyPipeline)
+        .andThen($symbolTablePipeline.assemblyPipeline)
         .results($listing, $hexFile);
 };
