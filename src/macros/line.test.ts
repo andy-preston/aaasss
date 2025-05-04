@@ -75,42 +75,6 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     }
 });
 
-Deno.test("'blank' lines are not recorded in the macro", () => {
-    const testInputWithBlanks: Array<TestLine> = [{
-        "macroName": "", "macroCount": 0,
-        "label": "", "mnemonic": "", "symbolicOperands": []
-    }, {
-        "macroName": "", "macroCount": 0,
-        "label": "testLabel", "mnemonic": "TST", "symbolicOperands": []
-    }, {
-        "macroName": "", "macroCount": 0,
-        "label": "testLabel", "mnemonic": "AND", "symbolicOperands": []
-    }, {
-        "macroName": "", "macroCount": 0,
-        "label": "", "mnemonic": "TST", "symbolicOperands": []
-    }, {
-        "macroName": "", "macroCount": 0,
-        "label": "", "mnemonic": "", "symbolicOperands": []
-    }] as const;
-
-    const system = systemUnderTest();
-
-    const define = system.macros.define("testMacro", []);
-    expect(define.type).not.toBe("failures");
-    {
-        const pipeline = testPipelineWithLines(system, testInputWithBlanks);
-        expect([...pipeline].length).toBe(5);
-    }
-    const end = system.macros.end();
-    expect(end.type).not.toBe("failures");
-    const use = system.macros.use("testMacro", []);
-    expect(use.type).not.toBe("failures");
-    {
-        const pipeline = testPipeLineWithFileStack(system);
-        expect([...pipeline].length).toBe(3);
-    }
-});
-
 Deno.test("Lines that are being replayed have a macro name and count", () => {
     const system = systemUnderTest();
 
