@@ -4,7 +4,7 @@ import type { NumericOperand, OperandIndex } from "./data-types.ts";
 import type { OperandRequirements } from "./valid-scaled.ts";
 
 import { expect } from "jsr:@std/expect";
-import { testLine } from "./test.ts";
+import { testLine } from "./testing.ts";
 import { validScaledOperands } from "./valid-scaled.ts";
 
 const anyNumber = 15;

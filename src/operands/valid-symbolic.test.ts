@@ -1,7 +1,7 @@
 import type { AssertionFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { testLine } from "./test.ts";
+import { testLine } from "./testing.ts";
 import { validSymbolic } from "./valid-symbolic.ts";
 
 Deno.test("Line must have at least expected parameters", () => {
