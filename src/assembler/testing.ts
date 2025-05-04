@@ -1,4 +1,4 @@
-import { line } from "./line.ts";
+import { line } from "./line-types.ts";
 
 export const mockNextPass = function* () {
     yield line("", 0, "", "", 0, true).withPass(1);

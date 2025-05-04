@@ -1,4 +1,4 @@
-import type { ImmutableLine } from "../assembler/line.ts";
+import type { ImmutableLine } from "../assembler/line-types.ts";
 
 export interface LineWithFailures {
     "failures": ImmutableLine["failures"];

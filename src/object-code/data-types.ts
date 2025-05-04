@@ -1,4 +1,4 @@
-import type { ImmutableLine } from "../assembler/line.ts";
+import type { ImmutableLine } from "../assembler/line-types.ts";
 import type { InstructionSet } from "../device/instruction-set.ts";
 
 export type BinaryDigit = "0" | "1";

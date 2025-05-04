@@ -1,4 +1,4 @@
-import type { ImmutableLine, MutableLine } from "../assembler/line.ts";
+import type { ImmutableLine, MutableLine } from "../assembler/line-types.ts";
 import type { LineWithRenderedJavascript } from "../javascript/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Label, Mnemonic } from "./data-types.ts";

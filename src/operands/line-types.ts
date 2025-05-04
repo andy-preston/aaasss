@@ -1,4 +1,4 @@
-import type { ImmutableLine, MutableLine } from "../assembler/line.ts";
+import type { ImmutableLine, MutableLine } from "../assembler/line-types.ts";
 import type { LineWithProcessedMacro } from "../macros/line-types.ts";
 import type { NumericOperands, OperandTypes } from "./data-types.ts";
 
