@@ -1,17 +1,9 @@
-import { expect } from "jsr:@std/expect";
-import { emptyBag, numberBag, type NumberBag } from "../assembler/bags.ts";
 import type { VoidDirective } from "../directives/bags.ts";
-import { cpuRegisters } from "../registers/cpu-registers.ts";
-import { symbolTable } from "./symbol-table.ts";
+import type { NumberBag } from "../assembler/bags.ts";
 
-export const systemUnderTest = () => {
-    const registers = cpuRegisters();
-    const symbols = symbolTable(registers);
-    return {
-        "symbolTable": symbols,
-        "cpuRegisters": registers,
-    };
-};
+import { expect } from "jsr:@std/expect";
+import { emptyBag, numberBag } from "../assembler/bags.ts";
+import { systemUnderTest } from "./testing.ts";
 
 Deno.test("A symbol is returned but not counted if it's a directive", () => {
     const system = systemUnderTest();

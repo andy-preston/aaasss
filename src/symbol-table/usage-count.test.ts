@@ -1,14 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { numberBag } from "../assembler/bags.ts";
-import { cpuRegisters } from "../registers/cpu-registers.ts";
-import { symbolTable } from "./symbol-table.ts";
-
-const systemUnderTest = () => {
-    const symbols = symbolTable(cpuRegisters());
-    return {
-        "symbolTable": symbols
-    };
-};
+import { systemUnderTest } from "./testing.ts";
 
 Deno.test("A freshly added symbol has a count of zero", () => {
     const system = systemUnderTest();
