@@ -137,6 +137,9 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "syntax_invalidMnemonic": (failure) => withLocation(failure, [
         "A mnemonic should only contain letters"
     ]),
+    "type_relativeAddress": (failure) => withLocation(failure, [
+        "Relative address"
+    ]),
     "type_16BitDataAddress": (failure) => withLocation(failure, numericTypeFailure(
         ["16 Bit Data Address out of range"],
         "Defined range", "Actual value",

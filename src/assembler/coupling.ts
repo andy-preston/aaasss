@@ -17,6 +17,7 @@ import { macros } from "../macros/macros.ts";
 import { objectCode } from "../object-code/assembly-pipeline.ts";
 import { pokeBuffer } from "../object-code/poke.ts";
 import { symbolicToNumeric } from "../operands/assembly-pipeline.ts";
+import { programMemoryPipeline } from "../program-memory/assembly-pipeline.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { fileStack } from "../source-code/file-stack.ts";
@@ -63,9 +64,14 @@ export const coupling = (
 
     const $instructionSet = withDirectives(instructionSet($symbolTable));
     const $pokeBuffer = withDirectives(pokeBuffer());
-    const $objectCode = withDirectives(objectCode($instructionSet, $pokeBuffer));
-    const $programMemory = withDirectives(programMemory($symbolTable));
+    const $programMemory = programMemory($symbolTable);
+    const $programMemoryPipeline = withDirectives(
+        programMemoryPipeline($programMemory)
+    );
     const $dataMemory = withDirectives(dataMemory($symbolTable));
+    const $objectCode = withDirectives(objectCode(
+        $instructionSet, $pokeBuffer, $programMemory
+    ));
 
     const $listing = withDirectives(listing(
         outputFile, fileName, failureMessageTranslator, $symbolTable
@@ -83,7 +89,7 @@ export const coupling = (
         .andThen($macroPipeline.assemblyPipeline)
         .andThen($symbolicToNumeric.assemblyPipeline)
         .andThen($objectCode.assemblyPipeline)
-        .andThen($programMemory.assemblyPipeline)
+        .andThen($programMemoryPipeline.assemblyPipeline)
         .andThen($dataMemory.assemblyPipeline)
         .andThen($symbolTablePipeline.assemblyPipeline)
         .results($listing, $hexFile);

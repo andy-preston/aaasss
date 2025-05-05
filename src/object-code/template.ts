@@ -19,6 +19,7 @@ type TemplateOperand =
     | "d" // destination register
     | "a" // address
     | "v" // value
+    | "b" // bit index
 
 type Substitutions = Partial<Record<TemplateOperand, NumericOperand>>;
 

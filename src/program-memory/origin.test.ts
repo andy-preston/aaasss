@@ -1,18 +1,12 @@
 import type { AssertionFailure, Failure, NumericTypeFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { directiveFunction } from "../directives/directive-function.ts";
 import { systemUnderTest } from "./testing.ts";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 
-const irrelevantName = "testing";
-
 Deno.test("A device must be selected before program memory can be set", () => {
     const system = systemUnderTest();
-    const origin = directiveFunction(
-        irrelevantName, system.programMemory.originDirective
-    );
-    const result = origin(10);
+    const result = system.programMemory.origin(10);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(2);
@@ -22,10 +16,7 @@ Deno.test("A device must be selected before program memory can be set", () => {
 
 Deno.test("Origin addresses can't be less than zero", () => {
     const system = systemUnderTest();
-    const origin = directiveFunction(
-        irrelevantName, system.programMemory.originDirective
-    );
-    const result = origin(-1);
+    const result = system.programMemory.origin(-1);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -37,29 +28,10 @@ Deno.test("Origin addresses can't be less than zero", () => {
     expect(failure.max).toBe(undefined);
 });
 
-Deno.test("Origin addresses can't be strange type", () => {
-    const system = systemUnderTest();
-    const origin = directiveFunction(
-        irrelevantName, system.programMemory.originDirective
-    );
-    const result = origin("nothing");
-    expect(result.type).toBe("failures");
-    const failures = result.it as Array<Failure>;
-    expect(failures.length).toBe(1);
-    const failure = failures[0] as AssertionFailure;
-    expect(failure.kind).toBe("type_failure");
-    expect(failure.location).toEqual({"parameter": 0});
-    expect(failure.expected).toBe("numeric");
-    expect(failure.actual).toBe('"nothing"');
-});
-
 Deno.test("Device name is used to determine if properties have been set", () => {
     const system = systemUnderTest();
-    const origin = directiveFunction(
-        irrelevantName, system.programMemory.originDirective
-    );
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
-    const result = origin(10);
+    const result = system.programMemory.origin(10);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(2);
@@ -69,16 +41,13 @@ Deno.test("Device name is used to determine if properties have been set", () => 
 
 Deno.test("Origin addresses must be progmem size when a device is chosen", () => {
     const system = systemUnderTest();
-    const origin = directiveFunction(
-        irrelevantName, system.programMemory.originDirective
-    );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     const bytesAvailable = 100;
     system.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(bytesAvailable)
     );
     const tryOrigin = 92;
-    const result = origin(tryOrigin);
+    const result = system.programMemory.origin(tryOrigin);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -90,13 +59,16 @@ Deno.test("Origin addresses must be progmem size when a device is chosen", () =>
 
 Deno.test("Origin directive sets current address", () => {
     const system = systemUnderTest();
-    const origin = directiveFunction(
-        irrelevantName, system.programMemory.originDirective
-    );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
-    expect(origin(23).type).not.toBe("failures");
+    {
+        const origin = system.programMemory.origin(23);
+        expect(origin.type).not.toBe("failures");
+    }
     expect(system.programMemory.address()).toBe(23);
-    expect(origin(42).type).not.toBe("failures");
+    {
+        const origin = system.programMemory.origin(42);
+        expect(origin.type).not.toBe("failures");
+    }
     expect(system.programMemory.address()).toBe(42);
 });

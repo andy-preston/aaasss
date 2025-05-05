@@ -11,10 +11,30 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { programMemory } from "./program-memory.ts";
+import { programMemoryPipeline } from "./assembly-pipeline.ts";
+
+export const systemUnderTest = () => {
+    const $cpuRegisters = cpuRegisters();
+    const $symbolTable = symbolTable($cpuRegisters);
+    const $programMemory = programMemory($symbolTable);
+    const $programMemoryPipeline = programMemoryPipeline($programMemory);
+    const $jsExpression = jSExpression($symbolTable);
+
+    return {
+        "symbolTable": $symbolTable,
+        "programMemory": $programMemory,
+        "programMemoryPipeline": $programMemoryPipeline,
+        "jsExpression": $jsExpression
+    };
+};
+
+type SystemUnderTest = ReturnType<typeof systemUnderTest>;
 
 type LineData = {"label": Label, "pokes": Array<Code>, "code": Code};
 
-export const systemUnderTest = (...lines: Array<LineData>) => {
+export const testPipeline = (
+    system: SystemUnderTest, ...lines: Array<LineData>
+) => {
     const testLines = function* () {
         for (const lineData of lines) {
             const $lineWithRawSource = lineWithRawSource("", 0, "", "", 0, false);
@@ -37,17 +57,5 @@ export const systemUnderTest = (...lines: Array<LineData>) => {
         }
     };
 
-    const $cpuRegisters = cpuRegisters();
-    const $symbolTable = symbolTable($cpuRegisters);
-    const $programMemory = programMemory($symbolTable);
-    const $jsExpression = jSExpression($symbolTable);
-    const assemblyPipeline = $programMemory.assemblyPipeline(testLines());
-
-    return {
-        "symbolTable": $symbolTable,
-        "programMemory": $programMemory,
-        "jsExpression": $jsExpression,
-        "assemblyPipeline": assemblyPipeline
-    };
+    return system.programMemoryPipeline.assemblyPipeline(testLines());
 };
-

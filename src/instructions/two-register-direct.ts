@@ -6,6 +6,7 @@ import type { OperandRequirements } from "../operands/valid-scaled.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
+import { ProgramMemory } from "../program-memory/program-memory.ts";
 
 const mapping: Map<string, [string, number]> = new Map([
     ["CPC",  ["0000_01", 1]],
@@ -29,7 +30,9 @@ const mapping: Map<string, [string, number]> = new Map([
 export const twoRegisterDirect = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
-    const codeGenerator = (_instructionSet: InstructionSet) => {
+    const codeGenerator = (
+        _instructionSet: InstructionSet, _programMemory: ProgramMemory
+    ) => {
         const [prefix, secondOperandIndex] = mapping.get(line.mnemonic)!;
 
         const operandRequirements: OperandRequirements = [

@@ -2,6 +2,7 @@ import type { InstructionSet } from "../device/instruction-set.ts";
 import type { EncodedInstruction } from "../object-code/data-types.ts";
 import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
+import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
@@ -29,7 +30,9 @@ export const singleRegisterDirect = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
 
-    const codeGenerator = (_instructionSet: InstructionSet) => {
+    const codeGenerator = (
+        _instructionSet: InstructionSet, _programMemory: ProgramMemory
+    ) => {
         const [operationBits, suffix, readModifyWrite] =
             mapping.get(line.mnemonic)!;
 

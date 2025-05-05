@@ -1,12 +1,10 @@
-import type { Pipe } from "../assembler/data-types.ts";
-import type { NumberDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { StringOrFailures } from "../failure/bags.ts";
+import type { NumberOrFailures, StringOrFailures } from "../failure/bags.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { emptyBag, numberBag } from "../assembler/bags.ts";
-import { assertionFailure, bagOfFailures, boringFailure } from "../failure/bags.ts";
+import { assertionFailure, bagOfFailures, boringFailure, numericTypeFailure } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import { lineWithAddress } from "./line-types.ts";
 
@@ -34,6 +32,27 @@ export const programMemory = (symbolTable: SymbolTable) => {
         return failures.it.length > 0 ? failures : emptyBag();
     };
 
+    const relativeAddress = (
+        absoluteAddress: number, bits: number
+    ): NumberOrFailures => {
+        const inRange = pastEnd(absoluteAddress);
+        if (inRange.type == "failures") {
+            return bagOfFailures(inRange.it);
+        }
+
+        const range = Math.pow(2, bits);
+        const max = range / 2;
+        const min = -max + 1;
+        const distance = absoluteAddress - address - 1;
+        if (distance < min || distance >= max) {
+            return bagOfFailures([
+                numericTypeFailure("type_relativeAddress", distance, min, max)
+            ]);
+        }
+
+        return numberBag(distance < 0 ? range + distance : distance);
+    };
+
     const origin = (newAddress: number): DirectiveResult => {
         const check = validNumeric(newAddress, "type_positive");
         if (check.type == "failures") {
@@ -52,10 +71,6 @@ export const programMemory = (symbolTable: SymbolTable) => {
         }
         address = newAddress;
         return emptyBag();
-    };
-
-    const originDirective: NumberDirective = {
-        "type": "numberDirective", "it": origin
     };
 
     const addressStep = (line: LineWithObjectCode) => {
@@ -83,19 +98,18 @@ export const programMemory = (symbolTable: SymbolTable) => {
         return newLine;
     };
 
-    const assemblyPipeline = function* (lines: Pipe) {
-        for (const line of lines) {
-            yield addressStep(line);
-            if (line.lastLine) {
-                address = 0;
-            }
+    const reset = (line: LineWithObjectCode) => {
+        if (line.lastLine) {
+            address = 0;
         }
     };
 
     return {
+        "relativeAddress": relativeAddress,
         "address": () => address,
-        "originDirective": originDirective,
-        "assemblyPipeline": assemblyPipeline
+        "origin": origin,
+        "addressStep": addressStep,
+        "reset": reset
     };
 };
 

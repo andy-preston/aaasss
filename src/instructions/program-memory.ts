@@ -1,6 +1,7 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import type { Code, EncodedInstruction } from "../object-code/data-types.ts";
+import type { BinaryDigit, Code, EncodedInstruction } from "../object-code/data-types.ts";
 import type { LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 import { assertionFailure, boringFailure } from "../failure/bags.ts";
 import { lineWithObjectCode } from "../object-code/line-types.ts";
@@ -9,15 +10,14 @@ import { validScaledOperands } from "../operands/valid-scaled.ts";
 
 const mnemonics = ["SPM", "ELPM", "LPM"];
 
-type BitString = "0" | "1";
-
 export const programMemory = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
 
-    const codeGenerator = (instructionSet: InstructionSet) => {
-
-        const storeIndexBit = (): BitString => {
+    const codeGenerator = (
+        instructionSet: InstructionSet, _programMemory: ProgramMemory
+    ) => {
+        const storeIndexBit = (): BinaryDigit => {
             if (line.symbolicOperands.length == 0) {
                 return "0";
             }
@@ -54,7 +54,7 @@ export const programMemory = (
             template(`1001_0101 111${storeIndexBit()}_1000`, {});
 
 
-        const explicitIndexBit = (): BitString => {
+        const explicitIndexBit = (): BinaryDigit => {
             if (line.symbolicOperands.length != 2) {
                 line.withFailures([assertionFailure(
                     "operand_count", "0/2", `${line.symbolicOperands.length}`

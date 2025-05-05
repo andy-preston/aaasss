@@ -24,7 +24,7 @@ export const failureKinds = {
         "type_failure"
     ],
     "numericType": [
-        "type_bytesOrString"
+        "type_bytesOrString", "type_relativeAddress"
     ],
     "clue": [
         "file_notFound",  "device_notFound",

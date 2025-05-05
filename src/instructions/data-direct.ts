@@ -4,6 +4,7 @@ import type { BinaryDigit, EncodedInstruction } from "../object-code/data-types.
 import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { NumericOperand } from "../operands/data-types.ts";
 import type { OperandRequirement } from "../operands/valid-scaled.ts";
+import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
@@ -24,7 +25,9 @@ const variations = (hasReducedCore: boolean) => hasReducedCore ? {
 export const dataDirect = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
-    const codeGenerator = (instructionSet: InstructionSet) => {
+    const codeGenerator = (
+        instructionSet: InstructionSet, _programMemory: ProgramMemory
+    ) => {
 
         const hasReducedCore = (): boolean => {
             const reducedCore = instructionSet.hasReducedCore();

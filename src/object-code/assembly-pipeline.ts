@@ -8,6 +8,7 @@ import type { PokeBuffer } from "./poke.ts";
 import { clueFailure } from "../failure/bags.ts";
 import { instructionEncoderList } from "./instruction-encoder-list.ts";
 import { lineWithObjectCode, lineWithPokedBytes } from "./line-types.ts";
+import { ProgramMemory } from "../program-memory/program-memory.ts";
 
 const addressingMode = (
     line: LineWithPokedBytes
@@ -24,7 +25,8 @@ const addressingMode = (
 const emptyLine = (line: LineWithPokedBytes) => lineWithObjectCode(line, []);
 
 export const objectCode = (
-    instructionSet: InstructionSet, pokeBuffer: PokeBuffer
+    instructionSet: InstructionSet,
+    pokeBuffer: PokeBuffer, programMemory: ProgramMemory
 ) => {
     const processedLine = (line: LineWithOperands) => {
         if (line.isRecordingMacro) {
@@ -50,7 +52,7 @@ export const objectCode = (
             ]);
         }
 
-        return generatedCode(instructionSet);
+        return generatedCode(instructionSet, programMemory);
     };
 
     const assemblyPipeline = function* (lines: Pipe) {
