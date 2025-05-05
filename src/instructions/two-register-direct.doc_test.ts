@@ -7,7 +7,7 @@ Deno.test("Two register direct demo",() => {
         "programMemoryBytes":      { "value": "0100" },
         "reducedCore":             { "value": false }
     });
-    demo.source([
+    demo.source("", [
         '    {{ device("ATMega 328"); }}',
         "    ADC R1, R2",
         "    ADD R3, R4",
@@ -81,7 +81,7 @@ Deno.test("Two register direct demo",() => {
 
 Deno.test("Many chips do not support 8-bit multiply",() => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny 24"); }}',
         "    MUL R0, R1"
         ]);

@@ -2,7 +2,7 @@ import { docTest, expectFileContents, expectFileExists } from "../assembler/doc-
 
 Deno.test("Single Register Direct Demo", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "    POP R6",
         "    PUSH R7",
@@ -58,7 +58,7 @@ Deno.test("Read-Modify-Write Demo", () => {
         "programMemoryBytes":      { "value": "0100" },
         "reducedCore":             { "value": false }
     });
-    demo.source([
+    demo.source("", [
         '    {{ device("DemoDevice"); }}',
         "    LAC Z, R20",
         "    LAS Z, R21",
@@ -92,7 +92,7 @@ Deno.test("Read-Modify-Write Demo", () => {
 
 Deno.test("Read-Modify-Write isn't available on all devices", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "    LAC Z, R20",
         "    LAS Z, R21",
@@ -135,7 +135,7 @@ Deno.test("Read-Modify-Write expects the index register to be Z", () => {
         "programMemoryBytes":      { "value": "0100" },
         "reducedCore":             { "value": false }
     });
-    demo.source([
+    demo.source("", [
         '    {{ device("DemoDevice"); }}',
         "    LAC R30, R20",
         "    LAS X, R21",

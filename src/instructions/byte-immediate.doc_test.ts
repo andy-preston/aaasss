@@ -2,7 +2,7 @@ import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Byte Immediate Demo",() => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "    CPI R16, 0",
         "    CPI R31, 0",

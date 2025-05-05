@@ -2,7 +2,7 @@ import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Single Register Bit Demo", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "    BLD R11, 1",
         "    BST R12, 3",

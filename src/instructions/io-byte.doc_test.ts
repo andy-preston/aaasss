@@ -2,7 +2,7 @@ import { docTest, expectFileContents, expectFileExists } from "../assembler/doc-
 
 Deno.test("IO Byte Demo", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "    IN R19, 53 + 0x20",
         "    OUT 25 + 0x20, R16"
@@ -31,7 +31,7 @@ Deno.test("IO Byte Demo", () => {
 
 Deno.test("Ports > 5F are out of range", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "    IN R19, 0x60"
     ]);

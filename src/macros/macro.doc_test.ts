@@ -2,7 +2,7 @@ import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Macro demo", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "",
         '    {{ macro("aMacro", "address"); }}',
@@ -44,7 +44,7 @@ Deno.test("Macro demo", () => {
 
 Deno.test("Playing back multiple copies of a macro with JS", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "",
         '    {{ macro("aMacro", "address"); }}',
@@ -82,7 +82,7 @@ Deno.test("Playing back multiple copies of a macro with JS", () => {
 
 Deno.test("A macro can be called from inside another macro", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "",
         '    {{ macro("innerMacro", "address"); }}',
@@ -129,5 +129,43 @@ Deno.test("A macro can be called from inside another macro", () => {
         ":020000020000FC",
         ":08000000E0910004E09100080A",
         ":00000001FF"
+    ]);
+});
+
+Deno.test("A macro can be defined in one file and used in another", () => {
+    const demo = docTest();
+    demo.source("def.asm", [
+        '    {{ macro("aMacro", "address"); }}',
+        "    LDS R30, address",
+        "    {{ end(); }}",
+    ]);
+    demo.source("", [
+        '    {{ device("ATTiny24"); }}',
+        '    {{ include("/var/tmp/def.asm"); }}',
+        '    {{ aMacro(1024); }}',
+    ]);
+    demo.assemble();
+    expectFileContents(".lst").toEqual([
+        "/var/tmp/demo.asm",
+        "=================",
+        '                      1     {{ device("ATTiny24"); }}',
+        '                      2     {{ include("/var/tmp/def.asm"); }}',
+        "",
+        "/var/tmp/def.asm",
+        "================",
+        '                      1     {{ macro("aMacro", "address"); }}',
+        "                      2     LDS R30, address",
+        "                      3     {{ end(); }}",
+        "",
+        "/var/tmp/demo.asm",
+        "=================",
+        "                      3     {{ aMacro(1024); }}",
+        "000000 91 E0 04 00    3     LDS R30, address",
+        "",
+        "Symbol Table",
+        "============",
+        "",
+        "aMacro |   |   | /var/tmp/def.asm:3 | 1",
+        "R30    |   |   | REGISTER           | 1"
     ]);
 });

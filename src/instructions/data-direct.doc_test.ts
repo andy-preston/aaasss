@@ -2,7 +2,7 @@ import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Data-direct without reduced core",() => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "    LDS R30, 512 * 2", // LDS register, data-memory address
         "    STS 1024 * 4, R8", // STS data-memory address, register
@@ -36,7 +36,7 @@ Deno.test("Data-direct with reduced core",() => {
         "programMemoryBytes":      { "value": "0100" },
         "reducedCore":             { "value": true }
     });
-    demo.source([
+    demo.source("", [
         '    {{ device("ATtiny20"); }}',
         "    LDS R30, 12 * 10",
         "    STS 126, R18"

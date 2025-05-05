@@ -2,7 +2,7 @@ import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Status manipulation demo",() => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("AT Tiny 24"); }}',
         "    BCLR 1",
         "    CLC",

@@ -2,7 +2,7 @@ import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Defining methods to get high and low bytes", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny2313"); }}',
         "",
         "    {{ Number.prototype.high = function() {",

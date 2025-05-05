@@ -2,7 +2,7 @@ import { docTest, expectFileContents, expectFileExists } from "../assembler/doc-
 
 Deno.test("Device demo", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         "    LDS R30, 1024",
     ]);
@@ -23,7 +23,7 @@ Deno.test("Device demo", () => {
 
 Deno.test("A device must be specified before any instructions can be assembled", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         "    DES 23",
     ]);
     demo.assemble();
@@ -40,7 +40,7 @@ Deno.test("A device must be specified before any instructions can be assembled",
 
 Deno.test("The device name must be a string",() => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         "    {{ device(ATTiny24); }}",
     ]);
     demo.assemble();
@@ -57,7 +57,7 @@ Deno.test("The device name must be a string",() => {
 
 Deno.test("You can only specify a single device",() => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("ATTiny24"); }}',
         '    {{ device("ATTiny24"); }}',
         '    {{ device("ATTiny2313"); }}',

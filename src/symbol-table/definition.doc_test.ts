@@ -2,7 +2,7 @@ import { docTest, expectFileContents, expectFileExists } from "../assembler/doc-
 
 Deno.test("Definition errors give the location of the original definition", () => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '      {{ device("ATTiny24"); }}',
         "plop: BLD R11, 1",
         "plop: BST R12, 3",

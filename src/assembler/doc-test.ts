@@ -11,7 +11,8 @@ import { defaultReaderMethod } from "../source-code/file-stack.ts";
 import { coupling } from "./coupling.ts";
 import { extensionSwap } from "./output-file.ts";
 
-const topFileName = "/var/tmp/demo.asm";
+const testFileDirectory = "/var/tmp/";
+const topFileName = `${testFileDirectory}demo.asm`;
 
 export const expectFileExists = (extension: FileExtension) => {
     const file = extensionSwap(topFileName, extension);
@@ -40,6 +41,7 @@ const cleanup = () => {
 
 export const docTest = () => {
     cleanup();
+
     let deviceFile: DeviceFileOperations =
         [defaultDeviceFinder, defaultJsonLoader];
 
@@ -47,15 +49,30 @@ export const docTest = () => {
         deviceFile = deviceMocks(spec);
     };
 
-    const source = (lines: Array<string>) => {
+    let defaultFileName = topFileName;
+
+    const fileNameOrDefault = (fileName: FileName) => {
+        if (fileName != "") {
+            return `${testFileDirectory}${fileName}`;
+        }
+
+        if (defaultFileName == "") {
+            throw new Error("Can only have one top/default file");
+        }
+
+        const useFileName = defaultFileName;
+        defaultFileName = "";
+        return useFileName;
+    };
+
+    const source = (fileName: FileName, lines: Array<string>) => {
         const theFile = Deno.openSync(
-            topFileName,
+            fileNameOrDefault(fileName),
             { create: true, write: true, truncate: true }
         );
         theFile.writeSync((new TextEncoder()).encode(lines.join("\n")));
         theFile.close();
     };
-
 
     const assemble = () => {
         coupling(

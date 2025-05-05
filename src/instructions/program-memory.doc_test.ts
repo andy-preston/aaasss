@@ -7,7 +7,7 @@ Deno.test("Program Memory Demo", () => {
         "programMemoryBytes":      { "value": "0100" },
         "reducedCore":             { "value": false }
     });
-    demo.source([
+    demo.source("", [
         '    {{ device("Fake Device"); }}',
         "    SPM",
         "    SPM Z+",
@@ -51,7 +51,7 @@ Deno.test("If ELPM is supported, implicit LPM cannot be used", () => {
         "unsupportedInstructions": { "value": [] },
         "programMemoryBytes":      { "value": "0100" }
     });
-    demo.source([
+    demo.source("", [
         '    {{ device("testing"); }}',
         "    LPM",
         "    ELPM"
@@ -74,7 +74,7 @@ Deno.test("The address is always implicit or held in Z", () => {
         "programMemoryBytes":      { "value": "0100" },
         "reducedCore":             { "value": false }
     });
-    demo.source([
+    demo.source("", [
         '    {{ device("Fake Device"); }}',
         "    SPM X",
         "    ELPM R12, 10",

@@ -6,7 +6,7 @@ Deno.test("DES example code",() => {
         "unsupportedInstructions": { "value": [] },
         "programMemoryBytes":      { "value": "0100" }
     });
-    demo.source([
+    demo.source("", [
         '    {{ device("testing"); }}',
         "    DES 0x00",
         "    DES 0x01",
@@ -58,7 +58,7 @@ Deno.test("DES example code",() => {
 
 Deno.test("Some(most?) devices don't support DES",() => {
     const demo = docTest();
-    demo.source([
+    demo.source("", [
         '    {{ device("AT-Tiny-24"); }}',
         "    DES 15",
     ]);
