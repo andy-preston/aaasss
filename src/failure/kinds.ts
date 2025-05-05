@@ -16,7 +16,6 @@ export const failureKinds = {
         "ram_sizeUnknown", "ram_stackAllocated"
     ],
     "assertion": [
-        "device_multiple",
         "macro_params",
         "operand_count", "operand_symbolic",
         "parameter_count",

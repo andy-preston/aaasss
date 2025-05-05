@@ -17,11 +17,6 @@ export const listingTitles = {
 const withLocation = location("operand", "parameter");
 
 export const messages: Record<FailureKind, FailureMessage> = {
-    "device_multiple": (failure) => withLocation(failure, assertionFailure(
-        ["You should select only one device type"],
-        "Original selection", "Subsequent selection (which will not work)",
-        failure as AssertionFailure
-    )),
     "device_notFound": (failure) => withLocation(failure, clueFailure(
         ["Device specification not found"],
         "Can't find a device specification for",

@@ -1,4 +1,3 @@
-import type { StringBag } from "../assembler/bags.ts";
 import type { StringDirective } from "../directives/bags.ts";
 import type { StringOrFailures } from "../failure/bags.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
@@ -8,7 +7,7 @@ import type { DeviceFileOperations } from "./device-file.ts";
 import type { InstructionSet } from "./instruction-set.ts";
 
 import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
-import { assertionFailure, bagOfFailures } from "../failure/bags.ts";
+import { bagOfFailures } from "../failure/bags.ts";
 
 export const deviceChooser = (
     instructionSet: InstructionSet,
@@ -46,16 +45,13 @@ export const deviceChooser = (
     const choose = (
         deviceName: string, fullSpec: FullSpec
     ): StringOrFailures => {
-        const previousName = symbolTable.symbolValue("deviceName");
-        if (previousName.it == deviceName) {
-            return emptyBag()
+        const setDevice = symbolTable.deviceSymbol(
+            "deviceName", stringBag(deviceName)
+        );
+        if (setDevice.type == "failures") {
+            return bagOfFailures(setDevice.it);
         }
-        if (previousName.it != "") {
-            return bagOfFailures([assertionFailure(
-                "device_multiple", (previousName as StringBag).it, deviceName
-            )]);
-        }
-        symbolTable.deviceSymbol("deviceName", stringBag(deviceName));
+
         for (const [key, value] of Object.entries(fullSpec)) {
             switch (key) {
                 case "unsupportedInstructions":

@@ -1,10 +1,14 @@
-import type { AssertionFailure, ClueFailure, Failure } from "../failure/bags.ts";
+import type { AssertionFailure, ClueFailure, DefinitionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
+import { line } from "../assembler/line-types.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const irrelevantName = "testing";
+
+const mockDefiningLine = (fileName: string, lineNumber: number) =>
+    line(fileName, lineNumber, "", "", 0, false);
 
 Deno.test("You can choose any device that has a definition file", () => {
     for (const deviceName of ["AT-Tiny 84", "AT_Tiny 24", "AT.Tiny 44"]) {
@@ -25,6 +29,7 @@ Deno.test("Choosing multiple devices results in failure", () => {
     const device = directiveFunction(
         irrelevantName, system.deviceChooser.deviceDirective
     );
+    system.symbolTable.definingLine(mockDefiningLine("plop.asm", 23));
     {
         const result = device(firstName);
         expect(result.type).not.toBe("failures");
@@ -33,10 +38,10 @@ Deno.test("Choosing multiple devices results in failure", () => {
         expect(result.type).toBe("failures");
         const failures = result.it as Array<Failure>;
         expect(failures.length).toBe(1);
-        expect(failures[0]!.kind).toBe("device_multiple");
-        const failure = failures[0] as AssertionFailure;
-        expect(failure.expected).toBe(firstName)
-        expect(failure.actual).toBe(secondName);
+        expect(failures[0]!.kind).toBe("symbol_alreadyExists");
+        const failure = failures[0] as DefinitionFailure;
+        expect(failure.name).toBe("deviceName");
+        expect(failure.definition).toBe("plop.asm:23");
     }
 });
 
@@ -49,6 +54,7 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
     const device = directiveFunction(
         irrelevantName, system.deviceChooser.deviceDirective
     );
+    system.symbolTable.definingLine(mockDefiningLine("plop.asm", 23));
     {
         const result = device(firstName);
         expect(result.type).not.toBe("failures");
@@ -57,10 +63,10 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
         expect(result.type, "failures");
         const failures = result.it as Array<Failure>;
         expect(failures.length).toBe(1);
-        expect(failures[0]!.kind).toBe("device_multiple");
-        const failure = failures[0] as AssertionFailure;
-        expect(failure.expected).toBe(firstName)
-        expect(failure.actual).toBe(secondName);
+        expect(failures[0]!.kind).toBe("symbol_alreadyExists");
+        const failure = failures[0] as DefinitionFailure;
+        expect(failure.name).toBe("deviceName");
+        expect(failure.definition).toBe("plop.asm:23");
     }
 });
 
@@ -75,6 +81,7 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
     expect(failures.length).toBe(1);
     const failure = failures[0] as ClueFailure;
     expect(failure.kind).toBe("device_notFound");
+    // cSpell:words notarealdevice
     expect(failure.clue).toBe("./devices/notarealdevice.json");
 });
 
