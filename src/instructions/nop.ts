@@ -8,12 +8,9 @@ import { lineWithObjectCode } from "../object-code/line-types.ts";
 export const nop = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
-
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
-    ) => {
-        return lineWithObjectCode(line, [0, 0]);
-    };
+    ) => lineWithObjectCode(line, [0, 0]);
 
     return line.mnemonic == "NOP" ? codeGenerator : undefined;
 };
