@@ -10,14 +10,16 @@ import { assertionFailure, bagOfFailures, boringFailure, clueFailure } from "../
 import { macro } from "./data-types.ts";
 import { remapping } from "./remapping.ts";
 import { lineWithProcessedMacro } from "./line-types.ts";
+import { removedDirective } from "./removed-directive.ts";
 
 export const macros = (
     symbolTable: SymbolTable, fileStack: FileStack
 ) => {
     const macroList: MacroList = new Map();
+    let useMacroDirective: FunctionUseDirective | undefined = undefined;
     let definingMacro: Macro | undefined = undefined;
     let definingName: MacroName = "";
-    let useMacroDirective: FunctionUseDirective | undefined = undefined;
+    let firstLine = false;
 
     const remap = remapping(macroList);
 
@@ -43,6 +45,7 @@ export const macros = (
 
         definingName = newName;
         definingMacro = macro(parameters);
+        firstLine = true;
         return emptyBag();
     };
 
@@ -86,9 +89,12 @@ export const macros = (
     };
 
     const recordedLine = (line: LineWithTokens) => {
-        if (line.assemblySource != "") {
-            definingMacro!.lines.push(line);
+        const lineToPush = firstLine
+            ? removedDirective(definingName, line) : line;
+        if (lineToPush != undefined) {
+            definingMacro!.lines.push(lineToPush);
         }
+        firstLine = false;
         return lineWithProcessedMacro(line, true);
     };
 
