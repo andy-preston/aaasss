@@ -9,9 +9,7 @@ export const extractedText = function* (
     line: LineWithAddress, messages: Array<string>
 ) {
     if (!line.lastLine) {
-        yield textLine(
-            `${line.lineNumber}`, line.rawSource || line.assemblySource
-        );
+        yield textLine(`${line.lineNumber}`, line.rawSource);
     }
     for (const message of messages) {
         yield textLine("", message);
