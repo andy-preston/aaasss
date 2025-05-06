@@ -1,0 +1,5 @@
+#!/bin/bash
+
+deno run --allow-read --allow-write src/device/json-to-toml.ts $(
+    find -name \*.json | grep ./devices/
+)
