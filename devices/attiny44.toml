@@ -1,26 +1,19 @@
-{
-    "family": "attiny-x4",
-    "spec": {
-        "SPL": {
-            "value": "5D",
-            "description": "Stack Pointer ----------------------- IO Address 3D"
-        },
+family = "attiny-x4"
 
-        "SPH": {
-            "value": "5E",
-            "description": "Stack Pointer ----------------------- IO Address 3E"
-        },
+[spec]
 
-        "eepromEnd":          { "value": "00FF" },
+eepromEnd = 0x00FF
 
-        "programMemoryBytes": { "value": "0FFF" },
+programMemoryBytes = 0x0FFF
 
-        "ioRegistersStart":   { "value": "0020" },
+ioRegistersStart = 0x0020
+ioRegistersEnd = 0x005F
 
-        "ioRegistersEnd":     { "value": "005F" },
+ramStart = 0x0060
+ramEnd = 0x015F
 
-        "ramStart":           { "value": "0060" },
+# Stack Pointer -------------------------------------------------- IO Address 3D
+SPL = 0x5D
 
-        "ramEnd":             { "value": "015F" }
-    }
-}
+# Stack Pointer -------------------------------------------------- IO Address 3E
+SPH = 0x5E

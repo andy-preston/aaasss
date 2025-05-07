@@ -1,112 +1,73 @@
-{
-    "family": "attiny-x313",
-    "spec": {
-        "UCSRC": {
-            "value": "23",
-            "description": "USART Control/Status Register C ----- IO Address 03"
-        },
-        "UMSEL": {
-            "value": "6",
-            "description": "USART Mode Select (asynchronous / synchronous)"
-        },
-        "UPM1": {
-            "value": "5",
-            "description": "USART Parity Mode Bit 1"
-        },
-        "UPM0": {
-            "value": "4",
-            "description": "USART Parity Mode Bit 0"
-        },
-        "USBS": {
-            "value": "3",
-            "description": "USART Stop bits"
-        },
-        "UCSZ1": {
-            "value": "2",
-            "description": "USART Data Size Bit 1"
-        },
-        "UCSZ0": {
-            "value": "1",
-            "description": "USART Data Size Bit 0"
-        },
-        "UCPOL": {
-            "value": "0",
-            "description": "USART Clock Polarity"
-        },
+family = "attiny-x313"
 
-        "PCMSK": {
-            "value": "40",
-            "description": "Pin Change Mask Register ------------ IO Address 20"
-        },
-        "PCINT7": {
-            "value": "7"
-        },
-        "PCINT6": {
-            "value": "6"
-        },
-        "PCINT5": {
-            "value": "5"
-        },
-        "PCINT4": {
-            "value": "4"
-        },
-        "PCINT3": {
-            "value": "3"
-        },
-        "PCINT2": {
-            "value": "2"
-        },
-        "PCINT1": {
-            "value": "1"
-        },
-        "PCINT0": {
-            "value": "0"
-        },
+[spec]
 
-        "EIFR": {
-            "value": "5A",
-            "description": "External Interrupt Flag ------------- IO Address 3A"
-        },
-        "INTF1": {
-            "value": "7",
-            "description": "External Interrupt Flag 1"
-        },
-        "INTF0": {
-            "value": "6",
-            "description": "External Interrupt Flag 0"
-        },
-        "PCIF": {
-            "value": "5",
-            "description": "Pin Change Interrupt Flag"
-        },
+eepromEnd = 0x7F
 
-        "GIMSK": {
-            "value": "5B",
-            "description": "General Interrupt Mask -------------- IO Address 3B"
-        },
-        "INT1": {
-            "value": "7",
-            "description": "External Interrupt Request 1 Enable"
-        },
-        "INT0": {
-            "value": "6",
-            "description": "Interrupt Request 0 Enable"
-        },
-        "PCIE": {
-            "value": "5",
-            "description": "Pin Change Interrupt Enable"
-        },
+programMemoryBytes = 0x07FF
 
-        "eepromEnd":          { "value": "7F" },
+ioRegistersStart = 0x20
+ioRegistersEnd = 0x5F
 
-        "programMemoryBytes": { "value": "07FF" },
+ramStart = 0x60
+ramEnd = 0xDF
 
-        "ioRegistersStart":   { "value": "20" },
+# USART Control/Status Register C -------------------------------- IO Address 03
+UCSRC = 0x23
 
-        "ioRegistersEnd":     { "value": "5F" },
+# USART Mode Select (asynchronous / synchronous)
+UMSEL = 0x06
 
-        "ramStart":           { "value": "60" },
+# USART Parity Mode Bit 1
+UPM1 = 0x05
 
-        "ramEnd":             { "value": "DF" }
-    }
-}
+# USART Parity Mode Bit 0
+UPM0 = 0x04
+
+# USART Stop bits
+USBS = 0x03
+
+# USART Data Size Bit 1
+UCSZ1 = 0x02
+
+# USART Data Size Bit 0
+UCSZ0 = 0x01
+
+# USART Clock Polarity
+UCPOL = 0x00
+
+# Pin Change Mask Register --------------------------------------- IO Address 20
+PCMSK = 0x40
+
+PCINT7 = 0x07
+PCINT6 = 0x06
+PCINT5 = 0x05
+PCINT4 = 0x04
+PCINT3 = 0x03
+PCINT2 = 0x02
+PCINT1 = 0x01
+PCINT0 = 0x00
+
+# External Interrupt Flag ---------------------------------------- IO Address 3A
+EIFR = 0x5A
+
+# External Interrupt Flag 1
+INTF1 = 0x07
+
+# External Interrupt Flag 0
+INTF0 = 0x06
+
+# Pin Change Interrupt Flag
+PCIF = 0x05
+
+# General Interrupt Mask ----------------------------------------- IO Address 3B
+GIMSK = 0x5B
+
+# External Interrupt Request 1 Enable
+INT1 = 0x07
+
+# Interrupt Request 0 Enable
+INT0 = 0x06
+
+# Pin Change Interrupt Enable
+PCIE = 0x05

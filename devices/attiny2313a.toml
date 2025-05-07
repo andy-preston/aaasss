@@ -1,194 +1,117 @@
-{
-    "family": "attiny-x313",
-    "spec": {
-        "UCSRC": {
-            "value": "23",
-            "description": "USART MSPIM Control/Status C -------- IO Address 03"
-        },
-        "UMSEL1": {
-            "value": "7",
-            "description": "USART Mode Select bit 1"
-        },
-        "UMSEL0": {
-            "value": "6",
-            "description": "USART Mode Select bit 1"
-        },
-        "UDORD": {
-            "value": "2",
-            "description": "Data Order"
-        },
-        "UCPHA": {
-            "value": "1",
-            "description": "Clock Phase"
-        },
-        "UCPOL": {
-            "value": "0",
-            "description": "Clock Polarity"
-        },
+family = "attiny-x313"
 
-        "PCMSK1": {
-            "value": "24",
-            "description": "Pin Change Mask Register 1 ---------- IO Address 04"
-        },
-        "PCINT10": {
-            "value": "2"
-        },
-        "PCINT9": {
-            "value": "1"
-        },
-        "PCINT8": {
-            "value": "0"
-        },
+[spec]
 
-        "PCMSK2": {
-            "value": "25",
-            "description": "Pin Change Mask Register 2 ---------- IO Address 05"
-        },
-        "PCINT17": {
-            "value": "6"
-        },
-        "PCINT16": {
-            "value": "5"
-        },
-        "PCINT15": {
-            "value": "4"
-        },
-        "PCINT14": {
-            "value": "3"
-        },
-        "PCINT13": {
-            "value": "2"
-        },
-        "PCINT12": {
-            "value": "1"
-        },
-        "PCINT11": {
-            "value": "0"
-        },
+eepromEnd = 0x7F
+programMemoryBytes = 0x07FF
+ioRegistersStart = 0x20
+ioRegistersEnd = 0x5F
+ramStart = 0x60
+ramEnd = 0xDF
 
-        "PRR": {
-            "value": "26",
-            "description": "Power Reduction Register ------------ IO Address 06"
-        },
-        "PRTIM1": {
-            "value": "3",
-            "description": "Power Reduction Timer/Counter1"
-        },
-        "PRTIM0": {
-            "value": "2",
-            "description": "Power Reduction Timer/Counter0"
-        },
-        "PRUSI": {
-            "value": "1",
-            "description": "Power Reduction USI"
-        },
-        "PRUSART": {
-            "value": "0",
-            "description": "Power Reduction USART"
-        },
+# USART MSPIM Control/Status C ----------------------------------- IO Address 03
+UCSRC = 0x23
 
-        "BODCR": {
-            "value": "27",
-            "description": "BOD control register ---------------- IO Address 07"
-        },
-        "BODS": {
-            "value": "1",
-            "description": "BOD Sleep"
-        },
-        "BODSE": {
-            "value": "0",
-            "description": "BOD Sleep Enable"
-        },
+# USART Mode Select bit 1
+UMSEL1 = 0x07
 
-        "PCMSK0": {
-            "value": "40",
-            "description": "Pin Change Mask Register 0 ---------- IO Address 20"
-        },
-        "PCINT7": {
-            "value": "7"
-        },
-        "PCINT6": {
-            "value": "6"
-        },
-        "PCINT5": {
-            "value": "5"
-        },
-        "PCINT4": {
-            "value": "4"
-        },
-        "PCINT3": {
-            "value": "3"
-        },
-        "PCINT2": {
-            "value": "2"
-        },
-        "PCINT1": {
-            "value": "1"
-        },
-        "PCINT0": {
-            "value": "0"
-        },
+# USART Mode Select bit 1
+UMSEL0 = 0x06
 
-        "GIFR": {
-            "value": "5A",
-            "description": "General Interrupt Flag -------------- IO Address 3A"
-        },
-        "INTF1": {
-            "value": "7",
-            "description": "External Interrupt Flag 1"
-        },
-        "INTF0": {
-            "value": "6",
-            "description": "External Interrupt Flag 0"
-        },
-        "PCIF0": {
-            "value": "5",
-            "description": "Pin Change Interrupt Flag 0"
-        },
-        "PCIF2": {
-            "value": "4",
-            "description": "Pin Change Interrupt Flag 2"
-        },
-        "PCIF1": {
-            "value": "3",
-            "description": "Pin Change Interrupt Flag 1"
-        },
+# Data Order
+UDORD = 0x02
 
-        "GIMSK": {
-            "value": "5B",
-            "description": "General Interrupt Mask -------------- IO Address 3B"
-        },
-        "INT1": {
-            "value": "7",
-            "description": "External Interrupt Request 1 Enable"
-        },
-        "INT0": {
-            "value": "6",
-            "description": "Interrupt Request 0 Enable"
-        },
-        "PCIE0": {
-            "value": "5",
-            "description": "Pin Change Interrupt Enable Bit 0"
-        },
-        "PCIE2": {
-            "value": "4",
-            "description": "Pin Change Interrupt Enable Bit 2"
-        },
-        "PCIE1": {
-            "value": "3",
-            "description": "Pin Change Interrupt Enable Bit 1"
-        },
+# Clock Phase
+UCPHA = 0x01
 
-        "eepromEnd":          { "value": "7F" },
+# Clock Polarity
+UCPOL = 0x00
 
-        "programMemoryBytes": { "value": "07FF" },
+# Pin Change Mask Register 1 ------------------------------------- IO Address 04
+PCMSK1 = 0x24
 
-        "ioRegistersStart":   { "value": "20" },
+PCINT10 = 0x02
+PCINT9 = 0x01
+PCINT8 = 0x00
 
-        "ioRegistersEnd":     { "value": "5F" },
+# Pin Change Mask Register 2 ------------------------------------- IO Address 05
+PCMSK2 = 0x25
 
-        "ramStart":           { "value": "60" },
+PCINT17 = 0x06
+PCINT16 = 0x05
+PCINT15 = 0x04
+PCINT14 = 0x03
+PCINT13 = 0x02
+PCINT12 = 0x01
+PCINT11 = 0x00
 
-        "ramEnd":             { "value": "DF" }
-    }
-}
+# Power Reduction Register --------------------------------------- IO Address 06
+PRR = 0x26
+
+# Power Reduction Timer/Counter1
+PRTIM1 = 0x03
+
+# Power Reduction Timer/Counter0
+PRTIM0 = 0x02
+
+# Power Reduction USI
+PRUSI = 0x01
+
+# Power Reduction USART
+PRUSART = 0x00
+
+# BOD control register ------------------------------------------- IO Address 07
+BODCR = 0x27
+
+# BOD Sleep
+BODS = 0x01
+
+# BOD Sleep Enable
+BODSE = 0x00
+
+# Pin Change Mask Register 0 ------------------------------------- IO Address 20
+PCMSK0 = 0x40
+PCINT7 = 0x07
+PCINT6 = 0x06
+PCINT5 = 0x05
+PCINT4 = 0x04
+PCINT3 = 0x03
+PCINT2 = 0x02
+PCINT1 = 0x01
+PCINT0 = 0x00
+
+# General Interrupt Flag ----------------------------------------- IO Address 3A
+GIFR = 0x5A
+
+# External Interrupt Flag 1
+INTF1 = 0x07
+
+# External Interrupt Flag 0
+INTF0 = 0x06
+
+# Pin Change Interrupt Flag 0
+PCIF0 = 0x05
+
+# Pin Change Interrupt Flag 2
+PCIF2 = 0x04
+
+# Pin Change Interrupt Flag 1
+PCIF1 = 0x03
+
+# General Interrupt Mask ----------------------------------------- IO Address 3B
+GIMSK = 0x5B
+
+# External Interrupt Request 1 Enable
+INT1 = 0x07
+
+# Interrupt Request 0 Enable
+INT0 = 0x06
+
+# Pin Change Interrupt Enable Bit 0
+PCIE0 = 0x05
+
+# Pin Change Interrupt Enable Bit 2
+PCIE2 = 0x04
+
+# Pin Change Interrupt Enable Bit 1
+PCIE1 = 0x03

@@ -1,909 +1,571 @@
-{
-    "unsupportedInstructions": {
-        "value": [
-            "multiply", "readModifyWrite", "DES",
-            "FlashMore128", "FlashMore8", "SPM.Z+"
-        ]
-    },
+unsupportedInstructions = [
+    "multiply", "readModifyWrite", "DES", "FlashMore128", "FlashMore8", "SPM.Z+"
+]
 
-    "reducedCore": {
-        "value": false
-    },
+reducedCore = false
 
-    "DIDR": {
-        "value": "21",
-        "description": "Digital Input Disable Register 1 -------- IO Address 01"
-    },
-    "AIN1D": {
-        "value": "1",
-        "description": "AIN1 Digital Input Disable"
-    },
-    "AIN0D": {
-        "value": "0",
-        "description": "AIN0 Digital Input Disable"
-    },
+# Digital Input Disable Register 1 ------------------------------ IO Address 01
+DIDR = 0x21
 
-    "UBRRH": {
-        "value": "22",
-        "description": "USART Baud Rate Register High Byte ------ IO Address 02"
-    },
+# AIN1 Digital Input Disable
+AIN1D = 0x01
 
-    "ACSR": {
-        "value": "28",
-        "description": "Analog Comparator Control/Status Reg ---- IO Address 08"
-    },
-    "ACD": {
-        "value": "7",
-        "description": "Analog Comparator Disable"
-    },
-    "ACBG": {
-        "value": "6",
-        "description": "Analog Comparator Bandgap Select"
-    },
-    "ACO": {
-        "value": "5",
-        "description": "Analog Compare Output"
-    },
-    "ACI": {
-        "value": "4",
-        "description": "Analog Comparator Interrupt Flag"
-    },
-    "ACIE": {
-        "value": "3",
-        "description": "Analog Comparator Interrupt Enable"
-    },
-    "ACIC": {
-        "value": "2",
-        "description": "Analog Comparator Input Capture Enable"
-    },
-    "ACIS1": {
-        "value": "1",
-        "description": "Analog Comparator Interrupt Mode Toggle Bit 1"
-    },
-    "ACIS0": {
-        "value": "0",
-        "description": "Analog Comparator Interrupt Mode Toggle Bit 0"
-    },
+# AIN0 Digital Input Disable
+AIN0D = 0x00
 
-    "UBRRL": {
-        "value": "29",
-        "description": "USART Baud Rate Register Low Byte ------- IO Address 09"
-    },
+# USART Baud Rate Register High Byte ----------------------------- IO Address 02
+UBRRH = 0x22
 
-    "UCSRB": {
-        "value": "2A",
-        "description": "USART Control and Status Register B ----- IO Address 0A"
-    },
-    "RXCIE": {
-        "value": "7",
-        "description": "RX Complete Interrupt Enable"
-    },
-    "TXCIE": {
-        "value": "6",
-        "description": "TX Complete Interrupt Enable"
-    },
-    "UDRIE": {
-        "value": "5",
-        "description": "USART Data register Empty Interrupt Enable"
-    },
-    "RXEN": {
-        "value": "4",
-        "description": "Receiver Enable"
-    },
-    "TXEN": {
-        "value": "3",
-        "description": "Transmitter Enable"
-    },
-    "UCSZ2": {
-        "value": "2",
-        "description": "USART Data Size Bit 2"
-    },
-    "RXB8": {
-        "value": "1",
-        "description": "Receive Data Bit 8"
-    },
-    "TXB8": {
-        "value": "0",
-        "description": "Transmit Data Bit 8"
-    },
+# Analog Comparator Control/Status Reg --------------------------- IO Address 08
+ACSR = 0x28
 
+# Analog Comparator Disable
+ACD = 0x07
 
-    "UCSRA": {
-        "value": "2B",
-        "description": "USART Control and Status Register A ----- IO Address 0B"
-    },
-    "RXC": {
-        "value": "7",
-        "description": "USART Receive Complete"
-    },
-    "TXC": {
-        "value": "6",
-        "description": "USART Transmit Complete"
-    },
-    "UDRE": {
-        "value": "5",
-        "description": "USART Data Register Empty"
-    },
-    "FE": {
-        "value": "4",
-        "description": "Framing Error"
-    },
-    "DOR": {
-        "value": "3",
-        "description": "Data overRun"
-    },
-    "UPE": {
-        "value": "2",
-        "description": "USART Parity Error"
-    },
-    "U2X": {
-        "value": "1",
-        "description": "Double the USART Transmission Speed"
-    },
-    "MPCM": {
-        "value": "01",
-        "description": "Multi-processor Communication Mode"
-    },
+# Analog Comparator Bandgap Select
+ACBG = 0x06
 
-    "UDR": {
-        "value": "2C",
-        "description": "USART I/O Data Register ----------------- IO Address 0C"
-    },
+# Analog Compare Output
+ACO = 0x05
 
-    "USICR": {
-        "value": "2D",
-        "description": "USI Control Register –------------------- IO Address 0D"
-    },
-    "USISIE": {
-        "value": "7",
-        "description": "Start Condition Interrupt Enable"
-    },
-    "USIOIE": {
-        "value": "6",
-        "description": "Counter Overflow Interrupt Enable"
-    },
-    "USIWM1": {
-        "value": "5",
-        "description": "Wire Mode - bit 1"
-    },
-    "USIWM0": {
-        "value": "4",
-        "description": "Wire Mode - bit 0"
-    },
-    "USICS1": {
-        "value": "3",
-        "description": "Clock Source Select bit 1"
-    },
-    "USICS0": {
-        "value": "2",
-        "description": "Clock Source Select bit 0"
-    },
-    "USICLK": {
-        "value": "1",
-        "description": "Clock Strobe"
-    },
-    "USITC": {
-        "value": "0",
-        "description": "Clock Port Pin"
-    },
+# Analog Comparator Interrupt Flag
+ACI = 0x04
 
-    "USISR": {
-        "value": "2E",
-        "description": "USI Status Register –-------------------- IO Address 0E"
-    },
-    "USISIF": {
-        "value": "7",
-        "description": "Condition Interrupt Flag"
-    },
-    "USIOIF": {
-        "value": "6",
-        "description": "Overflow Interrupt Flag"
-    },
-    "USIPF": {
-        "value": "5",
-        "description": "Stop Condition Flag"
-    },
-    "USIDC": {
-        "value": "4",
-        "description": "Output Collision"
-    },
-    "USICNT3": {
-        "value": "3",
-        "description": "Counter Value bit 3"
-    },
-    "USICNT2": {
-        "value": "2",
-        "description": "Counter Value bit 2"
-    },
-    "USICNT1": {
-        "value": "1",
-        "description": "Counter Value bit 1"
-    },
-    "USICNT0": {
-        "value": "0",
-        "description": "Counter Value bit 0"
-    },
+# Analog Comparator Interrupt Enable
+ACIE = 0x03
 
-    "USIDR": {
-        "value": "2F",
-        "description": "USI Data Register –---------------------- IO Address 0F"
-    },
+# Analog Comparator Input Capture Enable
+ACIC = 0x02
 
-    "PIND": {
-        "value": "30",
-        "description": "Port D Input Pins Register -------------- IO Address 10"
-    },
-    "PIND6": {
-        "value": "6"
-    },
-    "PIND5": {
-        "value": "5"
-    },
-    "PIND4": {
-        "value": "4"
-    },
-    "PIND3": {
-        "value": "3"
-    },
-    "PIND2": {
-        "value": "2"
-    },
-    "PIND1": {
-        "value": "1"
-    },
-    "PIND0": {
-        "value": "0"
-    },
+# Analog Comparator Interrupt Mode Toggle Bit 1
+ACIS1 = 0x01
 
-    "DDRD": {
-        "value": "31",
-        "description": "Port D Data Direction Register ---------- IO Address 11"
-    },
-    "DDRD6": {
-        "value": "6"
-    },
-    "DDRD5": {
-        "value": "5"
-    },
-    "DDRD4": {
-        "value": "4"
-    },
-    "DDRD3": {
-        "value": "3"
-    },
-    "DDRD2": {
-        "value": "2"
-    },
-    "DDRD1": {
-        "value": "1"
-    },
-    "DDRD0": {
-        "value": "0"
-    },
+# Analog Comparator Interrupt Mode Toggle Bit 0
+ACIS0 = 0x00
 
-    "PORTD": {
-        "value": "32",
-        "description": "Port D Data Register -------------------- IO Address 12"
-    },
-    "PORTD6": {
-        "value": "6"
-    },
-    "PORTD5": {
-        "value": "5"
-    },
-    "PORTD4": {
-        "value": "4"
-    },
-    "PORTD3": {
-        "value": "3"
-    },
-    "PORTD2": {
-        "value": "2"
-    },
-    "PORTD1": {
-        "value": "1"
-    },
-    "PORTD0": {
-        "value": "0"
-    },
+# USART Baud Rate Register Low Byte ------------------------------ IO Address 09
+UBRRL = 0x29
 
-    "GPIOR0": {
-        "value": "33",
-        "description": "General Purpose I/O Register 0 ---------- IO Address 13"
-    },
+# USART Control and Status Register B ---------------------------- IO Address 0A
+UCSRB = 0x2A
 
-    "GPIOR1": {
-        "value": "34",
-        "description": "General Purpose I/O Register 1 ---------- IO Address 14"
-    },
+# RX Complete Interrupt Enable
+RXCIE = 0x07
 
-    "GPIOR2": {
-        "value": "35",
-        "description": "General Purpose I/O Register 2 ---------- IO Address 15"
-    },
+# TX Complete Interrupt Enable
+TXCIE = 0x06
 
+# USART Data register Empty Interrupt Enable
+UDRIE = 0x05
 
-    "PINB": {
-        "value": "36",
-        "description": "Port B Input Pins Register -------------- IO Address 16"
-    },
-    "PINB7": {
-        "value": "7"
-    },
-    "PINB6": {
-        "value": "6"
-    },
-    "PINB5": {
-        "value": "5"
-    },
-    "PINB4": {
-        "value": "4"
-    },
-    "PINB3": {
-        "value": "3"
-    },
-    "PINB2": {
-        "value": "2"
-    },
-    "PINB1": {
-        "value": "1"
-    },
-    "PINB0": {
-        "value": "0"
-    },
+# Receiver Enable
+RXEN = 0x04
 
-    "DDRB": {
-        "value": "37",
-        "description": "Port B Data Direction Register ---------- IO Address 17"
-    },
-    "DDRB7": {
-        "value": "7"
-    },
-    "DDRB6": {
-        "value": "6"
-    },
-    "DDRB5": {
-        "value": "5"
-    },
-    "DDRB4": {
-        "value": "4"
-    },
-    "DDRB3": {
-        "value": "3"
-    },
-    "DDRB2": {
-        "value": "2"
-    },
-    "DDRB1": {
-        "value": "1"
-    },
-    "DDRB0": {
-        "value": "0"
-    },
+# Transmitter Enable
+TXEN = 0x03
 
-    "PORTB": {
-        "value": "38",
-        "description": "Port B Data Register -------------------- IO Address 18"
-    },
-    "PORTB7": {
-        "value": "7"
-    },
-    "PORTB6": {
-        "value": "6"
-    },
-    "PORTB5": {
-        "value": "5"
-    },
-    "PORTB4": {
-        "value": "4"
-    },
-    "PORTB3": {
-        "value": "3"
-    },
-    "PORTB2": {
-        "value": "2"
-    },
-    "PORTB1": {
-        "value": "1"
-    },
-    "PORTB0": {
-        "value": "0"
-    },
+# USART Data Size Bit 2
+UCSZ2 = 0x02
 
-    "PINA": {
-        "value": "39",
-        "description": "Port A Input Pins Register -------------- IO Address 19"
-    },
-    "PINA2": {
-        "value": "2"
-    },
-    "PINA1": {
-        "value": "1"
-    },
-    "PINA0": {
-        "value": "0"
-    },
+# Receive Data Bit 8
+RXB8 = 0x01
 
-    "DDRA": {
-        "value": "3A",
-        "description": "Port A Data Direction Register ---------- IO Address 1A"
-    },
-    "DDRA2": {
-        "value": "2"
-    },
-    "DDRA1": {
-        "value": "1"
-    },
-    "DDRA0": {
-        "value": "0"
-    },
+# Transmit Data Bit 8
+TXB8 = 0x00
 
-    "PORTA": {
-        "value": "3B",
-        "description": "Port A Data Register -------------------- IO Address 1B"
-    },
-    "PORTA2": {
-        "value": "2"
-    },
-    "PORTA1": {
-        "value": "1"
-    },
-    "PORTA0": {
-        "value": "0"
-    },
+# USART Control and Status Register A ---------------------------- IO Address 0B
+UCSRA = 0x2B
 
-    "EECR": {
-        "value": "3C",
-        "description": "EEPROM Control Register ----------------- IO Address 1C"
-    },
-    "EEPM1": {
-        "value": "5",
-        "description": "EEPROM Programming Mode Bit 1"
-    },
-    "EEPM0": {
-        "value": "4",
-        "description": "EEPROM Programming Mode Bit 0"
-    },
-    "EERIE": {
-        "value": "3",
-        "description": "EEProm Ready Interrupt Enable"
-    },
-    "EEMPE": {
-        "value": "2",
-        "description": "EEPROM Master Program (Write) Enable"
-    },
-    "EEPE": {
-        "value": "1",
-        "description": "EEPROM Program (Write) Enable"
-    },
-    "EERE": {
-        "value": "0",
-        "description": "EEPROM Read Enable"
-    },
+# USART Receive Complete
+RXC = 0x07
 
-    "EEDR": {
-        "value": "3D",
-        "description": "EEPROM Data Register -------------------- IO Address 1D"
-    },
+# USART Transmit Complete
+TXC = 0x06
 
-    "EEAR": {
-        "value": "3E",
-        "description": "EEPROM Read/Write Access ---------------- IO Address 1E"
-    },
+# USART Data Register Empty
+UDRE = 0x05
 
-    "WDTCSR": {
-        "value": "41",
-        "description": "Watchdog Timer Control Register --------- IO Address 21"
-    },
-    "WDIF": {
-        "value": "7",
-        "description": "Watchdog Timeout Interrupt Flag"
-    },
-    "WDIE": {
-        "value": "6",
-        "description": "Watchdog Timeout Interrupt Enable"
-    },
-    "WDP3": {
-        "value": "5",
-        "description": "Watchdog Timer Prescaler bit 3"
-    },
-    "WDCE": {
-        "value": "4",
-        "description": "Watchdog Change Enable"
-    },
-    "WDE": {
-        "value": "3",
-        "description": "Watch Dog Enable"
-    },
-    "WDP2": {
-        "value": "2",
-        "description": "Watchdog Timer Prescaler bit 2"
-    },
-    "WDP1": {
-        "value": "1",
-        "description": "Watchdog Timer Prescaler bit 1"
-    },
-    "WDP0": {
-        "value": "0",
-        "description": "Watchdog Timer Prescaler bit 0"
-    },
+# Framing Error
+FE = 0x04
 
-    "TCCR1C": {
-        "value": "42",
-        "description": "TC1 Control Register C ------------------ IO Address 22"
-    },
-    "FOC1B": {
-        "value": "7",
-        "description": "Force Output Compare for Channel B"
-    },
-    "FOC1A": {
-        "value": "6",
-        "description": "Force Output Compare for Channel A"
-    },
+# Data overRun
+DOR = 0x03
 
-    "GTCCR": {
-        "value": "43",
-        "description": "General Timer Counter Control ----------- IO Address 23"
-    },
-    "PSR10": {
-        "value": "0",
-        "description": "Prescaler Reset Timer/Counter1 and Timer/Counter0"
-    },
+# USART Parity Error
+UPE = 0x02
 
-    "ICR1L": {
-        "value": "44",
-        "description": "TC1 Input Capture Register Low Byte ----- IO Address 24"
-    },
+# Double the USART Transmission Speed
+U2X = 0x01
 
-    "ICR1H": {
-        "value": "45",
-        "description": "TC1 Input Capture Register High Byte ---- IO Address 25"
-    },
+# Multi-processor Communication Mode
+MPCM = 0x01
 
-    "CLKPR": {
-        "value": "46",
-        "description": "Clock Prescale Register ----------------- IO Address 26"
-    },
-    "CLKPCE": {
-        "value": "7",
-        "description": "Clock Prescaler Change Enable"
-    },
-    "CLKPS3": {
-        "value": "3",
-        "description": "Clock Prescaler Select Bit 3"
-    },
-    "CLKPS2": {
-        "value": "2",
-        "description": "Clock Prescaler Select Bit 2"
-    },
-    "CLKPS1": {
-        "value": "1",
-        "description": "Clock Prescaler Select Bit 1"
-    },
-    "CLKPS0": {
-        "value": "0",
-        "description": "Clock Prescaler Select Bit 0"
-    },
+# USART I/O Data Register ---------------------------------------- IO Address 0C
+UDR = 0x2C
 
-    "OCR1BL": {
-        "value": "48",
-        "description": "TC1 Compare Register B Low Byte --------- IO Address 28"
-    },
+# USI Control Register –------------------------------------------ IO Address 0D
+USICR = 0x2D
 
-    "OCR1BH": {
-        "value": "49",
-        "description": "TC1 Compare Register B High Byte -------- IO Address 29"
-    },
+# Start Condition Interrupt Enable
+USISIE = 0x07
 
-    "OCR1AL": {
-        "value": "4A",
-        "description": "TC1 Compare Register A Low Byte --------- IO Address 2A"
-    },
+# Counter Overflow Interrupt Enable
+USIOIE = 0x06
 
-    "OCR1AH": {
-        "value": "4B",
-        "description": "TC1 Compare Register A High Byte -------- IO Address 2B"
-    },
+# Wire Mode - bit 1
+USIWM1 = 0x05
 
-    "TCNT1L": {
-        "value": "4C",
-        "description": "TC1 Counter Register Low Byte ----------- IO Address 2C"
-    },
+# Wire Mode - bit 0
+USIWM0 = 0x04
 
-    "TCNT1H": {
-        "value": "4D",
-        "description": "TC1 Counter Register High Byte ---------- IO Address 2D"
-    },
+# Clock Source Select bit 1
+USICS1 = 0x03
 
-    "TCCR1B": {
-        "value": "4E",
-        "description": "Timer/Counter1 Control Register B"
-    },
-    "ICNC1": {
-        "value": "7",
-        "description": "Input Capture 1 Noise Canceller"
-    },
-    "ICES1": {
-        "value": "6",
-        "description": "Input Capture 1 Edge Select"
-    },
-    "WGM13": {
-        "value": "4",
-        "description": "Waveform Generation 1 Mode Bit 3"
-    },
-    "WGM12": {
-        "value": "3",
-        "description": "Waveform Generation 1 Mode Bit 2"
-    },
-    "CS12": {
-        "value": "2",
-        "description": "Clock Select 1 bit 2"
-    },
-    "CS11": {
-        "value": "1",
-        "description": "Clock Select 1 bit 1"
-    },
-    "CS10": {
-        "value": "0",
-        "description": "Clock Select 1 bit 0"
-    },
+# Clock Source Select bit 0
+USICS0 = 0x02
 
-    "TCCR1A": {
-        "value": "4F",
-        "description": "TC1 Control Register A ------------------ IO Address 2F"
-    },
-    "COM1A1": {
-        "value": "7",
-        "description": "Compare Output Mode 1A, bit 1"
-    },
-    "COM1A0": {
-        "value": "6",
-        "description": "Compare Output Mode 1A, bit 0"
-    },
-    "COM1B1": {
-        "value": "5",
-        "description": "Compare Output Mode 1B, bit 1"
-    },
-    "COM1B0": {
-        "value": "4",
-        "description": "Compare Output Mode 1B, bit 0"
-    },
-    "WGM11": {
-        "value": "1",
-        "description": "Pulse Width Modulator Select Bit 1"
-    },
-    "WGM10": {
-        "value": "0",
-        "description": "Pulse Width Modulator Select Bit 0"
-    },
+# Clock Strobe
+USICLK = 0x01
 
-    "TCCR0A": {
-        "value": "50",
-        "description": "Timer/Counter Control Register A -------- IO Address 30"
-    },
-    "COM0A1": {
-        "value": "7",
-        "description": "Compare Match Output A Mode bit 1"
-    },
-    "COM0A0": {
-        "value": "6",
-        "description": "Compare Match Output A Mode bit 0"
-    },
-    "COM0B1": {
-        "value": "5",
-        "description": "Compare Match Output B Mode bit 1"
-    },
-    "COM0B0": {
-        "value": "4",
-        "description": "Compare Match Output B Mode bit 0"
-    },
-    "WGM01": {
-        "value": "1",
-        "description": "Waveform Generation Mode bit 1"
-    },
-    "WGM00": {
-        "value": "0",
-        "description": "Waveform Generation Mode bit 0"
-    },
+# Clock Port Pin
+USITC = 0x00
 
-    "OSCCAL": {
-        "value": "51",
-        "description": "Oscillator Calibration Register --------- IO Address 31"
-    },
-    "CAL6": {
-        "value": "6"
-    },
-    "CAL5": {
-        "value": "5"
-    },
-    "CAL4": {
-        "value": "4"
-    },
-    "CAL3": {
-        "value": "3"
-    },
-    "CAL2": {
-        "value": "2"
-    },
-    "CAL1": {
-        "value": "1"
-    },
-    "CAL0": {
-        "value": "0"
-    },
+# USI Status Register –------------------------------------------- IO Address 0E
+USISR = 0x2E
 
-    "TCNT0": {
-        "value": "52",
-        "description": "Timer/Counter0 -------------------------- IO Address 32"
-    },
+# Condition Interrupt Flag
+USISIF = 0x07
 
-    "TCCR0B": {
-        "value": "53",
-        "description": "Timer/Counter Control Register B -------- IO Address 33"
-    },
-    "FOC0A": {
-        "value": "7",
-        "description": "Force Output Compare A"
-    },
-    "FOC0B": {
-        "value": "6",
-        "description": "Force Output Compare B"
-    },
-    "WGM02": {
-        "value": "3",
-        "description": "Waveform Generation Mode - see also TCCR0A"
-    },
-    "CS02": {
-        "value": "2",
-        "description": "Clock Select 0 bit 2"
-    },
-    "CS01": {
-        "value": "1",
-        "description": "Clock Select 0 bit 1"
-    },
-    "CS00": {
-        "value": "0",
-        "description": "Clock Select 0 bit 0"
-    },
+# Overflow Interrupt Flag
+USIOIF = 0x06
 
-    "MCUSR": {
-        "value": "54",
-        "description": "MCU Status register --------------------- IO Address 34"
-    },
-    "WDRF": {
-        "value": "3",
-        "description": "Watchdog Reset Flag"
-    },
-    "BORF": {
-        "value": "2",
-        "description": "Brown-out Reset Flag"
-    },
-    "EXTRF": {
-        "value": "1",
-        "description": "External Reset Flag"
-    },
-    "PORF": {
-        "value": "0",
-        "description": "Power-On Reset Flag"
-    },
+# Stop Condition Flag
+USIPF = 0x05
 
-    "MCUCR": {
-        "value": "55",
-        "description": "MCU Control Register -------------------- IO Address 35"
-    },
-    "PUD": {
-        "value": "7",
-        "description": "Pull-up Disable"
-    },
+# Output Collision
+USIDC = 0x04
 
-    "OCR0A": {
-        "value": "56",
-        "description": "TC0 Output Compare Register A ----------- IO Address 36"
-    },
+# Counter Value bit 3
+USICNT3 = 0x03
 
-    "SPMCSR": {
-        "value": "57",
-        "description": "Store Program Memory Control & Status --- IO Address 37"
-    },
-    "CTPB": {
-        "value": "4",
-        "description": "Clear Temporary Page Buffer"
-    },
-    "RFLB": {
-        "value": "3",
-        "description": "Read Fuse and Lock Bits"
-    },
-    "PGWRT": {
-        "value": "2",
-        "description": "Page Write"
-    },
-    "PGERS": {
-        "value": "1",
-        "description": "Page Erase"
-    },
-    "SELFPRGEN": {
-        "value": "0",
-        "description": "Self Programming Enable"
-    },
+# Counter Value bit 2
+USICNT2 = 0x02
 
-    "TIFR": {
-        "value": "58",
-        "description": "Timer/Counter Interrupt Flag Register --- IO Address 38"
-    },
-    "TOV1": {
-        "value": "7",
-        "description": "TC1 Overflow Flag"
-    },
-    "OCF1A": {
-        "value": "6",
-        "description": "Output Compare Flag 1A"
-    },
-    "OCF1B": {
-        "value": "5",
-        "description": "Output Compare Flag 1B"
-    },
-    "ICF1": {
-        "value": "3",
-        "description": "Input Capture Flag 1"
-    },
-    "OCF0B": {
-        "value": "2",
-        "description": "TC0 Output Compare Flag 0B"
-    },
-    "TOV0": {
-        "value": "1",
-        "description": "TC0 Overflow Flag"
-    },
-    "OCF0A": {
-        "value": "0",
-        "description": "TC0 Output Compare Flag 0A"
-    },
+# Counter Value bit 1
+USICNT1 = 0x01
 
-    "TIMSK": {
-        "value": "59",
-        "description": "Timer/Counter Interrupt Mask Register --- IO Address 39"
-    },
-    "TOIE1": {
-        "value": "7",
-        "description": "TC1 Overflow Interrupt Enable"
-    },
-    "OCIE1A": {
-        "value": "6",
-        "description": "TC1 Output CompareA Match Interrupt Enable"
-    },
-    "OCIE1B": {
-        "value": "5",
-        "description": "TC1 Output CompareB Match Interrupt Enable"
-    },
-    "ICIE1": {
-        "value": "3",
-        "description": "TC1 Input Capture Interrupt Enable"
-    },
-    "OCIE0B": {
-        "value": "2",
-        "description": "TC0 Output Compare Match B Interrupt Enable"
-    },
-    "TOIE0": {
-        "value": "1",
-        "description": "TC0 Overflow Interrupt Enable"
-    },
-    "OCIE0A": {
-        "value": "0",
-        "description": "TC0 Output Compare Match A Interrupt Enable"
-    },
+# Counter Value bit 0
+USICNT0 = 0x00
 
-    "OCR0B": {
-        "value": "5C",
-        "description": "TC0 Output Compare Register ------------- IO Address 3C"
-    },
+# USI Data Register –--------------------------------------------- IO Address 0F
+USIDR = 0x2F
 
-    "SPL": {
-        "value": "5D",
-        "description": "Stack Pointer --------------------------- IO Address 3D"
-    },
+# Port D Input Pins Register ------------------------------------- IO Address 10
+PIND = 0x30
 
-    "SREG": {
-        "value": "5F",
-        "description": "Processor status register --------------- IO Address 3F"
-    }
-}
+PIND6 = 0x06
+PIND5 = 0x05
+PIND4 = 0x04
+PIND3 = 0x03
+PIND2 = 0x02
+PIND1 = 0x01
+PIND0 = 0x00
+
+# Port D Data Direction Register --------------------------------- IO Address 11
+DDRD = 0x31
+
+DDRD6 = 0x06
+DDRD5 = 0x05
+DDRD4 = 0x04
+DDRD3 = 0x03
+DDRD2 = 0x02
+DDRD1 = 0x01
+DDRD0 = 0x00
+
+# Port D Data Register ------------------------------------------- IO Address 12
+PORTD = 0x32
+
+PORTD6 = 0x06
+PORTD5 = 0x05
+PORTD4 = 0x04
+PORTD3 = 0x03
+PORTD2 = 0x02
+PORTD1 = 0x01
+PORTD0 = 0x00
+
+# General Purpose I/O Register 0 --------------------------------- IO Address 13
+GPIOR0 = 0x33
+
+# General Purpose I/O Register 1 --------------------------------- IO Address 14
+GPIOR1 = 0x34
+
+# General Purpose I/O Register 2 --------------------------------- IO Address 15
+GPIOR2 = 0x35
+
+# Port B Input Pins Register ------------------------------------- IO Address 16
+PINB = 0x36
+
+PINB7 = 0x07
+PINB6 = 0x06
+PINB5 = 0x05
+PINB4 = 0x04
+PINB3 = 0x03
+PINB2 = 0x02
+PINB1 = 0x01
+PINB0 = 0x00
+
+# Port B Data Direction Register --------------------------------- IO Address 17
+DDRB = 0x37
+
+DDRB7 = 0x07
+DDRB6 = 0x06
+DDRB5 = 0x05
+DDRB4 = 0x04
+DDRB3 = 0x03
+DDRB2 = 0x02
+DDRB1 = 0x01
+DDRB0 = 0x00
+
+# Port B Data Register ------------------------------------------- IO Address 18
+PORTB = 0x38
+
+PORTB7 = 0x07
+PORTB6 = 0x06
+PORTB5 = 0x05
+PORTB4 = 0x04
+PORTB3 = 0x03
+PORTB2 = 0x02
+PORTB1 = 0x01
+PORTB0 = 0x00
+
+# Port A Input Pins Register ------------------------------------- IO Address 19
+PINA = 0x39
+
+PINA2 = 0x02
+PINA1 = 0x01
+PINA0 = 0x00
+
+# Port A Data Direction Register --------------------------------- IO Address 1A
+DDRA = 0x3A
+
+DDRA2 = 0x02
+DDRA1 = 0x01
+DDRA0 = 0x00
+
+# Port A Data Register ------------------------------------------- IO Address 1B
+PORTA = 0x3B
+
+PORTA2 = 0x02
+PORTA1 = 0x01
+PORTA0 = 0x00
+
+# EEPROM Control Register ---------------------------------------- IO Address 1C
+EECR = 0x3C
+
+# EEPROM Programming Mode Bit 1
+EEPM1 = 0x05
+
+# EEPROM Programming Mode Bit 0
+EEPM0 = 0x04
+
+# EEProm Ready Interrupt Enable
+EERIE = 0x03
+
+# EEPROM Master Program (Write) Enable
+EEMPE = 0x02
+
+# EEPROM Program (Write) Enable
+EEPE = 0x01
+
+# EEPROM Read Enable
+EERE = 0x00
+
+# EEPROM Data Register ------------------------------------------- IO Address 1D
+EEDR = 0x3D
+
+# EEPROM Read/Write Access --------------------------------------- IO Address 1E
+EEAR = 0x3E
+
+# Watchdog Timer Control Register -------------------------------- IO Address 21
+WDTCSR = 0x41
+
+# Watchdog Timeout Interrupt Flag
+WDIF = 0x07
+
+# Watchdog Timeout Interrupt Enable
+WDIE = 0x06
+
+# Watchdog Timer Prescaler bit 3
+WDP3 = 0x05
+
+# Watchdog Change Enable
+WDCE = 0x04
+
+# Watch Dog Enable
+WDE = 0x03
+
+# Watchdog Timer Prescaler bit 2
+WDP2 = 0x02
+
+# Watchdog Timer Prescaler bit 1
+WDP1 = 0x01
+
+# Watchdog Timer Prescaler bit 0
+WDP0 = 0x00
+
+# TC1 Control Register C ----------------------------------------- IO Address 22
+TCCR1C = 0x42
+
+# Force Output Compare for Channel B
+FOC1B = 0x07
+
+# Force Output Compare for Channel A
+FOC1A = 0x06
+
+# General Timer Counter Control ---------------------------------- IO Address 23
+GTCCR = 0x43
+
+# Prescaler Reset Timer/Counter1 and Timer/Counter0
+PSR10 = 0x00
+
+# TC1 Input Capture Register Low Byte ---------------------------- IO Address 24
+ICR1L = 0x44
+
+# TC1 Input Capture Register High Byte --------------------------- IO Address 25
+ICR1H = 0x45
+
+# Clock Prescale Register ---------------------------------------- IO Address 26
+CLKPR = 0x46
+
+# Clock Prescaler Change Enable
+CLKPCE = 0x07
+
+# Clock Prescaler Select Bit 3
+CLKPS3 = 0x03
+
+# Clock Prescaler Select Bit 2
+CLKPS2 = 0x02
+
+# Clock Prescaler Select Bit 1
+CLKPS1 = 0x01
+
+# Clock Prescaler Select Bit 0
+CLKPS0 = 0x00
+
+# TC1 Compare Register B Low Byte -------------------------------- IO Address 28
+OCR1BL = 0x48
+
+# TC1 Compare Register B High Byte ------------------------------- IO Address 29
+OCR1BH = 0x49
+
+# TC1 Compare Register A Low Byte -------------------------------- IO Address 2A
+OCR1AL = 0x4A
+
+# TC1 Compare Register A High Byte ------------------------------- IO Address 2B
+OCR1AH = 0x4B
+
+# TC1 Counter Register Low Byte ---------------------------------- IO Address 2C
+TCNT1L = 0x4C
+
+# TC1 Counter Register High Byte --------------------------------- IO Address 2D
+TCNT1H = 0x4D
+
+# Timer/Counter1 Control Register B
+TCCR1B = 0x4E
+
+# Input Capture 1 Noise Canceller
+ICNC1 = 0x07
+
+# Input Capture 1 Edge Select
+ICES1 = 0x06
+
+# Waveform Generation 1 Mode Bit 3
+WGM13 = 0x04
+
+# Waveform Generation 1 Mode Bit 2
+WGM12 = 0x03
+
+# Clock Select 1 bit 2
+CS12 = 0x02
+
+# Clock Select 1 bit 1
+CS11 = 0x01
+
+# Clock Select 1 bit 0
+CS10 = 0x00
+
+# TC1 Control Register A ----------------------------------------- IO Address 2F
+TCCR1A = 0x4F
+
+# Compare Output Mode 1A, bit 1
+COM1A1 = 0x07
+
+# Compare Output Mode 1A, bit 0
+COM1A0 = 0x06
+
+# Compare Output Mode 1B, bit 1
+COM1B1 = 0x05
+
+# Compare Output Mode 1B, bit 0
+COM1B0 = 0x04
+
+# Pulse Width Modulator Select Bit 1
+WGM11 = 0x01
+
+# Pulse Width Modulator Select Bit 0
+WGM10 = 0x00
+
+# Timer/Counter Control Register A ------------------------------- IO Address 30
+TCCR0A = 0x50
+
+# Compare Match Output A Mode bit 1
+COM0A1 = 0x07
+
+# Compare Match Output A Mode bit 0
+COM0A0 = 0x06
+
+# Compare Match Output B Mode bit 1
+COM0B1 = 0x05
+
+# Compare Match Output B Mode bit 0
+COM0B0 = 0x04
+
+# Waveform Generation Mode bit 1
+WGM01 = 0x01
+
+# Waveform Generation Mode bit 0
+WGM00 = 0x00
+
+# Oscillator Calibration Register -------------------------------- IO Address 31
+OSCCAL = 0x51
+
+CAL6 = 0x06
+CAL5 = 0x05
+CAL4 = 0x04
+CAL3 = 0x03
+CAL2 = 0x02
+CAL1 = 0x01
+CAL0 = 0x00
+
+# Timer/Counter0 ------------------------------------------------- IO Address 32
+TCNT0 = 0x52
+
+# Timer/Counter Control Register B ------------------------------- IO Address 33
+TCCR0B = 0x53
+
+# Force Output Compare A
+FOC0A = 0x07
+
+# Force Output Compare B
+FOC0B = 0x06
+
+# Waveform Generation Mode - see also TCCR0A
+WGM02 = 0x03
+
+# Clock Select 0 bit 2
+CS02 = 0x02
+
+# Clock Select 0 bit 1
+CS01 = 0x01
+
+# Clock Select 0 bit 0
+CS00 = 0x00
+
+# MCU Status register -------------------------------------------- IO Address 34
+MCUSR = 0x54
+
+# Watchdog Reset Flag
+WDRF = 0x03
+
+# Brown-out Reset Flag
+BORF = 0x02
+
+# External Reset Flag
+EXTRF = 0x01
+
+# Power-On Reset Flag
+PORF = 0x00
+
+# MCU Control Register ------------------------------------------- IO Address 35
+MCUCR = 0x55
+
+# Pull-up Disable
+PUD = 0x07
+
+# TC0 Output Compare Register A ---------------------------------- IO Address 36
+OCR0A = 0x56
+
+# Store Program Memory Control & Status -------------------------- IO Address 37
+SPMCSR = 0x57
+
+# Clear Temporary Page Buffer
+CTPB = 0x04
+
+# Read Fuse and Lock Bits
+RFLB = 0x03
+
+# Page Write
+PGWRT = 0x02
+
+# Page Erase
+PGERS = 0x01
+
+# Self Programming Enable
+SELFPRGEN = 0x00
+
+# Timer/Counter Interrupt Flag Register -------------------------- IO Address 38
+TIFR = 0x58
+
+# TC1 Overflow Flag
+TOV1 = 0x07
+
+# Output Compare Flag 1A
+OCF1A = 0x06
+
+# Output Compare Flag 1B
+OCF1B = 0x05
+
+# Input Capture Flag 1
+ICF1 = 0x03
+
+# TC0 Output Compare Flag 0B
+OCF0B = 0x02
+
+# TC0 Overflow Flag
+TOV0 = 0x01
+
+# TC0 Output Compare Flag 0A
+OCF0A = 0x00
+
+# Timer/Counter Interrupt Mask Register -------------------------- IO Address 39
+TIMSK = 0x59
+
+# TC1 Overflow Interrupt Enable
+TOIE1 = 0x07
+
+# TC1 Output CompareA Match Interrupt Enable
+OCIE1A = 0x06
+
+# TC1 Output CompareB Match Interrupt Enable
+OCIE1B = 0x05
+
+# TC1 Input Capture Interrupt Enable
+ICIE1 = 0x03
+
+# TC0 Output Compare Match B Interrupt Enable
+OCIE0B = 0x02
+
+# TC0 Overflow Interrupt Enable
+TOIE0 = 0x01
+
+# TC0 Output Compare Match A Interrupt Enable
+OCIE0A = 0x00
+
+# TC0 Output Compare Register ------------------------------------ IO Address 3C
+OCR0B = 0x5C
+
+# Stack Pointer -------------------------------------------------- IO Address 3D
+SPL = 0x5D
+
+# Processor status register -------------------------------------- IO Address 3F
+SREG = 0x5F
