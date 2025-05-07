@@ -2,13 +2,8 @@ import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 
 Deno.test("Relative Program Demo", () => {
     const demo = docTest();
-    demo.mockUnsupportedDevice({
-        "unsupportedInstructions": { "value": [] },
-        "programMemoryBytes":      { "value": "0100" },
-        "reducedCore":             { "value": false }
-    });
     demo.source("", [
-        '    {{ device("Fake Device"); }}',
+        '    {{ device("AT Tiny 24"); }}',
         "back:",
         "    NOP",
         "    NOP",
@@ -63,7 +58,7 @@ Deno.test("Relative Program Demo", () => {
     expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
-        '                      1     {{ device("Fake Device"); }}',
+        '                      1     {{ device("AT Tiny 24"); }}',
         "                      2 back:",
         "000000 00 00          3     NOP",
         "000001 00 00          4     NOP",
