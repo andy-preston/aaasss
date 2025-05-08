@@ -1,9 +1,9 @@
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { deviceDirective } from "./device-directive.ts";
-import { defaultDeviceFinder, defaultTomlLoader } from "./device-file.ts";
-import { deviceSettings } from "./device-settings.ts";
+import { deviceDirective } from "./directive.ts";
+import { defaultDeviceFinder, defaultTomlLoader } from "./file.ts";
 import { instructionSet } from "./instruction-set.ts";
+import { deviceSettings } from "./settings.ts";
 
 export const systemUnderTest = () => {
     const $cpuRegisters = cpuRegisters();
