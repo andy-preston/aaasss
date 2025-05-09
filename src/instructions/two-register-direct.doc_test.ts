@@ -3,9 +3,9 @@ import { docTest, expectFileContents, expectFileExists } from "../assembler/doc-
 Deno.test("Two register direct demo",() => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
-        "unsupportedInstructions": { "value": [] },
-        "programMemoryBytes":      { "value": "0100" },
-        "reducedCore":             { "value": false }
+        "unsupportedInstructions": [],
+        "programMemoryBytes": 0x0100,
+        "reducedCore": false
     });
     demo.source("", [
         '    {{ device("ATMega 328"); }}',

@@ -1,8 +1,8 @@
 import type { StringDirective } from "../directives/bags.ts";
 import type { StringOrFailures } from "../failure/bags.ts";
 import type { DeviceSpec, SpecItems } from "./data-types.ts";
-import type { DeviceFileOperations } from "./device-file.ts";
-import type { DeviceSettings } from "./device-settings.ts";
+import type { DeviceFileOperations } from "./file.ts";
+import type { DeviceSettings } from "./settings.ts";
 
 export const deviceDirective = (
     deviceSettings: DeviceSettings, fileOperations: DeviceFileOperations

@@ -1,11 +1,12 @@
-import type { DeviceFileOperations } from "../device/device-file.ts";
+import type { DeviceFileOperations } from "../device/file.ts";
 import type { BaggedDirective } from "../directives/bags.ts";
 import type { FailureMessageTranslator } from "../listing/languages.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { ReaderMethod } from "../source-code/file-stack.ts";
 
 import { dataMemory } from "../data-memory/data-memory.ts";
-import { deviceChooser } from "../device/chooser.ts";
+import { deviceDirective } from "../device/directive.ts";
+import { deviceSettings } from "../device/settings.ts";
 import { instructionSet } from "../device/instruction-set.ts";
 import { functionDirectives } from "../directives/function-directives.ts";
 import { hexFile } from "../hex-file/hex.ts";
@@ -49,9 +50,6 @@ export const coupling = (
         return component;
     }
 
-    withDirectives($symbolTablePipeline);
-    withDirectives($cpuRegisters);
-
     const $fileStack = withDirectives(fileStack(readerMethod, fileName));
     const $macros = macros($symbolTable, $fileStack);
     const $macroPipeline = withDirectives(macroPipeline($macros));
@@ -62,7 +60,7 @@ export const coupling = (
         $symbolTable, $cpuRegisters, $jsExpression
     ));
 
-    const $instructionSet = withDirectives(instructionSet($symbolTable));
+    const $instructionSet = instructionSet($symbolTable);
     const $pokeBuffer = withDirectives(pokeBuffer());
     const $programMemory = programMemory($symbolTable);
     const $programMemoryPipeline = withDirectives(
@@ -73,15 +71,19 @@ export const coupling = (
         $instructionSet, $pokeBuffer, $programMemory
     ));
 
-    const $listing = withDirectives(listing(
+    const $listing = listing(
         outputFile, fileName, failureMessageTranslator, $symbolTable
-    ));
-    const $hexFile = withDirectives(hexFile(outputFile, fileName));
+    );
+    const $hexFile = hexFile(outputFile, fileName);
 
+    const $deviceSettings = deviceSettings(
+        $instructionSet, $cpuRegisters, $symbolTable
+    );
+
+    withDirectives($symbolTablePipeline);
+    withDirectives($cpuRegisters);
     withDirectives(functionDirectives);
-    withDirectives(deviceChooser(
-        $instructionSet, $cpuRegisters, $symbolTable, deviceFileOperations
-    ));
+    withDirectives(deviceDirective($deviceSettings, deviceFileOperations));
 
     return startingWith($fileStack.assemblyPipeline)
         .andThen($embeddedJs)

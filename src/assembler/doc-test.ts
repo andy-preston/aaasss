@@ -1,13 +1,14 @@
-import type { DeviceFileOperations } from "../device/device-file.ts";
+import type { DeviceSpec, SpecItems } from "../device/data-types.ts";
+import type { DeviceFileOperations } from "../device/file.ts";
+import type { FileName } from "../source-code/data-types.ts";
 import type { FileExtension } from "./output-file.ts";
 
 import { expect } from "jsr:@std/expect/expect";
 import { existsSync } from "jsr:@std/fs/exists";
-import { defaultDeviceFinder, defaultJsonLoader } from "../device/device-file.ts";
-import { deviceMocks } from "../device/device-file-mocks.ts";
+import { defaultDeviceFinder, defaultTomlLoader } from "../device/file.ts";
 import { mockFailureMessages } from "../listing/languages-mock.ts";
-import { FileName } from "../source-code/data-types.ts";
 import { defaultReaderMethod } from "../source-code/file-stack.ts";
+import { stringBag } from "./bags.ts";
 import { coupling } from "./coupling.ts";
 import { extensionSwap } from "./output-file.ts";
 
@@ -43,10 +44,13 @@ export const docTest = () => {
     cleanup();
 
     let deviceFile: DeviceFileOperations =
-        [defaultDeviceFinder, defaultJsonLoader];
+        [defaultDeviceFinder, defaultTomlLoader];
 
     const mockUnsupportedDevice = (spec: object) => {
-        deviceFile = deviceMocks(spec);
+        deviceFile = [
+            (name: string) => stringBag(name),
+            (_fileName: string): DeviceSpec => ({ "spec": spec as SpecItems })
+        ];
     };
 
     let defaultFileName = topFileName;

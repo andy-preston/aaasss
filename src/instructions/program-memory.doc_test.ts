@@ -3,9 +3,9 @@ import { docTest, expectFileContents } from "../assembler/doc-test.ts";
 Deno.test("Program Memory Demo", () => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
-        "unsupportedInstructions": { "value": [] },
-        "programMemoryBytes":      { "value": "0100" },
-        "reducedCore":             { "value": false }
+        "unsupportedInstructions": [],
+        "programMemoryBytes": 0x0100,
+        "reducedCore": false
     });
     demo.source("", [
         '    {{ device("Fake Device"); }}',
@@ -48,8 +48,8 @@ Deno.test("Program Memory Demo", () => {
 Deno.test("If ELPM is supported, implicit LPM cannot be used", () => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
-        "unsupportedInstructions": { "value": [] },
-        "programMemoryBytes":      { "value": "0100" }
+        "unsupportedInstructions": [],
+        "programMemoryBytes": 0x0100
     });
     demo.source("", [
         '    {{ device("testing"); }}',
@@ -70,9 +70,9 @@ Deno.test("If ELPM is supported, implicit LPM cannot be used", () => {
 Deno.test("The address is always implicit or held in Z", () => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
-        "unsupportedInstructions": { "value": [] },
-        "programMemoryBytes":      { "value": "0100" },
-        "reducedCore":             { "value": false }
+        "unsupportedInstructions": [],
+        "programMemoryBytes": 0x0100,
+        "reducedCore": false
     });
     demo.source("", [
         '    {{ device("Fake Device"); }}',

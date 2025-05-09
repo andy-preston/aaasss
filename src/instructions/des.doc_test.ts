@@ -3,8 +3,8 @@ import { docTest, expectFileContents, expectFileExists } from "../assembler/doc-
 Deno.test("DES example code",() => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
-        "unsupportedInstructions": { "value": [] },
-        "programMemoryBytes":      { "value": "0100" }
+        "unsupportedInstructions": [],
+        "programMemoryBytes": 0x0100
     });
     demo.source("", [
         '    {{ device("testing"); }}',

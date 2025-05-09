@@ -54,9 +54,9 @@ Deno.test("Single Register Direct Demo", () => {
 Deno.test("Read-Modify-Write Demo", () => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
-        "unsupportedInstructions": { "value": [] },
-        "programMemoryBytes":      { "value": "0100" },
-        "reducedCore":             { "value": false }
+        "unsupportedInstructions": [],
+        "programMemoryBytes": 0x0100,
+        "reducedCore": false
     });
     demo.source("", [
         '    {{ device("DemoDevice"); }}',
@@ -131,9 +131,9 @@ Deno.test("Read-Modify-Write isn't available on all devices", () => {
 Deno.test("Read-Modify-Write expects the index register to be Z", () => {
     const demo = docTest();
     demo.mockUnsupportedDevice({
-        "unsupportedInstructions": { "value": [] },
-        "programMemoryBytes":      { "value": "0100" },
-        "reducedCore":             { "value": false }
+        "unsupportedInstructions": [],
+        "programMemoryBytes": 0x0100,
+        "reducedCore": false
     });
     demo.source("", [
         '    {{ device("DemoDevice"); }}',
