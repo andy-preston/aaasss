@@ -24,6 +24,7 @@ with your assembly code and use it to calculate all sorts of stuff at
 ## Status
 
 This is almost an M.V.P.
+(Today it actually assembled a program that actually does something)
 
 It blows my mind that it (almost) works.
 It would blow my mind even more to find out someone else was using it.
