@@ -1,15 +1,13 @@
 import type {
     AssertionFailure, ClueFailure, DefinitionFailure,
-    ExceptionFailure, NumericTypeFailure,
-    SupportFailure
+    ExceptionFailure, NumericTypeFailure, SupportFailure
 } from "../failure/bags.ts";
 import type { FailureKind } from "../failure/kinds.ts";
 import type { FailureMessage } from "./languages.ts";
 
 import {
     assertionFailure, clueFailure, definitionFailure,
-    exceptionFailure, location, numericTypeFailure,
-    supportFailure
+    exceptionFailure, location, numericTypeFailure, supportFailure
 } from "./failure.ts";
 
 export const listingTitles = {
