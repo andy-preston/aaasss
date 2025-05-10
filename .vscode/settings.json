@@ -57,6 +57,10 @@
         "MULSU",
         "nybble",
         "outputter",
+        "PINA",
+        "PINB",
+        "PINC",
+        "PIND",
         "PORTA",
         "PORTB",
         "PORTC",
@@ -76,6 +80,8 @@
         "SBRS",
         "SUBI",
         "TCCR1A",
+        "UCSRA",
+        "UDRE",
         "vento",
         "Xbbb"
     ]

@@ -2,7 +2,7 @@ import { branchOnStatus } from "../instructions/branch-on-status.ts";
 import { byteImmediate } from "../instructions/byte-immediate.ts";
 import { dataDirect } from "../instructions/data-direct.ts";
 import { des } from "../instructions/des.ts";
-import { ioByte } from "../instructions/io-byte.ts";
+import { ioBit, ioByte } from "../instructions/io.ts";
 import { nop } from "../instructions/nop.ts";
 import { programMemory } from "../instructions/program-memory.ts";
 import { relativeProgram } from "../instructions/relative-program.ts";
@@ -12,7 +12,7 @@ import { statusManipulation } from "../instructions/status-manipulation.ts";
 import { twoRegisterDirect } from "../instructions/two-register-direct.ts";
 
 export const instructionEncoderList = [
-    branchOnStatus, byteImmediate, dataDirect, des, ioByte, nop,
+    branchOnStatus, byteImmediate, dataDirect, des, ioBit, ioByte, nop,
     programMemory, relativeProgram,
     singleRegisterBit, singleRegisterDirect, statusManipulation,
     twoRegisterDirect

@@ -11,21 +11,62 @@ import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 
+const alternatives = new Map([
+    ["SBI", "SBR & STS"],
+    ["SBIC", "LDS & SBRC"],
+    ["SBIS", "LDS & SBRS"],
+    ["CBI", "CBR & STS"],
+    ["IN", "LDS"],
+    ["OUT", "STS"]
+]);
+
+const bitMapping: Map<string, string> = new Map([
+    ["SBI", "10"],
+    ["CBI", "00"],
+    ["SBIC", "01"],
+    ["SBIS", "11"]
+]);
+
+const hints = (
+    line: LineWithPokedBytes
+): Array<SupportFailure> | undefined => line.failures().reduce(
+    (
+        result: Array<SupportFailure> | undefined, failure, _index
+    ) => failure.kind != "type_ioPort" ? result : [supportFailure(
+        "notSupported_ioRange", line.mnemonic, alternatives.get(line.mnemonic)
+    )], undefined
+);
+
+export const ioBit = (
+    line: LineWithPokedBytes
+): EncodedInstruction | undefined => {
+    const codeGenerator = (
+        _instructionSet: InstructionSet, _programMemory: ProgramMemory
+    ) => {
+        const operationBits = bitMapping.get(line.mnemonic)!;
+        const [address, bitIndex] = validScaledOperands(line, [
+            ["number", "type_ioPort"],
+            ["number", "type_bitIndex"]
+        ]);
+
+        const additionalHints = hints(line);
+        if (additionalHints != undefined) {
+            line.withFailures(additionalHints);
+        }
+
+        const code = template(
+            `1001_10${operationBits} aaaa_abbb`,
+            {"a": address, "b": bitIndex}
+        );
+        return lineWithObjectCode(line, code);
+    };
+
+    return bitMapping.has(line.mnemonic) ? codeGenerator : undefined;
+};
+
 export const ioByte = (
     line: LineWithPokedBytes
 ): EncodedInstruction | undefined => {
-    const hints = (): Array<SupportFailure> | undefined => {
-        for (const failure of line.failures()) {
-            if (failure.kind == "type_ioPort") {
-                return [supportFailure(
-                    "notSupported_ioRange", line.mnemonic,
-                    line.mnemonic == "IN" ? "LDS" : "STS"
-                )];
-            }
-        }
-        return undefined;
-    };
-
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
     ) => {
@@ -45,7 +86,7 @@ export const ioByte = (
 
         const values = templateValues(line.mnemonic == "IN")
 
-        const additionalHints = hints();
+        const additionalHints = hints(line);
         if (additionalHints != undefined) {
             line.withFailures(additionalHints);
         }
