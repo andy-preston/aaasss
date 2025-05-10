@@ -40,7 +40,7 @@ export const singleRegisterDirect = (
             validSymbolic(line, [["Z"], []]);
         }
         const operandRequirements: OperandRequirements = readModifyWrite
-            ? [["index", "type_nothing"]]
+            ? [["index", "type_anything"]]
             : [];
         operandRequirements.push(["register", "type_register"]);
 

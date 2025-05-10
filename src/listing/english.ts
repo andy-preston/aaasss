@@ -1,13 +1,15 @@
 import type {
     AssertionFailure, ClueFailure, DefinitionFailure,
-    ExceptionFailure, NumericTypeFailure
+    ExceptionFailure, NumericTypeFailure,
+    SupportFailure
 } from "../failure/bags.ts";
 import type { FailureKind } from "../failure/kinds.ts";
 import type { FailureMessage } from "./languages.ts";
 
 import {
     assertionFailure, clueFailure, definitionFailure,
-    exceptionFailure, location, numericTypeFailure
+    exceptionFailure, location, numericTypeFailure,
+    supportFailure
 } from "./failure.ts";
 
 export const listingTitles = {
@@ -62,11 +64,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "The opcodes for the two instructions are identical, but ELPM uses the RAMPZ register",
         "And it's better to use ELPM to explicitly state that in your code."
     ]),
-    "mnemonic_notSupported": (failure) => withLocation(failure, clueFailure(
-        ["Instruction not supported on device"],
-        "Instruction mnemonic",
-        failure as ClueFailure
-    )),
     "mnemonic_supportedUnknown": (failure) => withLocation(failure, clueFailure(
         ["Can't determine if instruction is supported or not"],
         "Instruction mnemonic",
@@ -126,6 +123,21 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "ram_stackAllocated": (failure) => withLocation(failure, [
         "Stack Already Allocated"
     ]),
+    "notSupported_ioRange": (failure) => withLocation(failure, supportFailure(
+        [
+            "Some devices have extended GPIO outside of the normal IO area of data memory",
+            "alternatively, there might be a mistake with the value of this address"
+        ],
+        "This instruction can only use the IO range of data memory",
+        "Perhaps you could use", "as it has access to all of data memory",
+        failure as SupportFailure
+    )),
+    "notSupported_mnemonic": (failure) => withLocation(failure, supportFailure(
+        [],
+        "This instruction is not supported on the selected device",
+        "Perhaps, you could use", "instead",
+        failure as SupportFailure
+    )),
     "symbol_alreadyExists": (failure) => withLocation(failure, definitionFailure(
         ["Symbol already exists"],
         "Symbol name", "Existing definition",
@@ -175,7 +187,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Defined range", "Actual value",
         failure as NumericTypeFailure
     )),
-    "type_nothing": (failure) => withLocation(failure, numericTypeFailure(
+    "type_anything": (failure) => withLocation(failure, numericTypeFailure(
         ["This operand should only have a symbolic value"],
         "Defined range", "Actual value",
         failure as NumericTypeFailure

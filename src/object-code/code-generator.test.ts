@@ -1,4 +1,4 @@
-import type { BoringFailure } from "../failure/bags.ts";
+import type { BoringFailure, SupportFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { stringBag } from "../assembler/bags.ts";
@@ -43,8 +43,11 @@ Deno.test("Lines with unsupported instructions fail", () => {
     expect(result.failed()).toBeTruthy();
     const failures = [...result.failures()];
     expect(failures.length).toBe(1);
-    const failure = failures[0] as BoringFailure;
-    expect(failure.kind).toBe("mnemonic_notSupported");
+    const failure = failures[0] as SupportFailure;
+    expect(failure.kind).toBe("notSupported_mnemonic");
+    expect(failure.used).toBe("DES");
+    expect(failure.suggestion).toBe(undefined);
+    expect(failure.location).toBe(undefined);
     expect(result.code.length).toBe(0);
 });
 

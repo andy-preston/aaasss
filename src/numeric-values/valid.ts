@@ -3,7 +3,7 @@ import { assertionFailure, bagOfFailures, numericTypeFailure, type NumberOrFailu
 import type { NumericType } from "./types.ts";
 
 const minMax: Record<NumericType, [number | undefined, number | undefined]> = {
-    "type_nothing": [undefined, undefined],
+    "type_anything": [undefined, undefined],
     "type_positive": [0, undefined],
     "type_word": [0, 0xffff],
     "type_16BitDataAddress": [0, 0xffff],

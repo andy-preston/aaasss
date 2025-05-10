@@ -1,6 +1,7 @@
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import type { OperandIndex } from "../operands/data-types.ts";
+import type { Mnemonic } from "../tokens/data-types.ts";
 
 import { failureKinds } from "./kinds.ts";
 
@@ -66,9 +67,19 @@ export const exceptionFailure = (
 
 export type ExceptionFailure = ReturnType<typeof exceptionFailure>;
 
+export const supportFailure = (
+    kind: typeof failureKinds["notSupported"][number],
+    used: Mnemonic, suggestion: Mnemonic | undefined
+) => ({
+    "kind": kind, "location": undefined as FailureLocation,
+    "used": used, "suggestion": suggestion
+});
+
+export type SupportFailure = ReturnType<typeof supportFailure>;
+
 export type Failure = AssertionFailure | BoringFailure | ClueFailure
     | DefinitionFailure | ExceptionFailure
-    | NumericTypeFailure | AssertionFailure;
+    | NumericTypeFailure | SupportFailure;
 
 export const bagOfFailures = (failures: Array<Failure>) =>
     ({ "type": "failures" as const, "it": failures });

@@ -95,7 +95,7 @@ export const programMemory = (
             const mnemonicBit = line.mnemonic == "ELPM" ? "1" : "0";
             const actualOperands = validScaledOperands(line, [
                 ["register", "type_register"],
-                ["index",    "type_nothing"]
+                ["index",    "type_anything"]
             ]);
             return template(
                 `1001_000r rrrr_01${mnemonicBit}${explicitIndexBit()}`,

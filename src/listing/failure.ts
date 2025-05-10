@@ -1,6 +1,7 @@
 import type {
     AssertionFailure, ClueFailure, DefinitionFailure,
-    ExceptionFailure, Failure, NumericTypeFailure
+    ExceptionFailure, Failure, NumericTypeFailure,
+    SupportFailure
 } from "../failure/bags.ts";
 
 export const location = (operand: string, parameter: string) =>
@@ -54,4 +55,19 @@ export const numericTypeFailure = (
     };
     extra.push(`${actual}: ${failure.value}`);
     return messages.concat(extra);
+};
+
+export const supportFailure = (
+    messages: Array<string>,
+    unsupported: string, suggestion: string, reason: string | undefined,
+    failure: SupportFailure
+) => {
+    messages.push(`${unsupported}: ${failure.used}`);
+    if (failure.suggestion != undefined) {
+        const message = `${suggestion}: ${failure.suggestion}`;
+        messages.push(
+            reason == undefined ? message : `${message} ${reason}`
+        );
+    }
+    return messages;
 };

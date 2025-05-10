@@ -1,6 +1,7 @@
+import type { Failure, SupportFailure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
 import { stringBag } from "../assembler/bags.ts";
-import { ClueFailure, Failure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 
 Deno.test("Unsupported instructions fails when no device is selected", () => {
@@ -30,9 +31,11 @@ Deno.test("Instructions are added to the unsupported list in groups", () => {
         expect(result.type).toBe("failures");
         const failures = result.it as Array<Failure>;
         expect (failures.length).toBe(1);
-        const failure = failures[0] as ClueFailure;
-        expect (failure.kind).toBe("mnemonic_notSupported");
-        expect(failure.clue).toBe(mnemonic);
+        const failure = failures[0] as SupportFailure;
+        expect (failure.kind).toBe("notSupported_mnemonic");
+        expect(failure.used).toBe(mnemonic);
+        expect(failure.suggestion).toBe(undefined);
+        expect(failure.location).toBe(undefined);
     }
     for (const mnemonic of ["MUL", "MULS", "MULSU"]) {
         const result = system.instructionSet.isUnsupported(mnemonic);

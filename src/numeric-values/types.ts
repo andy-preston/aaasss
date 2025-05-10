@@ -2,7 +2,7 @@
 // and request types with the same identifier
 
 export const numericTypes = [
-    "type_nothing",
+    "type_anything",
     "type_positive", "type_word", "type_byte", "type_nybble",
     "type_bitIndex", "type_ioPort",
     "type_7BitDataAddress", "type_16BitDataAddress",

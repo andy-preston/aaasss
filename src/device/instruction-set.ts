@@ -1,7 +1,9 @@
-import { booleanBag } from "../assembler/bags.ts";
-import { bagOfFailures, boringFailure, clueFailure, type BooleanOrFailures } from "../failure/bags.ts";
+import type { BooleanOrFailures } from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
+
+import { booleanBag } from "../assembler/bags.ts";
+import { bagOfFailures, boringFailure, clueFailure, supportFailure } from "../failure/bags.ts";
 
 // It looks like we're assuming that everything is at least AVRe
 const instructionGroups: Map<string, Array<Mnemonic>> = new Map([
@@ -13,6 +15,11 @@ const instructionGroups: Map<string, Array<Mnemonic>> = new Map([
     ["readModifyWrite", ["LAC", "LAS", "LAT", "XCH"]],
     ["DES",             ["DES"]],
     ["SPM.Z+",          ["SPM.Z+"]],
+]);
+
+const alternatives: Map<Mnemonic, Mnemonic> = new Map([
+    ["CALL", "RCALL"],
+    ["JMP", "RJMP"]
 ]);
 
 export const instructionSet = (symbolTable: SymbolTable) => {
@@ -36,7 +43,9 @@ export const instructionSet = (symbolTable: SymbolTable) => {
             clueFailure("mnemonic_supportedUnknown", mnemonic)
         ])
         : unsupportedInstructions.includes(mnemonic)
-        ? bagOfFailures([clueFailure("mnemonic_notSupported", mnemonic)])
+        ? bagOfFailures([supportFailure(
+            "notSupported_mnemonic", mnemonic, alternatives.get(mnemonic)
+        )])
         : booleanBag(false);
 
     const unsupportedGroups = (groups: Array<string>) => {

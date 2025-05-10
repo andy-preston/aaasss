@@ -1,7 +1,7 @@
 import type { AssertionFailure, NumericTypeFailure } from "../failure/bags.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import type { NumericOperand, OperandIndex } from "./data-types.ts";
-import type { OperandRequirements } from "./valid-scaled.ts";
+import type { OperandRequirement, OperandRequirements } from "./valid-scaled.ts";
 
 import { expect } from "jsr:@std/expect";
 import { testLine } from "./testing.ts";
@@ -90,7 +90,7 @@ Deno.test("If they don't match the line is marked with a failure", () => {
 Deno.test("The required numeric type must match the actual type", () => {
     const anySymbolic = "test";
     const testData: Record<NumericType, NumericOperand> = {
-        "type_nothing": 0,
+        "type_anything": 0,
         "type_16BitDataAddress": 0xcafe,
         "type_7BitDataAddress": 0x4e,
         "type_bitIndex": 3,
@@ -114,7 +114,7 @@ Deno.test("The required numeric type must match the actual type", () => {
 Deno.test("If numeric types don't match the line fails", () => {
     const anySymbolic = "test";
     const testData: Record<NumericType, NumericOperand> = {
-        "type_nothing": 1,
+        "type_anything": 1,
         "type_16BitDataAddress": 0xdeadbeef,
         "type_7BitDataAddress": 0x80,
         "type_bitIndex": 9,
@@ -131,7 +131,7 @@ Deno.test("If numeric types don't match the line fails", () => {
         const line = testLine([anySymbolic], [value], ["number"]);
         validScaledOperands(line, [["number", numericType]]);
         // The result might be scaled, so we're not checking it here!
-        if (numericType == "type_nothing") {
+        if (numericType == "type_anything") {
             expect(line.failed(), numericType).toBeFalsy();
         } else {
             expect(line.failed(), numericType).toBeTruthy();
@@ -144,4 +144,14 @@ Deno.test("If numeric types don't match the line fails", () => {
             // There is also min and max but I'm not testing them here
         }
     }
+});
+
+Deno.test("type_anything can be any numeric value", () => {
+    [0, -1, 2].forEach(value => {
+        const line = testLine([""], [value], ["number"]);
+        const requirement: OperandRequirement = ["number", "type_anything"];
+        const result = validScaledOperands(line, [requirement]);
+        expect(result[0]).toBe(value);
+        expect(line.failed()).toBeFalsy();
+    });
 });

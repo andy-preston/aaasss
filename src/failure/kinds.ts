@@ -29,8 +29,10 @@ export const failureKinds = {
     "clue": [
         "file_notFound",  "device_notFound",
         "macro_multiDefine",
-        "mnemonic_unknown",
-        "mnemonic_notSupported", "mnemonic_supportedUnknown"
+        "mnemonic_unknown", "mnemonic_supportedUnknown"
+    ],
+    "notSupported": [
+        "notSupported_mnemonic", "notSupported_ioRange"
     ],
     "definition": [
         "symbol_alreadyExists"
