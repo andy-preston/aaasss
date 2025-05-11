@@ -1,0 +1,24 @@
+family = "atmega-x8"
+
+[spec]
+
+unsupportedInstructions = [
+    # 1 instruction word/vector (RJMP)
+    "readModifyWrite", "DES", "FlashMore8", "FlashMore128", "SPM.Z+"
+]
+
+eepromEnd = 0x01FF
+
+programMemoryBytes = 0x2000
+
+ioRegistersStart = 0x0020
+ioRegistersEnd = 0x005f
+
+extIoRegistersStart = 0x0060
+extIoRegistersEnd = 0x00FF
+
+ramStart = 0x0100
+ramEnd = 0x04FF
+
+# Stack Pointer (Low Byte Only) ---------------------------------- IO Address 3D
+SPL = 0x5D

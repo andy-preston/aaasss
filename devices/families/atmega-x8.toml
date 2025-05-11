@@ -1,0 +1,510 @@
+reducedCore = false
+
+# Port B Input --------------------------------------------------- IO Address 03
+PINB = 0x23
+
+PINB7 = 0x07
+PINB6 = 0x06
+PINB5 = 0x05
+PINB4 = 0x04
+PINB3 = 0x03
+PINB2 = 0x02
+PINB1 = 0x01
+PINB0 = 0x00
+
+# Port B DDR ----------------------------------------------------- IO Address 04
+DDRB = 0x24
+
+DDB7 = 0x07
+DDB6 = 0x06
+DDB5 = 0x05
+DDB4 = 0x04
+DDB3 = 0x03
+DDB2 = 0x02
+DDB1 = 0x01
+DDB0 = 0x00
+
+# Port B Output -------------------------------------------------- IO Address 05
+PORTB = 0x25
+
+PORTB7 = 0x07
+PORTB6 = 0x06
+PORTB5 = 0x05
+PORTB4 = 0x04
+PORTB3 = 0x03
+PORTB2 = 0x02
+PORTB1 = 0x01
+PORTB0 = 0x00
+
+# Port C Input --------------------------------------------------- IO Address 06
+PINC = 0x26
+
+PINC6 = 0x06
+PINC5 = 0x05
+PINC4 = 0x04
+PINC3 = 0x03
+PINC2 = 0x02
+PINC1 = 0x01
+PINC0 = 0x00
+
+# Port C DDR ----------------------------------------------------- IO Address 07
+DDRC = 0x27
+
+DDC6 = 0x06
+DDC5 = 0x05
+DDC4 = 0x04
+DDC3 = 0x03
+DDC2 = 0x02
+DDC1 = 0x01
+DDC0 = 0x00
+
+# Port C Output -------------------------------------------------- IO Address 08
+PORTC = 0x28
+
+PORTC6 = 0x06
+PORTC5 = 0x05
+PORTC4 = 0x04
+PORTC3 = 0x03
+PORTC2 = 0x02
+PORTC1 = 0x01
+PORTC0 = 0x00
+
+# Port D Input --------------------------------------------------- IO Address 09
+PIND = 0x29
+
+PIND7 = 0x07
+PIND6 = 0x06
+PIND5 = 0x05
+PIND4 = 0x04
+PIND3 = 0x03
+PIND2 = 0x02
+PIND1 = 0x03
+PIND0 = 0x04
+
+# Port D DDR ----------------------------------------------------- IO Address 0A
+DDRD = 0x2A
+
+DDD7 = 0x07
+DDD6 = 0x06
+DDD5 = 0x05
+DDD4 = 0x04
+DDD3 = 0x03
+DDD2 = 0x02
+DDD1 = 0x01
+DDD0 = 0x00
+
+# Port D Output -------------------------------------------------- IO Address 0B
+PORTD = 0x2B
+
+PORTD7 = 0x07
+PORTD6 = 0x06
+PORTD5 = 0x05
+PORTD4 = 0x04
+PORTD3 = 0x03
+PORTD2 = 0x02
+PORTD1 = 0x01
+PORTD0 = 0x00
+
+# Timer/Counter1 Interrupt Flag Register ------------------------- IO Address 16
+TIFR1 = 0x36
+
+# Timer/Counter1, Input Capture Flag
+ICF1 = 0x05
+
+# Timer/Counter1, Output Compare B Match Flag
+OCF1B = 0x02
+
+# Timer/Counter1, Output Compare A Match Flag
+OCF1A = 0x01
+
+# Timer/Counter1, Overflow Flag
+TOV1 = 0x00
+
+# Timer/Counter2 Interrupt Flag Register ------------------------- IO Address 17
+TIFR2 = 0x37
+
+
+# Output Compare Flag 2 B
+OCF2B = 0x02
+
+# Output Compare Flag 2 A
+OCF2A = 0x01
+
+# Timer/Counter2 Overflow Flag
+TOV2 = 0x00
+
+# Pin Change Interrupt Flag Register ----------------------------- IO Address 1B
+PCIFR = 0x3B
+
+# Pin Change Interrupt Flag 2
+PCIF2 = 0x02
+
+# Pin Change Interrupt Flag 1
+PCIF1 = 0x01
+
+# Pin Change Interrupt Flag 0
+PCIF0 = 0x00
+
+# External Interrupt Flag Register ------------------------------- IO Address 1C
+EIFR = 0x3C
+
+# External Interrupt Flag 1
+INTF1 = 0x01
+
+# External Interrupt Flag 0
+INTF0 = 0x00
+
+# External Interrupt Mask Register ------------------------------- IO Address 1D
+EIMSK = 0x3D
+
+# External Interrupt Request 1 Enable
+INT1 = 0x01
+
+# External Interrupt Request 0 Enable
+INT0 = 0x00
+
+# General Purpose I/O Register 0 --------------------------------- IO Address 1E
+GPIOR0 = 0x3E
+
+# The EEPROM Control Register ------------------------------------ IO Address 1F
+EECR = 0x3F
+
+# EEPROM Programming Mode Bits
+EEPM1 = 0x05
+EEPM0 = 0x04
+
+# EEPROM Ready Interrupt Enable
+EERIE = 0x03
+
+# EEPROM Master Write Enable
+EEMPE = 0x02
+
+# EEPROM Write Enable
+EEPE = 0x01
+
+# EEPROM Read Enable
+EERE = 0x00
+
+# The EEPROM Data Register --------------------------------------- IO Address 20
+EEDR = 0x40
+
+# The EEPROM Address Register (Low) ------------------------------ IO Address 21
+EEARL = 0x41
+
+# The EEPROM Address Register (High) ----------------------------- IO Address 22
+EEARH = 0x42
+
+# General Timer/Counter Control Register ------------------------- IO Address 23
+GTCCR = 0x43
+
+# Timer/Counter Synchronization Mode
+TSM = 0x07
+
+# Prescaler Reset Timer/Counter2
+PSRASY = 0x01
+
+# Prescaler Reset
+PSRSYNC = 0x00
+
+# Timer/Counter Control Register A ------------------------------- IO Address 24
+TCCR0A = 0x44
+
+# Compare Match Output A Mode
+COM0A1 = 0x07
+COM0A0 = 0x06
+
+# Compare Match Output B Mode
+COM0B1 = 0x05
+COM0B0 = 0x04
+
+# Waveform Generation Mode
+WGM01 = 0x01
+WGM00 = 0x00
+
+# Timer/Counter Control Register B ------------------------------- IO Address 25
+TCCR0B = 0x45
+
+# Force Output Compare A
+FOC0A = 0x07
+
+# Force Output Compare B
+FOC0B = 0x06
+
+# Waveform Generation Mode (2)
+WGM02 = 0x03
+
+# Clock Select
+CS02 = 0x02
+CS01 = 0x01
+CS00 = 0x00
+
+# Timer/Counter0 (8-bit) ----------------------------------------- IO Address 26
+TCNT0 = 0x46
+
+# Timer/Counter0 Output Compare Register A ----------------------- IO Address 27
+OCR0A = 0x47
+
+# Timer/Counter0 Output Compare Register B ----------------------- IO Address 28
+OCR0B = 0x48
+
+# General Purpose I/O Register 1 --------------------------------- IO Address 2A
+GPIOR1 = 0x4A
+
+# General Purpose I/O Register 2 --------------------------------- IO Address 2B
+GPIOR2 = 0x4B
+
+# SPI Control Register ------------------------------------------- IO Address 2C
+SPCR = 0x4C
+
+# SPI Interrupt Enable
+SPIE = 0x07
+
+# SPI Enable
+SPE = 0x06
+
+# Data Order
+DORD = 0x05
+
+# Master/Slave Select
+MSTR = 0x04
+
+# Clock Polarity
+CPOL = 0x03
+
+# Clock Phase
+CPHA = 0x02
+
+# SPI Clock Rate Select
+SPR1 = 0x01
+SPR0 = 0x00
+
+# SPI Status Register -------------------------------------------- IO Address 2D
+SPSR = 0x4D
+
+# SPI Interrupt Flag
+SPIF = 0x07
+
+# Write Collision Flag
+WCOL = 0x06
+
+# Double SPI Speed Bit
+SPI2X = 0x00
+
+# SPI Data Register ---------------------------------------------- IO Address 2E
+SPDR = 0x4E
+
+# Analog Comparator Control and Status Register ------------------ IO Address 30
+ACSR = 0x50
+
+# Analog Comparator Disable
+ACD = 0x07
+
+# Analog Comparator Bandgap Select
+ACBG = 0x06
+
+# Analog Comparator Output
+ACO = 0x05
+
+# Analog Comparator Interrupt Flag
+ACI = 0x04
+
+# Analog Comparator Interrupt Enable
+ACIE = 0x03
+
+# Analog Comparator Input Capture Enable
+ACIC = 0x02
+
+# Analog Comparator Interrupt Mode Select
+ACIS1 = 0x01
+ACIS0 = 0x00
+
+# Sleep Mode Control Register ------------------------------------ IO Address 33
+SMCR = 0x53
+
+# Sleep Mode Select Bits
+SM2 = 0x03
+SM1 = 0x02
+SM0 = 0x01
+
+# Sleep Enable
+SE = 0x00
+
+# MCU Status Register -------------------------------------------- IO Address 34
+MCUSR = 0x54
+
+# Watchdog System Reset Flag
+WDRF = 0x03
+
+# BORF: Brown-out Reset Flag
+BORF = 0x02
+
+# External Reset Flag
+EXTRF = 0x01
+
+# Power-on Reset Flag
+PORF = 0x00
+
+# MCU Control Register ------------------------------------------- IO Address 35
+MCUCR = 0x55
+
+# BOD Sleep
+BODS = 0x06
+
+# BOD Sleep Enable
+BODSE = 0x05
+
+# Pull-up Disable
+PUD = 0x04
+
+# Interrupt Vector Select
+IVSEL = 0x01
+
+# Interrupt Vector Change Enable
+IVCE = 0x00
+
+# Store Program Memory Control and Status Register --------------- IO Address 37
+SPMCSR = 0x57
+
+# SPM Interrupt Enable
+SPMIE = 0x07
+
+# Read-While-Write Section Busy
+RWWSB = 0x06
+
+# Signature Row Read
+SIGRD = 0x05
+
+# Read-While-Write Section Read Enable
+RWWSRE = 0x04
+
+# Boot Lock Bit Set
+BLBSET = 0x03
+
+# Page Write
+PGWRT = 0x02
+
+# Page Erase
+PGERS = 0x01
+
+# Store Program Memory
+SPMEN = 0x00
+
+# AVR Status Register -------------------------------------------- IO Address 3F
+SREG = 0x5F
+
+# Watchdog Timer Control Register ---------------------------------- Extended IO
+WDTCSR = 0x60
+
+# Watchdog Interrupt Flag
+WDIF = 0x07
+
+# Watchdog Interrupt Enable
+WDIE = 0x06
+
+# Watchdog Change Enable
+WDCE = 0x04
+
+# Watchdog System Reset Enable
+WDE = 0x03
+
+# Watchdog Timer Prescaler
+WDP3 = 0x05
+WDP2 = 0x02
+WDP1 = 0x01
+WDP0 = 0x00
+
+CLKPR = 0x61 CLKPCE – – – CLKPS3 CLKPS2 CLKPS1 CLKPS0 46
+
+PRR = 0x64 PRTWI PRTIM2 PRTIM0 – PRTIM1 PRSPI PRUSART0 PRADC 51
+
+OSCCAL = 0x66 Oscillator Calibration Register 46
+
+PCICR = 0x68 – – – – – PCIE2 PCIE1 PCIE0 82
+
+EICRA = 0x69 – – – – ISC11 ISC10 ISC01 ISC00 80
+
+PCMSK0 = 0x6B PCINT7 PCINT6 PCINT5 PCINT4 PCINT3 PCINT2 PCINT1 PCINT0 83
+
+PCMSK1 = 0x6C – PCINT14 PCINT13 PCINT12 PCINT11 PCINT10 PCINT9 PCINT8 83
+
+PCMSK2 = 0x6D PCINT23 PCINT22 PCINT21 PCINT20 PCINT19 PCINT18 PCINT17 PCINT16 83
+
+TIMSK0 = 0x6E – – – – – OCIE0B OCIE0A TOIE0 118
+
+TIMSK1 = 0x6F – – ICIE1 – – OCIE1B OCIE1A TOIE1 144
+
+TIMSK2 = 0x70 – – – – – OCIE2B OCIE2A TOIE2 166
+
+ADCL = 0x78 ADC Data Register Low byte 259
+
+ADCH = 0x79 ADC Data Register High byte 259
+
+ADCSRA = 0x7A ADEN ADSC ADATE ADIF ADIE ADPS2 ADPS1 ADPS0 258
+
+ADCSRB = 0x7B – ACME – – – ADTS2 ADTS1 ADTS0 260
+
+ADMUX = 0x7C REFS1 REFS0 ADLAR – MUX3 MUX2 MUX1 MUX0 257
+
+DIDR0 = 0x7E – – ADC5D ADC4D ADC3D ADC2D ADC1D ADC0D 260
+
+DIDR1 = 0x7F – – – – – – AIN1D AIN0D 245
+
+TCCR1A = 0x80 COM1A1 COM1A0 COM1B1 COM1B0 – – WGM11 WGM10 140
+
+TCCR1B = 0x81 ICNC1 ICES1 – WGM13 WGM12 CS12 CS11 CS10 142
+
+TCCR1C = 0x82 FOC1A FOC1B – – – – – – 143
+
+TCNT1L = 0x84 Timer/Counter1 - Counter Register Low Byte 143
+
+TCNT1H = 0x85 Timer/Counter1 - Counter Register High Byte 143
+
+ICR1L = 0x86 Timer/Counter1 - Input Capture Register Low Byte 144
+
+ICR1H = 0x87 Timer/Counter1 - Input Capture Register High Byte 144
+
+OCR1AL = 0x88 Timer/Counter1 - Output Compare Register A Low Byte 144
+
+OCR1AH = 0x89 Timer/Counter1 - Output Compare Register A High Byte 144
+
+OCR1BL = 0x8A Timer/Counter1 - Output Compare Register B Low Byte 144
+
+OCR1BH = 0x8B Timer/Counter1 - Output Compare Register B High Byte 144
+
+TCCR2A = 0xB0 COM2A1 COM2A0 COM2B1 COM2B0 – – WGM21 WGM20 162
+
+TCCR2B = 0xB1 FOC2A FOC2B – – WGM22 CS22 CS21 CS20 165
+
+TCNT2 = 0xB2 Timer/Counter2 (8-bit) 166
+
+OCR2A = 0xB3 Timer/Counter2 Output Compare Register A 166
+
+OCR2B = 0xB4 Timer/Counter2 Output Compare Register B 166
+
+ASSR = 0xB6 – EXCLK AS2 TCN2UB OCR2AUB OCR2BUB TCR2AUB TCR2BUB 167
+
+TWBR = 0xB8 2-wire Serial Interface Bit Rate Register 239
+
+TWSR = 0xB9 TWS7 TWS6 TWS5 TWS4 TWS3 – TWPS1 TWPS0 240
+
+TWAR = 0xBA TWA6 TWA5 TWA4 TWA3 TWA2 TWA1 TWA0 TWGCE 241
+
+TWDR = 0xBB 2-wire Serial Interface Data Register 241
+
+TWCR = 0xBC TWINT TWEA TWSTA TWSTO TWWC TWEN – TWIE 239
+
+TWAMR = 0xBD TWAM6 TWAM5 TWAM4 TWAM3 TWAM2 TWAM1 TWAM0 – 242
+
+UCSR0A = 0xC0 RXC0 TXC0 UDRE0 FE0 DOR0 UPE0 U2X0 MPCM0 200
+
+UCSR0B = 0xC1 RXCIE0 TXCIE0 UDRIE0 RXEN0 TXEN0 UCSZ02 RXB80 TXB80 201
+
+UCSR0C = 0xC2 UMSEL01 UMSEL00 UPM01 UPM00 USBS0 UCSZ01 /UDORD0 UCSZ00 / UCPHA0 UCPOL0 202/213
+
+UBRR0L = 0xC4 USART Baud Rate Register Low 204
+
+UBRR0H = 0xC5 USART Baud Rate Register High 204
+
+UDR0 = 0xC6 USART I/O Data Register 200
+
+# https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/DataSheets/ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061B.pdf
