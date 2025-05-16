@@ -10,7 +10,6 @@ import { codeWidth, extractedCode } from "./code.ts";
 import { formattedSymbolTable } from "./symbols.ts";
 import { extractedText } from "./text.ts";
 
-
 export const listing = (
     outputFile: OutputFile, topFileName: FileName,
     failureMessages: FailureMessageTranslator,

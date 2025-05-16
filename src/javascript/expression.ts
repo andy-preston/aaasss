@@ -41,6 +41,7 @@ const mappedCall = (symbolName: string, symbol: SymbolBag) => {
 const trailingSemicolons = /;*$/;
 
 export const jSExpression = (symbolTable: SymbolTable) => {
+
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
             return symbolName in globalThis || typeof symbolName != "string"
