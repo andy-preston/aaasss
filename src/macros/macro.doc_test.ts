@@ -51,7 +51,7 @@ Deno.test("Playing back multiple copies of a macro with JS", () => {
         "    LDS R30, address",
         "    {{ end(); }}",
         "",
-        "    {{ [2048, 1024].forEach(a => aMacro(a)); }}",
+        "    {{ [1024, 2048].reverse().forEach(a => aMacro(a)); }}",
     ]);
     demo.assemble();
     expectFileContents(".lst").toEqual([
@@ -63,7 +63,7 @@ Deno.test("Playing back multiple copies of a macro with JS", () => {
         "                      4     LDS R30, address",
         "                      5     {{ end(); }}",
         "                      6",
-        "                      7     {{ [2048, 1024].forEach(a => aMacro(a)); }}",
+        "                      7     {{ [1024, 2048].reverse().forEach(a => aMacro(a)); }}",
         "000000 91 E0 04 00    7     LDS R30, address",
         "000002 91 E0 08 00    7     LDS R30, address",
         "",
