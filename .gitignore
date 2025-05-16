@@ -1,2 +1,3 @@
-_coverage
 deno.lock
+app-image-source
+vscode

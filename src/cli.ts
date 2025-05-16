@@ -4,7 +4,7 @@ import { defaultFailureMessages } from "./listing/languages.ts";
 import { defaultReaderMethod } from "./source-code/file-stack.ts";
 
 const assemble = coupling(
-    "file1.asm",
+    Deno.args[0]!,
     defaultReaderMethod,
     defaultFailureMessages,
     [defaultDeviceFinder, defaultTomlLoader]

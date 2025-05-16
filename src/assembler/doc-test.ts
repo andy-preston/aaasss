@@ -6,7 +6,7 @@ import type { FileExtension } from "./output-file.ts";
 import { expect } from "jsr:@std/expect/expect";
 import { existsSync } from "jsr:@std/fs/exists";
 import { defaultDeviceFinder, defaultTomlLoader } from "../device/file.ts";
-import { mockFailureMessages } from "../listing/languages-mock.ts";
+import { mockFailureMessages } from "../listing/testing.ts";
 import { defaultReaderMethod } from "../source-code/file-stack.ts";
 import { stringBag } from "./bags.ts";
 import { coupling } from "./coupling.ts";
