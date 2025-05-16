@@ -413,73 +413,293 @@ WDP2 = 0x02
 WDP1 = 0x01
 WDP0 = 0x00
 
-CLKPR = 0x61 CLKPCE – – – CLKPS3 CLKPS2 CLKPS1 CLKPS0 46
+# Clock Prescale Register ------------------------------------------ Extended IO
+CLKPR = 0x61
 
-PRR = 0x64 PRTWI PRTIM2 PRTIM0 – PRTIM1 PRSPI PRUSART0 PRADC 51
+# Clock Prescaler Change Enable
+CLKPCE = 0x07
 
-OSCCAL = 0x66 Oscillator Calibration Register 46
+# Clock Prescaler Select
+CLKPS3 = 0x03
+CLKPS2 = 0x02
+CLKPS1 = 0x01
+CLKPS0 = 0x00
 
-PCICR = 0x68 – – – – – PCIE2 PCIE1 PCIE0 82
+# Power Reduction Register ----------------------------------------- Extended IO
+PRR = 0x64
 
-EICRA = 0x69 – – – – ISC11 ISC10 ISC01 ISC00 80
+# Power Reduction TWI
+PRTWI = 0x07
 
-PCMSK0 = 0x6B PCINT7 PCINT6 PCINT5 PCINT4 PCINT3 PCINT2 PCINT1 PCINT0 83
+# Power Reduction Timer/Counter2
+PRTIM2 = 0x06
 
-PCMSK1 = 0x6C – PCINT14 PCINT13 PCINT12 PCINT11 PCINT10 PCINT9 PCINT8 83
+# Power Reduction Timer/Counter0
+PRTIM0 = 0x05
 
-PCMSK2 = 0x6D PCINT23 PCINT22 PCINT21 PCINT20 PCINT19 PCINT18 PCINT17 PCINT16 83
+# Power Reduction Timer/Counter1
+PRTIM1 = 0x03
 
-TIMSK0 = 0x6E – – – – – OCIE0B OCIE0A TOIE0 118
+# Power Reduction Serial Peripheral Interface
+PRSPI = 0x02
 
-TIMSK1 = 0x6F – – ICIE1 – – OCIE1B OCIE1A TOIE1 144
+# Power Reduction USART0
+PRUSART0 = 0x01
 
-TIMSK2 = 0x70 – – – – – OCIE2B OCIE2A TOIE2 166
+# Power Reduction ADC
+PRADC = 0x00
 
-ADCL = 0x78 ADC Data Register Low byte 259
+# Oscillator Calibration Register ---------------------------------- Extended IO
+OSCCAL = 0x66
 
-ADCH = 0x79 ADC Data Register High byte 259
+CAL7 = 0x07
+CAL6 = 0x06
+CAL5 = 0x05
+CAL4 = 0x04
+CAL3 = 0x03
+CAL2 = 0x02
+CAL1 = 0x01
+CAL0 = 0x00
 
-ADCSRA = 0x7A ADEN ADSC ADATE ADIF ADIE ADPS2 ADPS1 ADPS0 258
+# Pin Change Interrupt Control Register ---------------------------- Extended IO
+PCICR = 0x68
 
-ADCSRB = 0x7B – ACME – – – ADTS2 ADTS1 ADTS0 260
+# Pin Change Interrupt Enable
+PCIE2 = 0x02
+PCIE1 = 0x01
+PCIE0 = 0x00
 
-ADMUX = 0x7C REFS1 REFS0 ADLAR – MUX3 MUX2 MUX1 MUX0 257
+# External Interrupt Control Register A ---------------------------- Extended IO
+EICRA = 0x69
 
-DIDR0 = 0x7E – – ADC5D ADC4D ADC3D ADC2D ADC1D ADC0D 260
+# Interrupt Sense Control 1
+ISC11 = 0x03
+ISC10 = 0x02
 
-DIDR1 = 0x7F – – – – – – AIN1D AIN0D 245
+# Interrupt Sense Control 0
+ISC01 = 0x01
+ISC00 = 0x00
 
-TCCR1A = 0x80 COM1A1 COM1A0 COM1B1 COM1B0 – – WGM11 WGM10 140
+# Pin Change Mask Register 0 --------------------------------------- Extended IO
+PCMSK0 = 0x6B
 
-TCCR1B = 0x81 ICNC1 ICES1 – WGM13 WGM12 CS12 CS11 CS10 142
+PCINT7 = 0x07
+PCINT6 = 0x06
+PCINT5 = 0x05
+PCINT4 = 0x04
+PCINT3 = 0x03
+PCINT2 = 0x02
+PCINT1 = 0x01
+PCINT0 = 0x00
 
-TCCR1C = 0x82 FOC1A FOC1B – – – – – – 143
+# Pin Change Mask Register 1 --------------------------------------- Extended IO
+PCMSK1 = 0x6C
 
-TCNT1L = 0x84 Timer/Counter1 - Counter Register Low Byte 143
+PCINT14 = 0x06
+PCINT13 = 0x05
+PCINT12 = 0x04
+PCINT11 = 0x03
+PCINT10 = 0x02
+PCINT9 = 0x01
+PCINT8 = 0x00
 
-TCNT1H = 0x85 Timer/Counter1 - Counter Register High Byte 143
+# Pin Change Mask Register 2 --------------------------------------- Extended IO
+PCMSK2 = 0x6D
 
-ICR1L = 0x86 Timer/Counter1 - Input Capture Register Low Byte 144
+PCINT23 = 0x07
+PCINT22 = 0x06
+PCINT21 = 0x05
+PCINT20 = 0x04
+PCINT19 = 0x03
+PCINT18 = 0x02
+PCINT17 = 0x01
+PCINT16 = 0x00
 
-ICR1H = 0x87 Timer/Counter1 - Input Capture Register High Byte 144
+# Timer/Counter Interrupt Mask Register ---------------------------- Extended IO
+TIMSK0 = 0x6E
 
-OCR1AL = 0x88 Timer/Counter1 - Output Compare Register A Low Byte 144
+# Timer/Counter Output Compare Match B Interrupt Enable
+OCIE0B = 0x02
 
-OCR1AH = 0x89 Timer/Counter1 - Output Compare Register A High Byte 144
+# Timer/Counter0 Output Compare Match A Interrupt Enable
+OCIE0A = 0x01
 
-OCR1BL = 0x8A Timer/Counter1 - Output Compare Register B Low Byte 144
+# Timer/Counter0 Overflow Interrupt Enable
+TOIE0 = 0x00
 
-OCR1BH = 0x8B Timer/Counter1 - Output Compare Register B High Byte 144
+# Timer/Counter1 Interrupt Mask Register --------------------------- Extended IO
+TIMSK1 = 0x6F
+
+# Timer/Counter1, Input Capture Interrupt Enable
+ICIE1 = 0x05
+
+# Timer/Counter1, Output Compare B Match Interrupt Enable
+OCIE1B = 0x02
+
+# Timer/Counter1, Output Compare A Match Interrupt Enable
+OCIE1A = 0x01
+
+# Timer/Counter1, Overflow Interrupt Enable
+TOIE1 = 0x00
+
+# Timer/Counter2 Interrupt Mask Register  -------------------------- Extended IO
+TIMSK2 = 0x70
+
+# Timer/Counter2 Output Compare Match B Interrupt Enable
+OCIE2B = 0x02
+
+# Timer/Counter2 Output Compare Match A Interrupt Enable
+OCIE2A = 0x01
+
+# Timer/Counter2 Overflow Interrupt Enable
+TOIE2 = 0x00
+
+# ADC Data Register Low byte --------------------------------------- Extended IO
+ADCL = 0x78
+
+# ADC Data Register High byte -------------------------------------- Extended IO
+ADCH = 0x79
+
+# ADC Control and Status Register A -------------------------------- Extended IO
+ADCSRA = 0x7A
+
+# ADC Enable
+ADEN = 0x07
+
+# ADC Start Conversion
+ADSC = 0x06
+
+# ADC Auto Trigger Enable
+ADATE = 0x05
+
+# ADC Interrupt Flag
+ADIF = 0x04
+
+# ADC Interrupt Enable
+ADIE = 0x03
+
+# ADC Prescaler Select Bits
+ADPS2 = 0x02
+ADPS1 = 0x01
+ADPS0 = 0x00
+
+# ADC Control and Status Register B -------------------------------- Extended IO
+ADCSRB = 0x7B
+
+# ADC Auto Trigger Source
+ADTS2 = 0x02
+ADTS1 = 0x01
+ADTS0 = 0x00
+
+# ADC Multiplexer Selection Register ------------------------------- Extended IO
+ADMUX = 0x7C
+
+# Reference Selection Bits
+REFS1 = 0x07
+REFS0 = 0x06
+
+# ADC Left Adjust Result
+ADLAR = 0x05
+
+# Analog Channel Selection Bits
+MUX3 = 0x03
+MUX2 = 0x02
+MUX1 = 0x01
+MUX0 = 0x00
+
+# Digital Input Disable Register 0 --------------------------------- Extended IO
+DIDR0 = 0x7E
+
+# Digital Input Disable
+ADC5D = 0x05
+ADC4D = 0x04
+ADC3D = 0x03
+ADC2D = 0x02
+ADC1D = 0x01
+ADC0D = 0x00
+
+# Digital Input Disable Register 1 --------------------------------- Extended IO
+DIDR1 = 0x7F
+
+# AIN1, AIN0 Digital Input Disable
+AIN1D = 0x01
+AIN0D = 0x00
+
+# Timer/Counter 1 Control Register A  ------------------------------ Extended IO
+TCCR1A = 0x80
+
+# Compare Output Mode for Channel A
+COM1A1 = 0x07
+COM1A0 = 0x06
+
+# Compare Output Mode for Channel B
+COM1B1 = 0x05
+COM1B10 = 0x04
+
+# Waveform Generation Mode
+WGM11 = 0x01
+WGM10 = 0x00
+
+# Timer/Counter 1 Control Register B ------------------------------- Extended IO
+TCCR1B = 0x81
+
+# Input Capture Noise Canceller
+ICNC1 = 0x07
+
+# Input Capture Edge Select
+ICES1 = 0x06
+
+# Waveform Generation Mode
+WGM13 = 0x04
+WGM12 = 0x03
+
+# Clock Select
+CS12 = 0x02
+CS11 = 0x01
+CS10 = 0x00
+
+# Timer/Counter 1 Control Register C ------------------------------- Extended IO
+TCCR1C = 0x82
+
+# Force Output Compare for Channel A
+FOC1A = 0x07
+
+# Force Output Compare for Channel B
+FOC1B = 0x06
+
+# Timer/Counter 1 - Counter Register Low Byte ---------------------- Extended IO
+TCNT1L = 0x84
+
+# Timer/Counter 1 - Counter Register High Byte --------------------- Extended IO
+TCNT1H = 0x85
+
+# Timer/Counter 1 - Input Capture Register Low Byte ---------------- Extended IO
+ICR1L = 0x86
+
+# Timer/Counter 1 - Input Capture Register High Byte --------------- Extended IO
+ICR1H = 0x87
+
+# Timer/Counter 1 - Output Compare Register A Low Byte ------------- Extended IO
+OCR1AL = 0x88
+
+# Timer/Counter 1 - Output Compare Register A Low Byte  ------------ Extended IO
+OCR1AH = 0x89
+
+# Timer/Counter 1 - Output Compare Register B Low Byte ------------- Extended IO
+OCR1BL = 0x8A
+
+# Timer/Counter 1 - Output Compare Register B High Byte ------------ Extended IO
+OCR1BH = 0x8B
 
 TCCR2A = 0xB0 COM2A1 COM2A0 COM2B1 COM2B0 – – WGM21 WGM20 162
 
 TCCR2B = 0xB1 FOC2A FOC2B – – WGM22 CS22 CS21 CS20 165
 
-TCNT2 = 0xB2 Timer/Counter2 (8-bit) 166
+TCNT2 = 0xB2 Timer/Counter 2 (8-bit) 166
 
-OCR2A = 0xB3 Timer/Counter2 Output Compare Register A 166
+OCR2A = 0xB3 Timer/Counter 2 Output Compare Register A 166
 
-OCR2B = 0xB4 Timer/Counter2 Output Compare Register B 166
+OCR2B = 0xB4 Timer/Counter 2 Output Compare Register B 166
 
 ASSR = 0xB6 – EXCLK AS2 TCN2UB OCR2AUB OCR2BUB TCR2AUB TCR2BUB 167
 
