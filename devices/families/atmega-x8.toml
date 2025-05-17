@@ -105,24 +105,23 @@ PORTD2 = 0x02
 PORTD1 = 0x01
 PORTD0 = 0x00
 
-# Timer/Counter1 Interrupt Flag Register ------------------------- IO Address 16
+# Timer/Counter 1 Interrupt Flag Register ------------------------ IO Address 16
 TIFR1 = 0x36
 
-# Timer/Counter1, Input Capture Flag
+# Timer/Counter 1, Input Capture Flag
 ICF1 = 0x05
 
-# Timer/Counter1, Output Compare B Match Flag
+# Timer/Counter 1, Output Compare B Match Flag
 OCF1B = 0x02
 
-# Timer/Counter1, Output Compare A Match Flag
+# Timer/Counter 1, Output Compare A Match Flag
 OCF1A = 0x01
 
-# Timer/Counter1, Overflow Flag
+# Timer/Counter 1, Overflow Flag
 TOV1 = 0x00
 
-# Timer/Counter2 Interrupt Flag Register ------------------------- IO Address 17
+# Timer/Counter 2 Interrupt Flag Register ------------------------ IO Address 17
 TIFR2 = 0x37
-
 
 # Output Compare Flag 2 B
 OCF2B = 0x02
@@ -130,7 +129,7 @@ OCF2B = 0x02
 # Output Compare Flag 2 A
 OCF2A = 0x01
 
-# Timer/Counter2 Overflow Flag
+# Timer/Counter 2 Overflow Flag
 TOV2 = 0x00
 
 # Pin Change Interrupt Flag Register ----------------------------- IO Address 1B
@@ -200,13 +199,13 @@ GTCCR = 0x43
 # Timer/Counter Synchronization Mode
 TSM = 0x07
 
-# Prescaler Reset Timer/Counter2
+# Prescaler Reset Timer/Counter 2
 PSRASY = 0x01
 
 # Prescaler Reset
 PSRSYNC = 0x00
 
-# Timer/Counter Control Register A ------------------------------- IO Address 24
+# Timer/Counter 0 Control Register A ----------------------------- IO Address 24
 TCCR0A = 0x44
 
 # Compare Match Output A Mode
@@ -221,7 +220,7 @@ COM0B0 = 0x04
 WGM01 = 0x01
 WGM00 = 0x00
 
-# Timer/Counter Control Register B ------------------------------- IO Address 25
+# Timer/Counter 0 Control Register B ----------------------------- IO Address 25
 TCCR0B = 0x45
 
 # Force Output Compare A
@@ -238,13 +237,13 @@ CS02 = 0x02
 CS01 = 0x01
 CS00 = 0x00
 
-# Timer/Counter0 (8-bit) ----------------------------------------- IO Address 26
+# Timer/Counter 0 (8-bit) ---------------------------------------- IO Address 26
 TCNT0 = 0x46
 
-# Timer/Counter0 Output Compare Register A ----------------------- IO Address 27
+# Timer/Counter 0 Output Compare Register A ---------------------- IO Address 27
 OCR0A = 0x47
 
-# Timer/Counter0 Output Compare Register B ----------------------- IO Address 28
+# Timer/Counter 0 Output Compare Register B ---------------------- IO Address 28
 OCR0B = 0x48
 
 # General Purpose I/O Register 1 --------------------------------- IO Address 2A
@@ -431,13 +430,13 @@ PRR = 0x64
 # Power Reduction TWI
 PRTWI = 0x07
 
-# Power Reduction Timer/Counter2
+# Power Reduction Timer/Counter 2
 PRTIM2 = 0x06
 
-# Power Reduction Timer/Counter0
+# Power Reduction Timer/Counter 0
 PRTIM0 = 0x05
 
-# Power Reduction Timer/Counter1
+# Power Reduction Timer/Counter 1
 PRTIM1 = 0x03
 
 # Power Reduction Serial Peripheral Interface
@@ -515,43 +514,43 @@ PCINT18 = 0x02
 PCINT17 = 0x01
 PCINT16 = 0x00
 
-# Timer/Counter Interrupt Mask Register ---------------------------- Extended IO
+# Timer/Counter 0 Interrupt Mask Register -------------------------- Extended IO
 TIMSK0 = 0x6E
 
-# Timer/Counter Output Compare Match B Interrupt Enable
+# Timer/Counter 0 Output Compare Match B Interrupt Enable
 OCIE0B = 0x02
 
-# Timer/Counter0 Output Compare Match A Interrupt Enable
+# Timer/Counter 0 Output Compare Match A Interrupt Enable
 OCIE0A = 0x01
 
-# Timer/Counter0 Overflow Interrupt Enable
+# Timer/Counter 0 Overflow Interrupt Enable
 TOIE0 = 0x00
 
-# Timer/Counter1 Interrupt Mask Register --------------------------- Extended IO
+# Timer/Counter 1 Interrupt Mask Register -------------------------- Extended IO
 TIMSK1 = 0x6F
 
-# Timer/Counter1, Input Capture Interrupt Enable
+# Timer/Counter 1, Input Capture Interrupt Enable
 ICIE1 = 0x05
 
-# Timer/Counter1, Output Compare B Match Interrupt Enable
+# Timer/Counter 1, Output Compare B Match Interrupt Enable
 OCIE1B = 0x02
 
-# Timer/Counter1, Output Compare A Match Interrupt Enable
+# Timer/Counter 1, Output Compare A Match Interrupt Enable
 OCIE1A = 0x01
 
-# Timer/Counter1, Overflow Interrupt Enable
+# Timer/Counter 1, Overflow Interrupt Enable
 TOIE1 = 0x00
 
-# Timer/Counter2 Interrupt Mask Register  -------------------------- Extended IO
+# Timer/Counter 2 Interrupt Mask Register  ------------------------- Extended IO
 TIMSK2 = 0x70
 
-# Timer/Counter2 Output Compare Match B Interrupt Enable
+# Timer/Counter 2 Output Compare Match B Interrupt Enable
 OCIE2B = 0x02
 
-# Timer/Counter2 Output Compare Match A Interrupt Enable
+# Timer/Counter 2 Output Compare Match A Interrupt Enable
 OCIE2A = 0x01
 
-# Timer/Counter2 Overflow Interrupt Enable
+# Timer/Counter 2 Overflow Interrupt Enable
 TOIE2 = 0x00
 
 # ADC Data Register Low byte --------------------------------------- Extended IO
@@ -691,40 +690,228 @@ OCR1BL = 0x8A
 # Timer/Counter 1 - Output Compare Register B High Byte ------------ Extended IO
 OCR1BH = 0x8B
 
-TCCR2A = 0xB0 COM2A1 COM2A0 COM2B1 COM2B0 – – WGM21 WGM20 162
+# Timer/Counter 2 Control Register A ------------------------------- Extended IO
+TCCR2A = 0xB0
 
-TCCR2B = 0xB1 FOC2A FOC2B – – WGM22 CS22 CS21 CS20 165
+# Compare Match Output A Mode
+COM2A1 = 0x07
+COM2A0 = 0x06
 
-TCNT2 = 0xB2 Timer/Counter 2 (8-bit) 166
+# Compare Match Output B Mode
+COM2B1 = 0x05
+COM2B0 = 0x04
 
-OCR2A = 0xB3 Timer/Counter 2 Output Compare Register A 166
+# Waveform Generation Mode
+WGM21 = 0x01
+WGM20 = 0x00
 
-OCR2B = 0xB4 Timer/Counter 2 Output Compare Register B 166
+# Timer/Counter 2 Control Register B ------------------------------- Extended IO
+TCCR2B = 0xB1
 
-ASSR = 0xB6 – EXCLK AS2 TCN2UB OCR2AUB OCR2BUB TCR2AUB TCR2BUB 167
+# Force Output Compare A
+FOC2A = 0x07
 
-TWBR = 0xB8 2-wire Serial Interface Bit Rate Register 239
+# Force Output Compare B
+FOC2B = 0x06
 
-TWSR = 0xB9 TWS7 TWS6 TWS5 TWS4 TWS3 – TWPS1 TWPS0 240
+# Waveform Generation Mode
+WGM22 = 0x03
 
-TWAR = 0xBA TWA6 TWA5 TWA4 TWA3 TWA2 TWA1 TWA0 TWGCE 241
+# Clock Select
+CS22 = 0x02
+CS21 = 0x01
+CS20 = 0x00
 
-TWDR = 0xBB 2-wire Serial Interface Data Register 241
+# Timer/Counter 2 (8-bit) ------------------------------------------ Extended IO
+TCNT2 = 0xB2
 
-TWCR = 0xBC TWINT TWEA TWSTA TWSTO TWWC TWEN – TWIE 239
+# Timer/Counter 2 Output Compare Register A ------------------------ Extended IO
+OCR2A = 0xB3
 
-TWAMR = 0xBD TWAM6 TWAM5 TWAM4 TWAM3 TWAM2 TWAM1 TWAM0 – 242
+# Timer/Counter 2 Output Compare Register B ------------------------ Extended IO
+OCR2B = 0xB4
 
-UCSR0A = 0xC0 RXC0 TXC0 UDRE0 FE0 DOR0 UPE0 U2X0 MPCM0 200
+# Asynchronous Status Register ------------------------------------- Extended IO
+ASSR = 0xB6
 
-UCSR0B = 0xC1 RXCIE0 TXCIE0 UDRIE0 RXEN0 TXEN0 UCSZ02 RXB80 TXB80 201
+# Enable External Clock Input
+EXCLK = 0x06
 
-UCSR0C = 0xC2 UMSEL01 UMSEL00 UPM01 UPM00 USBS0 UCSZ01 /UDORD0 UCSZ00 / UCPHA0 UCPOL0 202/213
+# Asynchronous Timer/Counter 2
+AS2 = 0x05
 
-UBRR0L = 0xC4 USART Baud Rate Register Low 204
+# Timer/Counter 2 Update Busy
+TCN2UB = 0x04
 
-UBRR0H = 0xC5 USART Baud Rate Register High 204
+# Output Compare Register 2 Update Busy
+OCR2AUB = 0x03
 
-UDR0 = 0xC6 USART I/O Data Register 200
+# Output Compare Register 2 Update Busy
+OCR2BUB = 0x02
 
-# https://ww1.microchip.com/downloads/aemDocuments/documents/MCU08/ProductDocuments/DataSheets/ATmega48A-PA-88A-PA-168A-PA-328-P-DS-DS40002061B.pdf
+# Timer/Counter Control Register 2 Update Busy
+TCR2AUB = 0x01
+
+# Timer/Counter Control Register 2 Update Busy
+TCR2BUB = 0x00
+
+# 2-wire Serial Interface Bit Rate Register ------------------------ Extended IO
+TWBR = 0xB8
+
+# TWI Status Register ---------------------------------------------- Extended IO
+TWSR = 0xB9
+
+# TWI Status
+TWS7 = 0x07
+TWS6 = 0x06
+TWS5 = 0x05
+TWS4 = 0x04
+TWS3 = 0x03
+
+# TWI Prescaler Bits
+TWPS1 = 0x01
+TWPS0 = 0x00
+
+# TWI (Slave) Address Register ------------------------------------- Extended IO
+TWAR = 0xBA
+
+# TWI (Slave) Address Register
+TWA6 = 0x07
+TWA5 = 0x06
+TWA4 = 0x05
+TWA3 = 0x04
+TWA2 = 0x03
+TWA1 = 0x02
+TWA0 = 0x01
+
+# TWI General Call Recognition Enable Bit
+TWGCE = 0x00
+
+# 2-wire Serial Interface Data Register ---------------------------- Extended IO
+TWDR = 0xBB
+
+# TWI Control Register --------------------------------------------- Extended IO
+TWCR = 0xBC
+
+# TWI Interrupt Flag
+TWINT = 0x07
+
+# TWI Enable Acknowledge Bit
+TWEA = 0x06
+
+# TWI START Condition Bit
+TWSTA = 0x05
+
+# TWI STOP Condition Bit
+TWSTO = 0x04
+
+# TWI Write Collision Flag
+TWWC = 0x03
+
+# TWI Enable Bit
+TWEN = 0x02
+
+# TWI Interrupt Enable
+TWIE = 0x00
+
+# TWI (Slave) Address Mask Register -------------------------------- Extended IO
+TWAMR = 0xBD
+
+# TWI Address Mask
+TWAM6 = 0x07
+TWAM5 = 0x06
+TWAM4 = 0x05
+TWAM3 = 0x04
+TWAM2 = 0x03
+TWAM1 = 0x02
+TWAM0 = 0x01
+
+# USART 0 Control and Status Register A ---------------------------- Extended IO
+UCSR0A = 0xC0
+
+# Receive Complete
+RXC0 = 0x07
+
+# Transmit Complete
+TXC0 = 0x06
+
+# Data Register Empty
+UDRE0 = 0x05
+
+# Frame Error
+FE0 = 0x04
+
+# Data OverRun
+DOR0 = 0x03
+
+# Parity Error
+UPE0 = 0x02
+
+# Double Transmission Speed
+U2X0 = 0x01
+
+# Multi-processor Communication Mode
+MPCM0 = 0x00
+
+# USART 0 Control and Status Register B ---------------------------- Extended IO
+UCSR0B = 0xC1
+
+# RX Complete Interrupt Enable
+RXCIE0 = 0x07
+
+# TX Complete Interrupt Enable
+TXCIE0 = 0x06
+
+# Data Register Empty Interrupt Enable
+UDRIE0 = 0x05
+
+# Receiver Enable
+RXEN0 = 0x04
+
+# Transmitter Enable
+TXEN0 = 0x03
+
+# Character Size
+UCSZ02 = 0x02
+
+# Receive Data Bit 8
+RXB80 = 0x01
+
+# Transmit Data Bit 8
+TXB80 = 0x00
+
+# USART 0 (MSPIM) Control and Status Register C -------------------- Extended IO
+UCSR0C = 0xC2
+
+# Mode Select
+UMSEL01 = 0x07
+UMSEL00 = 0x06
+
+# Parity Mode (Reserved in MSPI mode)
+UPM01 = 0x05
+UPM00 = 0x04
+
+# Stop Bit Select (Reserved in MSPI mode)
+USBS0 = 0x03
+
+# Character Size (Not in MSPI mode)
+UCSZ01 = 0x02
+UCSZ00 = 0x01
+
+# Data Order (MSPI mode)
+UDORD0 = 0x02
+
+# Clock Phase (MSPI mode)
+# UCPHA0 = 0x01
+
+# Clock Polarity
+UCPOL0 = 0x00
+
+# USART 0 Baud Rate Low Byte --------------------------------------- Extended IO
+UBRR0L = 0xC4
+
+# USART 0 Baud Rate High Byte -------------------------------------- Extended IO
+UBRR0H = 0xC5
+
+# USART 0 Data ----------------------------------------------------- Extended IO
+UDR0 = 0xC6
