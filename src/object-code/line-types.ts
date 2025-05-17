@@ -1,4 +1,4 @@
-import type { ImmutableLine, MutableLine } from "../assembler/line-types.ts";
+import type { ImmutableLine, MutableLine } from "../line/line-types.ts";
 import type { LineWithOperands } from "../operands/line-types.ts";
 import type { CodeGenerator } from "./data-types.ts";
 

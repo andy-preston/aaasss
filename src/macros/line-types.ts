@@ -1,4 +1,4 @@
-import type { ImmutableLine, MutableLine } from "../assembler/line-types.ts";
+import type { ImmutableLine, MutableLine } from "../line/line-types.ts";
 import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";

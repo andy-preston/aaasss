@@ -2,7 +2,7 @@ import type { SourceCode } from "../source-code/data-types.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 
 import { expect } from "jsr:@std/expect";
-import { ImmutableLine, line } from "../assembler/line-types.ts";
+import { ImmutableLine, line } from "../line/line-types.ts";
 import { removedDirective } from "./removed-directive.ts";
 
 const testLine = (rawSource: SourceCode) =>

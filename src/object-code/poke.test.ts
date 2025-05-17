@@ -1,5 +1,5 @@
-import type { ImmutableLine } from "../assembler/line-types.ts";
 import type { Failure, NumericTypeFailure } from "../failure/bags.ts";
+import type { ImmutableLine } from "../line/line-types.ts";
 import type { LineWithObjectCode } from "./line-types.ts";
 
 import { expect } from "jsr:@std/expect";

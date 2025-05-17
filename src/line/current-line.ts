@@ -1,4 +1,4 @@
-import { ImmutableLine } from "../assembler/line-types.ts";
+import { ImmutableLine } from "./line-types.ts";
 
 export const currentLine = () => {
     let theLine: ImmutableLine | undefined;

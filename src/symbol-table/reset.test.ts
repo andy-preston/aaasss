@@ -1,9 +1,9 @@
 import type { Pass } from "../assembler/data-types.ts";
-import type { ImmutableLine } from "../assembler/line-types.ts";
+import type { ImmutableLine } from "../line/line-types.ts";
 
 import { expect } from "jsr:@std/expect";
 import { numberBag } from "../assembler/bags.ts";
-import { line } from "../assembler/line-types.ts";
+import { line } from "../line/line-types.ts";
 import { systemUnderTest, testDirectives } from "./testing.ts";
 
 const testPipeline = function* (pass: Pass) {

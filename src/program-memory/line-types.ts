@@ -1,4 +1,4 @@
-import type { ImmutableLine, MutableLine } from "../assembler/line-types.ts";
+import type { ImmutableLine, MutableLine } from "../line/line-types.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 
 export interface LineWithAddress extends LineWithObjectCode {

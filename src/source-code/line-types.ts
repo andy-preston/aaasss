@@ -1,8 +1,8 @@
-import type { ImmutableLine } from "../assembler/line-types.ts";
 import type { LineWithFailures } from "../failure/line-types.ts";
+import type { ImmutableLine } from "../line/line-types.ts";
 import type { FileName, LineNumber, SourceCode } from "./data-types.ts";
 
-import { line } from "../assembler/line-types.ts";
+import { line } from "../line/line-types.ts";
 
 export interface LineWithRawSource extends LineWithFailures {
     "fileName": ImmutableLine["fileName"];

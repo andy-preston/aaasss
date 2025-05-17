@@ -2,7 +2,7 @@ import type { Failure } from "../failure/bags.ts";
 import type { LineWithTokens } from "../tokens/line-types.ts";
 
 import { expect } from "jsr:@std/expect";
-import { line } from "../assembler/line-types.ts";
+import { line } from "../line/line-types.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const isLastLineOfPass = true;

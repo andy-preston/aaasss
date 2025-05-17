@@ -1,4 +1,4 @@
-import type { ImmutableLine } from "../assembler/line-types.ts";
+import type { ImmutableLine } from "../line/line-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";

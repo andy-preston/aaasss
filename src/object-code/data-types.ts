@@ -1,6 +1,6 @@
-import type { ImmutableLine } from "../assembler/line-types.ts";
 import type { InstructionSet } from "../device/instruction-set.ts";
-import { ProgramMemory } from "../program-memory/program-memory.ts";
+import type { ImmutableLine } from "../line/line-types.ts";
+import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 export type BinaryDigit = "0" | "1";
 

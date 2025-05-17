@@ -1,8 +1,8 @@
 import type { AssertionFailure, ClueFailure, DefinitionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { line } from "../assembler/line-types.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
+import { line } from "../line/line-types.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const mockDefiningLine = (fileName: string, lineNumber: number) =>
