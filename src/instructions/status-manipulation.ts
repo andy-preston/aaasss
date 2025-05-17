@@ -1,6 +1,6 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
@@ -30,7 +30,7 @@ const mapping: Map<string, [string, number?]> = new Map([
 ]);
 
 export const statusManipulation = (
-    line: LineWithPokedBytes
+    line: LineWithOperands
 ): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
@@ -45,10 +45,10 @@ export const statusManipulation = (
             ? actualOperands[0]
             : impliedOperand;
 
-        const code = template(
+        const codeGenerator = template(
             `1001_0100 ${operationBit}vvv_1000`, {"v": operand!}
         );
-        return lineWithObjectCode(line, code);
+        return lineWithObjectCode(line, codeGenerator);
     };
 
     return mapping.has(line.mnemonic) ? codeGenerator : undefined;

@@ -1,83 +1,77 @@
+import type { ImmutableLine } from "../assembler/line-types.ts";
+import type { Failure, NumericTypeFailure } from "../failure/bags.ts";
+import type { LineWithObjectCode } from "./line-types.ts";
+
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directive-function.ts";
-import type { Failure, NumericTypeFailure } from "../failure/bags.ts";
-import { pokeBuffer } from "./poke.ts";
+import { currentLine } from "../line/current-line.ts";
+import { lineWithRawSource } from "../source-code/line-types.ts";
+import { poke } from "./poke.ts";
 
-const irrelevantName = "testing";
+const systemUnderTest = () => {
+    const $currentLine = currentLine();
+    const testLine = lineWithRawSource("", 0, "", "", 0, false);
+    $currentLine.forDirectives(testLine as ImmutableLine);
+    const $poke = poke($currentLine);
+    const pokeDirective = directiveFunction("poke", $poke.pokeDirective);
+    return {
+        "poke": pokeDirective,
+        "line": testLine as LineWithObjectCode
+    };
+}
 
 Deno.test("You can poke bytes", () => {
-    const poker = pokeBuffer();
-    const poke = directiveFunction(irrelevantName, poker.pokeDirective);
-
-    expect(poke(1, 2, 3, 4).type).not.toBe("failures");
-    expect([...poker.contents()]).toEqual([
-        [1, 2, 3, 4]
-    ]);
+    const system = systemUnderTest();
+    expect(system.poke(1, 2, 3, 4).type).not.toBe("failures");
+    expect(system.line.code).toEqual([[1, 2], [3, 4]]);
 });
 
 Deno.test("Poked bytes are grouped in sets of 4", () => {
-    const poker = pokeBuffer();
-    const poke = directiveFunction(irrelevantName, poker.pokeDirective);
-
-    expect(poke(1, 2, 3, 4, 5, 6).type).not.toBe("failures");
-    expect([...poker.contents()]).toEqual([
-        [1, 2, 3, 4], [5, 6]
-    ]);
+    const system = systemUnderTest();
+    expect(system.poke(1, 2, 3, 4, 5, 6).type).not.toBe("failures");
+    expect(system.line.code).toEqual([[1, 2], [3, 4], [5, 6]]);
 });
 
 Deno.test("Poked bytes are padded to an even number", () => {
-    const poker = pokeBuffer();
-    const poke = directiveFunction(irrelevantName, poker.pokeDirective);
-
-    expect(poke(1, 2, 3).type).not.toBe("failures");
-    expect([...poker.contents()]).toEqual([
-        [1, 2, 3, 0]
-    ]);
-
-    expect(poke(1, 2, 3, 4, 5).type).not.toBe("failures");
-    expect([...poker.contents()]).toEqual([
-        [1, 2, 3, 4], [5, 0]
-    ]);
+    {
+        const system = systemUnderTest();
+        expect(system.poke(1, 2, 3).type).not.toBe("failures");
+        expect(system.line.code).toEqual([[1, 2], [3, 0]]);
+    } {
+        const system = systemUnderTest();
+        expect(system.poke(1, 2, 3, 4, 5).type).not.toBe("failures");
+        expect(system.line.code).toEqual([[1, 2], [3, 4], [5, 0]]);
+    }
 });
 
 Deno.test("You can also poke ASCII strings", () => {
-    const poker = pokeBuffer();
-    const poke = directiveFunction(irrelevantName, poker.pokeDirective);
-
-    expect(poke("Hello").type).not.toBe("failures");
-    expect([...poker.contents()]).toEqual([
-        [72, 101, 108, 108], [111, 0]
+    const system = systemUnderTest();
+    expect(system.poke("Hello").type).not.toBe("failures");
+    expect(system.line.code).toEqual([
+        [72, 101], [108, 108], [111, 0]
     ]);
 });
 
 Deno.test("... or UTF-8 strings", () => {
-    const poker = pokeBuffer();
-    const poke = directiveFunction(irrelevantName, poker.pokeDirective);
-
-    expect(poke("ਕਿੱਦਾਂ").type).not.toBe("failures");
-    expect([...poker.contents()]).toEqual([
-        [224, 168, 149, 224], [168, 191, 224, 169],
-        [177, 224, 168, 166], [224, 168, 190, 224],
-        [168, 130]
+    const system = systemUnderTest();
+    expect(system.poke("ਕਿੱਦਾਂ").type).not.toBe("failures");
+    expect(system.line.code).toEqual([
+        [224, 168], [149, 224], [168, 191], [224, 169],
+        [177, 224], [168, 166], [224, 168], [190, 224], [168, 130]
     ]);
 });
 
 Deno.test("... or a combination of bytes and strings", () => {
-    const poker = pokeBuffer();
-    const poke = directiveFunction(irrelevantName, poker.pokeDirective);
-
-    expect(poke(1, 2, 3, 4, "Hello").type).not.toBe("failures");
-    expect([...poker.contents()]).toEqual([
-        [1, 2, 3, 4],
-        [72, 101, 108, 108], [111, 0]
+    const system = systemUnderTest();
+    expect(system.poke(1, 2, 3, 4, "Hello").type).not.toBe("failures");
+    expect(system.line.code).toEqual([
+        [1, 2], [3, 4], [72, 101], [108, 108], [111, 0]
     ]);
 })
 
 Deno.test("Poked numbers must be bytes (0-255)", () => {
-    const poker = pokeBuffer();
-    const poke = directiveFunction(irrelevantName, poker.pokeDirective);
-
-    const result = poke(-1, 2, 300, 4);
+    const system = systemUnderTest();
+    const result = system.poke(-1, 2, 300, 4);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(2);
@@ -92,5 +86,5 @@ Deno.test("Poked numbers must be bytes (0-255)", () => {
         expect(failure.location).toEqual({"parameter": 2});
         expect(failure.value).toBe(300);
     }
-    expect([...poker.contents()]).toEqual([[2, 4]]);
+    expect(system.line.code).toEqual([[2, 4]]);
 });

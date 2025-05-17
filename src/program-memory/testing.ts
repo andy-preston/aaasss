@@ -1,10 +1,11 @@
-import type { Code } from "../object-code/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 
 import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
+import { currentLine } from "../line/current-line.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
-import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
+import { codeAsWords } from "../object-code/as-words.ts";
+import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
@@ -14,8 +15,9 @@ import { programMemory } from "./program-memory.ts";
 import { programMemoryPipeline } from "./assembly-pipeline.ts";
 
 export const systemUnderTest = () => {
+    const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
-    const $symbolTable = symbolTable($cpuRegisters);
+    const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $programMemory = programMemory($symbolTable);
     const $programMemoryPipeline = programMemoryPipeline($programMemory);
     const $jsExpression = jSExpression($symbolTable);
@@ -30,7 +32,7 @@ export const systemUnderTest = () => {
 
 type SystemUnderTest = ReturnType<typeof systemUnderTest>;
 
-type LineData = {"label": Label, "pokes": Array<Code>, "code": Code};
+type LineData = {"label": Label, "code": Array<number>};
 
 export const testPipeline = (
     system: SystemUnderTest, ...lines: Array<LineData>
@@ -50,10 +52,9 @@ export const testPipeline = (
             const $lineWithOperands = lineWithOperands(
                 $lineWithProcessedMacro, [], []
             );
-            const $lineWithPokedBytes = lineWithPokedBytes(
-                $lineWithOperands, lineData.pokes
+            yield lineWithObjectCode(
+                $lineWithOperands, codeAsWords(lineData.code.values())
             );
-            yield lineWithObjectCode($lineWithPokedBytes, lineData.code);
         }
     };
 

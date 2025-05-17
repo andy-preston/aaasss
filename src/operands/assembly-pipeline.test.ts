@@ -4,6 +4,7 @@ import type { SymbolicOperands } from "./data-types.ts";
 import { expect } from "jsr:@std/expect";
 import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
+import { currentLine } from "../line/current-line.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
@@ -29,8 +30,9 @@ export const systemUnderTest = (...lines: Array<SymbolicOperands>) => {
         }
     };
 
+    const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
-    const $symbolTable = symbolTable($cpuRegisters);
+    const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $jsExpression = jSExpression($symbolTable);
     const $symbolicToNumeric = symbolicToNumeric(
         $symbolTable, $cpuRegisters, $jsExpression

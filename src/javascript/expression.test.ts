@@ -1,17 +1,21 @@
+import type { ExceptionFailure, Failure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
 import { numberBag } from "../assembler/bags.ts";
-import type { ExceptionFailure, Failure } from "../failure/bags.ts";
+import { currentLine } from "../line/current-line.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { jSExpression } from "./expression.ts";
 
 const systemUnderTest = () => {
-    const registers = cpuRegisters();
-    const symbols = symbolTable(registers);
+    const $currentLine = currentLine();
+    const $cpuRegisters = cpuRegisters();
+    const $symbolTable = symbolTable($currentLine, $cpuRegisters);
+    const $jSExpression = jSExpression($symbolTable)
     return {
-        "symbols": symbols,
-        "cpuRegisters": registers,
-        "jsExpression": jSExpression(symbols)
+        "symbolTable": $symbolTable,
+        "cpuRegisters": $cpuRegisters,
+        "jsExpression": $jSExpression
     };
 };
 
@@ -61,7 +65,7 @@ Deno.test("Javascript can contain newlines", () => {
 
 Deno.test("Javascript can get value from the symbol table", () => {
     const system = systemUnderTest();
-    system.symbols.persistentSymbol("plop", numberBag(23));
+    system.symbolTable.persistentSymbol("plop", numberBag(23));
     const result = system.jsExpression("plop");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("23");

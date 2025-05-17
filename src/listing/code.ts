@@ -5,22 +5,28 @@ const addressWidth = 6;
 
 export const codeWidth = objectWidth + addressWidth + 1;
 
-export const extractedCode = function* (line: LineWithAddress) {
+export const extractedCode = function* (
+    line: LineWithAddress
+): Generator<string, string, void> {
     let address = line.address;
-    for (const block of line.code) {
-        const addressHex = address
-            .toString(16)
-            .toUpperCase()
-            .padStart(addressWidth, "0");
-        const object = block
-            .map(byte => byte.toString(16).padStart(2, "0"))
-            .join(" ")
-            .toUpperCase()
-            .padEnd(objectWidth, " ");
-        yield `${addressHex} ${object}`;
-        address = address + (block.length / 2);
+    const bytes = line.code.flat(1).values();
+    while (true) {
+        const dWord = [...bytes.take(4)];
+        if (dWord.length == 0) {
+            return "";
+        }
+
+        const addressHex = address.toString(16).toUpperCase().padStart(
+            addressWidth, "0"
+        );
+        address = address + (dWord.length / 2);
+
+        const codeHex = dWord.map(
+            byte => byte.toString(16).padStart(2, "0")
+        ).join(" ").toUpperCase().padEnd(objectWidth, " ");
+
+        yield `${addressHex} ${codeHex}`;
     }
-    return "";
 };
 
 export type ExtractedCode = ReturnType<typeof extractedCode>;

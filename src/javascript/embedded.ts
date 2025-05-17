@@ -1,7 +1,7 @@
 import type { Pipe } from "../assembler/data-types.ts";
 import type { StringOrFailures } from "../failure/bags.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 import type { LineWithRawSource } from "../source-code/line-types.ts";
-import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { JsExpression } from "./expression.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
@@ -11,7 +11,7 @@ import { lineWithRenderedJavascript } from "./line-types.ts";
 const scriptDelimiter = /({{|}})/;
 
 export const assemblyPipeline = (
-    expression: JsExpression, symbolTable: SymbolTable
+    expression: JsExpression, currentLine: CurrentLine
 ) => function* (lines: Pipe) {
     const buffer = {
         "javascript": [] as Array<string>,
@@ -67,7 +67,6 @@ export const assemblyPipeline = (
     }
 
     const processedLine = (line: LineWithRawSource) => {
-        symbolTable.definingLine(line);
         const assembler = assemblerSource(line);
         if (line.lastLine) {
             const check = stillInJsMode();
@@ -79,6 +78,7 @@ export const assemblyPipeline = (
     };
 
     for (const line of lines) {
+        currentLine.forDirectives(line);
         yield processedLine(line);
     }
 };

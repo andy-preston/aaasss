@@ -1,6 +1,6 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 
 import { lineWithObjectCode } from "../object-code/line-types.ts";
@@ -28,7 +28,7 @@ const mapping: Map<string, [string, number]> = new Map([
 ]);
 
 export const twoRegisterDirect = (
-    line: LineWithPokedBytes
+    line: LineWithOperands
 ): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
@@ -43,11 +43,11 @@ export const twoRegisterDirect = (
         }
         const actualOperands = validScaledOperands(line, operandRequirements);
 
-        const code = template(
+        const codeGenerator = template(
             `${prefix}sd dddd_ssss`,
             {"d": actualOperands[0]!, "s": actualOperands[secondOperandIndex]!}
         );
-        return lineWithObjectCode(line, code);
+        return lineWithObjectCode(line, codeGenerator);
     };
 
     return mapping.has(line.mnemonic) ? codeGenerator : undefined;

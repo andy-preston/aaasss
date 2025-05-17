@@ -1,3 +1,4 @@
+import type { CurrentLine } from "../line/current-line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
@@ -8,12 +9,15 @@ import { bagOfFailures, boringFailure, definitionFailure } from "../failure/bags
 import { counting } from "./counting.ts";
 import { definitionList } from "./definition-list.ts";
 
-export const symbolTable = (cpuRegisters: CpuRegisters) => {
+export const symbolTable = (
+    currentLine: CurrentLine,
+    cpuRegisters: CpuRegisters
+) => {
     const varSymbols:   Map<string, SymbolBag> = new Map();
     const constSymbols: Map<string, SymbolBag> = new Map();
 
     const counts = counting();
-    const definitions = definitionList();
+    const definitions = definitionList(currentLine);
 
     const reset = (line: LineWithObjectCode) => {
         if (line.lastLine && line.isPass(1)) {
@@ -160,8 +164,7 @@ export const symbolTable = (cpuRegisters: CpuRegisters) => {
         "use": use,
         "count": counts.count,
         "list": list,
-        "reset": reset,
-        "definingLine": definitions.definingLine
+        "reset": reset
     };
 };
 

@@ -12,11 +12,12 @@ import { functionDirectives } from "../directives/function-directives.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { assemblyPipeline as embeddedJs } from "../javascript/embedded.ts";
+import { currentLine } from "../line/current-line.ts";
 import { listing } from "../listing/listing.ts";
 import { macroPipeline } from "../macros/assembly-pipeline.ts";
 import { macros } from "../macros/macros.ts";
 import { objectCode } from "../object-code/assembly-pipeline.ts";
-import { pokeBuffer } from "../object-code/poke.ts";
+import { poke } from "../object-code/poke.ts";
 import { symbolicToNumeric } from "../operands/assembly-pipeline.ts";
 import { programMemoryPipeline } from "../program-memory/assembly-pipeline.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
@@ -34,8 +35,9 @@ export const coupling = (
     failureMessageTranslator: FailureMessageTranslator,
     deviceFileOperations: DeviceFileOperations
 ) => {
+    const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
-    const $symbolTable = symbolTable($cpuRegisters);
+    const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $symbolTablePipeline = symbolTablePipeline($symbolTable);
 
     const withDirectives = <Component extends object>(component: Component) => {
@@ -55,20 +57,19 @@ export const coupling = (
     const $macroPipeline = withDirectives(macroPipeline($macros));
 
     const $jsExpression = withDirectives(jSExpression($symbolTable));
-    const $embeddedJs = withDirectives(embeddedJs($jsExpression, $symbolTable));
+    const $embeddedJs = withDirectives(embeddedJs($jsExpression, $currentLine));
     const $symbolicToNumeric = withDirectives(symbolicToNumeric(
         $symbolTable, $cpuRegisters, $jsExpression
     ));
 
     const $instructionSet = instructionSet($symbolTable);
-    const $pokeBuffer = withDirectives(pokeBuffer());
     const $programMemory = programMemory($symbolTable);
     const $programMemoryPipeline = withDirectives(
         programMemoryPipeline($programMemory)
     );
     const $dataMemory = withDirectives(dataMemory($symbolTable));
     const $objectCode = withDirectives(objectCode(
-        $instructionSet, $pokeBuffer, $programMemory
+        $instructionSet, $programMemory
     ));
 
     const $listing = listing(
@@ -84,6 +85,7 @@ export const coupling = (
     withDirectives($cpuRegisters);
     withDirectives(functionDirectives);
     withDirectives(deviceDirective($deviceSettings, deviceFileOperations));
+    withDirectives(poke($currentLine));
 
     return startingWith($fileStack.assemblyPipeline)
         .andThen($embeddedJs)

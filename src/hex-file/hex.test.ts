@@ -1,10 +1,9 @@
-import type { Code } from "../object-code/data-types.ts";
-
 import { expect } from "jsr:@std/expect";
 import { boringFailure } from "../failure/bags.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
-import { lineWithObjectCode, lineWithPokedBytes } from "../object-code/line-types.ts";
+import { codeAsWords } from "../object-code/as-words.ts";
+import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { lineWithOperands } from "../operands/line-types.ts";
 import { lineWithAddress } from "../program-memory/line-types.ts";
 import { lineWithRawSource } from "../source-code/line-types.ts";
@@ -17,8 +16,9 @@ const testLine = (test: TestBlock) => {
     const withTokens = lineWithTokens(withRendered, "", "", []);
     const withMacro = lineWithProcessedMacro(withTokens, false);
     const withOperands = lineWithOperands(withMacro, [], []);
-    const withPoked = lineWithPokedBytes(withOperands, []);
-    const withObject = lineWithObjectCode(withPoked, test[1]);
+    const withObject = lineWithObjectCode(
+        withOperands, codeAsWords(test[1].values())
+    );
     return lineWithAddress(withObject, test[0]);
 };
 
@@ -28,8 +28,7 @@ const testLineWithFailure = () => {
     const withTokens = lineWithTokens(withRendered, "", "", []);
     const withMacro = lineWithProcessedMacro(withTokens, false);
     const withOperands = lineWithOperands(withMacro, [], []);
-    const withPoked = lineWithPokedBytes(withOperands, []);
-    const withObject = lineWithObjectCode(withPoked, []);
+    const withObject = lineWithObjectCode(withOperands, undefined);
     return lineWithAddress(withObject, 0).withFailures(
         [boringFailure("syntax_invalidLabel")]
     );
@@ -61,7 +60,7 @@ const recordLength = (dataBytes: number): number => {
         recordTypeLength + dataLength + checksumLength;
 };
 
-type TestBlock = [number, Code];
+type TestBlock = [number, Array<number>];
 
 const testCode: Array<TestBlock> = [
     // As ever, obtained from my last, treasured version of GAVRASM

@@ -14,7 +14,7 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { lineWithTokens } from "../tokens/line-types.ts";
 import { objectCode } from "./assembly-pipeline.ts";
-import { pokeBuffer } from "./poke.ts";
+import { currentLine } from "../line/current-line.ts";
 
 type LineData = {
     "label": Label, "mnemonic": Mnemonic,
@@ -53,11 +53,11 @@ export const systemUnderTest = (...lines: Array<LineData>) => {
         "reset": (_line: LineWithObjectCode) => {},
     };
 
-    const $symbolTable = symbolTable(cpuRegisters());
+    const $currentLine = currentLine();
+    const $cpuRegisters = cpuRegisters();
+    const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $instructionSet = instructionSet($symbolTable);
-    const $objectCode = objectCode(
-        $instructionSet, pokeBuffer(), mockProgramMemory
-    );
+    const $objectCode = objectCode($instructionSet, mockProgramMemory);
     const assemblyPipeline = $objectCode.assemblyPipeline(testLines());
     return {
         "instructionSet": $instructionSet,

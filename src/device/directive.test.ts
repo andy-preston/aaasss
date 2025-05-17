@@ -21,7 +21,7 @@ Deno.test("Choosing multiple devices results in failure", () => {
     const firstName = "AT-Tiny 84";
     const secondName = "AT-Tiny 2313";
     const system = systemUnderTest();
-    system.symbolTable.definingLine(mockDefiningLine("plop.asm", 23));
+    system.currentLine.forDirectives(mockDefiningLine("plop.asm", 23));
     {
         const result = system.deviceDirective.it(firstName);
         expect(result.type).not.toBe("failures");
@@ -43,7 +43,7 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
     const firstName = "AT-Tiny 84";
     const secondName = "at tiny 84";
     const system = systemUnderTest();
-    system.symbolTable.definingLine(mockDefiningLine("plop.asm", 23));
+    system.currentLine.forDirectives(mockDefiningLine("plop.asm", 23));
     {
         const result = system.deviceDirective.it(firstName);
         expect(result.type).not.toBe("failures");

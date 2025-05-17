@@ -1,20 +1,18 @@
-import type { LineWithRawSource } from "../source-code/line-types.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 
-export const definitionList = () => {
+export const definitionList = (
+    currentLine: CurrentLine
+) => {
     const list: Map<string, string> = new Map();
-    let currentPosition: string = "";
 
     const reset = () => {
         list.clear();
     }
 
-    const definingLine = (line: LineWithRawSource) => {
-        currentPosition = `${line.fileName}:${line.lineNumber}`;
-    };
-
     const set = (symbolName: string) => {
-        if (currentPosition) {
-            list.set(symbolName, currentPosition);
+        const line = currentLine.directiveBackdoor();
+        if (line) {
+            list.set(symbolName, `${line.fileName}:${line.lineNumber}`);
         }
     };
 
@@ -26,7 +24,6 @@ export const definitionList = () => {
     return {
         "reset": reset,
         "set": set,
-        "text": text,
-        "definingLine": definingLine
+        "text": text
     };
 };

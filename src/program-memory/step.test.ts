@@ -1,5 +1,3 @@
-import type { Code } from "../object-code/data-types.ts";
-
 import { expect } from "jsr:@std/expect";
 import { systemUnderTest, testPipeline } from "./testing.ts";
 import { numberBag, stringBag } from "../assembler/bags.ts";
@@ -7,7 +5,7 @@ import { numberBag, stringBag } from "../assembler/bags.ts";
 Deno.test("If a line has no code the address remains unchanged", () => {
     const system = systemUnderTest();
     const pipeline = testPipeline(
-        system, {"label": "", "pokes": [], "code": []}
+        system, {"label": "", "code": []}
     );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
@@ -17,10 +15,10 @@ Deno.test("If a line has no code the address remains unchanged", () => {
     expect(system.programMemory.address()).toBe(0);
 });
 
-Deno.test("The program counter advances by the number of words poked", () => {
+Deno.test("The program counter advances by the number of words of code", () => {
     const system = systemUnderTest();
     const pipeline = testPipeline(
-        system, {"label": "", "pokes": [[1, 2, 3, 4], [5, 6]], "code": []}
+        system, {"label": "", "code": [1, 2, 3, 4, 5, 6]}
     );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
@@ -29,34 +27,10 @@ Deno.test("The program counter advances by the number of words poked", () => {
     expect(system.programMemory.address()).toBe(3);
 });
 
-Deno.test("... or by the number of words of code", () => {
-    const system = systemUnderTest();
-    const pipeline = testPipeline(
-        system, {"label": "", "pokes": [], "code": [1, 2]}
-    );
-    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
-    expect(system.programMemory.address()).toBe(0);
-    [...pipeline];
-    expect(system.programMemory.address()).toBe(1);
-});
-
-Deno.test("... or both", () => {
-    const system = systemUnderTest();
-    const pipeline = testPipeline(
-        system, {"label": "", "pokes": [[1, 2, 3, 4], [5, 6]], "code": [1, 2]}
-    );
-    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
-    expect(system.programMemory.address()).toBe(0);
-    [...pipeline];
-    expect(system.programMemory.address()).toBe(4);
-});
-
 Deno.test("Insufficient program memory causes generation to fail", () => {
     const system = systemUnderTest();
     const pipeline = testPipeline(
-        system, {"label": "", "pokes": [[1, 2, 3, 4]], "code": [1, 2]}
+        system, {"label": "", "code": [1, 2, 3, 4, 1, 2]}
     );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0x00));
@@ -68,20 +42,19 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
     const failure = failures[0]!;
     expect(failure.kind).toBe("programMemory_outOfRange");
     // Code is still generated
-    expect(result.code).toEqual([[1, 2, 3, 4], [1, 2]]);
+    expect(result.code).toEqual([[1, 2], [3, 4], [1, 2]]);
     // But the address doesn't advance
     expect(system.programMemory.address()).toBe(preFailureAddress);
 });
 
 Deno.test("Advancing beyond the end of program memory causes failure", () => {
-    const pokes = [[1, 2, 3, 4] as Code];
-    const code = [5, 6] as Code;
-    const expected = [pokes[0], code];
+    const code = [1, 2, 3, 4, 5, 6];
+    const expected = [[1, 2], [3, 4], [5, 6]];
     const system = systemUnderTest();
     const pipeline = testPipeline(
         system,
-        {"label": "", "pokes": pokes, "code": code},
-        {"label": "", "pokes": pokes, "code": code}
+        {"label": "", "code": code},
+        {"label": "", "code": code}
     );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0x06));

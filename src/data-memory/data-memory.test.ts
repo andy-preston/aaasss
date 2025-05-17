@@ -4,6 +4,7 @@ import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 import { mockNextPass } from "../assembler/testing.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
+import { currentLine } from "../line/current-line.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { dataMemory } from "./data-memory.ts";
@@ -11,8 +12,9 @@ import { dataMemory } from "./data-memory.ts";
 const irrelevantName = "testing";
 
 const systemUnderTest = () => {
+    const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
-    const $symbolTable = symbolTable($cpuRegisters);
+    const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $dataMemory = dataMemory($symbolTable);
     return {
         "symbolTable": $symbolTable,

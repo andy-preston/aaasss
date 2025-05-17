@@ -1,7 +1,7 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import type { BinaryDigit, EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithOperands } from "../operands/line-types.ts";
 import type { NumericOperand } from "../operands/data-types.ts";
 import type { OperandRequirement } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
@@ -23,7 +23,7 @@ const variations = (hasReducedCore: boolean) => hasReducedCore ? {
 };
 
 export const dataDirect = (
-    line: LineWithPokedBytes
+    line: LineWithOperands
 ): EncodedInstruction | undefined => {
     const codeGenerator = (
         instructionSet: InstructionSet, _programMemory: ProgramMemory
@@ -55,11 +55,11 @@ export const dataDirect = (
         const variation = variations(hasReducedCore());
         const values = templateValues(line.mnemonic == "LDS");
 
-        const code = template(
+        const codeGenerator = template(
             `${variation.prefix}${values.operation}${variation.suffix}`,
             {"r": values.register, "a": values.address}
         );
-        return lineWithObjectCode(line, code);
+        return lineWithObjectCode(line, codeGenerator);
     };
 
     return ["LDS", "STS"].includes(line.mnemonic) ? codeGenerator : undefined;

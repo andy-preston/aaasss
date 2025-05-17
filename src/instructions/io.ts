@@ -1,8 +1,8 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { SupportFailure } from "../failure/bags.ts";
 import type { BinaryDigit, EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithPokedBytes } from "../object-code/line-types.ts";
 import type { NumericOperand } from "../operands/data-types.ts";
+import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirement } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
@@ -28,7 +28,7 @@ const bitMapping: Map<string, string> = new Map([
 ]);
 
 const hints = (
-    line: LineWithPokedBytes
+    line: LineWithOperands
 ): Array<SupportFailure> | undefined => line.failures().reduce(
     (
         result: Array<SupportFailure> | undefined, failure, _index
@@ -38,7 +38,7 @@ const hints = (
 );
 
 export const ioBit = (
-    line: LineWithPokedBytes
+    line: LineWithOperands
 ): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
@@ -54,18 +54,18 @@ export const ioBit = (
             line.withFailures(additionalHints);
         }
 
-        const code = template(
+        const codeGenerator = template(
             `1001_10${operationBits} aaaa_abbb`,
             {"a": address, "b": bitIndex}
         );
-        return lineWithObjectCode(line, code);
+        return lineWithObjectCode(line, codeGenerator);
     };
 
     return bitMapping.has(line.mnemonic) ? codeGenerator : undefined;
 };
 
 export const ioByte = (
-    line: LineWithPokedBytes
+    line: LineWithOperands
 ): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
@@ -91,11 +91,11 @@ export const ioByte = (
             line.withFailures(additionalHints);
         }
 
-        const code = template(
+        const codeGenerator = template(
             `1011_${values.operation}aar rrrr_aaaa`,
             {"r": values.register, "a": values.address}
         );
-        return lineWithObjectCode(line, code);
+        return lineWithObjectCode(line, codeGenerator);
     };
 
     return ["IN", "OUT"].includes(line.mnemonic) ? codeGenerator : undefined;

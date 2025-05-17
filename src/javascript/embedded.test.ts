@@ -6,6 +6,7 @@ import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { assemblyPipeline } from "./embedded.ts";
 import { jSExpression } from "./expression.ts";
+import { currentLine } from "../line/current-line.ts";
 
 const systemUnderTest = (...sourceLines: Array<SourceCode>) => {
     const testLines = function* () {
@@ -15,13 +16,12 @@ const systemUnderTest = (...sourceLines: Array<SourceCode>) => {
         yield lineWithRawSource("", 0, "", "", 0, true);
     };
 
+    const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
-    const $symbolTable = symbolTable($cpuRegisters);
+    const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $jsExpression = jSExpression($symbolTable);
-    const $assemblyPipeline = assemblyPipeline($jsExpression, $symbolTable);
+    const $assemblyPipeline = assemblyPipeline($jsExpression, $currentLine);
     return {
-        "cpuRegisters": $cpuRegisters,
-        "symbolTable": $symbolTable,
         "assemblyPipeline": $assemblyPipeline(testLines())
     };
 };

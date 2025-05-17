@@ -1,6 +1,6 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithPokedBytes } from "../object-code/line-types.ts";
+import type { LineWithOperands } from "../operands/line-types.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 import { lineWithObjectCode } from "../object-code/line-types.ts";
@@ -15,7 +15,7 @@ const mapping: Map<string, string> = new Map([
 ]);
 
 export const singleRegisterBit = (
-    line: LineWithPokedBytes
+    line: LineWithOperands
 ): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
@@ -25,10 +25,10 @@ export const singleRegisterBit = (
             ["number",   "type_bitIndex"]
         ]);
         const operationBits = mapping.get(line.mnemonic)!;
-        const code = template(
+        const codeGenerator = template(
             `1111_1${operationBits}r rrrr_0vvv`, {"r": register, "v": bit}
         );
-        return lineWithObjectCode(line, code);
+        return lineWithObjectCode(line, codeGenerator);
     };
 
     return mapping.has(line.mnemonic) ? codeGenerator : undefined;

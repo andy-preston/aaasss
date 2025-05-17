@@ -5,7 +5,7 @@ import { systemUnderTest, testPipeline } from "./testing.ts";
 Deno.test("A label is stored in the symbol table with the current address", () => {
     const system = systemUnderTest();
     const pipeline = testPipeline(
-        system, {"label": "A_LABEL", "pokes": [], "code": []}
+        system, {"label": "A_LABEL", "code": []}
     );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
@@ -21,9 +21,9 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
     const system = systemUnderTest();
     const pipeline = testPipeline(
         system,
-        {"label": "A_LABEL", "pokes": [], "code": []},
-        {"label": "A_LABEL", "pokes": [], "code": []},
-        {"label": "A_LABEL", "pokes": [], "code": []}
+        {"label": "A_LABEL", "code": []},
+        {"label": "A_LABEL", "code": []},
+        {"label": "A_LABEL", "code": []}
     );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
@@ -53,7 +53,7 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
 Deno.test("Labels are available to javascript", () => {
     const system = systemUnderTest();
     const pipeline = testPipeline(
-        system, {"label": "A_LABEL", "pokes": [], "code": []}
+        system, {"label": "A_LABEL", "code": []}
     );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));

@@ -1,3 +1,4 @@
+import { currentLine } from "../line/current-line.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { deviceDirective } from "./directive.ts";
@@ -6,8 +7,9 @@ import { instructionSet } from "./instruction-set.ts";
 import { deviceSettings } from "./settings.ts";
 
 export const systemUnderTest = () => {
+    const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
-    const $symbolTable = symbolTable($cpuRegisters);
+    const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $instructionSet = instructionSet($symbolTable);
     const $deviceSettings = deviceSettings(
         $instructionSet, $cpuRegisters, $symbolTable
@@ -16,9 +18,9 @@ export const systemUnderTest = () => {
         $deviceSettings, [defaultDeviceFinder, defaultTomlLoader]
     );
     return {
+        "currentLine": $currentLine,
         "symbolTable": $symbolTable,
         "instructionSet": $instructionSet,
-        "deviceSettings": $deviceSettings,
         "deviceDirective": $deviceDirective.deviceDirective
     };
 }

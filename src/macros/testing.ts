@@ -14,6 +14,7 @@ import { lineWithTokens } from "../tokens/line-types.ts";
 import { macroPipeline } from "./assembly-pipeline.ts";
 import { macros } from "./macros.ts";
 import { symbolTablePipeline } from "../symbol-table/assembly-pipeline.ts";
+import { currentLine } from "../line/current-line.ts";
 
 const mockFileStack = () => {
     let lineIterator: FileLineIterator | undefined;
@@ -44,8 +45,9 @@ const mockUse = (
 ): DirectiveResult => emptyBag();
 
 export const systemUnderTest = () => {
+    const $currentLine = currentLine()
     const $cpuRegisters = cpuRegisters();
-    const $symbolTable = symbolTable($cpuRegisters);
+    const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $symbolTablePipeline = symbolTablePipeline($symbolTable);
     const $mockFileStack = mockFileStack();
     const $macros = macros($symbolTable, $mockFileStack);
