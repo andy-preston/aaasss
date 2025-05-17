@@ -9,8 +9,6 @@ import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { dataMemory } from "./data-memory.ts";
 
-const irrelevantName = "testing";
-
 const systemUnderTest = () => {
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
@@ -25,7 +23,7 @@ const systemUnderTest = () => {
 Deno.test("A device must be selected before SRAM can be allocated", () => {
     const system = systemUnderTest();
     const alloc = directiveFunction(
-        irrelevantName, system.dataMemory.allocDirective
+        "alloc", system.dataMemory.allocDirective
     );
     const result = alloc(23);
     expect(result.type).toBe("failures");
@@ -42,7 +40,7 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
     system.symbolTable.deviceSymbol("ramStart", numberBag(0));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
     const allocStack = directiveFunction(
-        irrelevantName, system.dataMemory.allocStackDirective
+        "allocStack", system.dataMemory.allocStackDirective
     );
     const bytesRequested = 0xf2;
     const result = allocStack(bytesRequested);
@@ -61,7 +59,7 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
     system.symbolTable.deviceSymbol("ramStart", numberBag(0));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
     const alloc = directiveFunction(
-        irrelevantName, system.dataMemory.allocDirective
+        "alloc", system.dataMemory.allocDirective
     );
     const bytesRequested = 0xf2;
     const result = alloc(bytesRequested);
@@ -80,7 +78,7 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
     system.symbolTable.deviceSymbol("ramStart", numberBag(0));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
     const alloc = directiveFunction(
-        irrelevantName, system.dataMemory.allocDirective
+        "alloc", system.dataMemory.allocDirective
     );
     ["0", "25", "50"].forEach((expectedStartAddress) => {
         const result = alloc(25);
@@ -95,10 +93,10 @@ Deno.test("Stack allocations decrease the available SRAM", () => {
     system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
     const alloc = directiveFunction(
-        irrelevantName, system.dataMemory.allocDirective
+        "alloc", system.dataMemory.allocDirective
     );
     const allocStack = directiveFunction(
-        irrelevantName, system.dataMemory.allocStackDirective
+        "allocStack", system.dataMemory.allocStackDirective
     );
     const bytesRequested = 0x19;
 
@@ -123,7 +121,7 @@ Deno.test("Memory allocations decrease the available SRAM", () => {
     system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
     const alloc = directiveFunction(
-        irrelevantName, system.dataMemory.allocDirective
+        "alloc", system.dataMemory.allocDirective
     );
     const bytesRequested = 0x19;
 
@@ -148,7 +146,7 @@ Deno.test("Allocations aren't considered repeated on the second pass", () => {
     system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
     const alloc = directiveFunction(
-        irrelevantName, system.dataMemory.allocDirective
+        "alloc", system.dataMemory.allocDirective
     );
     [1, 2].forEach(_pass => {
         ["0", "25"].forEach(expectedStartAddress => {
