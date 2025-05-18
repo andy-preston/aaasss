@@ -1,5 +1,6 @@
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { NumberOrFailures, StringOrFailures } from "../failure/bags.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
@@ -10,7 +11,9 @@ import { lineWithAddress } from "./line-types.ts";
 
 const bytesToWords = (byteCount: number): number => byteCount / 2;
 
-export const programMemory = (symbolTable: SymbolTable) => {
+export const programMemory = (
+    currentLine: CurrentLine, symbolTable: SymbolTable
+) => {
     let address = 0;
 
     const pastEnd = (newAddress: number): StringOrFailures => {

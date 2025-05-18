@@ -18,7 +18,7 @@ export const systemUnderTest = () => {
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $programMemory = programMemory($symbolTable);
+    const $programMemory = programMemory($currentLine, $symbolTable);
     const $programMemoryPipeline = programMemoryPipeline($programMemory);
     const $jsExpression = jSExpression($symbolTable);
 

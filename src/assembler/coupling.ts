@@ -63,7 +63,7 @@ export const coupling = (
     ));
 
     const $instructionSet = instructionSet($symbolTable);
-    const $programMemory = programMemory($symbolTable);
+    const $programMemory = programMemory($currentLine, $symbolTable);
     const $programMemoryPipeline = withDirectives(
         programMemoryPipeline($programMemory)
     );
