@@ -32,9 +32,17 @@ It would blow my mind even more to find out someone else was using it.
 I still don't trust the code it produces though... I like to double check it
 against something more reliable... I like GAVRASM.
 
+## Getting Involved
+
+If you like the look of this project and would like to get involved, then
+please do open an issue... even if it just says "I'd like to get involved".
+
+Assembly language is kinda niche and I'd love to find others to talk to about
+the implementation and to share ideas.
+
 ## Thank You For Inspiration
 
-+ Gerhard Schmidt
-+ Andrew Kelley
-+ Sophie Wilson
-+ Lingdong Huang
+* Gerhard Schmidt
+* Andrew Kelley
+* Sophie Wilson
+* Lingdong Huang
