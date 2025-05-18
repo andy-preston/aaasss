@@ -3,7 +3,6 @@ import type { EncodedInstruction } from "../object-code/data-types.ts";
 import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 
-import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 import { ProgramMemory } from "../program-memory/program-memory.ts";
@@ -43,11 +42,10 @@ export const twoRegisterDirect = (
         }
         const actualOperands = validScaledOperands(line, operandRequirements);
 
-        const codeGenerator = template(
+        return template(
             `${prefix}sd dddd_ssss`,
             {"d": actualOperands[0]!, "s": actualOperands[secondOperandIndex]!}
         );
-        return lineWithObjectCode(line, codeGenerator);
     };
 
     return mapping.has(line.mnemonic) ? codeGenerator : undefined;

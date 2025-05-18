@@ -62,10 +62,16 @@ Deno.test("Labels are available to javascript", () => {
 
     const origin = system.programMemory.origin(10);
     expect(origin.type).not.toBe("failures");
+    expect(system.line.address).toBe(10);
+
     const line = pipeline.next().value!;
+
+    expect(system.programMemory.address()).toBe(10);
+
     expect(line.failed()).toBeFalsy();
+    expect(line.address).toBe(10);
+
 
     const value = system.symbolTable.symbolValue("A_LABEL");
-    expect(value.type).not.toBe("failures");
-    expect((value as NumberBag).it).toBe(10);
+    expect(value).toEqual(numberBag(10));
 });

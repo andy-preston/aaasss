@@ -1,19 +1,13 @@
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { NumberOrFailures, StringOrFailures } from "../failure/bags.ts";
 import type { CurrentLine } from "../line/current-line.ts";
-import type { LineWithObjectCode } from "../object-code/line-types.ts";
+import type { Line } from "../line/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+import type { LineWithTokens } from "../tokens/line-types.ts";
 
 import { emptyBag, numberBag } from "../assembler/bags.ts";
 import { assertionFailure, bagOfFailures, boringFailure, numericTypeFailure, withLocation } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
-import { lineWithAddress } from "./line-types.ts";
-import { LineWithOperands } from "../operands/line-types.ts";
-import { LineWithRawSource } from "../source-code/line-types.ts";
-import { MutableLine } from "../line/line-types.ts";
-import { LineWithTokens } from "../tokens/line-types.ts";
-
-const bytesToWords = (byteCount: number): number => byteCount / 2;
 
 export const programMemory = (
     currentLine: CurrentLine, symbolTable: SymbolTable
@@ -88,7 +82,7 @@ export const programMemory = (
 
         const result = setAddress(newAddress);
         if (result.type != "failures") {
-            (theLine as MutableLine).address = address;
+            theLine.address = address;
         }
         return result;
     };
@@ -96,8 +90,9 @@ export const programMemory = (
     const label = (symbolName: string): DirectiveResult =>
         symbolTable.persistentSymbol(symbolName, numberBag(address));
 
-    const lineAddress = (line: LineWithRawSource) =>
-        lineWithAddress(line, address);
+    const lineAddress = (line: Line) => {
+        line.address = address;
+    };
 
     const lineLabel = (line: LineWithTokens) => {
         ////////////////////////////////////////////////////////////////////////
@@ -115,33 +110,9 @@ export const programMemory = (
         return line;
     };
 
-    const addressStep = (line: LineWithOperands) => {
-        ////////////////////////////////////////////////////////////////////////
-        //
-        // For the 7 segment demo!
-        //
-        // We need program memory address to be incremented as code
-        // is generated or BYTES POKED... and not once at the end of processing
-        // an ASSEMBLER line
-        //
-        ////////////////////////////////////////////////////////////////////////
+    const addressPlusOne = () => setAddress(address + 1);
 
-        /*
-        const newAddress = bytesToWords(line.code.reduce(
-            (accumulated, codeBlock) => accumulated + codeBlock.length,
-            0
-        )) + address;
-
-        const step = setAddress(newAddress);
-        if (step.type == "failures") {
-            newLine.withFailures(step.it);
-        }
-            */
-
-        return lineWithAddress(line, address);
-    };
-
-    const reset = (line: LineWithObjectCode) => {
+    const reset = (line: Line) => {
         if (line.lastLine) {
             address = 0;
         }
@@ -152,7 +123,7 @@ export const programMemory = (
         "address": () => address,
         "origin": origin,
         "label": label,
-        //"addressStep": addressStep,
+        "addressPlusOne": addressPlusOne,
         "lineAddress": lineAddress,
         "lineLabel": lineLabel,
         "reset": reset

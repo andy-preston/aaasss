@@ -6,7 +6,6 @@ import type { NumericOperand } from "../operands/data-types.ts";
 import type { OperandRequirement } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
-import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 
@@ -55,11 +54,10 @@ export const dataDirect = (
         const variation = variations(hasReducedCore());
         const values = templateValues(line.mnemonic == "LDS");
 
-        const codeGenerator = template(
+        return template(
             `${variation.prefix}${values.operation}${variation.suffix}`,
             {"r": values.register, "a": values.address}
         );
-        return lineWithObjectCode(line, codeGenerator);
     };
 
     return ["LDS", "STS"].includes(line.mnemonic) ? codeGenerator : undefined;

@@ -1,18 +1,18 @@
-import type { Pipe } from "../assembler/data-types.ts";
+import type { Stage } from "../assembler/assembly-pipeline.ts";
 import type { StringOrFailures } from "../failure/bags.ts";
 import type { CurrentLine } from "../line/current-line.ts";
-import type { LineWithRawSource } from "../source-code/line-types.ts";
+import type { Line } from "../line/line-types.ts";
+import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { JsExpression } from "./expression.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
 import { bagOfFailures, boringFailure } from "../failure/bags.ts";
-import { lineWithRenderedJavascript } from "./line-types.ts";
 
 const scriptDelimiter = /({{|}})/;
 
 export const assemblyPipeline = (
     expression: JsExpression, currentLine: CurrentLine
-) => function* (lines: Pipe) {
+): Stage => {
     const buffer = {
         "javascript": [] as Array<string>,
         "assembler": [] as Array<string>,
@@ -23,7 +23,7 @@ export const assemblyPipeline = (
         ? bagOfFailures([boringFailure("js_jsMode")])
         : emptyBag();
 
-    const openMoustache = (line: LineWithRawSource) => {
+    const openMoustache = (line: LineWithObjectCode) => {
         const alreadyInJs = stillInJsMode();
         if (alreadyInJs.type == "failures") {
             line.withFailures(alreadyInJs.it);
@@ -32,7 +32,7 @@ export const assemblyPipeline = (
         }
     };
 
-    const closeMoustache = (line: LineWithRawSource) => {
+    const closeMoustache = (line: LineWithObjectCode) => {
         if (current == "assembler") {
             line.withFailures([boringFailure("js_assemblerMode")]);
             return;
@@ -53,7 +53,7 @@ export const assemblyPipeline = (
         ["{{", openMoustache], ["}}", closeMoustache]
     ]);
 
-    const assemblerSource = (line: LineWithRawSource) => {
+    const assemblerSource = (line: LineWithObjectCode) => {
         line.rawSource.split(scriptDelimiter).forEach(part => {
             if (actions.has(part)) {
                 actions.get(part)!(line);
@@ -66,19 +66,16 @@ export const assemblyPipeline = (
         return assembler;
     }
 
-    const processedLine = (line: LineWithRawSource) => {
-        const assembler = assemblerSource(line);
+    const pipeline = (line: Line) => {
+        currentLine.forDirectives(line);
+        line.assemblySource = assemblerSource(line);
         if (line.lastLine) {
             const check = stillInJsMode();
             if (check.type == "failures") {
                 line.withFailures(check.it);
             }
         }
-        return lineWithRenderedJavascript(line, assembler);
     };
 
-    for (const line of lines) {
-        currentLine.forDirectives(line);
-        yield processedLine(line);
-    }
+    return pipeline;
 };

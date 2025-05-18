@@ -1,10 +1,9 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
-import type { BinaryDigit, CodeGenerator, EncodedInstruction } from "../object-code/data-types.ts";
+import type { BinaryDigit, EncodedInstruction } from "../object-code/data-types.ts";
 import type { LineWithOperands } from "../operands/line-types.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 import { assertionFailure, boringFailure } from "../failure/bags.ts";
-import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 
@@ -50,9 +49,8 @@ export const programMemory = (
             return "1";
         };
 
-        const store = (): CodeGenerator =>
+        const store = () =>
             template(`1001_0101 111${storeIndexBit()}_1000`, {});
-
 
         const explicitIndexBit = (): BinaryDigit => {
             if (line.symbolicOperands.length != 2) {
@@ -86,7 +84,7 @@ export const programMemory = (
             line.withFailures([boringFailure("mnemonic_implicitElpmNotLpm")]);
         };
 
-        const load = (): CodeGenerator => {
+        const load = () => {
             if (line.symbolicOperands.length == 0) {
                 implicitLoad();
                 return template("1001_0101 1101_1000", {});
@@ -102,10 +100,7 @@ export const programMemory = (
                 {"r": actualOperands[0]!}
             );
         };
-
-        return lineWithObjectCode(
-            line, line.mnemonic == "SPM" ? store() : load()
-        );
+        return line.mnemonic == "SPM" ? store() : load();
     };
 
     return mnemonics.includes(line.mnemonic) ? codeGenerator : undefined;

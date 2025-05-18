@@ -4,7 +4,6 @@ import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
-import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 
@@ -34,7 +33,6 @@ const mapping: Map<string, [string, number?]> = new Map([
 export const branchOnStatus = (
     line: LineWithOperands
 ): EncodedInstruction | undefined => {
-
     const codeGenerator = (
         _instructionSet: InstructionSet, programMemory: ProgramMemory
     ) => {
@@ -49,11 +47,10 @@ export const branchOnStatus = (
         if (relativeAddress.type == "failures") {
             line.withFailures(relativeAddress.it);
         }
-        const codeGenerator = template(`1111_0${operationBit}aa aaaa_abbb`, {
+        return template(`1111_0${operationBit}aa aaaa_abbb`, {
             "a": relativeAddress.type == "failures" ? 0 : relativeAddress.it,
             "b": impliedBit == undefined ? actualOperands[0] : impliedBit
         });
-        return lineWithObjectCode(line, codeGenerator);
     };
 
     return mapping.has(line.mnemonic) ? codeGenerator : undefined;

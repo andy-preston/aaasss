@@ -4,7 +4,6 @@ import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
-import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 
@@ -44,10 +43,9 @@ export const byteImmediate = (
             : actualOperands[1]!;
 
         const prefix = mapping.get(line.mnemonic)!;
-        const codeGenerator = template(
+        return template(
             `${prefix}_vvvv rrrr_vvvv`, {"r": register, "v": value}
         );
-        return lineWithObjectCode(line, codeGenerator);
     };
 
     return mapping.has(line.mnemonic) ? codeGenerator : undefined;

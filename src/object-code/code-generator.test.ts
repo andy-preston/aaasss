@@ -1,7 +1,7 @@
 import type { BoringFailure, SupportFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { stringBag } from "../assembler/bags.ts";
+import { numberBag, stringBag } from "../assembler/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 
 Deno.test("Lines with no mnemonic don't bother generating code", () => {
@@ -74,6 +74,7 @@ Deno.test("Lines with real/supported instructions produce code", () => {
         "operandTypes": ["number"], "isRecordingMacro": false
     });
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(10));
     const result = system.assemblyPipeline.next().value!;
     expect(result.failed()).toBeFalsy();
     expect(result.code).toEqual([[0x94, 0xfb]]);

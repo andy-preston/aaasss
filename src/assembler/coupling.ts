@@ -85,18 +85,16 @@ export const coupling = (
     withDirectives($cpuRegisters);
     withDirectives(functionDirectives);
     withDirectives(deviceDirective($deviceSettings, deviceFileOperations));
-    withDirectives(poke($currentLine));
+    withDirectives(poke($currentLine, $objectCode));
 
     return startingWith($fileStack.assemblyPipeline)
         .andThen($programMemoryPipeline.addressingPipeline)
         .andThen($embeddedJs)
         .andThen(tokens)
         .andThen($programMemoryPipeline.labelPipeline)
-
         .andThen($macroPipeline.assemblyPipeline)
         .andThen($symbolicToNumeric.assemblyPipeline)
         .andThen($objectCode.assemblyPipeline)
-        //.andThen($programMemoryPipeline.assemblyPipeline)
         .andThen($dataMemory.assemblyPipeline)
         .andThen($symbolTablePipeline.assemblyPipeline)
         .results($listing, $hexFile);

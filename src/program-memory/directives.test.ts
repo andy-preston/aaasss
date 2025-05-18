@@ -3,9 +3,7 @@ import type { AssertionFailure, BoringFailure, Failure } from "../failure/bags.t
 import { expect } from "jsr:@std/expect";
 import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
 import { directiveFunction } from "../directives/directive-function.ts";
-import { lineWithRawSource } from "../source-code/line-types.ts";
 import { systemUnderTest } from "./testing.ts";
-import { codeAsWords } from "../object-code/as-words.ts";
 
 Deno.test("Origin addresses can't be strange type", () => {
     const system = systemUnderTest();
@@ -29,10 +27,7 @@ Deno.test("Origin directive is blocked by code in current line", () => {
     const origin = directiveFunction(
         "origin", system.programMemoryPipeline.originDirective
     );
-
-    const line = lineWithRawSource("", 0, "", "", 0, false);
-    line.withCode(codeAsWords([0].values()));
-    system.currentLine.forDirectives(line);
+    system.line.code.push([0, 0]);
     const result = origin(0);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
@@ -46,9 +41,6 @@ Deno.test("Origin directive is not blocked when there's no code in current line"
     const origin = directiveFunction(
         "origin", system.programMemoryPipeline.originDirective
     );
-
-    const line = lineWithRawSource("", 0, "", "", 0, false);
-    system.currentLine.forDirectives(line);
     const result = origin(0);
     expect(result.type).not.toBe("failures");
 });

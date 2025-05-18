@@ -7,7 +7,6 @@ import type { OperandRequirement } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 import { supportFailure } from "../failure/bags.ts";
-import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 
@@ -54,11 +53,10 @@ export const ioBit = (
             line.withFailures(additionalHints);
         }
 
-        const codeGenerator = template(
+        return template(
             `1001_10${operationBits} aaaa_abbb`,
             {"a": address, "b": bitIndex}
         );
-        return lineWithObjectCode(line, codeGenerator);
     };
 
     return bitMapping.has(line.mnemonic) ? codeGenerator : undefined;
@@ -91,11 +89,10 @@ export const ioByte = (
             line.withFailures(additionalHints);
         }
 
-        const codeGenerator = template(
+        return template(
             `1011_${values.operation}aar rrrr_aaaa`,
             {"r": values.register, "a": values.address}
         );
-        return lineWithObjectCode(line, codeGenerator);
     };
 
     return ["IN", "OUT"].includes(line.mnemonic) ? codeGenerator : undefined;

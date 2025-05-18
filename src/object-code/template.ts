@@ -1,6 +1,5 @@
-import type { BinaryDigit, CodeGenerator } from "../object-code/data-types.ts";
+import type { BinaryDigit } from "../object-code/data-types.ts";
 import type { NumericOperand } from "../operands/data-types.ts";
-import { codeAsWords } from "./as-words.ts";
 
 type Binary = Array<BinaryDigit>;
 
@@ -40,9 +39,9 @@ const substitutionMap = (substitutions: Substitutions) => {
 export const template = (
     templateString: string, // format: "0101_011d dddd_0qqq"
     substitutions: Substitutions
-): CodeGenerator => {
+): Array<number> => {
     const map = substitutionMap(substitutions);
-    const bytes: Array<number> = templateString
+    return templateString
         .replaceAll("_", "") // underscores are for convenience
         .split("")           // a list of bits and spaces
         .reverse()           // bits are processed least significant first
@@ -51,7 +50,6 @@ export const template = (
         .join("")            // stick 'em back together prior to...
         .split(" ")          // splitting them into bytes this time
         .map(byte => Number.parseInt(byte, 2));
-    return codeAsWords(bytes.values());
 };
 
 ////////////////////////////////////////////////////////////////////////////////

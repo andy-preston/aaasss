@@ -9,13 +9,6 @@ export interface LineWithProcessedMacro extends LineWithTokens {
     "isRecordingMacro": ImmutableLine["isRecordingMacro"];
 };
 
-export const lineWithProcessedMacro = (
-    line: LineWithTokens, isRecordingMacro: boolean
-) => {
-    (line as MutableLine).isRecordingMacro = isRecordingMacro;
-    return line as ImmutableLine;
-};
-
 export const lineWithRemappedMacro = (
     line: LineWithTokens, label: Label, symbolicOperands: Array<string>
 ) => {

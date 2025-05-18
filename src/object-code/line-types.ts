@@ -1,22 +1,6 @@
-import type { ImmutableLine, MutableLine } from "../line/line-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
-import type { LineWithRawSource } from "../source-code/line-types.ts";
-import type { CodeGenerator } from "./data-types.ts";
+import type { ImmutableLine } from "../line/line-types.ts";
+import type { LineWithAddress } from "../program-memory/line-types.ts";
 
-export interface LineWithObjectCode extends LineWithRawSource {
-    "withCode": ImmutableLine["withCode"];
+export interface LineWithObjectCode extends LineWithAddress {
     "code": ImmutableLine["code"];
 };
-
-/*
-export const lineWithObjectCode = (
-    line: LineWithOperands, codeGenerator: CodeGenerator | undefined
-) => {
-    if (codeGenerator != undefined) {
-        codeGenerator.forEach(code => {
-            (line as MutableLine).code.push(code);
-        });
-    }
-    return line as ImmutableLine;
-};
-*/

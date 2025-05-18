@@ -1,15 +1,14 @@
 import type { FunctionUseDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
+import type { Line } from "../line/line-types.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import type { LineWithTokens } from "../tokens/line-types.ts";
 import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
 import { assertionFailure, bagOfFailures, boringFailure, clueFailure } from "../failure/bags.ts";
 import { macro } from "./data-types.ts";
 import { remapping } from "./remapping.ts";
-import { lineWithProcessedMacro } from "./line-types.ts";
 import { removedDirective } from "./removed-directive.ts";
 
 export const macros = (
@@ -88,26 +87,28 @@ export const macros = (
         return emptyBag();
     };
 
-    const recordedLine = (line: LineWithTokens) => {
+    const recordedLine = (line: Line) => {
         const lineToPush = firstLine
             ? removedDirective(definingName, line) : line;
         if (lineToPush != undefined) {
             definingMacro!.lines.push(lineToPush);
         }
         firstLine = false;
-        return lineWithProcessedMacro(line, true);
+        line.isRecordingMacro = true;
     };
 
-    const processedLine = (line: LineWithTokens) => {
-        const processed = isDefining()
-            ? recordedLine(line) : remap.remapped(line);
-        if (line.lastLine && isDefining()) {
-            processed.withFailures([boringFailure("macro_noEnd")]);
+    const processedLine = (line: Line) => {
+        if (isDefining()) {
+            recordedLine(line);
+            if (line.lastLine) {
+                line.withFailures([boringFailure("macro_noEnd")]);
+            }
+        } else {
+            remap.remapped(line);
         }
-        return processed;
     };
 
-    const lastLine = (line: LineWithTokens) => {
+    const lastLine = (line: Line) => {
         if (line.lastLine) {
             definingMacro = undefined;
             definingName = "";

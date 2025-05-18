@@ -1,39 +1,33 @@
-import type { LineWithAddress } from "../program-memory/line-types.ts";
+import type { Line } from "../line/line-types.ts";
 import type { Pass, Pipe } from "./data-types.ts";
 
 import { passes } from "./data-types.ts";
 
 type Source = (pass: Pass) => Pipe;
-type Stage = (pipe: Pipe) => Pipe;
-type Sink = {
-    "line": (line: LineWithAddress) => void;
-    "close": () => void;
-};
+
+export type Stage = (line: Line) => void;
+
+type Sink = {"line": Stage, "close": () => void};
 
 export const assemblyPipeline = (source: Source) => {
-    const twoPasses = function* () {
-        for (const pass of passes) {
-            yield* source(pass);
-        }
-    };
+    const stages: Array<Stage> = [];
 
-    let pipe : Pipe = twoPasses();
-
-    const results = (...output: Array<Sink>) => () => {
-        for (const line of pipe) {
+    const results = (...sinks: Array<Sink>) => () => {
+        passes.forEach(pass => source(pass).forEach(line => {
+            stages.forEach(stage => stage(line));
             if (line.isPass(2)) {
-                output.forEach(sink => sink.line(line));
+                sinks.forEach(sink => sink.line(line));
             }
-        }
-        output.forEach(sink => sink.close());
+        }));
+        sinks.forEach(sink => sink.close());
     };
 
     const andThen = (stage: Stage) => {
-        pipe = stage(pipe);
+        stages.push(stage);
         return pipeline;
     };
 
-    const pipeline = { "andThen": andThen, "results": results };
+    const pipeline = {"andThen": andThen, "results": results};
 
-    return pipeline;
+    return pipeline
 };

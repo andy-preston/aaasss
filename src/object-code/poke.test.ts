@@ -1,24 +1,7 @@
 import type { Failure, NumericTypeFailure } from "../failure/bags.ts";
-import type { ImmutableLine } from "../line/line-types.ts";
-import type { LineWithObjectCode } from "./line-types.ts";
 
-import { expect } from "jsr:@std/expect";
-import { directiveFunction } from "../directives/directive-function.ts";
-import { currentLine } from "../line/current-line.ts";
-import { lineWithRawSource } from "../source-code/line-types.ts";
-import { poke } from "./poke.ts";
-
-const systemUnderTest = () => {
-    const $currentLine = currentLine();
-    const testLine = lineWithRawSource("", 0, "", "", 0, false);
-    $currentLine.forDirectives(testLine as ImmutableLine);
-    const $poke = poke($currentLine);
-    const pokeDirective = directiveFunction("poke", $poke.pokeDirective);
-    return {
-        "poke": pokeDirective,
-        "line": testLine as LineWithObjectCode
-    };
-}
+import { expect } from "jsr:@std/expect/expect";
+import { systemUnderTest } from "./testing.ts";
 
 Deno.test("You can poke bytes", () => {
     const system = systemUnderTest();

@@ -4,7 +4,6 @@ import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
-import { lineWithObjectCode } from "../object-code/line-types.ts";
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
 
@@ -45,10 +44,9 @@ export const statusManipulation = (
             ? actualOperands[0]
             : impliedOperand;
 
-        const codeGenerator = template(
+        return template(
             `1001_0100 ${operationBit}vvv_1000`, {"v": operand!}
         );
-        return lineWithObjectCode(line, codeGenerator);
     };
 
     return mapping.has(line.mnemonic) ? codeGenerator : undefined;

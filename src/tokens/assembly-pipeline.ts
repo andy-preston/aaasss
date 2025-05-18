@@ -1,11 +1,9 @@
-import type { Pipe } from "../assembler/data-types.ts";
-import type { LineWithRenderedJavascript } from "../javascript/line-types.ts";
+import type { Line } from "../line/line-types.ts";
 import type { OperandIndex, SymbolicOperands } from "../operands/data-types.ts"
 
 import { assertionFailure, boringFailure } from "../failure/bags.ts";
 import { operands } from "../operands/data-types.ts"
 import { pushOperandCheckingIndexOffset } from "./index-offset.ts";
-import { lineWithTokens } from "./line-types.ts";
 import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
 
@@ -21,7 +19,7 @@ const invalidLabel = (label: string) => !validLabel.test(label);
 const splitOperands = (text: string): Array<string> =>
     text == "" ? [] : text.split(",").map(operand => operand.trim());
 
-const tokenise = (line: LineWithRenderedJavascript) => {
+export const assemblyPipeline = (line: Line) => {
     const cleaned = clean(line.assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
@@ -60,13 +58,7 @@ const tokenise = (line: LineWithRenderedJavascript) => {
 
     const mappedOperands = fullOperands.map(upperCaseRegisters);
 
-    return lineWithTokens(
-        line, label, mnemonic, operands<SymbolicOperands>(mappedOperands)
-    );
-};
-
-export const assemblyPipeline = function* (lines: Pipe) {
-    for (const line of lines) {
-        yield tokenise(line);
-    }
+    line.label = label;
+    line.mnemonic = mnemonic;
+    line.symbolicOperands = operands<SymbolicOperands>(mappedOperands);
 };
