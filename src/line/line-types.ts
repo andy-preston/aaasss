@@ -1,6 +1,6 @@
 import type { Pass } from "../assembler/data-types.ts";
 import type { Failure } from "../failure/bags.ts";
-import type { Code } from "../object-code/data-types.ts";
+import type { Code, CodeGenerator } from "../object-code/data-types.ts";
 import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
 import type { FileName, LineNumber, SourceCode } from "../source-code/data-types.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
@@ -10,6 +10,7 @@ export const line = (
     macroName: string, macroCount: number, lastLine: boolean,
 ) => {
     const failures: Array<Failure> = [];
+    const code: Array<Code> = [];
     let passNumber: Pass;
 
     const withFailures = (moreFailures: Array<Failure>) => {
@@ -26,6 +27,13 @@ export const line = (
         return theLine;
     };
 
+    const withCode = (codeGenerator: CodeGenerator) => {
+        codeGenerator.forEach((word) => {
+            code.push(word);
+        });
+        return theLine;
+    }
+
     const isPass = (wanted: Pass) => passNumber == wanted;
 
     const theLine = {
@@ -34,6 +42,8 @@ export const line = (
         "withFailures": withFailures,
         "withPass": withPass,
         "isPass": isPass,
+        "withCode": withCode,
+        "code": code.values(),
         "fileName": fileName as FileName,
         "lineNumber": lineNumber as LineNumber,
         "lastLine": lastLine,
@@ -47,8 +57,7 @@ export const line = (
         "symbolicOperands": [] as SymbolicOperands,
         "numericOperands": [] as NumericOperands,
         "operandTypes": [] as OperandTypes,
-        "address": 0,
-        "code": [] as Array<Code>
+        "address": 0
     };
     return theLine;
 };

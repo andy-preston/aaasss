@@ -1,12 +1,12 @@
 import type { ImmutableLine, MutableLine } from "../line/line-types.ts";
-import type { LineWithObjectCode } from "../object-code/line-types.ts";
+import type { LineWithRawSource } from "../source-code/line-types.ts";
 
-export interface LineWithAddress extends LineWithObjectCode {
+export interface LineWithAddress extends LineWithRawSource {
     "address": ImmutableLine["address"];
 };
 
 export const lineWithAddress = (
-    line: LineWithObjectCode, address: number
+    line: LineWithRawSource, address: number
 ) => {
     (line as MutableLine).address = address;
     return line as ImmutableLine;

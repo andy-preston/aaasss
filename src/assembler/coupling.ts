@@ -88,12 +88,15 @@ export const coupling = (
     withDirectives(poke($currentLine));
 
     return startingWith($fileStack.assemblyPipeline)
+        .andThen($programMemoryPipeline.addressingPipeline)
         .andThen($embeddedJs)
         .andThen(tokens)
+        .andThen($programMemoryPipeline.labelPipeline)
+
         .andThen($macroPipeline.assemblyPipeline)
         .andThen($symbolicToNumeric.assemblyPipeline)
         .andThen($objectCode.assemblyPipeline)
-        .andThen($programMemoryPipeline.assemblyPipeline)
+        //.andThen($programMemoryPipeline.assemblyPipeline)
         .andThen($dataMemory.assemblyPipeline)
         .andThen($symbolTablePipeline.assemblyPipeline)
         .results($listing, $hexFile);

@@ -1,11 +1,14 @@
 import type { ImmutableLine, MutableLine } from "../line/line-types.ts";
 import type { LineWithOperands } from "../operands/line-types.ts";
+import type { LineWithRawSource } from "../source-code/line-types.ts";
 import type { CodeGenerator } from "./data-types.ts";
 
-export interface LineWithObjectCode extends LineWithOperands {
+export interface LineWithObjectCode extends LineWithRawSource {
+    "withCode": ImmutableLine["withCode"];
     "code": ImmutableLine["code"];
 };
 
+/*
 export const lineWithObjectCode = (
     line: LineWithOperands, codeGenerator: CodeGenerator | undefined
 ) => {
@@ -16,3 +19,4 @@ export const lineWithObjectCode = (
     }
     return line as ImmutableLine;
 };
+*/
