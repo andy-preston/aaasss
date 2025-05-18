@@ -4,7 +4,7 @@ import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
 import type { LineWithObjectCode } from "./line-types.ts";
 
-import { numberBag, stringBag } from "../assembler/bags.ts";
+import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
 import { instructionSet } from "../device/instruction-set.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
@@ -49,6 +49,7 @@ export const systemUnderTest = (...lines: Array<LineData>) => {
         "address": () => 0,
         "addressStep": (line: LineWithObjectCode) => line as ImmutableLine,
         "origin": (newAddress: number) => stringBag(`${newAddress}`),
+        "label": (_name: string) => emptyBag(),
         "relativeAddress": (_address: number, _bits: number) => numberBag(0),
         "reset": (_line: LineWithObjectCode) => {},
     };

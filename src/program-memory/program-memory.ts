@@ -83,11 +83,12 @@ export const programMemory = (
             : setAddress(newAddress);
     };
 
+    const label = (symbolName: string): DirectiveResult =>
+        symbolTable.persistentSymbol(symbolName, numberBag(address));
+
     const addressStep = (line: LineWithObjectCode) => {
         if (line.label) {
-            const result = symbolTable.persistentSymbol(
-                line.label, numberBag(address)
-            );
+            const result = label(line.label);
             if (result.type == "failures") {
                 line.withFailures(result.it);
             }
@@ -118,6 +119,7 @@ export const programMemory = (
         "relativeAddress": relativeAddress,
         "address": () => address,
         "origin": origin,
+        "label": label,
         "addressStep": addressStep,
         "reset": reset
     };
