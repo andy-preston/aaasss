@@ -5,7 +5,7 @@ import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { emptyBag, numberBag } from "../assembler/bags.ts";
-import { assertionFailure, bagOfFailures, boringFailure, numericTypeFailure } from "../failure/bags.ts";
+import { assertionFailure, bagOfFailures, boringFailure, numericTypeFailure, withLocation } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 import { lineWithAddress } from "./line-types.ts";
 
@@ -56,24 +56,31 @@ export const programMemory = (
         return numberBag(distance < 0 ? range + distance : distance);
     };
 
-    const origin = (newAddress: number): DirectiveResult => {
-        const check = validNumeric(newAddress, "type_positive");
-        if (check.type == "failures") {
-            check.it.forEach((failure) => {
-                failure.location = { "parameter": 0 };
-            });
-            return check;
+    const setAddress = (newAddress: number): DirectiveResult => {
+        const negative = validNumeric(newAddress, "type_positive");
+        if (negative.type == "failures") {
+            return withLocation(negative, { "parameter": 0 });
         }
+
         if (newAddress == 0) {
             address = 0;
             return emptyBag();
         }
+
         const tooBig = pastEnd(newAddress);
         if (tooBig.type == "failures") {
-            return tooBig;
+            return withLocation(tooBig, { "parameter": 0 });
         }
+
         address = newAddress;
         return emptyBag();
+    }
+
+    const origin = (newAddress: number): DirectiveResult => {
+        const theLine = currentLine.directiveBackdoor();
+        return theLine != undefined && theLine.code.length > 0
+            ? bagOfFailures([boringFailure("programMemory_cantOrg")])
+            : setAddress(newAddress);
     };
 
     const addressStep = (line: LineWithObjectCode) => {
@@ -93,7 +100,7 @@ export const programMemory = (
             0
         )) + address;
 
-        const step = origin(newAddress);
+        const step = setAddress(newAddress);
         if (step.type == "failures") {
             newLine.withFailures(step.it);
         }

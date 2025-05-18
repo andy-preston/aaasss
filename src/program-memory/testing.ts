@@ -1,6 +1,5 @@
 import type { Label } from "../tokens/data-types.ts";
 
-import { jSExpression } from "../javascript/expression.ts";
 import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { currentLine } from "../line/current-line.ts";
 import { lineWithProcessedMacro } from "../macros/line-types.ts";
@@ -20,13 +19,12 @@ export const systemUnderTest = () => {
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $programMemory = programMemory($currentLine, $symbolTable);
     const $programMemoryPipeline = programMemoryPipeline($programMemory);
-    const $jsExpression = jSExpression($symbolTable);
 
     return {
+        "currentLine": $currentLine,
         "symbolTable": $symbolTable,
         "programMemory": $programMemory,
         "programMemoryPipeline": $programMemoryPipeline,
-        "jsExpression": $jsExpression
     };
 };
 

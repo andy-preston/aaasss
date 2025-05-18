@@ -7,8 +7,9 @@ import type { FailureMessage } from "./languages.ts";
 
 import {
     assertionFailure, clueFailure, definitionFailure,
-    exceptionFailure, location, numericTypeFailure, supportFailure
+    exceptionFailure, numericTypeFailure, supportFailure
 } from "./failure.ts";
+import { location } from "./languages.ts";
 
 export const listingTitles = {
     "symbolTable": "Symbol Table"
@@ -102,6 +103,10 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Expected", "Actual",
         failure as AssertionFailure
     )),
+    "programMemory_cantOrg": (failure) => withLocation(failure, [
+        "You can't have an org on a line that already has some code",
+        "If this is annoying and you've got a good use case, get in touch and we'll talk about changing it"
+    ]),
     "programMemory_outOfRange": (failure) => withLocation(failure, assertionFailure(
         ["Out of program memory"],
         "Available (16 bit) words", "Current address",

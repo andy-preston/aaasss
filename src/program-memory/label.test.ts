@@ -1,5 +1,7 @@
+import type { NumberBag } from "../assembler/bags.ts";
+
 import { expect } from "jsr:@std/expect";
-import { numberBag, stringBag, StringBag } from "../assembler/bags.ts";
+import { numberBag, stringBag } from "../assembler/bags.ts";
 import { systemUnderTest, testPipeline } from "./testing.ts";
 
 Deno.test("A label is stored in the symbol table with the current address", () => {
@@ -63,7 +65,7 @@ Deno.test("Labels are available to javascript", () => {
     const line = pipeline.next().value!;
     expect(line.failed()).toBeFalsy();
 
-    const value = system.jsExpression("A_LABEL");
+    const value = system.symbolTable.symbolValue("A_LABEL");
     expect(value.type).not.toBe("failures");
-    expect((value as StringBag).it).toBe("10");
+    expect((value as NumberBag).it).toBe(10);
 });

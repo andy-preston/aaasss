@@ -11,9 +11,7 @@ const indexRegisterWithPlus = (operand: string) => {
 };
 
 export const pushOperandCheckingIndexOffset = (
-    operand: string,
-    mnemonic: Mnemonic,
-    fullOperands: Array<string>,
+    operand: string, mnemonic: Mnemonic, fullOperands: Array<string>,
     line: LineWithRenderedJavascript
 ) => {
     const addFailure = (failure: Failure) => {

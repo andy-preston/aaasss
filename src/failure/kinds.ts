@@ -12,7 +12,7 @@ export const failureKinds = {
         "operand_blank", "operand_offsetNotLdd", "operand_offsetNotStd",
         "operand_offsetX",
         "parameter_firstName",
-        "programMemory_sizeUnknown",
+        "programMemory_cantOrg", "programMemory_sizeUnknown",
         "ram_sizeUnknown", "ram_stackAllocated"
     ],
     "assertion": [

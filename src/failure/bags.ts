@@ -85,6 +85,15 @@ export const bagOfFailures = (failures: Array<Failure>) =>
     ({ "type": "failures" as const, "it": failures });
 export type BagOfFailures = ReturnType<typeof bagOfFailures>;
 
+export const withLocation = (
+    failures: BagOfFailures, location: FailureLocation
+): BagOfFailures => {
+    failures.it.forEach((failure) => {
+        failure.location = location;
+    });
+    return failures;
+};
+
 export type NumberOrFailures = NumberBag | BagOfFailures;
 export type StringOrFailures = StringBag | BagOfFailures;
 export type StringsOrFailures = StringsBag | BagOfFailures;
