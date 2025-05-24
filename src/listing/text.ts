@@ -1,4 +1,4 @@
-import { LineWithAddress } from "../program-memory/line-types.ts";
+import type { Line } from "../line/line-types.ts";
 
 const lineNumberWidth = 4;
 
@@ -6,7 +6,7 @@ const textLine = (lineNumber: string, theText: string) =>
     `${lineNumber}`.padStart(lineNumberWidth, " ") + ` ${theText}`;
 
 export const extractedText = function* (
-    line: LineWithAddress, messages: Array<string>
+    line: Line, messages: Array<string>
 ) {
     if (!line.lastLine) {
         yield textLine(`${line.lineNumber}`, line.rawSource);
@@ -18,4 +18,3 @@ export const extractedText = function* (
 };
 
 export type ExtractedText = ReturnType<typeof extractedText>;
-

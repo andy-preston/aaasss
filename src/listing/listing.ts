@@ -1,5 +1,5 @@
 import type { OutputFile } from "../assembler/output-file.ts";
-import type { LineWithAddress } from "../program-memory/line-types.ts";
+import type { Line } from "../line/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { ExtractedCode } from "./code.ts";
@@ -33,7 +33,7 @@ export const listing = (
         }
     };
 
-    const messagesForLine = (line: LineWithAddress) =>
+    const messagesForLine = (line: Line) =>
         line.failures().reduce(
             (messages, failure) =>
                 messages.concat(failureMessages(failure)),
@@ -56,7 +56,7 @@ export const listing = (
         }
     };
 
-    const line = (theLine: LineWithAddress) => {
+    const line = (theLine: Line) => {
         fileName(theLine.fileName);
         const messages = messagesForLine(theLine);
         body(extractedCode(theLine), extractedText(theLine, messages));

@@ -1,4 +1,4 @@
-import { LineWithAddress } from "../program-memory/line-types.ts";
+import { Line } from "../line/line-types.ts";
 
 const objectWidth = "00 00 00 00".length;
 const addressWidth = 6;
@@ -6,7 +6,7 @@ const addressWidth = 6;
 export const codeWidth = objectWidth + addressWidth + 1;
 
 export const extractedCode = function* (
-    line: LineWithAddress
+    line: Line
 ): Generator<string, string, void> {
     let address = line.address;
     const bytes = line.code.flat(1).values();
