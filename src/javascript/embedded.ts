@@ -1,8 +1,7 @@
-import type { Stage } from "../assembler/assembly-pipeline.ts";
+import type { PipelineStage } from "../assembler/data-types.ts";
 import type { StringOrFailures } from "../failure/bags.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { Line } from "../line/line-types.ts";
-import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { JsExpression } from "./expression.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
@@ -10,9 +9,9 @@ import { bagOfFailures, boringFailure } from "../failure/bags.ts";
 
 const scriptDelimiter = /({{|}})/;
 
-export const assemblyPipeline = (
+export const embeddedJs = (
     expression: JsExpression, currentLine: CurrentLine
-): Stage => {
+): PipelineStage => {
     const buffer = {
         "javascript": [] as Array<string>,
         "assembler": [] as Array<string>,
@@ -23,7 +22,7 @@ export const assemblyPipeline = (
         ? bagOfFailures([boringFailure("js_jsMode")])
         : emptyBag();
 
-    const openMoustache = (line: LineWithObjectCode) => {
+    const openMoustache = (line: Line) => {
         const alreadyInJs = stillInJsMode();
         if (alreadyInJs.type == "failures") {
             line.withFailures(alreadyInJs.it);
@@ -32,7 +31,7 @@ export const assemblyPipeline = (
         }
     };
 
-    const closeMoustache = (line: LineWithObjectCode) => {
+    const closeMoustache = (line: Line) => {
         if (current == "assembler") {
             line.withFailures([boringFailure("js_assemblerMode")]);
             return;
@@ -53,7 +52,7 @@ export const assemblyPipeline = (
         ["{{", openMoustache], ["}}", closeMoustache]
     ]);
 
-    const assemblerSource = (line: LineWithObjectCode) => {
+    const assemblerSource = (line: Line) => {
         line.rawSource.split(scriptDelimiter).forEach(part => {
             if (actions.has(part)) {
                 actions.get(part)!(line);
