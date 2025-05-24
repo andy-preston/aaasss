@@ -1,12 +1,11 @@
-import type { Pass } from "../assembler/data-types.ts";
-import type { StringDirective } from "../directives/bags.ts";
+import type { Pass, PipelineSource } from "../assembler/data-types.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { StringsOrFailures } from "../failure/bags.ts";
 import type { FileLineIterator, FileName, LineNumber } from "./data-types.ts";
 
 import { emptyBag, stringsBag } from "../assembler/bags.ts";
 import { bagOfFailures, clueFailure } from "../failure/bags.ts";
-import { lineWithRawSource } from "./line-types.ts";
+import { Line, line } from "../line/line-types.ts";
 
 type StackEntry = {
     "fileName": FileName;
@@ -57,10 +56,6 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         return emptyBag();
     };
 
-    const includeDirective: StringDirective = {
-        "type": "stringDirective", "it": include
-    };
-
     const currentFile = () => fileStack.at(-1);
 
     const pushImaginary = (iterator: FileLineIterator) => {
@@ -78,16 +73,16 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             return undefined;
         } else {
             const [rawSource, macroName, macroCount] = next.value;
-            return lineWithRawSource(
+            return line(
                 file.fileName, lineNumber,
                 rawSource, macroName, macroCount, false
             );
         }
     };
 
-    const assemblyPipeline = function* (pass: Pass) {
+    const lines: PipelineSource = function* (pass: Pass) {
         const dummyLine  = (isLast: boolean) =>
-            lineWithRawSource(topFileName, 0, "", "", 0, isLast).withPass(pass);
+            line(topFileName, 0, "", "", 0, isLast).withPass(pass);
 
         const topFile = include(topFileName);
         if (topFile.type == "failures") {
@@ -110,9 +105,9 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     };
 
     return {
-        "includeDirective": includeDirective,
+        "include": include,
         "pushImaginary": pushImaginary,
-        "assemblyPipeline": assemblyPipeline,
+        "lines": lines,
     };
 };
 
