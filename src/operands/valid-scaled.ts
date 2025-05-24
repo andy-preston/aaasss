@@ -1,7 +1,7 @@
 import type { Failure } from "../failure/bags.ts";
+import type { Line } from "../line/line-types.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import type { NumericOperand, NumericOperands, OperandIndex, OperandType } from "./data-types.ts";
-import type { LineWithOperands } from "./line-types.ts";
 
 import { assertionFailure } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
@@ -18,7 +18,7 @@ export type OperandRequirement = [OperandType, NumericType];
 export type OperandRequirements = Array<OperandRequirement>;
 
 export const validScaledOperands = (
-    line: LineWithOperands, operandRequirements: OperandRequirements
+    line: Line, operandRequirements: OperandRequirements
 ): NumericOperands => {
     const count = operandRequirements.length;
     if (count != line.numericOperands.length) {

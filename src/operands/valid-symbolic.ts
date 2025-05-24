@@ -1,11 +1,11 @@
+import type { Line } from "../line/line-types.ts";
 import type { OperandIndex } from "./data-types.ts";
 import type { IndexOperand } from "./index-operands.ts";
-import type { LineWithOperands } from "./line-types.ts";
 
 import { assertionFailure } from "../failure/bags.ts";
 
 export const validSymbolic = (
-    line: LineWithOperands, expected: Array<Array<IndexOperand>>
+    line: Line, expected: Array<Array<IndexOperand>>
 ) => {
     if (line.symbolicOperands.length != expected.length) {
         line.withFailures([assertionFailure(
