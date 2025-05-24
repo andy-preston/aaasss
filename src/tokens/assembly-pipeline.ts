@@ -1,3 +1,4 @@
+import type { PipelineStage } from "../assembler/data-types.ts";
 import type { Line } from "../line/line-types.ts";
 import type { OperandIndex, SymbolicOperands } from "../operands/data-types.ts"
 
@@ -19,7 +20,7 @@ const invalidLabel = (label: string) => !validLabel.test(label);
 const splitOperands = (text: string): Array<string> =>
     text == "" ? [] : text.split(",").map(operand => operand.trim());
 
-export const assemblyPipeline = (line: Line) => {
+export const tokens: PipelineStage = (line: Line) => {
     const cleaned = clean(line.assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);

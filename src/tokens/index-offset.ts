@@ -1,7 +1,9 @@
-import { boringFailure, type Failure } from "../failure/bags.ts";
-import type { LineWithRenderedJavascript } from "../javascript/line-types.ts";
+import type { Failure } from "../failure/bags.ts";
+import type { Line } from "../line/line-types.ts";
 import type { OperandIndex } from "../operands/data-types.ts";
 import type { Mnemonic } from "./data-types.ts";
+
+import { boringFailure } from "../failure/bags.ts";
 
 const pattern = /^[XYZ]\+/;
 
@@ -11,8 +13,7 @@ const indexRegisterWithPlus = (operand: string) => {
 };
 
 export const pushOperandCheckingIndexOffset = (
-    operand: string, mnemonic: Mnemonic, fullOperands: Array<string>,
-    line: LineWithRenderedJavascript
+    operand: string, mnemonic: Mnemonic, fullOperands: Array<string>, line: Line
 ) => {
     const addFailure = (failure: Failure) => {
         failure.location = { "operand": fullOperands.length as OperandIndex };
