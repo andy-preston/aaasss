@@ -1,30 +1,25 @@
+import type { PipelineStage } from "../assembler/data-types.ts";
 import type { InstructionSet } from "../device/instruction-set.ts";
-import type { ImmutableLine } from "../line/line-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
+import type { Failure } from "../failure/bags.ts";
+import type { CurrentLine } from "../line/current-line.ts";
+import type { Line } from "../line/line-types.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { Code } from "./data-types.ts";
 
-import { clueFailure } from "../failure/bags.ts";
-import { instructionEncoderList } from "./instruction-encoder-list.ts";
-import { LineWithObjectCode } from "./line-types.ts";
+import { emptyBag } from "../assembler/bags.ts";
+import { DirectiveResult } from "../directives/data-types.ts";
+import { bagOfFailures, clueFailure, numericTypeFailure } from "../failure/bags.ts";
+import { encoderFor } from "./instruction-encoder-list.ts";
 
-const isTwo = (pair: Readonly<Array<number>>): pair is Code =>
-    pair.length == 2;
+const isTwo = (pair: Readonly<Array<number>>): pair is Code => pair.length == 2;
+
+const textEncoder = new TextEncoder();
 
 export const objectCode = (
-    instructionSet: InstructionSet, programMemory: ProgramMemory
+    instructionSet: InstructionSet, programMemory: ProgramMemory,
+    currentLine: CurrentLine
 ) => {
-    const addressingMode = (line: LineWithOperands) => {
-        for (const addressingMode of instructionEncoderList) {
-            const codeGenerator = addressingMode(line)
-            if (codeGenerator != undefined) {
-                return codeGenerator;
-            }
-        }
-        return undefined;
-    };
-
-    const toLine = (line: LineWithObjectCode, bytes: Array<number>) => {
+    const toLine = (line: Line, bytes: Array<number>) => {
         const push = (code: Code) => {
             line.code.push(code);
             const memoryEnd = programMemory.addressPlusOne();
@@ -46,29 +41,53 @@ export const objectCode = (
         }
     };
 
-    const processedLine = (line: ImmutableLine): ImmutableLine => {
+    const line: PipelineStage = (line: Line) => {
         if (line.isRecordingMacro || line.mnemonic == "") {
-            return line;
+            return;
         }
 
         const isUnsupported = instructionSet.isUnsupported(line.mnemonic);
         if (isUnsupported.type == "failures") {
-            return line.withFailures(isUnsupported.it);
+            line.withFailures(isUnsupported.it);
+            return;
         }
 
-        const encoder = addressingMode(line);
+        const encoder = encoderFor(line);
         if (encoder == undefined) {
             line.withFailures([clueFailure("mnemonic_unknown", line.mnemonic)]);
         } else {
             toLine(line, encoder(instructionSet, programMemory));
         }
-        return line as ImmutableLine;
     };
 
-    return {
-        "toLine": toLine,
-        "processedLine": processedLine
+    const poke = (data: Array<number | string>): DirectiveResult => {
+        const failures: Array<Failure> = [];
+
+        const bytes = data.flatMap(
+            (item, index) => {
+                if (typeof item == "string") {
+                    return Array.from(textEncoder.encode(item));
+                }
+
+                if (item < 0 || item > 0xff) {
+                    const failure = numericTypeFailure(
+                        "type_bytesOrString", item, 0, 0xff
+                    );
+                    failure.location = {"parameter": index};
+                    failures.push(failure);
+                    return [];
+                }
+
+                return item;
+            }
+        );
+
+        const line = currentLine.directiveBackdoor()!;
+        toLine(line, bytes);
+        return failures.length > 0 ? bagOfFailures(failures) : emptyBag();
     };
+
+    return { "line": line, "poke": poke };
 };
 
 export type ObjectCode = ReturnType<typeof objectCode>;

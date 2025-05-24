@@ -1,3 +1,5 @@
+import type { Line } from "../line/line-types.ts";
+
 import { branchOnStatus } from "../instructions/branch-on-status.ts";
 import { byteImmediate } from "../instructions/byte-immediate.ts";
 import { dataDirect } from "../instructions/data-direct.ts";
@@ -11,10 +13,19 @@ import { singleRegisterDirect } from "../instructions/single-register-direct.ts"
 import { statusManipulation } from "../instructions/status-manipulation.ts";
 import { twoRegisterDirect } from "../instructions/two-register-direct.ts";
 
-export const instructionEncoderList = [
+const instructionEncoderList = [
     branchOnStatus, byteImmediate, dataDirect, des, ioBit, ioByte, nop,
     programMemory, relativeProgram,
     singleRegisterBit, singleRegisterDirect, statusManipulation,
     twoRegisterDirect
 ] as const;
 
+export const encoderFor = (line: Line) => {
+    for (const addressingMode of instructionEncoderList) {
+        const codeGenerator = addressingMode(line)
+        if (codeGenerator != undefined) {
+            return codeGenerator;
+        }
+    }
+    return undefined;
+};

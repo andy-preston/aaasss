@@ -1,18 +1,16 @@
-import type { Pipe } from "../assembler/data-types.ts";
-import type { ObjectCode } from "./object-code.ts";
+import { DataDirective } from "../directives/bags.ts";
+import { ObjectCode } from "./object-code.ts";
 
-export const assemblyPipeline = (
-    objectCode: ObjectCode
-) => {
-    const assemblyPipeline = function* (lines: Pipe) {
-        for (const line of lines) {
-            yield objectCode.processedLine(line);
-        }
+export const objectCodePipeline = (objectCode: ObjectCode) => {
+
+    const pokeDirective: DataDirective = {
+        "type": "dataDirective", "it": objectCode.poke
     };
 
     return {
-        "assemblyPipeline": assemblyPipeline
+        "pokeDirective": pokeDirective,
+        "line": objectCode.line
     };
 };
 
-export type ObjectCodePipeline = ReturnType<typeof assemblyPipeline>;
+export type ObjectCodePipeline = ReturnType<typeof objectCodePipeline>;
