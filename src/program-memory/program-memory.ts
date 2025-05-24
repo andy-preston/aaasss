@@ -1,9 +1,9 @@
+import type { PipelineStage } from "../assembler/data-types.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { NumberOrFailures, StringOrFailures } from "../failure/bags.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { Line } from "../line/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import type { LineWithTokens } from "../tokens/line-types.ts";
 
 import { emptyBag, numberBag } from "../assembler/bags.ts";
 import { assertionFailure, bagOfFailures, boringFailure, numericTypeFailure, withLocation } from "../failure/bags.ts";
@@ -82,7 +82,7 @@ export const programMemory = (
 
         const result = setAddress(newAddress);
         if (result.type != "failures") {
-            theLine.address = address;
+            theLine!.address = address;
         }
         return result;
     };
@@ -90,17 +90,14 @@ export const programMemory = (
     const label = (symbolName: string): DirectiveResult =>
         symbolTable.persistentSymbol(symbolName, numberBag(address));
 
-    const lineAddress = (line: Line) => {
+    const lineAddress: PipelineStage = (line: Line) => {
         line.address = address;
+        if (line.lastLine) {
+            address = 0;
+        }
     };
 
-    const lineLabel = (line: LineWithTokens) => {
-        ////////////////////////////////////////////////////////////////////////
-        //
-        // This is going to need an error line origin has
-        // "Label: {{ poke(something) }} NOP" is meaningless and confusing
-        //
-        ////////////////////////////////////////////////////////////////////////
+    const lineLabel: PipelineStage = (line: Line) => {
         if (line.label) {
             const result = label(line.label);
             if (result.type == "failures") {
@@ -112,12 +109,6 @@ export const programMemory = (
 
     const addressPlusOne = () => setAddress(address + 1);
 
-    const reset = (line: Line) => {
-        if (line.lastLine) {
-            address = 0;
-        }
-    };
-
     return {
         "relativeAddress": relativeAddress,
         "address": () => address,
@@ -125,8 +116,7 @@ export const programMemory = (
         "label": label,
         "addressPlusOne": addressPlusOne,
         "lineAddress": lineAddress,
-        "lineLabel": lineLabel,
-        "reset": reset
+        "lineLabel": lineLabel
     };
 };
 

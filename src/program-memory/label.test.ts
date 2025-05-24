@@ -1,76 +1,64 @@
-import type { NumberBag } from "../assembler/bags.ts";
-
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
-import { systemUnderTest, testPipeline } from "./testing.ts";
+import { dummyLine } from "../line/line-types.ts";
+import { systemUnderTest } from "./testing.ts";
 
 Deno.test("A label is stored in the symbol table with the current address", () => {
     const system = systemUnderTest();
-    const pipeline = testPipeline(
-        system, {"label": "A_LABEL", "code": []}
-    );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
-    const origin = system.programMemory.origin(10);
-    expect(origin.type).not.toBe("failures");
-    const result = pipeline.next().value!;
-    expect(result.failed(), "Unexpected failure").toBeFalsy();
-    expect(result.failures.length).toBe(0);
-    expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
+    {
+        const result = system.programMemory.origin(10);
+        expect(result.type).not.toBe("failures");
+    } {
+        const line = dummyLine(false);
+        line.label = "A_LABEL";
+        system.programMemory.lineLabel(line);
+        expect(line.failed(), "Unexpected failure").toBeFalsy();
+        expect(line.failures.length).toBe(0);
+        expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
+    }
 });
 
 Deno.test("Labels can only be redefined if their value doesn't change", () => {
     const system = systemUnderTest();
-    const pipeline = testPipeline(
-        system,
-        {"label": "A_LABEL", "code": []},
-        {"label": "A_LABEL", "code": []},
-        {"label": "A_LABEL", "code": []}
-    );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
-    {
-        const origin = system.programMemory.origin(10);
-        expect(origin.type).not.toBe("failures");
-    }
-    const initialValue = pipeline.next().value!;
-    expect(initialValue.failed()).toBeFalsy();
-    expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
-    {
-        const origin = system.programMemory.origin(10);
-        expect(origin.type).not.toBe("failures");
-    }
-    const sameValue = pipeline.next().value!;
-    expect(sameValue.failed()).toBeFalsy();
-    expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
-    {
-        const origin = system.programMemory.origin(20);
-        expect(origin.type).not.toBe("failures");
-    }
-    const differentValues = pipeline.next().value!;
-    expect(differentValues.failed()).toBeTruthy();
+    [1, 2].forEach((_try) => {
+        const sameAddress = system.programMemory.origin(10);
+        expect(sameAddress.type).not.toBe("failures");
+
+        const line = dummyLine(false);
+        line.label = "A_LABEL";
+        system.programMemory.lineLabel(line);
+        expect(line.failed()).toBeFalsy();
+        expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
+    });
+    const differentAddress = system.programMemory.origin(20);
+    expect(differentAddress.type).not.toBe("failures");
+
+    const line = dummyLine(false);
+    line.label = "A_LABEL";
+    system.programMemory.lineLabel(line);
+    expect(line.failed()).toBeTruthy();
     expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
 });
 
 Deno.test("Labels are available to javascript", () => {
     const system = systemUnderTest();
-    const pipeline = testPipeline(
-        system, {"label": "A_LABEL", "code": []}
-    );
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
 
-    const origin = system.programMemory.origin(10);
-    expect(origin.type).not.toBe("failures");
-    expect(system.line.address).toBe(10);
+    const line = dummyLine(false);
+    line.label = "A_LABEL";
+    system.currentLine.forDirectives(line);
 
-    const line = pipeline.next().value!;
-
-    expect(system.programMemory.address()).toBe(10);
-
-    expect(line.failed()).toBeFalsy();
+    const address = system.programMemory.origin(10);
+    expect(address.type).not.toBe("failures");
     expect(line.address).toBe(10);
 
+    system.programMemory.lineLabel(line);
+    expect(line.failed()).toBeFalsy();
 
     const value = system.symbolTable.symbolValue("A_LABEL");
     expect(value).toEqual(numberBag(10));
