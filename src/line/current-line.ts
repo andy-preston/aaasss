@@ -1,9 +1,9 @@
-import { ImmutableLine } from "./line-types.ts";
+import type { Line } from "./line-types.ts";
 
 export const currentLine = () => {
-    let theLine: ImmutableLine | undefined;
+    let theLine: Line | undefined;
 
-    const forDirectives = (line: ImmutableLine) => {
+    const forDirectives = (line: Line) => {
         theLine = line;
     };
 

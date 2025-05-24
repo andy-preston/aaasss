@@ -80,11 +80,8 @@ export const docTest = () => {
 
     const assemble = () => {
         coupling(
-            topFileName,
-            defaultReaderMethod,
-            mockFailureMessages,
-            deviceFile
-        )();
+            topFileName, defaultReaderMethod, mockFailureMessages, deviceFile
+        );
     };
 
     return {

@@ -17,9 +17,6 @@ export const line = (
         return theLine;
     };
     const failed = () => failures.length > 0;
-    const failureMap = function*(): Generator<Failure, void, void> {
-        yield* failures;
-    };
 
     const withPass = (pass: Pass) => {
         passNumber = pass;
@@ -29,7 +26,7 @@ export const line = (
     const isPass = (wanted: Pass) => passNumber == wanted;
 
     const theLine = {
-        "failures": failureMap,
+        "failures": failures,
         "failed": failed,
         "withFailures": withFailures,
         "withPass": withPass,
@@ -54,3 +51,5 @@ export const line = (
 };
 
 export type Line = ReturnType<typeof line>;
+
+export const dummyLine = (last: boolean) => line("", 0, "", "", 0, last);

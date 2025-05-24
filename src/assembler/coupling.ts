@@ -11,22 +11,23 @@ import { instructionSet } from "../device/instruction-set.ts";
 import { functionDirectives } from "../directives/function-directives.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { jSExpression } from "../javascript/expression.ts";
-import { assemblyPipeline as embeddedJs } from "../javascript/embedded.ts";
+import { embeddedJs } from "../javascript/embedded.ts";
 import { currentLine } from "../line/current-line.ts";
 import { listing } from "../listing/listing.ts";
 import { macroPipeline } from "../macros/assembly-pipeline.ts";
 import { macros } from "../macros/macros.ts";
-import { objectCode } from "../object-code/assembly-pipeline.ts";
-import { poke } from "../object-code/poke.ts";
+import { objectCode } from "../object-code/object-code.ts";
+import { objectCodePipeline } from "../object-code/assembly-pipeline.ts";
 import { symbolicToNumeric } from "../operands/assembly-pipeline.ts";
 import { programMemoryPipeline } from "../program-memory/assembly-pipeline.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { fileStack } from "../source-code/file-stack.ts";
+import { pipeLineSource } from "../source-code/assembly-pipeline.ts";
 import { symbolTablePipeline } from "../symbol-table/assembly-pipeline.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { assemblyPipeline as tokens } from "../tokens/assembly-pipeline.ts";
-import { assemblyPipeline as startingWith } from "./assembly-pipeline.ts";
+import { tokens } from "../tokens/assembly-pipeline.ts";
+import { assemblyPipeline as thePipeline } from "./assembly-pipeline.ts";
 import { outputFile } from "./output-file.ts";
 
 export const coupling = (
@@ -52,7 +53,9 @@ export const coupling = (
         return component;
     }
 
-    const $fileStack = withDirectives(fileStack(readerMethod, fileName));
+    const $fileStack = fileStack(readerMethod, fileName);
+    const $sourcePipeline = withDirectives(pipeLineSource($fileStack));
+
     const $macros = macros($symbolTable, $fileStack);
     const $macroPipeline = withDirectives(macroPipeline($macros));
 
@@ -68,9 +71,8 @@ export const coupling = (
         programMemoryPipeline($programMemory)
     );
     const $dataMemory = withDirectives(dataMemory($symbolTable));
-    const $objectCode = withDirectives(objectCode(
-        $instructionSet, $programMemory
-    ));
+    const $objectCode = objectCode($instructionSet, $programMemory, $currentLine);
+    const $objectCodePipeline = withDirectives(objectCodePipeline($objectCode));
 
     const $listing = listing(
         outputFile, fileName, failureMessageTranslator, $symbolTable
@@ -85,17 +87,21 @@ export const coupling = (
     withDirectives($cpuRegisters);
     withDirectives(functionDirectives);
     withDirectives(deviceDirective($deviceSettings, deviceFileOperations));
-    withDirectives(poke($currentLine, $objectCode));
+    withDirectives($objectCodePipeline);
 
-    return startingWith($fileStack.assemblyPipeline)
-        .andThen($programMemoryPipeline.addressingPipeline)
-        .andThen($embeddedJs)
-        .andThen(tokens)
-        .andThen($programMemoryPipeline.labelPipeline)
-        .andThen($macroPipeline.assemblyPipeline)
-        .andThen($symbolicToNumeric.assemblyPipeline)
-        .andThen($objectCode.assemblyPipeline)
-        .andThen($dataMemory.assemblyPipeline)
-        .andThen($symbolTablePipeline.assemblyPipeline)
-        .results($listing, $hexFile);
+    return thePipeline(
+        $sourcePipeline.lines,
+        [
+            $programMemoryPipeline.lineAddress,
+            $embeddedJs,
+            tokens,
+            $programMemoryPipeline.lineLabel,
+            $macroPipeline.processedLine,
+            $symbolicToNumeric.converted,
+            $objectCodePipeline.line,
+            $dataMemory.reset,
+            $symbolTablePipeline.reset
+        ],
+        [$listing, $hexFile]
+    );
 };
