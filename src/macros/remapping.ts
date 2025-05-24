@@ -1,13 +1,13 @@
 import type { StringOrFailures } from "../failure/bags.ts";
-import type { SymbolicOperand } from "../operands/data-types.ts";
+import type { Line } from "../line/line-types.ts";
+import type { SymbolicOperand, SymbolicOperands } from "../operands/data-types.ts";
 import type { FileLineIterator } from "../source-code/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
-import type { LineWithTokens } from "../tokens/line-types.ts";
 import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
 import { assertionFailure, bagOfFailures } from "../failure/bags.ts";
-import { lineWithProcessedMacro, lineWithRemappedMacro } from "./line-types.ts";
+import { operands } from "../operands/data-types.ts";
 
 export const remapping = (macroList: MacroList) => {
     const mapping: Map<string, MacroParameters> = new Map();
@@ -33,13 +33,13 @@ export const remapping = (macroList: MacroList) => {
         return emptyBag();
     };
 
-    const expandedLabel = (line: LineWithTokens, label: Label) =>
+    const expandedLabel = (line: Line, label: Label) =>
         `${line.macroName}$${line.macroCount}$${label}`;
 
-    const remappedLabel = (line: LineWithTokens) =>
+    const remappedLabel = (line: Line) =>
         line.label ? expandedLabel(line, line.label) : "";
 
-    const remappedParameters = (line: LineWithTokens) => {
+    const remappedParameters = (line: Line) => {
         const macro = macroList.get(line.macroName)!;
         const actual = mapping.get(mapKey(line.macroName, line.macroCount))!;
 
@@ -58,11 +58,15 @@ export const remapping = (macroList: MacroList) => {
         });
     };
 
-    const remapped = (line: LineWithTokens) => line.macroName == ""
-        ? lineWithProcessedMacro(line, false)
-        : lineWithRemappedMacro(
-            line, remappedLabel(line), remappedParameters(line)
-        );
+    const remapped = (line: Line) => {
+        line.isRecordingMacro = false;
+        if (line.macroName !== "") {
+            line.label = remappedLabel(line);
+            line.symbolicOperands = operands<SymbolicOperands>(
+                remappedParameters(line)
+            );
+        }
+    };
 
     const imaginaryFile = function* (
         macroName: string, macroCount: number

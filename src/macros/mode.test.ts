@@ -1,8 +1,7 @@
 import type { Failure } from "../failure/bags.ts";
-import type { LineWithTokens } from "../tokens/line-types.ts";
 
 import { expect } from "jsr:@std/expect";
-import { line } from "../line/line-types.ts";
+import { dummyLine } from "../line/line-types.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const isLastLineOfPass = true;
@@ -13,7 +12,7 @@ Deno.test("the last line has a failure is a definition wasn't closed", () => {
     const define = system.macros.define("plop", []);
     expect(define.type).not.toBe("failures");
     const lastLine = system.macros.processedLine(
-        line("", 0, "", "", 0, isLastLineOfPass) as LineWithTokens
+        dummyLine(isLastLineOfPass)
     );
     expect(lastLine.failed).toBeTruthy();
     const failures = [...lastLine.failures()];

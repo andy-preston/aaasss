@@ -6,11 +6,8 @@ import type { Label, Mnemonic } from "../tokens/data-types.ts";
 import type { MacroName, MacroParameters } from "./data-types.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
-import { lineWithRenderedJavascript } from "../javascript/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
-import { lineWithRawSource } from "../source-code/line-types.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { lineWithTokens } from "../tokens/line-types.ts";
 import { macroPipeline } from "./assembly-pipeline.ts";
 import { macros } from "./macros.ts";
 import { symbolTablePipeline } from "../symbol-table/assembly-pipeline.ts";

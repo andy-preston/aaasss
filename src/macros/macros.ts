@@ -10,6 +10,7 @@ import { assertionFailure, bagOfFailures, boringFailure, clueFailure } from "../
 import { macro } from "./data-types.ts";
 import { remapping } from "./remapping.ts";
 import { removedDirective } from "./removed-directive.ts";
+import { PipelineStage } from "../assembler/data-types.ts";
 
 export const macros = (
     symbolTable: SymbolTable, fileStack: FileStack
@@ -97,7 +98,7 @@ export const macros = (
         line.isRecordingMacro = true;
     };
 
-    const processedLine = (line: Line) => {
+    const processedLine: PipelineStage = (line: Line) => {
         if (isDefining()) {
             recordedLine(line);
             if (line.lastLine) {
@@ -106,9 +107,6 @@ export const macros = (
         } else {
             remap.remapped(line);
         }
-    };
-
-    const lastLine = (line: Line) => {
         if (line.lastLine) {
             definingMacro = undefined;
             definingName = "";
@@ -121,7 +119,6 @@ export const macros = (
         "end": end,
         "use": use,
         "processedLine": processedLine,
-        "lastLine": lastLine,
         "directiveForMacroUse": directiveForMacroUse
     };
 };
