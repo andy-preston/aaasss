@@ -1,11 +1,11 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 import { template } from "../object-code/template.ts";
 import { validScaledOperands } from "../operands/valid-scaled.ts";
+import { Line } from "../line/line-types.ts";
 
 const mapping: Map<string, [string, number?]> = new Map([
     ["BCLR", ["1", undefined]],
@@ -28,9 +28,7 @@ const mapping: Map<string, [string, number?]> = new Map([
     ["SEI", ["0", 7]]
 ]);
 
-export const statusManipulation = (
-    line: LineWithOperands
-): EncodedInstruction | undefined => {
+export const statusManipulation = (line: Line): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
     ) => {

@@ -1,8 +1,8 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { SupportFailure } from "../failure/bags.ts";
+import type { Line } from "../line/line-types.ts";
 import type { BinaryDigit, EncodedInstruction } from "../object-code/data-types.ts";
 import type { NumericOperand } from "../operands/data-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirement } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
@@ -27,8 +27,8 @@ const bitMapping: Map<string, string> = new Map([
 ]);
 
 const hints = (
-    line: LineWithOperands
-): Array<SupportFailure> | undefined => line.failures().reduce(
+    line: Line
+): Array<SupportFailure> | undefined => line.failures.reduce(
     (
         result: Array<SupportFailure> | undefined, failure, _index
     ) => failure.kind != "type_ioPort" ? result : [supportFailure(
@@ -36,9 +36,7 @@ const hints = (
     )], undefined
 );
 
-export const ioBit = (
-    line: LineWithOperands
-): EncodedInstruction | undefined => {
+export const ioBit = (line: Line): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
     ) => {
@@ -62,9 +60,7 @@ export const ioBit = (
     return bitMapping.has(line.mnemonic) ? codeGenerator : undefined;
 };
 
-export const ioByte = (
-    line: LineWithOperands
-): EncodedInstruction | undefined => {
+export const ioByte = (line: Line): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
     ) => {

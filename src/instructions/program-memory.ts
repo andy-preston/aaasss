@@ -1,6 +1,6 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
+import type { Line } from "../line/line-types.ts";
 import type { BinaryDigit, EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 import { assertionFailure, boringFailure } from "../failure/bags.ts";
@@ -9,10 +9,7 @@ import { validScaledOperands } from "../operands/valid-scaled.ts";
 
 const mnemonics = ["SPM", "ELPM", "LPM"];
 
-export const programMemory = (
-    line: LineWithOperands
-): EncodedInstruction | undefined => {
-
+export const programMemory = (line: Line): EncodedInstruction | undefined => {
     const codeGenerator = (
         instructionSet: InstructionSet, _programMemory: ProgramMemory
     ) => {

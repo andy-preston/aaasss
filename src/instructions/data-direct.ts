@@ -1,7 +1,7 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
+import type { Line } from "../line/line-types.ts";
 import type { NumericType } from "../numeric-values/types.ts";
 import type { BinaryDigit, EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
 import type { NumericOperand } from "../operands/data-types.ts";
 import type { OperandRequirement } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
@@ -21,9 +21,7 @@ const variations = (hasReducedCore: boolean) => hasReducedCore ? {
     "suffix": "r rrrr_0000 aaaa_aaaa aaaa_aaaa"
 };
 
-export const dataDirect = (
-    line: LineWithOperands
-): EncodedInstruction | undefined => {
+export const dataDirect = (line: Line): EncodedInstruction | undefined => {
     const codeGenerator = (
         instructionSet: InstructionSet, _programMemory: ProgramMemory
     ) => {

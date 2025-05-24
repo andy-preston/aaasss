@@ -1,6 +1,6 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
+import type { Line } from "../line/line-types.ts";
 import type { EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
@@ -30,9 +30,7 @@ const mapping: Map<string, [string, number?]> = new Map([
     ["BRIE", ["0", 7]]
 ]);
 
-export const branchOnStatus = (
-    line: LineWithOperands
-): EncodedInstruction | undefined => {
+export const branchOnStatus = (line: Line): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, programMemory: ProgramMemory
     ) => {

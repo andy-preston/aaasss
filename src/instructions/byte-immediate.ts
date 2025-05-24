@@ -1,6 +1,6 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
+import type { Line } from "../line/line-types.ts";
 import type { EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
@@ -19,9 +19,7 @@ const mapping: Map<string, string> = new Map([
     ["SER",  "1110"]  //   LDI are ALMOST the same instruction
 ]);
 
-export const byteImmediate = (
-    line: LineWithOperands
-): EncodedInstruction | undefined => {
+export const byteImmediate = (line: Line): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
     ) => {

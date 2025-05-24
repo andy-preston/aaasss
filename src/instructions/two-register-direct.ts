@@ -1,6 +1,6 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
+import type { Line } from "../line/line-types.ts";
 import type { EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
 import type { OperandRequirements } from "../operands/valid-scaled.ts";
 
 import { template } from "../object-code/template.ts";
@@ -26,9 +26,7 @@ const mapping: Map<string, [string, number]> = new Map([
     ["MUL",  ["1001_11", 1]]
 ]);
 
-export const twoRegisterDirect = (
-    line: LineWithOperands
-): EncodedInstruction | undefined => {
+export const twoRegisterDirect = (line: Line): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
     ) => {

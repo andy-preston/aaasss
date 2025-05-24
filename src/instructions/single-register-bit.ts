@@ -1,6 +1,6 @@
 import type { InstructionSet } from "../device/instruction-set.ts";
+import type { Line } from "../line/line-types.ts";
 import type { EncodedInstruction } from "../object-code/data-types.ts";
-import type { LineWithOperands } from "../operands/line-types.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
 import { template } from "../object-code/template.ts";
@@ -13,9 +13,7 @@ const mapping: Map<string, string> = new Map([
     ["SBRS", "11"]
 ]);
 
-export const singleRegisterBit = (
-    line: LineWithOperands
-): EncodedInstruction | undefined => {
+export const singleRegisterBit = (line: Line): EncodedInstruction | undefined => {
     const codeGenerator = (
         _instructionSet: InstructionSet, _programMemory: ProgramMemory
     ) => {
