@@ -1,6 +1,7 @@
 import type { OutputFile } from "../assembler/output-file.ts";
-import { LineWithObjectCode } from "../object-code/line-types.ts";
+import type { Line } from "../line/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
+
 import { hexBuffer } from "./hex-buffer.ts";
 import { hexRecord } from "./hex-record.ts";
 
@@ -12,7 +13,7 @@ export const hexFile = (outputFile: OutputFile, topFileName: FileName) => {
     const buffer = hexBuffer();
     let noHexFile: boolean = false;
 
-    const line = (line: LineWithObjectCode) => {
+    const line = (line: Line) => {
         if (line.failed()) {
             noHexFile = true;
         }
