@@ -16,6 +16,7 @@ Deno.test("The mnemonic is separated from the operands by whitespace", () => {
 Deno.test("The operands are separated by a comma", () => {
     const line = dummyLine(false);
     line.assemblySource = "label: LDI R16, 23";
+    tokens(line);
     expect(line.label).toBe("label");
     expect(line.mnemonic).toBe("LDI");
     expect(line.symbolicOperands).toEqual(["R16", "23"]);

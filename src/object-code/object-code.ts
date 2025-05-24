@@ -82,8 +82,7 @@ export const objectCode = (
             }
         );
 
-        const line = currentLine.directiveBackdoor()!;
-        toLine(line, bytes);
+        toLine(currentLine.directiveBackdoor()!, bytes);
         return failures.length > 0 ? bagOfFailures(failures) : emptyBag();
     };
 
