@@ -1,8 +1,8 @@
 import type { NumberBag } from "../assembler/bags.ts";
-import type { Pipe } from "../assembler/data-types.ts";
-import type { NumberDirective } from "../directives/bags.ts";
+import type { PipelineStage } from "../assembler/data-types.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { Failure, NumberOrFailures } from "../failure/bags.ts";
+import type { Line } from "../line/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
@@ -45,10 +45,6 @@ export const dataMemory = (symbolTable: SymbolTable) => {
         return stringBag(`${startAddress.it}`);
     };
 
-    const allocDirective: NumberDirective = {
-        "type": "numberDirective", "it": alloc
-    };
-
     const allocStack = (bytes: number): DirectiveResult => {
         // It's entirely optional to allocate space for a stack.
         // but you can if you're worried that your RAM allocations might eat up
@@ -65,24 +61,17 @@ export const dataMemory = (symbolTable: SymbolTable) => {
         return emptyBag();
     };
 
-    const allocStackDirective: NumberDirective = {
-        "type": "numberDirective", "it": allocStack
-    };
-
-    const assemblyPipeline = function* (lines: Pipe) {
-        for (const line of lines) {
-            yield line;
-            if (line.lastLine) {
-                stack = 0;
-                allocated = 0;
-            }
+    const reset: PipelineStage = (line: Line) => {
+        if (line.lastLine) {
+            stack = 0;
+            allocated = 0;
         }
     };
 
     return {
-        "allocDirective": allocDirective,
-        "allocStackDirective": allocStackDirective,
-        "assemblyPipeline": assemblyPipeline
+        "alloc": alloc,
+        "allocStack": allocStack,
+        "reset": reset
     };
 };
 
