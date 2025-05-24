@@ -12,9 +12,7 @@ import { remapping } from "./remapping.ts";
 import { removedDirective } from "./removed-directive.ts";
 import { PipelineStage } from "../assembler/data-types.ts";
 
-export const macros = (
-    symbolTable: SymbolTable, fileStack: FileStack
-) => {
+export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     const macroList: MacroList = new Map();
     let useMacroDirective: FunctionUseDirective | undefined = undefined;
     let definingMacro: Macro | undefined = undefined;
@@ -115,9 +113,7 @@ export const macros = (
     };
 
     return {
-        "define": define,
-        "end": end,
-        "use": use,
+        "define": define, "end": end, "use": use,
         "processedLine": processedLine,
         "directiveForMacroUse": directiveForMacroUse
     };

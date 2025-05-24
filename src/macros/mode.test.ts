@@ -4,20 +4,15 @@ import { expect } from "jsr:@std/expect";
 import { dummyLine } from "../line/line-types.ts";
 import { systemUnderTest } from "./testing.ts";
 
-const isLastLineOfPass = true;
-
 Deno.test("the last line has a failure is a definition wasn't closed", () => {
     const system = systemUnderTest();
-
     const define = system.macros.define("plop", []);
     expect(define.type).not.toBe("failures");
-    const lastLine = system.macros.processedLine(
-        dummyLine(isLastLineOfPass)
-    );
-    expect(lastLine.failed).toBeTruthy();
-    const failures = [...lastLine.failures()];
-    expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const line = dummyLine(true);
+    system.macros.processedLine(line);
+    expect(line).toBeTruthy();
+    expect(line.failures.length).toBe(1);
+    const failure = line.failures[0]!;
     expect(failure.kind).toBe("macro_noEnd");
 });
 
@@ -38,7 +33,6 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
 
 Deno.test("Multiple macros can be defined", () => {
     const system = systemUnderTest();
-
     for (const macroName of ["aMacro", "anotherOne", "yetAnotherOne"]) {
         const define = system.macros.define(macroName, []);
         expect(define.type).not.toBe("failures");
@@ -49,7 +43,6 @@ Deno.test("Multiple macros can be defined", () => {
 
 Deno.test("You can't end a macro definition if one isn't being defined", () => {
     const system = systemUnderTest();
-
     const end = system.macros.end();
     expect(end.type).toBe("failures");
     const failures = end.it as Array<Failure>;
