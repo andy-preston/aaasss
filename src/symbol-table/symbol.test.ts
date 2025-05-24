@@ -2,30 +2,35 @@ import type { Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
-import { systemUnderTest, testDirectives } from "./testing.ts";
+import { systemUnderTest } from "./testing.ts";
 
 Deno.test("A symbol can be defined and accessed", () => {
     const system = systemUnderTest();
-    const directives = testDirectives(system);
-
-    const define = directives.define("plop", 57);
+    const define = system.symbolTable.persistentSymbol(
+        "plop", numberBag(57)
+    );
     expect(define.type).not.toBe("failures");
     expect(system.symbolTable.use("plop")).toEqual(numberBag(57));
 });
 
 Deno.test("A symbol can only be redefined if it's value has not changed", () => {
     const system = systemUnderTest();
-    const directives = testDirectives(system);
     {
-        const define = directives.define("plop", 57);
+        const define = system.symbolTable.persistentSymbol(
+            "plop", numberBag(57)
+        );
         expect(define.type).not.toBe("failures");
         const result = system.symbolTable.use("plop");
         expect(result.type).toBe("number");
         expect(result.it).toBe(57);
     } {
-        const define = directives.define("plop", 57);
+        const define = system.symbolTable.persistentSymbol(
+            "plop", numberBag(57)
+        );
         expect(define.type).not.toBe("failures");
-        const result = directives.define("plop", 75);
+        const result = system.symbolTable.persistentSymbol(
+            "plop", numberBag(75)
+        );
         expect(result.type).toBe("failures");
         const failures = result.it as Array<Failure>;
         expect(failures.length).toBe(1);

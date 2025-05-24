@@ -1,4 +1,3 @@
-import type { Pipe } from "../assembler/data-types.ts";
 import type { ValueDirective } from "../directives/bags.ts";
 import type { SymbolTable } from "./symbol-table.ts";
 
@@ -15,16 +14,9 @@ export const symbolTablePipeline = (symbolTable: SymbolTable) => {
             symbolTable.persistentSymbol(symbolName, numberBag(value))
     };
 
-    const assemblyPipeline = function* (lines: Pipe) {
-        for (const line of lines) {
-            yield line;
-            symbolTable.reset(line);
-        }
-    };
-
     return {
         "defineDirective": defineDirective,
-        "assemblyPipeline": assemblyPipeline
+        "reset": symbolTable.reset
     };
 }
 

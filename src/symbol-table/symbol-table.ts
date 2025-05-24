@@ -1,6 +1,7 @@
+import type { PipelineStage } from "../assembler/data-types.ts";
 import type { CurrentLine } from "../line/current-line.ts";
+import type { Line } from "../line/line-types.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { LineWithObjectCode } from "../object-code/line-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolBag } from "./bags.ts";
 
@@ -19,7 +20,7 @@ export const symbolTable = (
     const counts = counting();
     const definitions = definitionList(currentLine);
 
-    const reset = (line: LineWithObjectCode) => {
+    const reset: PipelineStage = (line: Line) => {
         if (line.lastLine && line.isPass(1)) {
             counts.reset();
             definitions.reset();

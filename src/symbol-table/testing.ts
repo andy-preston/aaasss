@@ -17,9 +17,3 @@ export const systemUnderTest = () => {
 };
 
 type SystemUnderTest = ReturnType<typeof systemUnderTest>;
-
-export const testDirectives = (system: SystemUnderTest) => ({
-    "define": directiveFunction(
-        "define", system.symbolTablePipeline.defineDirective
-    )
-});
