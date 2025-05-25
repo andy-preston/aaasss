@@ -88,7 +88,7 @@ Deno.test("Omitting a closing moustache is illegal", () => {
     expect(line.failures.length).toBe(0);
 
     const lastLine = dummyLine(true);
-    system.embeddedJs(line);
+    system.embeddedJs(lastLine);
     expect(lastLine.failed()).toBeTruthy();
     expect(lastLine.failures.length).toBe(1);
     expect(lastLine.failures[0]!.kind).toBe("js_jsMode");
