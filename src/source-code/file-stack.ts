@@ -5,7 +5,7 @@ import type { FileLineIterator, FileName, LineNumber } from "./data-types.ts";
 
 import { emptyBag, stringsBag } from "../assembler/bags.ts";
 import { bagOfFailures, clueFailure } from "../failure/bags.ts";
-import { Line, line } from "../line/line-types.ts";
+import { line } from "../line/line-types.ts";
 
 type StackEntry = {
     "fileName": FileName;

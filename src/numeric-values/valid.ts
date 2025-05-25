@@ -1,6 +1,8 @@
-import { numberBag } from "../assembler/bags.ts";
-import { assertionFailure, bagOfFailures, numericTypeFailure, type NumberOrFailures } from "../failure/bags.ts";
+import type { NumberOrFailures } from "../failure/bags.ts";
 import type { NumericType } from "./types.ts";
+
+import { numberBag } from "../assembler/bags.ts";
+import { assertionFailure, bagOfFailures, numericTypeFailure } from "../failure/bags.ts";
 
 const minMax: Record<NumericType, [number | undefined, number | undefined]> = {
     "type_anything": [undefined, undefined],

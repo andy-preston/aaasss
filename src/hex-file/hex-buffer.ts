@@ -1,4 +1,4 @@
-import { Code } from "../object-code/data-types.ts";
+import type { Code } from "../object-code/data-types.ts";
 
 export type PairOfBytes = [number, number];
 

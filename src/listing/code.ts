@@ -1,4 +1,4 @@
-import { Line } from "../line/line-types.ts";
+import type { Line } from "../line/line-types.ts";
 
 const objectWidth = "00 00 00 00".length;
 const addressWidth = 6;

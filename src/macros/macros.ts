@@ -1,3 +1,4 @@
+import type { PipelineStage } from "../assembler/data-types.ts";
 import type { FunctionUseDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { Line } from "../line/line-types.ts";
@@ -10,7 +11,6 @@ import { assertionFailure, bagOfFailures, boringFailure, clueFailure } from "../
 import { macro } from "./data-types.ts";
 import { remapping } from "./remapping.ts";
 import { removedDirective } from "./removed-directive.ts";
-import { PipelineStage } from "../assembler/data-types.ts";
 
 export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     const macroList: MacroList = new Map();

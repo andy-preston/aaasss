@@ -1,8 +1,8 @@
 import type { StringOrFailures } from "../failure/bags.ts";
 import type { DeviceSpec, SpecItems } from "./data-types.ts";
 
-import { parse } from "jsr:@std/toml";
 import { existsSync } from "jsr:@std/fs/exists";
+import { parse } from "jsr:@std/toml";
 import { stringBag } from "../assembler/bags.ts";
 import { bagOfFailures, clueFailure } from "../failure/bags.ts";
 

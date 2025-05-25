@@ -3,10 +3,10 @@ import type { ExceptionFailure } from "../failure/bags.ts";
 import { expect } from "jsr:@std/expect";
 import { jSExpression } from "../javascript/expression.ts";
 import { currentLine } from "../line/current-line.ts";
+import { dummyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { symbolicToNumeric } from "./assembly-pipeline.ts";
-import { dummyLine } from "../line/line-types.ts";
 
 export const systemUnderTest = () => {
     const $currentLine = currentLine();

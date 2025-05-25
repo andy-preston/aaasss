@@ -1,5 +1,5 @@
-import { DataDirective } from "../directives/bags.ts";
-import { ObjectCode } from "./object-code.ts";
+import type { DataDirective } from "../directives/bags.ts";
+import type { ObjectCode } from "./object-code.ts";
 
 export const objectCodePipeline = (objectCode: ObjectCode) => {
 

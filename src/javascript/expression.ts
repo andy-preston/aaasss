@@ -1,12 +1,11 @@
-import { emptyBag, stringBag, type NumberBag, type StringBag } from "../assembler/bags.ts";
 import type { BaggedDirective } from "../directives/bags.ts";
-import { directiveFunction } from "../directives/directive-function.ts";
-import {
-    bagOfFailures, exceptionFailure,
-    type BagOfFailures, type BagOrFailures, type StringOrFailures
-} from "../failure/bags.ts";
+import type { BagOfFailures, BagOrFailures, StringOrFailures } from "../failure/bags.ts";
 import type { SymbolBag } from "../symbol-table/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
+
+import { emptyBag, stringBag, type NumberBag, type StringBag } from "../assembler/bags.ts";
+import { directiveFunction } from "../directives/directive-function.ts";
+import { bagOfFailures, exceptionFailure } from "../failure/bags.ts";
 
 const isBagOrFailures = (it: object): it is BagOrFailures =>
     Object.hasOwn(it, "type") && Object.hasOwn(it, "it");

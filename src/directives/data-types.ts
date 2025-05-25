@@ -1,4 +1,4 @@
-import { StringOrFailures } from "../failure/bags.ts";
+import type { StringOrFailures } from "../failure/bags.ts";
 
 export type DirectiveResult = StringOrFailures;
 

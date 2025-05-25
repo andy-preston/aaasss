@@ -1,14 +1,13 @@
 import type { PipelineStage } from "../assembler/data-types.ts";
 import type { InstructionSet } from "../device/instruction-set.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { Failure } from "../failure/bags.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { Line } from "../line/line-types.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { Code } from "./data-types.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
-import { bagOfFailures, clueFailure, numericTypeFailure } from "../failure/bags.ts";
+import { clueFailure, numericTypeFailure } from "../failure/bags.ts";
 import { encoderFor } from "./instruction-encoder-list.ts";
 
 const isTwo = (pair: Readonly<Array<number>>): pair is Code => pair.length == 2;

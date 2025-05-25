@@ -1,16 +1,14 @@
 import type { PipelineSource } from "../assembler/data-types.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { FileLineIterator, FileName } from "../source-code/data-types.ts";
-import type { SymbolicOperands } from "../operands/data-types.ts";
-import type { Label, Mnemonic } from "../tokens/data-types.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
-import { cpuRegisters } from "../registers/cpu-registers.ts";
-import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { macros } from "./macros.ts";
-import { symbolTablePipeline } from "../symbol-table/assembly-pipeline.ts";
 import { currentLine } from "../line/current-line.ts";
 import { dummyLine, line } from "../line/line-types.ts";
+import { cpuRegisters } from "../registers/cpu-registers.ts";
+import { symbolTablePipeline } from "../symbol-table/assembly-pipeline.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
+import { macros } from "./macros.ts";
 
 const mockFileStack = () => {
     let lineIterator: FileLineIterator | undefined;

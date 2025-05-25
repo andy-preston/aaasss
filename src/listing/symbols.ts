@@ -1,4 +1,4 @@
-import { SymbolTable } from "../symbol-table/symbol-table.ts";
+import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 const transform = (key: string) =>
     key.replace(/^R([0-9])$/, "R0$1").toUpperCase()

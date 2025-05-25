@@ -1,6 +1,7 @@
+import type { Failure, SupportFailure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
 import { systemUnderTest } from "./testing.ts";
-import { Failure, SupportFailure } from "../failure/bags.ts";
 
 Deno.test("DES has no alternative", () => {
     const system = systemUnderTest();

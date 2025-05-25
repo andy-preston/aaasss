@@ -3,7 +3,6 @@ import type { FileLineIterator, FileName } from "./data-types.ts";
 
 import { expect } from "jsr:@std/expect";
 import { defaultReaderMethod, fileStack } from "./file-stack.ts";
-import { Line } from "../line/line-types.ts";
 
 Deno.test("Including a file doesn't return anything", () => {
     const irrelevantButRealFile = "deno.json";

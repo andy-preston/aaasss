@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
-import { systemUnderTest } from "./testing.ts";
 import { dummyLine } from "../line/line-types.ts";
+import { systemUnderTest } from "./testing.ts";
 
 Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const system = systemUnderTest();

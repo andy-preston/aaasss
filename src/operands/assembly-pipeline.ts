@@ -1,6 +1,7 @@
 import type { PipelineStage } from "../assembler/data-types.ts";
 import type { Failure, NumberOrFailures } from "../failure/bags.ts";
 import type { JsExpression } from "../javascript/expression.ts";
+import type { Line } from "../line/line-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type {
@@ -12,7 +13,6 @@ import type { IndexOperand } from "./index-operands.ts";
 import { numberBag } from "../assembler/bags.ts";
 import { operands } from "./data-types.ts";
 import { indexOperands } from "./index-operands.ts";
-import { Line } from "../line/line-types.ts";
 
 export const symbolicToNumeric = (
     symbolTable: SymbolTable, cpuRegisters: CpuRegisters,

@@ -1,7 +1,5 @@
-import type { SourceCode } from "../source-code/data-types.ts";
-
 import { expect } from "jsr:@std/expect";
-import { dummyLine, line } from "../line/line-types.ts";
+import { dummyLine } from "../line/line-types.ts";
 import { removedDirective } from "./removed-directive.ts";
 
 Deno.test("If the original line was blank - it returns the original line", () => {

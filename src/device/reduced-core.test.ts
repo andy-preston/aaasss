@@ -1,6 +1,7 @@
+import type { Failure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
 import { stringBag } from "../assembler/bags.ts";
-import type { Failure } from "../failure/bags.ts";
 import { systemUnderTest } from "./testing.ts";
 
 Deno.test("reducedCore fails when no device is selected", () => {

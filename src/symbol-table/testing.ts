@@ -1,4 +1,3 @@
-import { directiveFunction } from "../directives/directive-function.ts";
 import { currentLine } from "../line/current-line.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTablePipeline } from "./assembly-pipeline.ts";

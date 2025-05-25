@@ -3,10 +3,10 @@ import type { AssertionFailure, Failure } from "../failure/bags.ts";
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 import { currentLine } from "../line/current-line.ts";
+import { dummyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { dataMemory } from "./data-memory.ts";
-import { dummyLine } from "../line/line-types.ts";
 
 const systemUnderTest = () => {
     const $currentLine = currentLine();

@@ -1,8 +1,8 @@
 import type { AssertionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { systemUnderTest } from "./testing.ts";
 import { dummyLine } from "../line/line-types.ts";
+import { systemUnderTest } from "./testing.ts";
 
 Deno.test("The macro doesn't have to have parameters", () => {
     const system = systemUnderTest();

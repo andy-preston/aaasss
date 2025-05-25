@@ -1,5 +1,6 @@
+import type { FileName } from "../source-code/data-types.ts";
+
 import { existsSync } from "jsr:@std/fs/exists";
-import { FileName } from "../source-code/data-types.ts";
 
 export type FileExtension = ".lst" | ".hex";
 
