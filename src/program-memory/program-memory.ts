@@ -76,16 +76,19 @@ export const programMemory = (
     }
 
     const origin = (newAddress: number): DirectiveResult => {
-        const theLine = currentLine.directiveBackdoor();
-        if (theLine != undefined && [...theLine.code].length > 0) {
-            return bagOfFailures([boringFailure("programMemory_cantOrg")]);
+        const theLine = currentLine.directiveBackdoor()!;
+        if (theLine.code.length > 0) {
+            theLine.failures.push(boringFailure("programMemory_cantOrg"));
+            return emptyBag();
         }
 
         const result = setAddress(newAddress);
-        if (result.type != "failures") {
+        if (result.type == "failures") {
+            theLine.withFailures(result.it);
+        } else {
             theLine!.address = address;
         }
-        return result;
+        return emptyBag();
     };
 
     const label = (symbolName: string): DirectiveResult =>
