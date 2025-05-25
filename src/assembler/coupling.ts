@@ -6,7 +6,8 @@ import type { ReaderMethod } from "../source-code/file-stack.ts";
 
 import { dataMemoryCoupling } from "../data-memory/coupling.ts";
 import { dataMemory } from "../data-memory/data-memory.ts";
-import { deviceDirective } from "../device/directive.ts";
+import { deviceChooser } from "../device/chooser.ts";
+import { deviceCoupling } from "../device/coupling.ts";
 import { deviceSettings } from "../device/settings.ts";
 import { instructionSet } from "../device/instruction-set.ts";
 import { functionDirectives } from "../directives/function-directives.ts";
@@ -50,13 +51,15 @@ export const coupling = (
     const $instructionSet = instructionSet($symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
     const $dataMemory = dataMemory($symbolTable);
-    const $objectCode = objectCode($instructionSet, $programMemory, $currentLine);
-
-
-
-
-
-
+    const $objectCode = objectCode(
+        $instructionSet, $programMemory, $currentLine
+    );
+    const $deviceSettings = deviceSettings(
+        $instructionSet, $cpuRegisters, $symbolTable
+    );
+    const $deviceChooser = deviceChooser(
+        $deviceSettings, deviceFileOperations
+    );
 
     const withDirectives = <Component extends object>(component: Component) => {
         for (const property in component) {
@@ -70,26 +73,11 @@ export const coupling = (
         return component;
     }
 
-
-
-
-    const $listing = listing(
-        outputFile, fileName, failureMessageTranslator, $symbolTable
-    );
-    const $hexFile = hexFile(outputFile, fileName);
-
-    const $deviceSettings = deviceSettings(
-        $instructionSet, $cpuRegisters, $symbolTable
-    );
-
-    withDirectives($cpuRegisters);
+    withDirectives(deviceCoupling($deviceChooser));
     withDirectives(functionDirectives);
-    withDirectives(deviceDirective($deviceSettings, deviceFileOperations));
-
     const $programMemoryCoupling = withDirectives(
         programMemoryCoupling($programMemory)
     );
-
     return thePipeline(
         withDirectives(sourceCodeCoupling($fileStack)).lines,
         [
@@ -103,6 +91,9 @@ export const coupling = (
             withDirectives(dataMemoryCoupling($dataMemory)).reset,
             withDirectives(symbolTableCoupling($symbolTable)).reset
         ],
-        [$listing, $hexFile]
+        [
+            listing(outputFile, fileName, failureMessageTranslator, $symbolTable),
+            hexFile(outputFile, fileName)
+        ]
     );
 };

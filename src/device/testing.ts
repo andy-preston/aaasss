@@ -1,7 +1,7 @@
 import { currentLine } from "../line/current-line.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { deviceDirective } from "./directive.ts";
+import { deviceChooser } from "./chooser.ts";
 import { defaultDeviceFinder, defaultTomlLoader } from "./file.ts";
 import { instructionSet } from "./instruction-set.ts";
 import { deviceSettings } from "./settings.ts";
@@ -14,14 +14,14 @@ export const systemUnderTest = () => {
     const $deviceSettings = deviceSettings(
         $instructionSet, $cpuRegisters, $symbolTable
     );
-    const $deviceDirective = deviceDirective(
+    const $deviceChooser = deviceChooser(
         $deviceSettings, [defaultDeviceFinder, defaultTomlLoader]
     );
     return {
         "currentLine": $currentLine,
         "symbolTable": $symbolTable,
         "instructionSet": $instructionSet,
-        "deviceDirective": $deviceDirective.deviceDirective
+        "deviceChooser": $deviceChooser
     };
 }
 

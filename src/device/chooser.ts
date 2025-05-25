@@ -1,15 +1,14 @@
-import type { StringDirective } from "../directives/bags.ts";
 import type { StringOrFailures } from "../failure/bags.ts";
 import type { DeviceSpec, SpecItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./file.ts";
 import type { DeviceSettings } from "./settings.ts";
 
-export const deviceDirective = (
+export const deviceChooser = (
     deviceSettings: DeviceSettings, fileOperations: DeviceFileOperations
 ) => {
     const [deviceFinder, loadTomlFile] = fileOperations;
 
-    const device = (name: string): StringOrFailures => {
+    return (name: string): StringOrFailures => {
         const fullSpec: SpecItems = {};
 
         const loadSpec = (spec: SpecItems) => {
@@ -36,10 +35,6 @@ export const deviceDirective = (
         }
         return deviceSettings(name, fullSpec);
     };
-
-    const deviceDirective: StringDirective = {
-        "type": "stringDirective", "it": device
-    };
-
-    return { "deviceDirective": deviceDirective };
 };
+
+export type DeviceChooser = ReturnType<typeof deviceChooser>;

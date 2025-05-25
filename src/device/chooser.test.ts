@@ -1,7 +1,6 @@
-import type { AssertionFailure, ClueFailure, DefinitionFailure, Failure } from "../failure/bags.ts";
+import type { ClueFailure, DefinitionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { directiveFunction } from "../directives/directive-function.ts";
 import { line } from "../line/line-types.ts";
 import { systemUnderTest } from "./testing.ts";
 
@@ -11,7 +10,7 @@ const mockDefiningLine = (fileName: string, lineNumber: number) =>
 Deno.test("You can choose any device that has a definition file", () => {
     for (const deviceName of ["AT-Tiny 84", "AT_Tiny 24", "AT.Tiny 44"]) {
         const system = systemUnderTest();
-        const result = system.deviceDirective.it(deviceName);
+        const result = system.deviceChooser(deviceName);
         expect(result.type).not.toBe("failures");
         expect(result.it).toBe("");
     }
@@ -23,10 +22,10 @@ Deno.test("Choosing multiple devices results in failure", () => {
     const system = systemUnderTest();
     system.currentLine.forDirectives(mockDefiningLine("plop.asm", 23));
     {
-        const result = system.deviceDirective.it(firstName);
+        const result = system.deviceChooser(firstName);
         expect(result.type).not.toBe("failures");
     } {
-        const result = system.deviceDirective.it(secondName);
+        const result = system.deviceChooser(secondName);
         expect(result.type).toBe("failures");
         const failures = result.it as Array<Failure>;
         expect(failures.length).toBe(1);
@@ -45,10 +44,10 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
     const system = systemUnderTest();
     system.currentLine.forDirectives(mockDefiningLine("plop.asm", 23));
     {
-        const result = system.deviceDirective.it(firstName);
+        const result = system.deviceChooser(firstName);
         expect(result.type).not.toBe("failures");
     } {
-        const result = system.deviceDirective.it(secondName);
+        const result = system.deviceChooser(secondName);
         expect(result.type, "failures");
         const failures = result.it as Array<Failure>;
         expect(failures.length).toBe(1);
@@ -61,7 +60,7 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
 
 Deno.test("Choosing an non-existant device returns a Failure", () => {
     const system = systemUnderTest();
-    const result = system.deviceDirective.it("notARealDevice");
+    const result = system.deviceChooser("notARealDevice");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -71,30 +70,9 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
     expect(failure.clue).toBe("./devices/notarealdevice.toml");
 });
 
-Deno.test("The device name must be present", () => {
-    const system = systemUnderTest();
-    const device = directiveFunction("device", system.deviceDirective);
-    const result = device();
-    expect(result.type).toBe("failures");
-    const failures = result.it as Array<Failure>;
-    expect(failures.length).toBe(1);
-    expect(failures[0]!.kind).toBe("parameter_count");
-    const failure = failures[0] as AssertionFailure;
-    expect(failure.expected).toBe("1");
-    expect(failure.actual).toBe("0");
-});
-
-Deno.test("The device name must be present and a string", () => {
-    const system = systemUnderTest();
-    const device = directiveFunction("device", system.deviceDirective);
-    const result = device("at tiny 24");
-    expect(result.type).not.toBe("failures");
-    expect(result.it).toBe("");
-});
-
 Deno.test("It correctly interprets the hex stings in the TOML files", () => {
     const system = systemUnderTest();
-    const result = system.deviceDirective.it("ATTiny2313");
+    const result = system.deviceChooser("ATTiny2313");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("");
     const value = system.symbolTable.symbolValue("TCCR1A");
