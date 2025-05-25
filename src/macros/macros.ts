@@ -53,9 +53,10 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         }
 
         macroList.set(definingName, definingMacro!);
-        if (useMacroDirective != undefined) {
-            symbolTable.userSymbol(definingName, useMacroDirective);
+        if (useMacroDirective == undefined) {
+            throw new Error("Macro use directive is not defined");
         }
+        symbolTable.userSymbol(definingName, useMacroDirective);
         definingMacro = undefined;
         definingName = "";
         return emptyBag();

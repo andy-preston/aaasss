@@ -41,6 +41,9 @@ export const systemUnderTest = () => {
     const $symbolTablePipeline = symbolTablePipeline($symbolTable);
     const $mockFileStack = mockFileStack();
     const $macros = macros($symbolTable, $mockFileStack);
+    $macros.directiveForMacroUse({
+        "type": "functionUseDirective", "it": $macros.use
+    });
     return {
         "symbolTable": $symbolTable,
         "symbolTablePipeline": $symbolTablePipeline,

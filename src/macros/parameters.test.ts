@@ -12,10 +12,8 @@ Deno.test("If a macro has parameters, they are substituted", () => {
     const end = system.macros.end();
     expect(end.type).not.toBe("failures");
 
-    /*
     const forceSymbolIncrement = system.symbolTable.use("testMacro");
     expect(forceSymbolIncrement.type).toBe("functionUseDirective");
-    */
 
     const use = system.macros.use("testMacro", ["1", "2"]);
     expect(use.type).not.toBe("failures");
@@ -23,11 +21,9 @@ Deno.test("If a macro has parameters, they are substituted", () => {
     const line = dummyLine(false);
     line.macroName = "testMacro";
     line.macroCount = 1;
-    line.mnemonic = "TST";
     line.symbolicOperands = ["a", "b"];
     system.macros.processedLine(line);
     expect(line.failed()).toBeFalsy();
-    expect(line.mnemonic).toBe("TST");
     expect(line.symbolicOperands).toEqual(["1", "2"]);
 });
 

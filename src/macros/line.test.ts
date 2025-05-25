@@ -92,11 +92,14 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
     const end = system.macros.end();
     expect(end.type).not.toBe("failures");
 
+    const forceSymbolIncrement = system.symbolTable.use("testMacro");
+    expect(forceSymbolIncrement.type).toBe("functionUseDirective");
+
     const use = system.macros.use("testMacro", []);
     expect(use.type).not.toBe("failures");
     const playback = [...system.mockFileStack.lines(1)];
     expect(playback.length).toBe(testLines.length);
-    playback.forEach((line) => {
+    playback.forEach(line => {
         system.macros.processedLine(line);
         expect(line.macroName).toBe("testMacro");
         expect(line.macroCount).toBe(1);
