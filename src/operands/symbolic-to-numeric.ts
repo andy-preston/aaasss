@@ -17,7 +17,7 @@ import { indexOperands } from "./index-operands.ts";
 export const symbolicToNumeric = (
     symbolTable: SymbolTable, cpuRegisters: CpuRegisters,
     jsExpression: JsExpression
-) => {
+): PipelineStage => {
     const valueAndType = (
         symbolicOperand: SymbolicOperand
     ): [NumberOrFailures, OperandType] => {
@@ -34,7 +34,7 @@ export const symbolicToNumeric = (
             : [numberBag(parseInt(numeric.it)), "number"];
     };
 
-    const converted: PipelineStage = (line: Line) => {
+    return (line: Line) => {
         // If we're recording a macro - the symbolic operands are going to be
         // re-defined on playback and the numeric operands re-calculated then
         // and there's nothing much to do here.
@@ -68,10 +68,6 @@ export const symbolicToNumeric = (
         }
         line.numericOperands = operands<NumericOperands>(numericOperands);
         line.operandTypes = operands<OperandTypes>(operandTypes);
-    };
-
-    return {
-        "converted": converted
     };
 };
 

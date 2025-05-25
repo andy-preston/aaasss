@@ -1,7 +1,7 @@
 import type { DataDirective } from "../directives/bags.ts";
 import type { ObjectCode } from "./object-code.ts";
 
-export const objectCodePipeline = (objectCode: ObjectCode) => {
+export const objectCodeCoupling = (objectCode: ObjectCode) => {
 
     const pokeDirective: DataDirective = {
         "type": "dataDirective", "it": objectCode.poke
@@ -12,5 +12,3 @@ export const objectCodePipeline = (objectCode: ObjectCode) => {
         "line": objectCode.line
     };
 };
-
-export type ObjectCodePipeline = ReturnType<typeof objectCodePipeline>;

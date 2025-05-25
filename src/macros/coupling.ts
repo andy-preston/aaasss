@@ -1,7 +1,7 @@
 import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/bags.ts";
 import type { Macros } from "./macros.ts";
 
-export const macroPipeline = (macros: Macros) => {
+export const macroCoupling = (macros: Macros) => {
     const macroDirective: FunctionDefineDirective = {
         "type": "functionDefineDirective", "it": macros.define
     };
@@ -23,5 +23,3 @@ export const macroPipeline = (macros: Macros) => {
         "useMacroDirective": useMacroDirective
     };
 };
-
-export type MacroPipeline = ReturnType<typeof macroPipeline>;

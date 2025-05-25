@@ -34,7 +34,7 @@ export const listing = (
     };
 
     const messagesForLine = (line: Line) =>
-        line.failures().reduce(
+        line.failures.reduce(
             (messages, failure) =>
                 messages.concat(failureMessages(failure)),
             [] as Array<string>

@@ -4,6 +4,7 @@ import type { FailureMessageTranslator } from "../listing/languages.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { ReaderMethod } from "../source-code/file-stack.ts";
 
+import { dataMemoryCoupling } from "../data-memory/coupling.ts";
 import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceDirective } from "../device/directive.ts";
 import { deviceSettings } from "../device/settings.ts";
@@ -14,17 +15,17 @@ import { jSExpression } from "../javascript/expression.ts";
 import { embeddedJs } from "../javascript/embedded.ts";
 import { currentLine } from "../line/current-line.ts";
 import { listing } from "../listing/listing.ts";
-import { macroPipeline } from "../macros/assembly-pipeline.ts";
+import { macroCoupling } from "../macros/coupling.ts";
 import { macros } from "../macros/macros.ts";
 import { objectCode } from "../object-code/object-code.ts";
-import { objectCodePipeline } from "../object-code/assembly-pipeline.ts";
-import { symbolicToNumeric } from "../operands/assembly-pipeline.ts";
-import { programMemoryPipeline } from "../program-memory/assembly-pipeline.ts";
+import { objectCodeCoupling } from "../object-code/coupling.ts";
+import { symbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
+import { programMemoryCoupling } from "../program-memory/coupling.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { fileStack } from "../source-code/file-stack.ts";
-import { pipeLineSource } from "../source-code/assembly-pipeline.ts";
-import { symbolTablePipeline } from "../symbol-table/assembly-pipeline.ts";
+import { sourceCodeCoupling } from "../source-code/coupling.ts";
+import { symbolTableCoupling } from "../symbol-table/coupling.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { tokens } from "../tokens/assembly-pipeline.ts";
 import { assemblyPipeline as thePipeline } from "./assembly-pipeline.ts";
@@ -39,7 +40,23 @@ export const coupling = (
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $symbolTablePipeline = symbolTablePipeline($symbolTable);
+    const $fileStack = fileStack(readerMethod, fileName);
+    const $macros = macros($symbolTable, $fileStack);
+    const $jsExpression = jSExpression($symbolTable);
+    const $embeddedJs = embeddedJs($jsExpression, $currentLine);
+    const $symbolicToNumeric = symbolicToNumeric(
+        $symbolTable, $cpuRegisters, $jsExpression
+    );
+    const $instructionSet = instructionSet($symbolTable);
+    const $programMemory = programMemory($currentLine, $symbolTable);
+    const $dataMemory = dataMemory($symbolTable);
+    const $objectCode = objectCode($instructionSet, $programMemory, $currentLine);
+
+
+
+
+
+
 
     const withDirectives = <Component extends object>(component: Component) => {
         for (const property in component) {
@@ -53,26 +70,8 @@ export const coupling = (
         return component;
     }
 
-    const $fileStack = fileStack(readerMethod, fileName);
-    const $sourcePipeline = withDirectives(pipeLineSource($fileStack));
 
-    const $macros = macros($symbolTable, $fileStack);
-    const $macroPipeline = withDirectives(macroPipeline($macros));
 
-    const $jsExpression = withDirectives(jSExpression($symbolTable));
-    const $embeddedJs = withDirectives(embeddedJs($jsExpression, $currentLine));
-    const $symbolicToNumeric = withDirectives(symbolicToNumeric(
-        $symbolTable, $cpuRegisters, $jsExpression
-    ));
-
-    const $instructionSet = instructionSet($symbolTable);
-    const $programMemory = programMemory($currentLine, $symbolTable);
-    const $programMemoryPipeline = withDirectives(
-        programMemoryPipeline($programMemory)
-    );
-    const $dataMemory = withDirectives(dataMemory($symbolTable));
-    const $objectCode = objectCode($instructionSet, $programMemory, $currentLine);
-    const $objectCodePipeline = withDirectives(objectCodePipeline($objectCode));
 
     const $listing = listing(
         outputFile, fileName, failureMessageTranslator, $symbolTable
@@ -83,24 +82,26 @@ export const coupling = (
         $instructionSet, $cpuRegisters, $symbolTable
     );
 
-    withDirectives($symbolTablePipeline);
     withDirectives($cpuRegisters);
     withDirectives(functionDirectives);
     withDirectives(deviceDirective($deviceSettings, deviceFileOperations));
-    withDirectives($objectCodePipeline);
+
+    const $programMemoryCoupling = withDirectives(
+        programMemoryCoupling($programMemory)
+    );
 
     return thePipeline(
-        $sourcePipeline.lines,
+        withDirectives(sourceCodeCoupling($fileStack)).lines,
         [
-            $programMemoryPipeline.lineAddress,
+            $programMemoryCoupling.lineAddress,
             $embeddedJs,
             tokens,
-            $programMemoryPipeline.lineLabel,
-            $macroPipeline.processedLine,
-            $symbolicToNumeric.converted,
-            $objectCodePipeline.line,
-            $dataMemory.reset,
-            $symbolTablePipeline.reset
+            $programMemoryCoupling.lineLabel,
+            withDirectives(macroCoupling($macros)).processedLine,
+            $symbolicToNumeric,
+            withDirectives(objectCodeCoupling($objectCode)).line,
+            withDirectives(dataMemoryCoupling($dataMemory)).reset,
+            withDirectives(symbolTableCoupling($symbolTable)).reset
         ],
         [$listing, $hexFile]
     );

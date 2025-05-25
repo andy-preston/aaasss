@@ -6,7 +6,6 @@ import { emptyBag } from "../assembler/bags.ts";
 import { currentLine } from "../line/current-line.ts";
 import { dummyLine, line } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
-import { symbolTablePipeline } from "../symbol-table/assembly-pipeline.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { macros } from "./macros.ts";
 
@@ -36,7 +35,6 @@ export const systemUnderTest = () => {
     const $currentLine = currentLine()
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $symbolTablePipeline = symbolTablePipeline($symbolTable);
     const $mockFileStack = mockFileStack();
     const $macros = macros($symbolTable, $mockFileStack);
     $macros.directiveForMacroUse({
@@ -44,7 +42,6 @@ export const systemUnderTest = () => {
     });
     return {
         "symbolTable": $symbolTable,
-        "symbolTablePipeline": $symbolTablePipeline,
         "mockFileStack": $mockFileStack,
         "macros": $macros,
     };

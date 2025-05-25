@@ -1,7 +1,7 @@
 import type { NumberDirective, StringDirective } from "../directives/bags.ts";
 import type { ProgramMemory } from "./program-memory.ts";
 
-export const programMemoryPipeline = (programMemory: ProgramMemory) => {
+export const programMemoryCoupling = (programMemory: ProgramMemory) => {
 
     const originDirective: NumberDirective = {
         "type": "numberDirective", "it": programMemory.origin
@@ -18,5 +18,3 @@ export const programMemoryPipeline = (programMemory: ProgramMemory) => {
         "lineLabel": programMemory.lineLabel
     };
 };
-
-export type ProgramMemoryPipeline = ReturnType<typeof programMemoryPipeline>;

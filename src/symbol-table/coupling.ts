@@ -3,7 +3,7 @@ import type { SymbolTable } from "./symbol-table.ts";
 
 import { numberBag } from "../assembler/bags.ts";
 
-export const symbolTablePipeline = (symbolTable: SymbolTable) => {
+export const symbolTableCoupling = (symbolTable: SymbolTable) => {
 
     const defineDirective: ValueDirective = {
         // This is the directive for doing a "define" operation
@@ -19,5 +19,3 @@ export const symbolTablePipeline = (symbolTable: SymbolTable) => {
         "reset": symbolTable.reset
     };
 }
-
-export type SymbolTablePipeline = ReturnType<typeof symbolTablePipeline>;
