@@ -10,7 +10,7 @@ Deno.test("Lines with no mnemonic don't bother generating code", () => {
     expect(system.line.failed()).toBeFalsy();
     expect(system.line.failures.length).toBe(0);
     expect(system.line.code.length).toBe(0);
-    expect(system.programMemory.address).toBe(0);
+    expect(system.programMemory.address()).toBe(0);
 });
 
 Deno.test("Attempting to generate code with no device selected fails", () => {
@@ -59,7 +59,7 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     const system = systemUnderTest();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(10));
-    expect(system.programMemory.address).toBe(0);
+    expect(system.programMemory.address()).toBe(0);
     system.line.mnemonic = "DES";
     system.line.symbolicOperands = ["15"];
     system.line.numericOperands = [15];
@@ -67,7 +67,7 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     system.objectCode.line(system.line);
     expect(system.line.failed()).toBeFalsy();
     expect(system.line.code).toEqual([[0x94, 0xfb]]);
-    expect(system.programMemory.address).toBe(1);
+    expect(system.programMemory.address()).toBe(1);
 });
 
 Deno.test("If a line has `isRecordingMacro == true`, no code is generated", () => {
@@ -81,7 +81,7 @@ Deno.test("If a line has `isRecordingMacro == true`, no code is generated", () =
     system.objectCode.line(system.line);
     expect(system.line.failed()).toBeFalsy();
     expect(system.line.code.length).toBe(0);
-    expect(system.programMemory.address).toBe(0);
+    expect(system.programMemory.address()).toBe(0);
 });
 
 Deno.test("Generating code will increment the programMemory address", () => {

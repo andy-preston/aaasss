@@ -15,20 +15,21 @@ export const programMemory = (
     let address = 0;
 
     const pastEnd = (newAddress: number): StringOrFailures => {
-        const bytes = symbolTable.deviceSymbolValue(
+        const bytesAvailable = symbolTable.deviceSymbolValue(
             "programMemoryBytes", "number"
         );
-        const failures = bytes.type == "failures" ? bytes : bagOfFailures([]);
-        if (bytes.type == "number") {
-            const words = bytes.it / 2;
-            if (newAddress > words) {
+        const failures = bytesAvailable.type == "failures"
+            ? bytesAvailable
+            : bagOfFailures([]);
+        if (bytesAvailable.type != "number") {
+            failures.it.push(boringFailure("programMemory_sizeUnknown"));
+        } else {
+            const wordsAvailable = bytesAvailable.it / 2;
+            if (newAddress > wordsAvailable) {
                 failures.it.push(assertionFailure(
-                    "programMemory_outOfRange",
-                    `${bytes.it / 2}`, `${newAddress - address}`
+                    "programMemory_outOfRange", `${newAddress}`, `${wordsAvailable}`
                 ));
             }
-        } else {
-            failures.it.push(boringFailure("programMemory_sizeUnknown"));
         }
         return failures.it.length > 0 ? failures : emptyBag();
     };
@@ -107,14 +108,14 @@ export const programMemory = (
         return line;
     };
 
-    const addressPlusOne = () => setAddress(address + 1);
+    const addressStep = (steps: number) => setAddress(address + steps);
 
     return {
         "relativeAddress": relativeAddress,
         "address": () => address,
         "origin": origin,
         "label": label,
-        "addressPlusOne": addressPlusOne,
+        "addressStep": addressStep,
         "lineAddress": lineAddress,
         "lineLabel": lineLabel
     };

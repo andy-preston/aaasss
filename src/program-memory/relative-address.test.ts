@@ -84,15 +84,15 @@ Deno.test("7 bit relative address can't be beyond -63 - 64 range", () => {
 Deno.test("7 bit relative address can't be beyond program memory", () => {
     const system = systemUnderTest();
     system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
+    const wordsAvailable = 100;
     system.symbolTable.deviceSymbol(
-        "programMemoryBytes", numberBag(20)
+        "programMemoryBytes", numberBag(wordsAvailable * 2)
     );
-    system.programMemory.origin(1000);
-    const result = system.programMemory.relativeAddress(23, 7);
+    const result = system.programMemory.relativeAddress(120, 7);
     expect(result.type).toBe("failures");
     const failures = result as BagOfFailures;
     const failure = failures.it[0]! as AssertionFailure;
     expect(failure.kind).toBe("programMemory_outOfRange");
-    expect(failure.expected).toBe("10");
-    expect(failure.actual).toBe("23");
+    expect(failure.expected).toBe("120");
+    expect(failure.actual).toBe(`${wordsAvailable}`);
 });

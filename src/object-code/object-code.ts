@@ -1,5 +1,6 @@
 import type { PipelineStage } from "../assembler/data-types.ts";
 import type { InstructionSet } from "../device/instruction-set.ts";
+import type { DirectiveResult } from "../directives/data-types.ts";
 import type { Failure } from "../failure/bags.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { Line } from "../line/line-types.ts";
@@ -7,7 +8,6 @@ import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { Code } from "./data-types.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
-import { DirectiveResult } from "../directives/data-types.ts";
 import { bagOfFailures, clueFailure, numericTypeFailure } from "../failure/bags.ts";
 import { encoderFor } from "./instruction-encoder-list.ts";
 
@@ -20,12 +20,11 @@ export const objectCode = (
     currentLine: CurrentLine
 ) => {
     const toLine = (line: Line, bytes: Array<number>) => {
+        let words = 0;
+
         const push = (code: Code) => {
             line.code.push(code);
-            const memoryEnd = programMemory.addressPlusOne();
-            if (memoryEnd.type == "failures") {
-                line.withFailures(memoryEnd.it);
-            }
+            words = words + 1;
         };
 
         let pair: Array<number> = [];
@@ -38,6 +37,10 @@ export const objectCode = (
         });
         if (pair.length == 1) {
             push([pair[0]!, 0]);
+        }
+        const memoryEnd = programMemory.addressStep(words);
+        if (memoryEnd.type == "failures") {
+            line.withFailures(memoryEnd.it);
         }
     };
 
@@ -55,13 +58,14 @@ export const objectCode = (
         const encoder = encoderFor(line);
         if (encoder == undefined) {
             line.withFailures([clueFailure("mnemonic_unknown", line.mnemonic)]);
-        } else {
-            toLine(line, encoder(instructionSet, programMemory));
-        }
+            return
+        };
+
+        toLine(line, encoder(instructionSet, programMemory));
     };
 
     const poke = (data: Array<number | string>): DirectiveResult => {
-        const failures: Array<Failure> = [];
+        const line = currentLine.directiveBackdoor()!;
 
         const bytes = data.flatMap(
             (item, index) => {
@@ -74,7 +78,7 @@ export const objectCode = (
                         "type_bytesOrString", item, 0, 0xff
                     );
                     failure.location = {"parameter": index};
-                    failures.push(failure);
+                    line.failures.push(failure);
                     return [];
                 }
 
@@ -82,8 +86,8 @@ export const objectCode = (
             }
         );
 
-        toLine(currentLine.directiveBackdoor()!, bytes);
-        return failures.length > 0 ? bagOfFailures(failures) : emptyBag();
+        toLine(line, bytes);
+        return emptyBag();
     };
 
     return { "line": line, "poke": poke };

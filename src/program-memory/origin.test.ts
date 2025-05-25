@@ -42,19 +42,19 @@ Deno.test("Device name is used to determine if properties have been set", () => 
 Deno.test("Origin addresses must be progmem size when a device is chosen", () => {
     const system = systemUnderTest();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    const bytesAvailable = 100;
+    const wordsAvailable = 100;
     system.symbolTable.deviceSymbol(
-        "programMemoryBytes", numberBag(bytesAvailable)
+        "programMemoryBytes", numberBag(wordsAvailable * 2)
     );
-    const tryOrigin = 92;
+    const tryOrigin = 110;
     const result = system.programMemory.origin(tryOrigin);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     expect(failures[0]!.kind).toBe("programMemory_outOfRange");
     const failure = failures[0] as AssertionFailure;
-    expect(failure.expected).toBe(`${bytesAvailable / 2}`);
-    expect(failure.actual).toBe(`${tryOrigin}`);
+    expect(failure.actual).toBe(`${wordsAvailable}`);
+    expect(failure.expected).toBe(`${tryOrigin}`);
 });
 
 Deno.test("Origin directive sets current address", () => {
