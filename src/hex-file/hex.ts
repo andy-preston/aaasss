@@ -49,6 +49,7 @@ export const hexFile = (outputFile: OutputFile, topFileName: FileName) => {
         if (dataRecords.length == 0) {
             return;
         }
+
         file.write(":020000020000FC");
         dataRecords.forEach(file.write);
         file.write(":00000001FF");

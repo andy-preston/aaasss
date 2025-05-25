@@ -1,4 +1,5 @@
 import type { NumberDirective } from "./bags.ts";
+
 import { stringBag } from "../assembler/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 
