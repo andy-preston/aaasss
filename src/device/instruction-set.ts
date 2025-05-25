@@ -17,6 +17,14 @@ const instructionGroups: Map<string, Array<Mnemonic>> = new Map([
     ["SPM.Z+",          ["SPM.Z+"]],
 ]);
 
+const alternatives: Map<Mnemonic, Mnemonic> = new Map([
+    ["CALL",   "RCALL"],
+    ["EICALL", "ICALL"],
+    ["JMP",    "RJMP"],
+    ["EIJMP",  "IJMP"],
+    ["ELPM",   "LPM"]
+]);
+
 export const instructionSet = (symbolTable: SymbolTable) => {
     let reducedCore = false;
     let unsupportedInstructions: Array<Mnemonic> = [];
@@ -31,22 +39,6 @@ export const instructionSet = (symbolTable: SymbolTable) => {
             ? bagOfFailures([boringFailure("device_notSelected")])
             : booleanBag(reducedCore);
 
-    const alternatives = (mnemonic: Mnemonic): Mnemonic | undefined => {
-        switch (mnemonic) {
-            case "CALL":
-                return "RCALL";
-            case "EICALL":
-                return unsupportedInstructions.includes("CALL") ? "RCALL" : "CALL";
-            case "JMP":
-                return "RJMP";
-            case "EIJMP":
-                return unsupportedInstructions.includes("JMP") ? "RJMP" : "JMP";
-            case "ELPM":
-                return "LPM";
-        }
-        return undefined;
-    }
-
     const isUnsupported = (mnemonic: Mnemonic): BooleanOrFailures =>
         deviceNotDefined()
         ? bagOfFailures([
@@ -55,7 +47,7 @@ export const instructionSet = (symbolTable: SymbolTable) => {
         ])
         : unsupportedInstructions.includes(mnemonic)
         ? bagOfFailures([supportFailure(
-            "notSupported_mnemonic", mnemonic, alternatives(mnemonic)
+            "notSupported_mnemonic", mnemonic, alternatives.get(mnemonic)
         )])
         : booleanBag(false);
 
