@@ -40,17 +40,12 @@ const mappedCall = (symbolName: string, symbol: SymbolBag) => {
 const trailingSemicolons = /;*$/;
 
 export const jSExpression = (symbolTable: SymbolTable) => {
-
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
-            return symbolName in globalThis || typeof symbolName != "string"
-                ? false
-                : symbolTable.isDefinedSymbol(symbolName);
+            return symbolTable.isDefinedSymbol(symbolName);
         },
         get(_target: object, symbolName: string) {
-            return typeof symbolName == "string"
-                ? mappedCall(symbolName, symbolTable.use(symbolName))
-                : undefined;
+            return mappedCall(symbolName, symbolTable.use(symbolName));
         },
         set() {
             throw new ReferenceError("this_assignment");
