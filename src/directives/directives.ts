@@ -1,7 +1,7 @@
 import type { BagOrFailures, Failure } from "../failure/bags.ts";
 import type {
-    VoidDirective, StringDirective, NumberDirective, ValueDirective,
-    FunctionDefineDirective, FunctionUseDirective, DataDirective
+    VoidDirective, StringDirective, NumberDirective, BooleanDirective,
+    ValueDirective, FunctionDefineDirective, FunctionUseDirective, DataDirective
 } from "./bags.ts";
 import type { JavaScriptFunction } from "./data-types.ts";
 
@@ -90,6 +90,16 @@ export const numberDirective = (
     return failures.length > 0
         ? bagOfFailures(failures)
         : directive.it(numeric.it as number);
+};
+
+export const booleanDirective = (
+    directive: BooleanDirective
+): JavaScriptFunction => (...parameters: unknown[]) => {
+    return parameters.length != 1
+        ? bagOfFailures([assertionFailure(
+            "parameter_count", "1", `${parameters.length}`
+        )])
+        : directive.it(Boolean(parameters[0]));
 };
 
 export const valueDirective = (

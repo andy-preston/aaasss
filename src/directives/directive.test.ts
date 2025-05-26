@@ -170,6 +170,39 @@ Deno.test("A NumberDirective has a single number or numeric string parameter", (
     expect((correctNumber as StringBag).it).toBe("57");
 });
 
+Deno.test("A boolean directive can't have more than 1 parameter", () => {
+    const untyped = directiveFunction(irrelevantName, {
+        "type": "booleanDirective",
+        "it": (parameter: boolean) => stringBag(`${parameter}`)
+    });
+
+    const tooMany = untyped(true, false);
+    expect(tooMany.type).toBe("failures");
+    const failures = tooMany.it as Array<Failure>;
+    expect(failures.length).toBe(1);
+    const failure = failures[0] as AssertionFailure;
+    expect(failure.kind).toBe("parameter_count");
+    expect(failure.expected).toBe("1");
+    expect(failure.actual).toBe("2");
+});
+
+Deno.test("A boolean directive has a single parameter of any type", () => {
+    const untyped = directiveFunction(irrelevantName, {
+        "type": "booleanDirective",
+        "it": (parameter: boolean) => stringBag(`${parameter}`)
+    });
+    (["true", 1, 1000, {}] as Array<unknown>).forEach(truthy => {
+        const result = untyped(truthy);
+        expect(result.type).not.toBe("failures");
+        expect((result as StringBag).it).toBe("true");
+    });
+    (["", 0, -0, undefined, null] as Array<unknown>).forEach(falsy => {
+        const result = untyped(falsy);
+        expect(result.type).not.toBe("failures");
+        expect((result as StringBag).it).toBe("false");
+    });
+});
+
 Deno.test("A value directive can't have a number as the first parameter", () => {
     const untyped = directiveFunction(irrelevantName, {
         "type": "valueDirective",

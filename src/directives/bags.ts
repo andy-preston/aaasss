@@ -15,6 +15,11 @@ export type NumberDirective = {
     "it": (parameter: number) => DirectiveResult
 };
 
+export type BooleanDirective = {
+    "type": "booleanDirective",
+    "it": (parameter: boolean) => DirectiveResult
+};
+
 export type ValueDirective = {
     "type": "valueDirective",
     "it": (symbolName: string, symbolValue: number) => DirectiveResult
@@ -36,7 +41,7 @@ export type FunctionUseDirective = {
 };
 
 export type BaggedDirective = VoidDirective
-    | StringDirective | NumberDirective
+    | StringDirective | NumberDirective | BooleanDirective
     | ValueDirective | DataDirective
     | FunctionDefineDirective | FunctionUseDirective;
 
