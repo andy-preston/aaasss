@@ -70,14 +70,14 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     expect(system.programMemory.address()).toBe(1);
 });
 
-Deno.test("If a line has `isRecordingMacro == true`, no code is generated", () => {
+Deno.test("If a line has `isDefiningMacro == true`, no code is generated", () => {
     const system = systemUnderTest();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.line.mnemonic = "DES";
     system.line.symbolicOperands = ["15"];
     system.line.numericOperands = [15];
     system.line.operandTypes = ["number"];
-    system.line.isRecordingMacro = true;
+    system.line.isDefiningMacro = true;
     system.objectCode.line(system.line);
     expect(system.line.failed()).toBeFalsy();
     expect(system.line.code.length).toBe(0);

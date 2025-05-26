@@ -38,7 +38,7 @@ export const line = (
         "assemblySource": "" as SourceCode,
         "label": "" as Label,
         "mnemonic": "" as Mnemonic,
-        "isRecordingMacro": false,
+        "isDefiningMacro": false,
         "macroName": macroName,
         "macroCount": macroCount,
         "symbolicOperands": [] as SymbolicOperands,

@@ -94,7 +94,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
             definingMacro!.lines.push(lineToPush);
         }
         firstLine = false;
-        line.isRecordingMacro = true;
+        line.isDefiningMacro = true;
     };
 
     const processedLine: PipelineStage = (line: Line) => {

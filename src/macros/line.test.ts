@@ -17,7 +17,7 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
         line.label = label;
         line.mnemonic = mnemonic;
         system.macros.processedLine(line);
-        expect(line.isRecordingMacro).toBe(false);
+        expect(line.isDefiningMacro).toBe(false);
         expect(line.macroName).toBe("");
         expect(line.macroCount).toBe(0);
         expect(line.label).toBe(label);
@@ -35,7 +35,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
         line.label = label;
         line.mnemonic = mnemonic;
         system.macros.processedLine(line);
-        expect(line.isRecordingMacro).toBe(true);
+        expect(line.isDefiningMacro).toBe(true);
     });
     const end = system.macros.end();
     expect(end.type).not.toBe("failures");
@@ -46,7 +46,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
         line.label = label;
         line.mnemonic = mnemonic;
         system.macros.processedLine(line);
-        expect(line.isRecordingMacro).toBe(false);
+        expect(line.isDefiningMacro).toBe(false);
     });
 });
 

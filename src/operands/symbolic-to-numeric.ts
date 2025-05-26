@@ -38,7 +38,7 @@ export const symbolicToNumeric = (
         // If we're recording a macro - the symbolic operands are going to be
         // re-defined on playback and the numeric operands re-calculated then
         // and there's nothing much to do here.
-        if (line.isRecordingMacro) {
+        if (line.isDefiningMacro) {
             return;
         }
 

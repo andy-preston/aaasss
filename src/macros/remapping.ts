@@ -59,7 +59,7 @@ export const remapping = (macroList: MacroList) => {
     };
 
     const remapped = (line: Line) => {
-        line.isRecordingMacro = false;
+        line.isDefiningMacro = false;
         if (line.macroName !== "") {
             line.label = remappedLabel(line);
             line.symbolicOperands = operands<SymbolicOperands>(

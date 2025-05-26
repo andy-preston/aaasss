@@ -44,7 +44,7 @@ export const objectCode = (
     };
 
     const line: PipelineStage = (line: Line) => {
-        if (line.isRecordingMacro || line.mnemonic == "") {
+        if (line.isDefiningMacro || line.mnemonic == "") {
             return;
         }
 
