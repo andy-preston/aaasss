@@ -132,7 +132,7 @@ Deno.test("A macro can be called from inside another macro", () => {
     ]);
 });
 
-Deno.test("Any JS in a macro is executed during definition and playback but andy code it may generate is discarded", () => {
+Deno.test("Any JS in a macro is executed during definition and playback but any code it may generate is discarded", () => {
     const demo = docTest();
     demo.source("", [
         '    {{ device("ATTiny24"); }}',
