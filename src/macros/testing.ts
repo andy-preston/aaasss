@@ -37,9 +37,6 @@ export const systemUnderTest = () => {
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $mockFileStack = mockFileStack();
     const $macros = macros($symbolTable, $mockFileStack);
-    $macros.directiveForMacroUse({
-        "type": "functionUseDirective", "it": $macros.use
-    });
     return {
         "symbolTable": $symbolTable,
         "mockFileStack": $mockFileStack,

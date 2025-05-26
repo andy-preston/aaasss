@@ -14,16 +14,12 @@ import { removedDirective } from "./removed-directive.ts";
 
 export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
     const macroList: MacroList = new Map();
-    let useMacroDirective: FunctionUseDirective | undefined = undefined;
+
     let definingMacro: Macro | undefined = undefined;
     let definingName: MacroName = "";
     let firstLine = false;
 
     const remap = remapping(macroList);
-
-    const directiveForMacroUse = (directive: FunctionUseDirective) => {
-        useMacroDirective = directive;
-    };
 
     const isDefining = () => definingMacro != undefined || definingName != "";
 
@@ -87,6 +83,10 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         return emptyBag();
     };
 
+    const useMacroDirective: FunctionUseDirective = {
+        "type": "functionUseDirective", "it": use
+    };
+
     const recordedLine = (line: Line) => {
         const lineToPush = firstLine
             ? removedDirective(definingName, line) : line;
@@ -115,8 +115,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
 
     return {
         "define": define, "end": end, "use": use,
-        "processedLine": processedLine,
-        "directiveForMacroUse": directiveForMacroUse
+        "processedLine": processedLine
     };
 };
 

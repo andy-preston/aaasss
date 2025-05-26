@@ -1,4 +1,4 @@
-import type { FunctionDefineDirective, FunctionUseDirective, VoidDirective } from "../directives/bags.ts";
+import type { FunctionDefineDirective, VoidDirective } from "../directives/bags.ts";
 import type { Macros } from "./macros.ts";
 
 export const macroCoupling = (macros: Macros) => {
@@ -10,16 +10,9 @@ export const macroCoupling = (macros: Macros) => {
         "type": "voidDirective", "it": macros.end
     };
 
-    const useMacroDirective: FunctionUseDirective = {
-        "type": "functionUseDirective", "it": macros.use
-    };
-
-    macros.directiveForMacroUse(useMacroDirective);
-
     return {
         "processedLine": macros.processedLine,
         "macroDirective": macroDirective,
-        "endDirective": endDirective,
-        "useMacroDirective": useMacroDirective
+        "endDirective": endDirective
     };
 };
