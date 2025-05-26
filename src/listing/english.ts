@@ -200,6 +200,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Defined value", "Actual value",
         failure as NumericTypeFailure
     )),
+    "type_6Bits": (failure) => withLocation(failure, numericTypeFailure(
+        ["6-bit value out of range"],
+        "Defined value", "Actual value",
+        failure as NumericTypeFailure
+    )),
     "type_positive": (failure) => withLocation(failure, numericTypeFailure(
         ["This should be a positive number only"],
         "Defined value", "Actual value",
@@ -212,6 +217,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
     )),
     "type_registerImmediate": (failure) => withLocation(failure, numericTypeFailure(
         ["This should be an immediate register only"],
+        "Defined value", "Actual value",
+        failure as NumericTypeFailure
+    )),
+    "type_registerPair": (failure) => withLocation(failure, numericTypeFailure(
+        ["This should be a register pair only"],
         "Defined value", "Actual value",
         failure as NumericTypeFailure
     )),

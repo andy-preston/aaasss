@@ -10,8 +10,9 @@ import { operands } from "./data-types.ts";
 type Scaler = (value: NumericOperand) => NumericOperand;
 
 const scalers: Map<NumericType, Scaler> = new Map([
-    ["type_registerImmediate", (value) => value - 16],
-    ["type_ioPort", (value) => value - 0x20]
+    ["type_registerImmediate", value => value - 16],
+    ["type_ioPort",            value => value - 0x20],
+    ["type_registerPair",      value => (value - 24) / 2]
 ]);
 
 export type OperandRequirement = [OperandType, NumericType];

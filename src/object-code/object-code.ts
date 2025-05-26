@@ -74,7 +74,7 @@ export const objectCode = (
 
                 if (item < 0 || item > 0xff) {
                     const failure = numericTypeFailure(
-                        "type_bytesOrString", item, 0, 0xff
+                        "type_bytesOrString", item, 0, 0xff, []
                     );
                     failure.location = {"parameter": index};
                     line.failures.push(failure);

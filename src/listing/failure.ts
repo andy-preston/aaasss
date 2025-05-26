@@ -43,6 +43,9 @@ export const numericTypeFailure = (
             failure.max == undefined ? "" : '${failure.max}',
         ].join(""));
     };
+    if (failure.allowed != "") {
+        extra.push(failure.allowed);
+    }
     extra.push(`${actual}: ${failure.value}`);
     return messages.concat(extra);
 };

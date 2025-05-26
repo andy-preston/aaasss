@@ -1,5 +1,5 @@
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
-import type { NumericType } from "../numeric-values/types.ts";
+import type { AllowedValues, Max, Min, NumericType } from "../numeric-values/types.ts";
 import type { OperandIndex } from "../operands/data-types.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 
@@ -29,10 +29,10 @@ export type AssertionFailure = ReturnType<typeof assertionFailure>;
 
 export const numericTypeFailure = (
     kind: typeof failureKinds["numericType"][number] | NumericType,
-    value: unknown, min: number | undefined, max: number | undefined
+    value: unknown, min: Min, max: Max, allowed: AllowedValues
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
-    "value": value, "min": min, "max": max
+    "value": value, "min": min, "max": max, "allowed": allowed.join(", ")
 });
 
 export type NumericTypeFailure = ReturnType<typeof numericTypeFailure>;

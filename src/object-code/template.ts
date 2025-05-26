@@ -14,7 +14,7 @@ const bitSource = (decimal: number) => {
 };
 
 type TemplateOperand =
-    | "r" // register
+    | "r" // register (pair)
     | "s" // source register
     | "d" // destination register
     | "a" // address

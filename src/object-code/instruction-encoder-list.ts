@@ -12,12 +12,13 @@ import { singleRegisterBit } from "../instructions/single-register-bit.ts";
 import { singleRegisterDirect } from "../instructions/single-register-direct.ts";
 import { statusManipulation } from "../instructions/status-manipulation.ts";
 import { twoRegisterDirect } from "../instructions/two-register-direct.ts";
+import { wordImmediate } from "../instructions/word-immediate.ts";
 
 const instructionEncoderList = [
     branchOnStatus, byteImmediate, dataDirect, des, implicit, ioBit, ioByte,
     programMemory, relativeProgram,
     singleRegisterBit, singleRegisterDirect, statusManipulation,
-    twoRegisterDirect
+    twoRegisterDirect, wordImmediate
 ] as const;
 
 export const encoderFor = (line: Line) => {

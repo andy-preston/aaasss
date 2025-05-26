@@ -47,9 +47,9 @@ export const programMemory = (
         const min = -max + 1;
         const distance = absoluteAddress - address - 1;
         if (distance < min || distance >= max) {
-            return bagOfFailures([
-                numericTypeFailure("type_relativeAddress", distance, min, max)
-            ]);
+            return bagOfFailures([numericTypeFailure(
+                "type_relativeAddress", distance, min, max, []
+            )]);
         }
 
         return numberBag(distance < 0 ? range + distance : distance);

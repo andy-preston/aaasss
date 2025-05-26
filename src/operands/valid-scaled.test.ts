@@ -95,9 +95,11 @@ Deno.test("The required numeric type must match the actual type", () => {
         "type_byte": 0xda,
         "type_ioPort": 0x23,
         "type_nybble": 8,
+        "type_6Bits": 42,
         "type_positive": 23,
         "type_register": 30,
         "type_registerImmediate": 16,
+        "type_registerPair": 28
     } as const;
     for (const [key, value] of Object.entries(testData)) {
         const numericType = key as NumericType;
@@ -121,9 +123,11 @@ Deno.test("If numeric types don't match the line fails", () => {
         "type_byte": 0xcafe,
         "type_ioPort": 0x60,
         "type_nybble": 0xab,
+        "type_6Bits": 0b10000000,
         "type_positive": -10,
         "type_register": 40,
         "type_registerImmediate": 3,
+        "type_registerPair": 3,
         "type_word": 0xdeadbeef,
     } as const;
     for (const [key, value] of Object.entries(testData)) {
