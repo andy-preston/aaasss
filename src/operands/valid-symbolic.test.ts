@@ -10,7 +10,7 @@ Deno.test("Line must have at least expected parameters", () => {
     line.numericOperands = [0];
     line.operandTypes = ["index"];
     validSymbolic(line, [["X", "X+"], ["Z"]]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(2);
     {
         const failure = line.failures[0] as AssertionFailure;
@@ -32,7 +32,7 @@ Deno.test("line must not exceed expected parameters", () => {
     line.numericOperands = [0, 0];
     line.operandTypes = ["index", "index"];
     validSymbolic(line, [["X", "X+"]]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0] as AssertionFailure;
     expect(failure.kind).toBe("operand_count");
@@ -46,7 +46,7 @@ Deno.test("line and expectation must not be different", () => {
     line.numericOperands = [0, 0];
     line.operandTypes = ["index", "index"];
     validSymbolic(line, [["Z", "Z+"], ["Z"]]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(2);
     {
         const failure = line.failures[0] as AssertionFailure;
@@ -69,6 +69,6 @@ Deno.test("Everything's lovely when actual and expected match", () => {
     line.numericOperands = [0, 0];
     line.operandTypes = ["index", "index"];
     validSymbolic(line, [["X", "X+"], ["Y", "Y+"]]);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.failures.length).toBe(0);
 });

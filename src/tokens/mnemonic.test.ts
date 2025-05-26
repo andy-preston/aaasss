@@ -15,7 +15,7 @@ Deno.test("Mnemonics are only letters", () => {
     const line = dummyLine(false);
     line.assemblySource = "LPM.X+ R16";
     tokens(line);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0]!;
     expect(failure.kind).toBe("syntax_invalidMnemonic");

@@ -10,7 +10,7 @@ Deno.test("the last line has a failure is a definition wasn't closed", () => {
     expect(define.type).not.toBe("failures");
     const line = dummyLine(true);
     system.macros.processedLine(line);
-    expect(line).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0]!;
     expect(failure.kind).toBe("macro_noEnd");

@@ -18,7 +18,7 @@ Deno.test("Device demo", () => {
         "",
         "R30 |   |   | REGISTER | 1"
     ]);
-    expectFileExists(".hex").toBeTruthy();
+    expectFileExists(".hex").toBe(true);
 });
 
 Deno.test("A device must be specified before any instructions can be assembled", () => {
@@ -35,7 +35,7 @@ Deno.test("A device must be specified before any instructions can be assembled",
         "                        mnemonic_supportedUnknown",
         "                        clue: DES"
     ]);
-    expectFileExists(".hex").toBeFalsy();
+    expectFileExists(".hex").toBe(false);
 });
 
 Deno.test("The device name must be a string",() => {
@@ -52,7 +52,7 @@ Deno.test("The device name must be a string",() => {
         "                        exception: ReferenceError",
         "                        message: ATTiny24 is not defined",
     ]);
-    expectFileExists(".hex").toBeFalsy();
+    expectFileExists(".hex").toBe(false);
 });
 
 Deno.test("You can only specify a single device",() => {
@@ -76,5 +76,5 @@ Deno.test("You can only specify a single device",() => {
         "                        name: deviceName",
         "                        definition: /var/tmp/demo.asm:1",
     ]);
-    expectFileExists(".hex").toBeFalsy();
+    expectFileExists(".hex").toBe(false);
 });

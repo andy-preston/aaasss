@@ -25,5 +25,5 @@ Deno.test("Definition errors give the location of the original definition", () =
         "R11  |   |   | REGISTER            | 1",
         "R12  |   |   | REGISTER            | 1"
     ]);
-    expectFileExists(".hex").toBeFalsy();
+    expectFileExists(".hex").toBe(false);
 });

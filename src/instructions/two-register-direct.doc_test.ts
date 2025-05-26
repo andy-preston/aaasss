@@ -95,6 +95,6 @@ Deno.test("Many chips do not support 8-bit multiply",() => {
         "R0 |   |   | REGISTER | 1",
         "R1 |   |   | REGISTER | 1"
     ]);
-    expectFileExists(".hex").toBeFalsy();
+    expectFileExists(".hex").toBe(false);
 });
 

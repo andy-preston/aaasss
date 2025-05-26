@@ -14,7 +14,7 @@ Deno.test("A label is stored in the symbol table with the current address", () =
         const line = dummyLine(false);
         line.label = "A_LABEL";
         system.programMemory.lineLabel(line);
-        expect(line.failed(), "Unexpected failure").toBeFalsy();
+        expect(line.failed(), "Unexpected failure").toBe(false);
         expect(line.failures.length).toBe(0);
         expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
     }
@@ -31,7 +31,7 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
         const line = dummyLine(false);
         line.label = "A_LABEL";
         system.programMemory.lineLabel(line);
-        expect(line.failed()).toBeFalsy();
+        expect(line.failed()).toBe(false);
         expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
     });
     const differentAddress = system.programMemory.origin(20);
@@ -40,7 +40,7 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
     const line = dummyLine(false);
     line.label = "A_LABEL";
     system.programMemory.lineLabel(line);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(system.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
 });
 
@@ -58,7 +58,7 @@ Deno.test("Labels are available to javascript", () => {
     expect(line.address).toBe(10);
 
     system.programMemory.lineLabel(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
 
     const value = system.symbolTable.symbolValue("A_LABEL");
     expect(value).toEqual(numberBag(10));

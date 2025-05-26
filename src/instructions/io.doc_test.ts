@@ -93,5 +93,5 @@ Deno.test("Ports > 5F are out of range", () => {
         "",
         "R19 |   |   | REGISTER | 1"
     ]);
-    expectFileExists(".hex").toBeFalsy();
+    expectFileExists(".hex").toBe(false);
 });

@@ -71,5 +71,5 @@ Deno.test("Some(most?) devices don't support DES",() => {
         "                        notSupported_mnemonic",
         "                        used: DES"
     ]);
-    expectFileExists(".hex").toBeFalsy();
+    expectFileExists(".hex").toBe(false);
 });

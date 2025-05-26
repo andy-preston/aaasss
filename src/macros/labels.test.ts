@@ -10,7 +10,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
         const line = dummyLine(false);
         line.label = "aLabel";
         system.macros.processedLine(line);
-        expect(line.failed()).toBeFalsy();
+        expect(line.failed()).toBe(false);
     }
     const end = system.macros.end();
     expect(end.type).not.toBe("failures");
@@ -24,7 +24,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
         line.mnemonic = "JMP";
         line.symbolicOperands = ["aLabel"];
         system.macros.processedLine(line);
-        expect(line.failed()).toBeFalsy();
+        expect(line.failed()).toBe(false);
         expect(line.symbolicOperands[0]).toBe("testMacro$2$aLabel");
     }
 });
@@ -37,7 +37,7 @@ Deno.test("But label operands from outside the macro are left as is", () => {
         const line = dummyLine(false);
         line.label = "aLabel";
         system.macros.processedLine(line);
-        expect(line.failed()).toBeFalsy();
+        expect(line.failed()).toBe(false);
     }
     const end = system.macros.end();
     expect(end.type).not.toBe("failures");
@@ -51,7 +51,7 @@ Deno.test("But label operands from outside the macro are left as is", () => {
         line.mnemonic = "JMP";
         line.symbolicOperands = ["aDifferentLabel"];
         system.macros.processedLine(line);
-        expect(line.failed()).toBeFalsy();
+        expect(line.failed()).toBe(false);
         expect(line.symbolicOperands[0]).toBe("aDifferentLabel");
     }
 });
@@ -71,7 +71,7 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
         line.label = "aLabel";
         line.mnemonic = "TST";
         system.macros.processedLine(line);
-        expect(line.failed()).toBeFalsy();
+        expect(line.failed()).toBe(false);
         expect(line.label).toBe(`testMacro$4$aLabel`);
     }
 });

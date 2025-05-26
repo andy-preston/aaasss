@@ -37,7 +37,7 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
             expect(line.fileName).toBe("mock.test");
             expect(line.lineNumber).toBe(index + 1);
             expect(line.rawSource).toBe(expectedLines[index]);
-            expect(line.failed()).toBeFalsy();
+            expect(line.failed()).toBe(false);
         }
     );
 });
@@ -50,7 +50,7 @@ Deno.test("Reading a non existant source file gives one line with a failure", ()
     expect(line.fileName).toBe("does-not-exist.test");
     expect(line.lineNumber).toBe(0);
     expect(line.rawSource).toBe("");
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0]!;
     expect(failure.kind).toBe("file_notFound");

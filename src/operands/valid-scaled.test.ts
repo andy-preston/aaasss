@@ -22,7 +22,7 @@ Deno.test("The number of operands much match", () => {
         ["number",   someNumericType],
     ];
     const result = validScaledOperands(line, operandRequirements);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(result).toEqual([1, 23, 0]);
     expect(line.failures.length).toBe(3);
     {
@@ -56,7 +56,7 @@ Deno.test("The required operand type must match the actual operand types", () =>
         ["number",   someNumericType]
     ];
     const result = validScaledOperands(line, operandRequirements);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(result).toEqual([anyNumber, anyNumber]);
 });
 
@@ -70,7 +70,7 @@ Deno.test("If they don't match the line is marked with a failure", () => {
         ["register", someNumericType]
     ];
     const result = validScaledOperands(line, operandRequirements);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(result).toEqual([anyNumber, anyNumber]);
     expect(line.failures.length).toBe(2);
     line.failures.forEach((failure, index) => {
@@ -107,7 +107,7 @@ Deno.test("The required numeric type must match the actual type", () => {
         line.operandTypes =     ["number"];
         validScaledOperands(line, [["number", numericType]]);
         // The result might be scaled, so we're not checking it here!
-        expect(line.failed(), `${key}`).toBeFalsy();
+        expect(line.failed(), `${key}`).toBe(false);
     }
 });
 
@@ -135,9 +135,9 @@ Deno.test("If numeric types don't match the line fails", () => {
         validScaledOperands(line, [["number", numericType]]);
         // The result might be scaled, so we're not checking it here!
         if (numericType == "type_anything") {
-            expect(line.failed(), numericType).toBeFalsy();
+            expect(line.failed(), numericType).toBe(false);
         } else {
-            expect(line.failed(), numericType).toBeTruthy();
+            expect(line.failed(), numericType).toBe(true);
             expect(line.failures.length).toBe(1);
             const failure = line.failures[0] as NumericTypeFailure;
             expect(failure.kind).toBe(numericType);
@@ -157,6 +157,6 @@ Deno.test("type_anything can be any numeric value", () => {
         const requirement: OperandRequirement = ["number", "type_anything"];
         const result = validScaledOperands(line, [requirement]);
         expect(result[0]).toBe(value);
-        expect(line.failed()).toBeFalsy();
+        expect(line.failed()).toBe(false);
     });
 });

@@ -26,7 +26,7 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
             const line = dummyLine(false);
             line.assemblySource = sourceCode;
             tokens(line);
-            expect(line.failed()).toBeTruthy();
+            expect(line.failed()).toBe(true);
             expect (line.failures.length).toBe(1);
             const failure = line.failures[0]!;
            expect(failure.kind).toBe("syntax_invalidLabel");
@@ -37,7 +37,7 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
             const line = dummyLine(false);
             line.assemblySource = sourceCode;
             tokens(line);
-            expect(line.failed()).toBeFalsy();
+            expect(line.failed()).toBe(false);
             expect(line.failures.length).toBe(0);
         }
     );

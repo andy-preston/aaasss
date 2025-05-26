@@ -27,7 +27,7 @@ Deno.test("No instruction has three (or more) operands", () => {
     line.assemblySource = "LDI R16, 23, 999";
     tokens(line);
     expect(line.symbolicOperands).toEqual(["R16", "23"]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0] as AssertionFailure;
     expect(failure.kind).toBe("operand_count");
@@ -40,7 +40,7 @@ Deno.test("An operand must not be empty", () => {
     line.assemblySource = "LDI , 23";
     tokens(line);
     expect(line.symbolicOperands).toEqual(["", "23"]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0]!;
     expect(failure.kind).toBe("operand_blank");
@@ -52,7 +52,7 @@ Deno.test("Trailing commas count as an (empty operand)", () => {
     line.assemblySource = "LDI r16, ";
     tokens(line);
     expect(line.symbolicOperands).toEqual(["R16", ""]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0]!;
     expect(failure.kind).toBe("operand_blank");
@@ -101,7 +101,7 @@ Deno.test("... but not the first", () => {
     tokens(line);
     expect(line.mnemonic).toBe("LDD");
     expect(line.symbolicOperands).toEqual(["Z+offset", "R14"]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0]!;
     expect(failure.kind).toBe("operand_offsetNotStd");
@@ -112,7 +112,7 @@ Deno.test("... or the first operand of a STD instruction", () => {
     const line = dummyLine(false);
     line.assemblySource = "STD Y+0xa7, R17";
     tokens(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.label).toBe("");
     expect(line.mnemonic).toBe("STD");
     expect(line.symbolicOperands).toEqual(["Y+", "0xa7", "R17"]);
@@ -124,7 +124,7 @@ Deno.test("... but not the second", () => {
     tokens(line);
     expect(line.mnemonic).toBe("STD");
     expect(line.symbolicOperands).toEqual(["R17", "Y+0xa7"]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0]!;
     expect(failure.kind).toBe("operand_offsetNotLdd");
@@ -137,7 +137,7 @@ Deno.test("... but not as the first operand of any other instruction", () => {
     tokens(line);
     expect(line.mnemonic).toBe("ST");
     expect(line.symbolicOperands).toEqual(["Z+19", "R17"]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0]!;
     expect(failure.kind).toBe("operand_offsetNotStd");
@@ -150,7 +150,7 @@ Deno.test("... or the second operand", () => {
     tokens(line);
     expect(line.mnemonic).toBe("LDI");
     expect(line.symbolicOperands).toEqual(["R14", "Z+offset"]);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     const failure = line.failures[0]!;
     expect(failure.kind).toBe("operand_offsetNotLdd");
@@ -161,7 +161,7 @@ Deno.test("Post-increment is not mistaken for an index offset", () => {
     const line = dummyLine(false);
     line.assemblySource = "LPM R14, Z+";
     tokens(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.label).toBe("");
     expect(line.mnemonic).toBe("LPM");
     expect(line.symbolicOperands).toEqual(["R14", "Z+"]);

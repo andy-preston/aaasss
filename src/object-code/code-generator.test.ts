@@ -7,7 +7,7 @@ import { systemUnderTest } from "./testing.ts";
 Deno.test("Lines with no mnemonic don't bother generating code", () => {
     const system = systemUnderTest();
     system.objectCode.line(system.line);
-    expect(system.line.failed()).toBeFalsy();
+    expect(system.line.failed()).toBe(false);
     expect(system.line.failures.length).toBe(0);
     expect(system.line.code.length).toBe(0);
     expect(system.programMemory.address()).toBe(0);
@@ -17,7 +17,7 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
     const system = systemUnderTest();
     system.line.mnemonic = "DES";
     system.objectCode.line(system.line);
-    expect(system.line.failed()).toBeTruthy();
+    expect(system.line.failed()).toBe(true);
     const failures = system.line.failures;
     expect(failures.length).toBe(2);
     expect(failures[0]!.kind).toBe("device_notSelected");
@@ -31,7 +31,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
     system.instructionSet.unsupportedGroups(["DES"]);
     system.line.mnemonic = "DES";
     system.objectCode.line(system.line);
-    expect(system.line.failed()).toBeTruthy();
+    expect(system.line.failed()).toBe(true);
     const failures = system.line.failures;
     expect(failures.length).toBe(1);
     const failure = failures[0] as SupportFailure;
@@ -47,7 +47,7 @@ Deno.test("Lines with unknown instructions fail", () => {
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.line.mnemonic = "NOT_REAL";
     system.objectCode.line(system.line);
-    expect(system.line.failed()).toBeTruthy();
+    expect(system.line.failed()).toBe(true);
     const failures = system.line.failures;
     expect(failures.length).toBe(1);
     const failure = failures[0] as BoringFailure;
@@ -65,7 +65,7 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     system.line.numericOperands = [15];
     system.line.operandTypes = ["number"];
     system.objectCode.line(system.line);
-    expect(system.line.failed()).toBeFalsy();
+    expect(system.line.failed()).toBe(false);
     expect(system.line.code).toEqual([[0x94, 0xfb]]);
     expect(system.programMemory.address()).toBe(1);
 });
@@ -79,7 +79,7 @@ Deno.test("If a line has `isDefiningMacro == true`, no code is generated", () =>
     system.line.operandTypes = ["number"];
     system.line.isDefiningMacro = true;
     system.objectCode.line(system.line);
-    expect(system.line.failed()).toBeFalsy();
+    expect(system.line.failed()).toBe(false);
     expect(system.line.code.length).toBe(0);
     expect(system.programMemory.address()).toBe(0);
 });
@@ -91,7 +91,7 @@ Deno.test("Generating code will increment the programMemory address", () => {
     system.line.mnemonic = "NOP";
     expect(system.programMemory.address()).toBe(0);
     system.objectCode.line(system.line);
-    expect(system.line.failed()).toBeFalsy();
+    expect(system.line.failed()).toBe(false);
     expect(system.line.code).toEqual([[0, 0]]);
     expect(system.programMemory.address()).toBe(1);
 });
@@ -103,7 +103,7 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
     const preFailureAddress = system.programMemory.address();
     system.line.mnemonic = "NOP";
     system.objectCode.line(system.line);
-    expect(system.line.failed()).toBeTruthy();
+    expect(system.line.failed()).toBe(true);
     const failures = system.line.failures;
     expect(failures.length).toBe(1);
     const failure = failures[0]!;

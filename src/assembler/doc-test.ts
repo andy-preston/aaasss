@@ -21,7 +21,7 @@ export const expectFileExists = (extension: FileExtension) => {
 };
 
 export const expectFileContents = (extension: FileExtension) => {
-    expectFileExists(extension).toBeTruthy();
+    expectFileExists(extension).toBe(true);
     const contents = Deno.readTextFileSync(
         extensionSwap(topFileName, extension)
     ).split("\n");

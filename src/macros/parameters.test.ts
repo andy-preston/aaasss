@@ -23,7 +23,7 @@ Deno.test("If a macro has parameters, they are substituted", () => {
     line.macroCount = 1;
     line.symbolicOperands = ["a", "b"];
     system.macros.processedLine(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.symbolicOperands).toEqual(["1", "2"]);
 });
 

@@ -130,7 +130,7 @@ Deno.test("Each record begins with a start code", () => {
     }
     system.hex.close();
     for (const line of system.mockFileContents) {
-        expect(line.startsWith(":")).toBeTruthy();
+        expect(line.startsWith(":")).toBe(true);
     }
 });
 

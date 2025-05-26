@@ -23,7 +23,7 @@ Deno.test("A symbol assignment does not pollute the `this` context object", () =
     const line = dummyLine(false);
     line.rawSource = "{{ plop = 27; this.plop; }}";
     system.embeddedJs(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.assemblySource).not.toBe("27");
     expect(line.assemblySource).toBe("");
 });
@@ -33,7 +33,7 @@ Deno.test("JS can be delimited with moustaches on the same line", () => {
     const line = dummyLine(false);
     line.rawSource = "MOV {{ const test = 27; test; }}, R2";
     system.embeddedJs(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.assemblySource).toBe("MOV 27, R2");
 });
 
@@ -43,17 +43,17 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
 
     line.rawSource = "some ordinary stuff {{ const test = 27;";
     system.embeddedJs(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.assemblySource).toBe("some ordinary stuff");
 
     line.rawSource = 'const message = "hello";';
     system.embeddedJs(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.assemblySource).toBe("");
 
     line.rawSource = "message; }} matey!";
     system.embeddedJs(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.assemblySource).toBe("hello matey!");
 });
 
@@ -62,7 +62,7 @@ Deno.test("Multiple opening moustaches are illegal", () => {
     const line = dummyLine(false);
     line.rawSource = "{{ {{ }}";
     system.embeddedJs(line);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     expect(line.failures[0]!.kind).toBe("js_jsMode");
 });
@@ -72,7 +72,7 @@ Deno.test("Multiple closing moustaches are illegal", () => {
     const line = dummyLine(false);
     line.rawSource = "{{ }} }}";
     system.embeddedJs(line);
-    expect(line.failed()).toBeTruthy();
+    expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);
     expect(line.failures[0]!.kind).toBe("js_assemblerMode");
 });
@@ -82,12 +82,12 @@ Deno.test("Omitting a closing moustache is illegal", () => {
     const line = dummyLine(false);
     line.rawSource = "{{";
     system.embeddedJs(line);
-    expect(line.failed()).toBeFalsy();
+    expect(line.failed()).toBe(false);
     expect(line.failures.length).toBe(0);
 
     const lastLine = dummyLine(true);
     system.embeddedJs(lastLine);
-    expect(lastLine.failed()).toBeTruthy();
+    expect(lastLine.failed()).toBe(true);
     expect(lastLine.failures.length).toBe(1);
     expect(lastLine.failures[0]!.kind).toBe("js_jsMode");
 });

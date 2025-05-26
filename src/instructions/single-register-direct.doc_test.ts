@@ -125,7 +125,7 @@ Deno.test("Read-Modify-Write isn't available on all devices", () => {
         "R21 |   |   | REGISTER | 1",
         "R22 |   |   | REGISTER | 1"
     ]);
-    expectFileExists(".hex").toBeFalsy();
+    expectFileExists(".hex").toBe(false);
 });
 
 Deno.test("Read-Modify-Write expects the index register to be Z", () => {
@@ -181,5 +181,5 @@ Deno.test("Read-Modify-Write expects the index register to be Z", () => {
         "R22 |   |   | REGISTER | 1",
         "R30 |   |   | REGISTER | 1"
     ]);
-    expectFileExists(".hex").toBeFalsy();
+    expectFileExists(".hex").toBe(false);
 });
