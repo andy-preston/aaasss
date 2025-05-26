@@ -8,6 +8,7 @@ Deno.test("the last line has a failure is a definition wasn't closed", () => {
     const system = systemUnderTest();
     const define = system.macros.define("plop", []);
     expect(define.type).not.toBe("failures");
+
     const line = dummyLine(true);
     system.macros.processedLine(line);
     expect(line.failed()).toBe(true);
@@ -49,4 +50,12 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
     expect(failures.length).toBe(1);
     const failure = failures[0]!;
     expect(failure.kind).toBe("macro_end");
+});
+
+Deno.test("Whilst defining, a flag is set on the line", () => {
+    const system = systemUnderTest();
+    const define = system.macros.define("plop", []);
+    expect(define.type).not.toBe("failures");
+    system.macros.processedLine(system.line);
+    expect(system.line.isDefiningMacro).toBe(true);
 });

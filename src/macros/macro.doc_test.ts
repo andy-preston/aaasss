@@ -132,6 +132,43 @@ Deno.test("A macro can be called from inside another macro", () => {
     ]);
 });
 
+Deno.test("Any JS in a macro is executed during definition and playback but andy code it may generate is discarded", () => {
+    const demo = docTest();
+    demo.source("", [
+        '    {{ device("ATTiny24"); }}',
+        "",
+        '    {{ macro("pokingMacro"); }}',
+        '    {{ poke("testing"); }}',
+        "    LDI R30, 23",
+        "    {{ end(); }}",
+        "",
+        "    {{ pokingMacro() }}"
+
+    ]);
+    demo.assemble();
+    expectFileContents(".lst").toEqual([
+        "/var/tmp/demo.asm",
+        "=================",
+        '                      1     {{ device("ATTiny24"); }}',
+        "                      2",
+        '                      3     {{ macro("pokingMacro"); }}',
+        '                      4     {{ poke("testing"); }}',
+        "                      5     LDI R30, 23",
+        "                      6     {{ end(); }}",
+        "                      7",
+        "                      8     {{ pokingMacro() }}",
+        '000004 74 65 73 74    8     {{ poke("testing"); }}',
+        "000006 69 6E 67 00",
+        "000008 E1 E7          8     LDI R30, 23",
+        "",
+        "Symbol Table",
+        "============",
+        "",
+        "pokingMacro |   |   | /var/tmp/demo.asm:6 | 1",
+        "R30         |   |   | REGISTER            | 1"
+    ]);
+});
+
 Deno.test("A macro can be defined in one file and used in another", () => {
     const demo = docTest();
     demo.source("def.asm", [
