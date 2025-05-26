@@ -32,7 +32,9 @@ const mockFileStack = () => {
 };
 
 export const systemUnderTest = () => {
-    const $currentLine = currentLine()
+    const $currentLine = currentLine();
+    const $line = dummyLine(false);
+    $currentLine.forDirectives($line);
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $mockFileStack = mockFileStack();
@@ -41,5 +43,6 @@ export const systemUnderTest = () => {
         "symbolTable": $symbolTable,
         "mockFileStack": $mockFileStack,
         "macros": $macros,
+        "line": $line
     };
 };
