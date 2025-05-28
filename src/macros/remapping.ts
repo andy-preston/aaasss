@@ -72,7 +72,7 @@ export const remapping = (macroList: MacroList) => {
         macroName: string, macroCount: number
     ): FileLineIterator {
         for (const line of macroList.get(macroName)!.lines) {
-            yield [line.rawSource, macroName, macroCount!];
+            yield [line.rawSource, macroName, macroCount!, false];
         }
         completed(macroName, macroCount);
     };

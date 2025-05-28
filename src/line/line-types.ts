@@ -7,7 +7,7 @@ import type { Label, Mnemonic } from "../tokens/data-types.ts";
 
 export const line = (
     fileName: FileName, lineNumber: LineNumber, source: SourceCode,
-    macroName: string, macroCount: number, lastLine: boolean,
+    macroName: string, macroCount: number, eof: boolean, lastLine: boolean
 ) => {
     const failures: Array<Failure> = [];
 
@@ -24,6 +24,7 @@ export const line = (
         "pass": 0 as Pass,
         "fileName": fileName as FileName,
         "lineNumber": lineNumber as LineNumber,
+        "eof": eof,
         "lastLine": lastLine,
         "rawSource": source as SourceCode,
         "assemblySource": "" as SourceCode,
@@ -44,7 +45,7 @@ export const line = (
 export type Line = ReturnType<typeof line>;
 
 export const dummyLine = (last: boolean, pass: Pass) => {
-    const $line = line("", 0, "", "", 0, last);
+    const $line = line("", 0, "", "", 0, last, last);
     $line.pass = pass;
     return $line;
 };

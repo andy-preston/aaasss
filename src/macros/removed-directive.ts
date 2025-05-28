@@ -24,6 +24,6 @@ export const removedDirective = (
 
     return newLine(
         line.fileName, line.lineNumber,
-        replaced, line.macroName, line.macroCount, false
+        replaced, line.macroName, line.macroCount, false, false
     );
 };

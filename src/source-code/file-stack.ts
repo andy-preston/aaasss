@@ -5,7 +5,7 @@ import type { FileLineIterator, FileName, LineNumber } from "./data-types.ts";
 
 import { emptyBag, stringsBag } from "../assembler/bags.ts";
 import { bagOfFailures, clueFailure } from "../failure/bags.ts";
-import { line } from "../line/line-types.ts";
+import { dummyLine, line } from "../line/line-types.ts";
 
 type StackEntry = {
     "fileName": FileName;
@@ -40,7 +40,7 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             // Real files provide a line number here!
             // but imaginary files just reuse this one without incrementing
             lineNumber = index + 1;
-            yield [text, "", 0];
+            yield [text, "", 0, lineNumber == lines.length];
         }
     };
 
@@ -56,6 +56,8 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
         return emptyBag();
     };
 
+    // Another file could have been pushed by an include directive
+    // "whilst we weren't watching".
     const currentFile = () => fileStack.at(-1);
 
     const pushImaginary = (iterator: FileLineIterator) => {
@@ -72,34 +74,34 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
             fileStack.pop();
             return undefined;
         } else {
-            const [rawSource, macroName, macroCount] = next.value;
+            const [rawSource, macroName, macroCount, eof] = next.value;
             return line(
                 file.fileName, lineNumber,
-                rawSource, macroName, macroCount, false
+                rawSource, macroName, macroCount, eof, false
             );
         }
     };
 
     const lines: PipelineSource = function* (pass: Pass) {
-        const dummyLine  = (isLast: boolean) =>
-            line(topFileName, 0, "", "", 0, isLast).withPass(pass);
-
         const topFile = include(topFileName);
         if (topFile.type == "failures") {
-            yield dummyLine(false).withFailures(topFile.it);
+            const line = dummyLine(false, pass).withFailures(topFile.it);
+            line.fileName = topFileName;
+            yield line
             return;
         }
         while (true) {
-            // Another file could have been pushed by an include directive
-            // "whilst we weren't watching".
             const file = currentFile();
             if (file == undefined) {
-                yield dummyLine(true);
+                const line = dummyLine(true, pass);
+                line.fileName = topFileName;
+                yield line;
                 return;
             }
             const next = nextLine(file);
             if (next != undefined) {
-                yield next.withPass(pass);
+                next.pass = pass;
+                yield next;
             }
         }
     };

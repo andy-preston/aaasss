@@ -1,5 +1,5 @@
 export type FileLineIterator =
-    Generator<[SourceCode, string, number], void, unknown>;
+    Generator<[SourceCode, string, number, boolean], void, unknown>;
 
 export type FileName = string;
 

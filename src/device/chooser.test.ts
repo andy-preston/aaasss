@@ -5,7 +5,7 @@ import { line } from "../line/line-types.ts";
 import { systemUnderTest } from "./testing.ts";
 
 const mockDefiningLine = (fileName: string, lineNumber: number) =>
-    line(fileName, lineNumber, "", "", 0, false);
+    line(fileName, lineNumber, "", "", 0, false, false);
 
 Deno.test("You can choose any device that has a definition file", () => {
     for (const deviceName of ["AT-Tiny 84", "AT_Tiny 24", "AT.Tiny 44"]) {

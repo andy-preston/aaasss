@@ -8,7 +8,8 @@ Deno.test("Including a file doesn't return anything", () => {
     const irrelevantButRealFile = "deno.json";
     const aFileStack = fileStack(defaultReaderMethod, "");
     const result = aFileStack.include(irrelevantButRealFile);
-    expect(result.type).not.toBe("failure");
+    expect(result.type).toBe("string");
+    expect(result.it).toBe("");
 });
 
 Deno.test("Including a non existant file returns a failure", () => {
@@ -38,6 +39,19 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
             expect(line.lineNumber).toBe(index + 1);
             expect(line.rawSource).toBe(expectedLines[index]);
             expect(line.failed()).toBe(false);
+        }
+    );
+});
+
+Deno.test("The last line of a file is tagged with EOF", () => {
+    const expectedLines = ["no", "no", "no", "yes"];
+    const files = fileStack(
+        (_path: FileName) => expectedLines,
+        "mock.test"
+    );
+    files.lines(1).filter(line => !line.lastLine).forEach(
+        (line) => {
+            expect(line.eof).toBe(line.rawSource == "yes");
         }
     );
 });
@@ -101,9 +115,9 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
     expect(firstLine.rawSource).toBe("top.file 1");
 
     const imaginaryFile = function* (): FileLineIterator {
-        yield ["one", "", 0];
-        yield ["two", "", 0];
-        yield ["three", "", 0];
+        yield ["one", "", 0, false];
+        yield ["two", "", 0, false];
+        yield ["three", "", 0, false];
     }
     files.pushImaginary(imaginaryFile());
 
