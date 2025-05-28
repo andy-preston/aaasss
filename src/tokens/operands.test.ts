@@ -68,7 +68,7 @@ Deno.test("Some instructions only have one operand", () => {
     expect(line.symbolicOperands).toEqual(["R16"]);
 });
 
-Deno.test("Some instructions only have no operands at all", () => {
+Deno.test("Some instructions have no operands at all", () => {
     const line = dummyLine(false, 1);
     line.assemblySource = "label: RETI";
     tokens(line);

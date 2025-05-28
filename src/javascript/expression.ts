@@ -27,7 +27,7 @@ const mappedResult = (result: unknown): StringOrFailures =>
         ? stringBag(`${result.it}`)
         : emptyBag(); // eating unwanted objects (including boxed booleans)
 
-const discreteTypes = ["string", "number", "directive"];
+const discreteTypes = ["string", "number"];
 
 const mappedCall = (symbolName: string, symbol: SymbolBag) => {
     return discreteTypes.includes(symbol.type)
