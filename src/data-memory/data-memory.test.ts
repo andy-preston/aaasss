@@ -2,6 +2,7 @@ import type { AssertionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
+import { passes } from "../assembler/data-types.ts";
 import { currentLine } from "../line/current-line.ts";
 import { dummyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -123,12 +124,12 @@ Deno.test("Allocations aren't considered repeated on the second pass", () => {
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
-    [1, 2].forEach(_pass => {
+    passes.forEach(pass => {
         ["0", "25"].forEach(expectedStartAddress => {
             const result = system.dataMemory.alloc(25);
             expect(result.type).not.toBe("failures");
             expect(result.it).toBe(expectedStartAddress);
         });
-        system.dataMemory.reset(dummyLine(true));
+        system.dataMemory.reset(dummyLine(true, pass));
     });
 });

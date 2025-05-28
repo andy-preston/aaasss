@@ -12,7 +12,7 @@ const anySymbolic = "test";
 const someNumericType: NumericType = "type_positive";
 
 Deno.test("The number of operands much match", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.symbolicOperands = ["R1", "23"];
     line.numericOperands = [1, 23];
     line.operandTypes = ["register", "number"];
@@ -47,7 +47,7 @@ Deno.test("The number of operands much match", () => {
 });
 
 Deno.test("The required operand type must match the actual operand types", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.symbolicOperands = [anySymbolic, anySymbolic];
     line.numericOperands =  [  anyNumber,   anyNumber];
     line.operandTypes =     [ "register",    "number"];
@@ -61,7 +61,7 @@ Deno.test("The required operand type must match the actual operand types", () =>
 });
 
 Deno.test("If they don't match the line is marked with a failure", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.symbolicOperands = [anySymbolic, anySymbolic];
     line.numericOperands =  [  anyNumber,   anyNumber];
     line.operandTypes =     [ "register",    "number"];
@@ -103,7 +103,7 @@ Deno.test("The required numeric type must match the actual type", () => {
     } as const;
     for (const [key, value] of Object.entries(testData)) {
         const numericType = key as NumericType;
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.symbolicOperands = [anySymbolic];
         line.numericOperands =  [value];
         line.operandTypes =     ["number"];
@@ -132,7 +132,7 @@ Deno.test("If numeric types don't match the line fails", () => {
     } as const;
     for (const [key, value] of Object.entries(testData)) {
         const numericType = key as NumericType;
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.symbolicOperands = [anySymbolic];
         line.numericOperands =  [value];
         line.operandTypes =     ["number"];
@@ -154,7 +154,7 @@ Deno.test("If numeric types don't match the line fails", () => {
 
 Deno.test("type_anything can be any numeric value", () => {
     [0, -1, 2].forEach(value => {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.symbolicOperands = [""];
         line.numericOperands =  [value];
         line.operandTypes =     ["number"];

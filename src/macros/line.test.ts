@@ -11,7 +11,7 @@ const testLines: Array<[string, string, string]> = [
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
     const system = systemUnderTest();
     testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.rawSource = source;
         line.assemblySource = source;
         line.label = label;
@@ -29,7 +29,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.rawSource = source;
         line.assemblySource = source;
         line.label = label;
@@ -40,7 +40,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
     const end = system.macros.end();
     expect(end.type).not.toBe("failures");
     testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.rawSource = source;
         line.assemblySource = source;
         line.label = label;
@@ -56,7 +56,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.rawSource = source;
         line.assemblySource = source;
         line.label = label;
@@ -82,7 +82,7 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.rawSource = source;
         line.assemblySource = source;
         line.label = label;

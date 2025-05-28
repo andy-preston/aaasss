@@ -10,7 +10,6 @@ export const line = (
     macroName: string, macroCount: number, lastLine: boolean,
 ) => {
     const failures: Array<Failure> = [];
-    let passNumber: Pass;
 
     const withFailures = (moreFailures: Array<Failure>) => {
         moreFailures.forEach(failure => failures.push(failure));
@@ -18,19 +17,11 @@ export const line = (
     };
     const failed = () => failures.length > 0;
 
-    const withPass = (pass: Pass) => {
-        passNumber = pass;
-        return theLine;
-    };
-
-    const isPass = (wanted: Pass) => passNumber == wanted;
-
     const theLine = {
         "failures": failures,
         "failed": failed,
         "withFailures": withFailures,
-        "withPass": withPass,
-        "isPass": isPass,
+        "pass": 0 as Pass,
         "fileName": fileName as FileName,
         "lineNumber": lineNumber as LineNumber,
         "lastLine": lastLine,
@@ -52,4 +43,8 @@ export const line = (
 
 export type Line = ReturnType<typeof line>;
 
-export const dummyLine = (last: boolean) => line("", 0, "", "", 0, last);
+export const dummyLine = (last: boolean, pass: Pass) => {
+    const $line = line("", 0, "", "", 0, last);
+    $line.pass = pass;
+    return $line;
+};

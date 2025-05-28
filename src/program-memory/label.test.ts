@@ -11,7 +11,7 @@ Deno.test("A label is stored in the symbol table with the current address", () =
         const result = system.programMemory.origin(10);
         expect(result.type).not.toBe("failures");
     } {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.label = "A_LABEL";
         system.programMemory.lineLabel(line);
         expect(line.failed(), "Unexpected failure").toBe(false);
@@ -28,7 +28,7 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
         const sameAddress = system.programMemory.origin(10);
         expect(sameAddress.type).not.toBe("failures");
 
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.label = "A_LABEL";
         system.programMemory.lineLabel(line);
         expect(line.failed()).toBe(false);
@@ -37,7 +37,7 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
     const differentAddress = system.programMemory.origin(20);
     expect(differentAddress.type).not.toBe("failures");
 
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.label = "A_LABEL";
     system.programMemory.lineLabel(line);
     expect(line.failed()).toBe(true);
@@ -49,7 +49,7 @@ Deno.test("Labels are available to javascript", () => {
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
 
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.label = "A_LABEL";
     system.currentLine.forDirectives(line);
 

@@ -5,7 +5,7 @@ import { dummyLine } from "../line/line-types.ts";
 import { validSymbolic } from "./valid-symbolic.ts";
 
 Deno.test("Line must have at least expected parameters", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.symbolicOperands = ["X"];
     line.numericOperands = [0];
     line.operandTypes = ["index"];
@@ -27,7 +27,7 @@ Deno.test("Line must have at least expected parameters", () => {
 });
 
 Deno.test("line must not exceed expected parameters", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.symbolicOperands = ["X", "Y"];
     line.numericOperands = [0, 0];
     line.operandTypes = ["index", "index"];
@@ -41,7 +41,7 @@ Deno.test("line must not exceed expected parameters", () => {
 });
 
 Deno.test("line and expectation must not be different", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.symbolicOperands = ["X", "Y"];
     line.numericOperands = [0, 0];
     line.operandTypes = ["index", "index"];
@@ -64,7 +64,7 @@ Deno.test("line and expectation must not be different", () => {
 });
 
 Deno.test("Everything's lovely when actual and expected match", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.symbolicOperands = ["X", "Y"];
     line.numericOperands = [0, 0];
     line.operandTypes = ["index", "index"];

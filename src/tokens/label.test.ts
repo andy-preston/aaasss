@@ -3,7 +3,7 @@ import { dummyLine } from "../line/line-types.ts";
 import { tokens } from "./assembly-pipeline.ts";
 
 Deno.test("A line containing a colon contains a label", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "label: LDI R16, 23";
     tokens(line);
     expect(line.label).toBe("label");
@@ -12,7 +12,7 @@ Deno.test("A line containing a colon contains a label", () => {
 });
 
 Deno.test("A line can contain JUST a label", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "label:";
     tokens(line);
     expect(line.label).toBe("label");
@@ -23,7 +23,7 @@ Deno.test("A line can contain JUST a label", () => {
 Deno.test("A label must only contain alphanumerics or underscore", () => {
     ["count bytes:", "count-bytes:", "count$bytes:", "count?bytes:"].forEach(
         (sourceCode) => {
-            const line = dummyLine(false);
+            const line = dummyLine(false, 1);
             line.assemblySource = sourceCode;
             tokens(line);
             expect(line.failed()).toBe(true);
@@ -34,7 +34,7 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
     );
     ["countBytes:", "count_bytes:", "count_8bit:"].forEach(
         (sourceCode) => {
-            const line = dummyLine(false);
+            const line = dummyLine(false, 1);
             line.assemblySource = sourceCode;
             tokens(line);
             expect(line.failed()).toBe(false);

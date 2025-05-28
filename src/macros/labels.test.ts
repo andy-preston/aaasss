@@ -7,7 +7,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.label = "aLabel";
         system.macros.processedLine(line);
         expect(line.failed()).toBe(false);
@@ -17,7 +17,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const use = system.macros.use("testMacro", []);
     expect(use.type).not.toBe("failures");
     {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.macroName = "testMacro";
         line.macroCount = 2;
         line.rawSource = "JMP aLabel";
@@ -34,7 +34,7 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.label = "aLabel";
         system.macros.processedLine(line);
         expect(line.failed()).toBe(false);
@@ -44,7 +44,7 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     const use = system.macros.use("testMacro", []);
     expect(use.type).not.toBe("failures");
     {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.macroName = "testMacro";
         line.macroCount = 3;
         line.rawSource = "JMP aDifferentLabel";
@@ -65,7 +65,7 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
     const use = system.macros.use("testMacro", []);
     expect(use.type).not.toBe("failures");
     {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.macroName = "testMacro";
         line.macroCount = 4;
         line.label = "aLabel";

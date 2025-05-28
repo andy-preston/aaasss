@@ -51,17 +51,17 @@ const testCode: Array<TestBlock> = [
 Deno.test("If there are any failures, no hex is produced", () => {
     const system = systemUnderTest();
     {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.address = 0x000000;
         line.code = [[1, 2], [3, 4]];
         system.hex.line(line);
     } {
-        const line = dummyLine(false).withFailures([
+        const line = dummyLine(false, 1).withFailures([
             boringFailure("syntax_invalidLabel")
         ]);
         system.hex.line(line);
     } {
-        const line = dummyLine(false);
+        const line = dummyLine(false, 1);
         line.address = 0x000000;
         line.code = [[1, 2], [3, 4]];
         system.hex.line(line);
@@ -72,7 +72,7 @@ Deno.test("If there are any failures, no hex is produced", () => {
 
 Deno.test("If no lines have code, no hex is produced", () => {
     const system = systemUnderTest();
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.address = 0x000000;
     line.code = [];
     system.hex.line(line);
@@ -88,7 +88,7 @@ Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
         ":00000001FF"
     ];
     const system = systemUnderTest();
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     for (const [address, code] of testCode) {
         line.address = address;
         line.code = code;
@@ -102,7 +102,7 @@ Deno.test("Test data comes out the same as GAVRASM .HEX file", () => {
 
 Deno.test("Every file starts with an extended segment address of zero", () => {
     const system = systemUnderTest();
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.address = 0x000000;
     line.code = [[1, 2], [3, 4]];
     system.hex.line(line);
@@ -112,7 +112,7 @@ Deno.test("Every file starts with an extended segment address of zero", () => {
 
 Deno.test("Every file ends with an end-of-file marker", () => {
     const system = systemUnderTest();
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.address = 0x000000;
     line.code = [[1, 2], [3, 4]];
     system.hex.line(line);
@@ -122,7 +122,7 @@ Deno.test("Every file ends with an end-of-file marker", () => {
 
 Deno.test("Each record begins with a start code", () => {
     const system = systemUnderTest();
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     for (const [address, code] of testCode) {
         line.address = address;
         line.code = code;
@@ -136,7 +136,7 @@ Deno.test("Each record begins with a start code", () => {
 
 Deno.test("Each record contains a maximum of 0x10 bytes", () => {
     const system = systemUnderTest();
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     for (const [address, code] of testCode) {
         line.address = address;
         line.code = code;
@@ -150,7 +150,7 @@ Deno.test("Each record contains a maximum of 0x10 bytes", () => {
 
 Deno.test("The remainder of the bytes form the last record", () => {
     const system = systemUnderTest();
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     for (const [address, code] of testCode) {
         line.address = address;
         line.code = code;
@@ -171,7 +171,7 @@ Deno.test("If the address jumps out of sequence, a new record starts", () => {
         [0x000010, [[0x06, 0x05]]],
         [0x000011, [[0x08, 0x07]]]
     ];
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     for (const [address, code] of outOfSequence) {
         line.address = address;
         line.code = code;
@@ -205,7 +205,7 @@ Deno.test("Long strings of bytes are stored in multiple records", () => {
         [0x000016, [[0x4F, 0x54], [0x4B, 0x4E]]],
         [0x000018, [[0x21, 0x53]              ]]
     ];
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     for (const [address, code] of longString) {
         line.address = address;
         line.code = code;

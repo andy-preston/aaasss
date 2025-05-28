@@ -18,7 +18,7 @@ Deno.test("If a macro has parameters, they are substituted", () => {
     const use = system.macros.use("testMacro", ["1", "2"]);
     expect(use.type).not.toBe("failures");
 
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.macroName = "testMacro";
     line.macroCount = 1;
     line.symbolicOperands = ["a", "b"];

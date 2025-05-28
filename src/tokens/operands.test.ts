@@ -5,7 +5,7 @@ import { dummyLine } from "../line/line-types.ts";
 import { tokens } from "./assembly-pipeline.ts";
 
 Deno.test("The mnemonic is separated from the operands by whitespace", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LDI R16, 23";
     tokens(line);
     expect(line.label).toBe("");
@@ -14,7 +14,7 @@ Deno.test("The mnemonic is separated from the operands by whitespace", () => {
 });
 
 Deno.test("The operands are separated by a comma", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "label: LDI R16, 23";
     tokens(line);
     expect(line.label).toBe("label");
@@ -23,7 +23,7 @@ Deno.test("The operands are separated by a comma", () => {
 });
 
 Deno.test("No instruction has three (or more) operands", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LDI R16, 23, 999";
     tokens(line);
     expect(line.symbolicOperands).toEqual(["R16", "23"]);
@@ -36,7 +36,7 @@ Deno.test("No instruction has three (or more) operands", () => {
 });
 
 Deno.test("An operand must not be empty", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LDI , 23";
     tokens(line);
     expect(line.symbolicOperands).toEqual(["", "23"]);
@@ -48,7 +48,7 @@ Deno.test("An operand must not be empty", () => {
 });
 
 Deno.test("Trailing commas count as an (empty operand)", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LDI r16, ";
     tokens(line);
     expect(line.symbolicOperands).toEqual(["R16", ""]);
@@ -60,7 +60,7 @@ Deno.test("Trailing commas count as an (empty operand)", () => {
 });
 
 Deno.test("Some instructions only have one operand", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "label: INC R16";
     tokens(line);
     expect(line.label).toBe("label");
@@ -69,7 +69,7 @@ Deno.test("Some instructions only have one operand", () => {
 });
 
 Deno.test("Some instructions only have no operands at all", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "label: RETI";
     tokens(line);
     expect(line.label).toBe("label");
@@ -78,7 +78,7 @@ Deno.test("Some instructions only have no operands at all", () => {
 });
 
 Deno.test("Operands can contain whitespace and even be JS expressions", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "label: LDI baseReg + n, n * 2";
     tokens(line);
     expect(line.label).toBe("label");
@@ -87,7 +87,7 @@ Deno.test("Operands can contain whitespace and even be JS expressions", () => {
 });
 
 Deno.test("Z+q operands can appear as the second operand of an LDD instruction", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LDD R14, Z+offset";
     tokens(line);
     expect(line.label).toBe("");
@@ -96,7 +96,7 @@ Deno.test("Z+q operands can appear as the second operand of an LDD instruction",
 });
 
 Deno.test("... but not the first", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LDD Z+offset, R14";
     tokens(line);
     expect(line.mnemonic).toBe("LDD");
@@ -109,7 +109,7 @@ Deno.test("... but not the first", () => {
 });
 
 Deno.test("... or the first operand of a STD instruction", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "STD Y+0xa7, R17";
     tokens(line);
     expect(line.failed()).toBe(false);
@@ -119,7 +119,7 @@ Deno.test("... or the first operand of a STD instruction", () => {
 });
 
 Deno.test("... but not the second", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "STD R17, Y+0xa7";
     tokens(line);
     expect(line.mnemonic).toBe("STD");
@@ -132,7 +132,7 @@ Deno.test("... but not the second", () => {
 });
 
 Deno.test("... but not as the first operand of any other instruction", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "ST Z+19, R17";
     tokens(line);
     expect(line.mnemonic).toBe("ST");
@@ -145,7 +145,7 @@ Deno.test("... but not as the first operand of any other instruction", () => {
 });
 
 Deno.test("... or the second operand", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LDI R14, Z+offset";
     tokens(line);
     expect(line.mnemonic).toBe("LDI");
@@ -158,7 +158,7 @@ Deno.test("... or the second operand", () => {
 });
 
 Deno.test("Post-increment is not mistaken for an index offset", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LPM R14, Z+";
     tokens(line);
     expect(line.failed()).toBe(false);

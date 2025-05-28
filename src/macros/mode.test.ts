@@ -9,7 +9,7 @@ Deno.test("the last line has a failure is a definition wasn't closed", () => {
     const define = system.macros.define("plop", []);
     expect(define.type).not.toBe("failures");
 
-    const line = dummyLine(true);
+    const line = dummyLine(true, 1);
     system.macros.processedLine(line);
     expect(line.failed()).toBe(true);
     expect(line.failures.length).toBe(1);

@@ -8,7 +8,7 @@ export const assemblyPipeline = (
 ) => {
     passes.forEach(pass => source(pass).forEach(line => {
         stages.forEach(stage => stage(line));
-        if (line.isPass(2)) {
+        if (line.pass == 2) {
             sinks.forEach(sink => sink.line(line));
         }
     }));

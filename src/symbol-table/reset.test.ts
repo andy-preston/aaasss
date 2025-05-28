@@ -17,7 +17,7 @@ Deno.test("The symbol table is reset at the end of the first pass", () => {
         expect(system.symbolTable.count("plop")).toBe(expectedCount);
     });
     system.symbolTable.reset(
-        dummyLine(true).withPass(1)
+        dummyLine(true, 1)
     );
     expect(system.symbolTable.count("plop")).toEqual(0);
 });
@@ -36,7 +36,7 @@ Deno.test("... but left intact at the end of the second pass", () => {
         expect(system.symbolTable.count("plop")).toBe(expectedCount);
     });
     system.symbolTable.reset(
-        dummyLine(true).withPass(2)
+        dummyLine(true, 2)
     );
     expect(system.symbolTable.count("plop")).toEqual(3);
 });

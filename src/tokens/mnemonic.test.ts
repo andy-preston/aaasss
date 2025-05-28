@@ -3,7 +3,7 @@ import { dummyLine } from "../line/line-types.ts";
 import { tokens } from "./assembly-pipeline.ts";
 
 Deno.test("Mnemonics are automatically converted to upper case", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "ldi R16, \t 23";
     tokens(line);
     expect(line.label).toBe("");
@@ -12,7 +12,7 @@ Deno.test("Mnemonics are automatically converted to upper case", () => {
 });
 
 Deno.test("Mnemonics are only letters", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LPM.X+ R16";
     tokens(line);
     expect(line.failed()).toBe(true);

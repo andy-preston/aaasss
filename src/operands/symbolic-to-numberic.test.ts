@@ -10,7 +10,7 @@ import { symbolicToNumeric } from "./symbolic-to-numeric.ts";
 
 export const systemUnderTest = () => {
     const $currentLine = currentLine();
-    const $line = dummyLine(false);
+    const $line = dummyLine(false, 1);
     $currentLine.forDirectives($line);
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);

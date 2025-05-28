@@ -3,7 +3,7 @@ import { dummyLine } from "../line/line-types.ts";
 import { tokens } from "./assembly-pipeline.ts";
 
 Deno.test("Leading and trailing whitespace is discarded", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "\tLDI R16, 23   ";
     tokens(line);
     expect(line.label).toBe("");
@@ -12,7 +12,7 @@ Deno.test("Leading and trailing whitespace is discarded", () => {
 });
 
 Deno.test("Lines could be entirely blank", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "";
     tokens(line);
     expect(line.label).toBe("");
@@ -21,7 +21,7 @@ Deno.test("Lines could be entirely blank", () => {
 });
 
 Deno.test("Multiple spaces are reduced to one space", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LDI     R16, \t 23";
     tokens(line);
     expect(line.label).toBe("");
@@ -30,7 +30,7 @@ Deno.test("Multiple spaces are reduced to one space", () => {
 });
 
 Deno.test("Comments are stripped and discarded", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "LDI R16, 23 ; Put 16 in R16";
     tokens(line);
     expect(line.label).toBe("");
@@ -39,7 +39,7 @@ Deno.test("Comments are stripped and discarded", () => {
 });
 
 Deno.test("A line could be just a comment", () => {
-    const line = dummyLine(false);
+    const line = dummyLine(false, 1);
     line.assemblySource = "; Just a comment";
     tokens(line);
     expect(line.label).toBe("");

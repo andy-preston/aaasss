@@ -21,7 +21,7 @@ export const symbolTable = (
     const definitions = definitionList(currentLine);
 
     const reset: PipelineStage = (line: Line) => {
-        if (line.lastLine && line.isPass(1)) {
+        if (line.lastLine && line.pass == 1) {
             counts.reset();
             definitions.reset();
             varSymbols.clear();
