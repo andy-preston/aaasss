@@ -18,6 +18,8 @@ export const objectCode = (
     instructionSet: InstructionSet, programMemory: ProgramMemory,
     currentLine: CurrentLine
 ) => {
+    let assemblyIsRequired = true;
+
     const toLine = (line: Line, bytes: Array<number>) => {
         let words = 0;
 
@@ -44,7 +46,11 @@ export const objectCode = (
     };
 
     const line: PipelineStage = (line: Line) => {
-        if (line.isDefiningMacro || line.mnemonic == "") {
+        if (line.lastLine) {
+            assemblyIsRequired = true;
+        }
+
+        if (line.isDefiningMacro || line.mnemonic == "" || !assemblyIsRequired) {
             return;
         }
 
@@ -61,6 +67,11 @@ export const objectCode = (
         };
 
         toLine(line, encoder(instructionSet, programMemory));
+    };
+
+    const assembleIf = (required: boolean): DirectiveResult => {
+        assemblyIsRequired = required;
+        return emptyBag();
     };
 
     const poke = (data: Array<number | string>): DirectiveResult => {
@@ -89,7 +100,7 @@ export const objectCode = (
         return emptyBag();
     };
 
-    return { "line": line, "poke": poke };
+    return { "line": line, "poke": poke, "assembleIf": assembleIf };
 };
 
 export type ObjectCode = ReturnType<typeof objectCode>;
