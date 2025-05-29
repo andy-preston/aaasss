@@ -1,39 +1,35 @@
 import type { PipelineStage } from "../assembler/data-types.ts";
-import type { StringOrFailures } from "../failure/bags.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { Line } from "../line/line-types.ts";
 import type { JsExpression } from "./expression.ts";
 
-import { emptyBag } from "../assembler/bags.ts";
-import { bagOfFailures, boringFailure } from "../failure/bags.ts";
+import { boringFailure } from "../failure/bags.ts";
 
 const scriptDelimiter = /({{|}})/;
 
-export const embeddedJs = (
-    expression: JsExpression, currentLine: CurrentLine
-): PipelineStage => {
+export const embeddedJs = (expression: JsExpression): PipelineStage => {
     const buffer = {
         "javascript": [] as Array<string>,
         "assembler": [] as Array<string>,
     };
     let current: keyof typeof buffer = "assembler";
 
-    const stillInJsMode = (): StringOrFailures => current == "javascript"
-        ? bagOfFailures([boringFailure("js_jsMode")])
-        : emptyBag();
+    const failIfInJsMode = (line: Line): boolean => {
+        const fail = current == "javascript";
+        if (fail) {
+            line.failures.push(boringFailure("js_jsMode"));
+        }
+        return fail;
+    };
 
     const openMoustache = (line: Line) => {
-        const alreadyInJs = stillInJsMode();
-        if (alreadyInJs.type == "failures") {
-            line.withFailures(alreadyInJs.it);
-        } else {
+        if (!failIfInJsMode(line)) {
             current = "javascript";
         }
     };
 
     const closeMoustache = (line: Line) => {
         if (current == "assembler") {
-            line.withFailures([boringFailure("js_assemblerMode")]);
+            line.failures.push(boringFailure("js_assemblerMode"));
             return;
         }
 
@@ -52,7 +48,17 @@ export const embeddedJs = (
         ["{{", openMoustache], ["}}", closeMoustache]
     ]);
 
-    const assemblerSource = (line: Line) => {
+    const plainJsLine = (line: Line) => {
+        if (line.lineNumber == 1) {
+            openMoustache(line);
+        }
+        buffer.javascript.push(line.rawSource);
+        if (line.eof) {
+            closeMoustache(line);
+        }
+    }
+
+    const mixedLine = (line: Line) => {
         line.rawSource.split(scriptDelimiter).forEach(part => {
             if (actions.has(part)) {
                 actions.get(part)!(line);
@@ -60,19 +66,18 @@ export const embeddedJs = (
                 buffer[current]!.push(part);
             }
         });
-        const assembler = buffer.assembler.join("").trimEnd();
-        buffer.assembler = [];
-        return assembler;
-    }
+    };
 
     const pipeline = (line: Line) => {
-        currentLine.forDirectives(line);
-        line.assemblySource = assemblerSource(line);
+        if (line.fileName.endsWith(".js")) {
+            plainJsLine(line);
+        } else {
+            mixedLine(line);
+        }
+        line.assemblySource = buffer.assembler.join("").trimEnd();
+        buffer.assembler = [];
         if (line.lastLine) {
-            const check = stillInJsMode();
-            if (check.type == "failures") {
-                line.withFailures(check.it);
-            }
+            failIfInJsMode(line);
         }
     };
 

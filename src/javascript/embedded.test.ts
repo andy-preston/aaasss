@@ -11,7 +11,7 @@ const systemUnderTest = () => {
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $jsExpression = jSExpression($symbolTable);
-    const $embeddedJs = embeddedJs($jsExpression, $currentLine);
+    const $embeddedJs = embeddedJs($jsExpression);
     return {
         "embeddedJs": $embeddedJs,
         "currentLine": $currentLine

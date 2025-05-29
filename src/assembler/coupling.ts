@@ -44,7 +44,7 @@ export const coupling = (
     const $fileStack = fileStack(readerMethod, fileName);
     const $macros = macros($symbolTable, $fileStack);
     const $jsExpression = jSExpression($symbolTable);
-    const $embeddedJs = embeddedJs($jsExpression, $currentLine);
+    const $embeddedJs = embeddedJs($jsExpression);
     const $symbolicToNumeric = symbolicToNumeric(
         $symbolTable, $cpuRegisters, $jsExpression
     );
@@ -81,6 +81,7 @@ export const coupling = (
     return thePipeline(
         withDirectives(sourceCodeCoupling($fileStack)).lines,
         [
+            $currentLine.forDirectives,
             $programMemoryCoupling.lineAddress,
             $embeddedJs,
             tokens,
