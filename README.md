@@ -40,6 +40,9 @@ please do open an issue... even if it just says "I'd like to get involved".
 Assembly language is kinda niche and I'd love to find others to talk to about
 the implementation and to share ideas.
 
+<https://github.com/andy-preston/aaasss/discussions>
+<https://github.com/andy-preston/aaasss/issues>
+
 ## Thank You For Inspiration
 
 * Gerhard Schmidt
