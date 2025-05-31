@@ -1,6 +1,7 @@
 import type { NumberDirective } from "./bags.ts";
 
 import { stringBag } from "../assembler/bags.ts";
+import { complement, highByte, lowByte } from "../assembler/byte-operations.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 
 const lowDirective: NumberDirective = {
@@ -9,7 +10,7 @@ const lowDirective: NumberDirective = {
         const parameter = validNumeric(word, "type_word");
         return parameter.type == "failures"
             ? parameter
-            : stringBag(`${parameter.it & 0xff}`);
+            : stringBag(`${lowByte(parameter.it)}`);
     }
 };
 
@@ -19,13 +20,13 @@ const highDirective: NumberDirective = {
         const parameter = validNumeric(word, "type_word");
         return parameter.type == "failures"
             ? parameter
-            : stringBag(`${(parameter.it >> 8) & 0xff}`);
+            : stringBag(`${highByte(parameter.it)}`);
     }
 };
 
 const complementDirective: NumberDirective = {
     "type": "numberDirective",
-    "it": (value: number) => stringBag(`${value < 0 ? 0x0100 + value : value}`)
+    "it": (value: number) => stringBag(`${complement(value)}`)
 };
 
 export const functionDirectives = {
