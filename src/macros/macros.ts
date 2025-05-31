@@ -104,7 +104,7 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         if (isDefining()) {
             recordedLine(line);
             if (line.lastLine) {
-                line.withFailures([boringFailure("macro_noEnd")]);
+                line.failures.push(boringFailure("macro_noEnd"));
             }
         } else {
             remap.remapped(line);

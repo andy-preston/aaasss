@@ -8,10 +8,10 @@ export const validSymbolic = (
     line: Line, expected: Array<Array<IndexOperand>>
 ) => {
     if (line.symbolicOperands.length != expected.length) {
-        line.withFailures([assertionFailure(
+        line.failures.push(assertionFailure(
             "operand_count",
             `${expected.length}`, `${line.symbolicOperands.length}`
-        )]);
+        ));
     }
     expected.forEach((expectation, position) => {
         if (expectation.length == 0) {
@@ -23,7 +23,7 @@ export const validSymbolic = (
                 "operand_symbolic", expectation.join("/"), actual
             );
             failure.location = { "operand": position as OperandIndex };
-            line.withFailures([failure]);
+            line.failures.push(failure);
         }
     });
 };

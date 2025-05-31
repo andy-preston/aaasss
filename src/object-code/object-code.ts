@@ -66,7 +66,7 @@ export const objectCode = (
 
         const encoder = encoderFor(line);
         if (encoder == undefined) {
-            line.withFailures([clueFailure("mnemonic_unknown", line.mnemonic)]);
+            line.failures.push(clueFailure("mnemonic_unknown", line.mnemonic));
             return
         };
 

@@ -25,7 +25,7 @@ export const tokens: PipelineStage = (line: Line) => {
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
     if (invalidLabel(label)) {
-        line.withFailures([boringFailure("syntax_invalidLabel")]);
+        line.failures.push(boringFailure("syntax_invalidLabel"));
     }
 
     const mnemonicAndOperands = splitSource("before", " ", withoutLabel);
@@ -33,14 +33,14 @@ export const tokens: PipelineStage = (line: Line) => {
     const operandsText = mnemonicAndOperands[1];
 
     if (mnemonic != "" && !mnemonic.match("^[A-Z]+$")) {
-        line.withFailures([boringFailure("syntax_invalidMnemonic")]);
+        line.failures.push(boringFailure("syntax_invalidMnemonic"));
     }
 
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
-        line.withFailures([assertionFailure(
+        line.failures.push(assertionFailure(
             "operand_count", "2", `${operandsList.length}`
-        )]);
+        ));
     }
 
     const fullOperands: Array<string> = [];
@@ -53,7 +53,7 @@ export const tokens: PipelineStage = (line: Line) => {
         if (operand == "") {
             const failure = boringFailure("operand_blank");
             failure.location = {"operand": index as OperandIndex};
-            line.withFailures([failure]);
+            line.failures.push(failure);
         }
     });
 

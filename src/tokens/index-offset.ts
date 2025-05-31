@@ -17,7 +17,7 @@ export const pushOperandCheckingIndexOffset = (
 ) => {
     const addFailure = (failure: Failure) => {
         failure.location = { "operand": fullOperands.length as OperandIndex };
-        line.withFailures([failure]);
+        line.failures.push(failure);
     };
 
     const operandPositionIs = (position: number) =>

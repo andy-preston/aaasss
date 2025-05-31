@@ -23,14 +23,9 @@ export const validScaledOperands = (
 ): NumericOperands => {
     const count = operandRequirements.length;
     if (count != line.numericOperands.length) {
-        line.withFailures([assertionFailure(
+        line.failures.push(assertionFailure(
             "operand_count", `${count}`,`${line.numericOperands.length}`
-        )]);
-    }
-
-    const withFailure = (failure: Failure, operandIndex: OperandIndex) => {
-        failure.location = {"operand": operandIndex};
-        line.withFailures([failure]);
+        ));
     }
 
     const mapped = operandRequirements.map((operandRequirement, index) => {
@@ -41,16 +36,18 @@ export const validScaledOperands = (
         const actualType = line.operandTypes[operandIndex];
 
         if (actualType != requiredType) {
-            withFailure(
-                assertionFailure("type_failure", requiredType, `${actualType}`),
-                operandIndex
+            const failure = assertionFailure(
+                "type_failure", requiredType, `${actualType}`
             );
+            failure.location = {"operand": operandIndex};
+            line.failures.push(failure);
         }
 
         const valid = validNumeric(numeric, numericType);
         if (valid.type == "failures") {
             (valid.it as Array<Failure>).forEach(failure => {
-                withFailure(failure, operandIndex);
+                failure.location = {"operand": operandIndex};
+                line.failures.push(failure);
             });
         }
 

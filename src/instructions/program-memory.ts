@@ -19,9 +19,9 @@ export const programMemory = (line: Line): EncodedInstruction | undefined => {
             }
 
             if (line.symbolicOperands.length > 1) {
-                line.withFailures([assertionFailure(
+                line.failures.push(assertionFailure(
                     "operand_count", "0/1", `${line.symbolicOperands.length}`
-                )]);
+                ));
                 return "0";
             }
 
@@ -31,7 +31,7 @@ export const programMemory = (line: Line): EncodedInstruction | undefined => {
                     "operand_symbolic", "Z+", indexRegister
                 );
                 failure.location = { "operand": 0 };
-                line.withFailures([failure]);
+                line.failures.push(failure);
                 return "0";
             }
 
@@ -51,9 +51,9 @@ export const programMemory = (line: Line): EncodedInstruction | undefined => {
 
         const explicitIndexBit = (): BinaryDigit => {
             if (line.symbolicOperands.length != 2) {
-                line.withFailures([assertionFailure(
+                line.failures.push(assertionFailure(
                     "operand_count", "0/2", `${line.symbolicOperands.length}`
-                )]);
+                ));
                 return "0";
             }
 
@@ -63,7 +63,7 @@ export const programMemory = (line: Line): EncodedInstruction | undefined => {
                     "operand_symbolic", "Z/Z+", indexRegister
                 );
                 failure.location = { "operand": 1 };
-                line.withFailures([failure]);
+                line.failures.push(failure);
                 return "0";
             }
 
@@ -78,7 +78,7 @@ export const programMemory = (line: Line): EncodedInstruction | undefined => {
             if (unsupported.type == "failures") {
                 return;
             }
-            line.withFailures([boringFailure("mnemonic_implicitElpmNotLpm")]);
+            line.failures.push(boringFailure("mnemonic_implicitElpmNotLpm"));
         };
 
         const load = () => {
