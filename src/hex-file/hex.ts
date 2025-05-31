@@ -3,7 +3,31 @@ import type { Line } from "../line/line-types.ts";
 import type { FileName } from "../source-code/data-types.ts";
 
 import { hexBuffer } from "./hex-buffer.ts";
-import { hexRecord } from "./hex-record.ts";
+
+const dataRecordType = "00";
+
+const hex = (value: number, digits: number) =>
+    value.toString(16).toUpperCase().padStart(digits, "0");
+
+export const hexRecord = (address: number, bytes: Array<number>) => {
+    const checksum = () => {
+        // https://en.wikipedia.org/wiki/Intel_HEX
+        const total = bytes.reduce(
+            (total, byte) => total + byte,
+            bytes.length + (address & 0xff) + ((address & 0xff00) >> 8)
+        );
+        return 0x0100 - (total & 0xff);
+    };
+
+    return [
+        ":",
+        hex(bytes.length, 2), // usually 8, 16 or 32 some warez don't like 32
+        hex(address, 4),      // for > 64K use extended segment address
+        dataRecordType,
+        bytes.map(byte => hex(byte, 2)).join(""),
+        hex(checksum(), 2)
+    ].join("");
+};
 
 const programMemoryAddressInBytes = (programMemoryAddress: number): number =>
     programMemoryAddress * 2;
@@ -25,16 +49,13 @@ export const hexFile = (outputFile: OutputFile, topFileName: FileName) => {
         for (const block of line.code) {
             buffer.add(block);
         }
-        if (buffer.hasAtLeast(16)) {
-            saveRecordsFromByteBuffer(16);
-        }
+        saveRecordsFromByteBuffer(16);
     };
 
     const saveRecordsFromByteBuffer = (minimumRecordSize: 1 | 16) => {
         while (buffer.hasAtLeast(minimumRecordSize)) {
-            const record = hexRecord(buffer.address());
-            buffer.pairs().forEach(record.add);
-            dataRecords.push(record.asString());
+            const record = hexRecord(buffer.address(), buffer.someBytes());
+            dataRecords.push(record);
         }
     };
 

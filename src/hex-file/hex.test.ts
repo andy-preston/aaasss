@@ -36,16 +36,16 @@ type TestBlock = [Address, Array<Code>];
 
 const testCode: Array<TestBlock> = [
     // As ever, obtained from my last, treasured version of GAVRASM
-    [0x000000, [[0x2c, 0x24]              ]], //       MOV R2, R4
-    [0x000001, [[0x94, 0x53]              ]], //       INC R5
-    [0x000002, [[0x94, 0x6a]              ]], //       DEC R6
-    [0x000003, [[0x72, 0x03]              ]], //       ANDI R16, 0x23
-    [0x000004, [[0x64, 0x22]              ]], //       ORI R18, 0x42
-    [0x000005, [[0xe0, 0x15]              ]], //       LDI R17, 5
-    [0x000006, [[0xb8, 0x0a]              ]], // path: OUT 10, R0
-    [0x000007, [[0xb2, 0x04]              ]], //       IN R0, 20 /
-    [0x000008, [[0xf7, 0xe9]              ]], //       BRNE path
-    [0x000009, [[0x94, 0x0c], [0x00, 0x14]]]  //       JMP 20
+    [0x000000, [[0x24, 0x2c]              ]], //       MOV R2, R4
+    [0x000001, [[0x53, 0x94]              ]], //       INC R5
+    [0x000002, [[0x6a, 0x94]              ]], //       DEC R6
+    [0x000003, [[0x03, 0x72]              ]], //       ANDI R16, 0x23
+    [0x000004, [[0x22, 0x64]              ]], //       ORI R18, 0x42
+    [0x000005, [[0x15, 0xe0]              ]], //       LDI R17, 5
+    [0x000006, [[0x0a, 0xb8]              ]], // path: OUT 10, R0
+    [0x000007, [[0x04, 0xb2]              ]], //       IN R0, 20 /
+    [0x000008, [[0xe9, 0xf7]              ]], //       BRNE path
+    [0x000009, [[0x0c, 0x94], [0x14, 0x00]]]  //       JMP 20
 ];
 
 Deno.test("If there are any failures, no hex is produced", () => {
@@ -145,7 +145,7 @@ Deno.test("Each record contains a maximum of 0x10 bytes", () => {
     system.hex.close();
     const firstRecord = system.mockFileContents[1]!;
     expect(firstRecord.substring(1, 3)).toBe("10");
-    expect(firstRecord.length).toBe(recordLength(16));
+    expect(firstRecord.length).toBe(recordLength(0x10));
 });
 
 Deno.test("The remainder of the bytes form the last record", () => {
@@ -165,11 +165,11 @@ Deno.test("The remainder of the bytes form the last record", () => {
 Deno.test("If the address jumps out of sequence, a new record starts", () => {
     const system = systemUnderTest();
     const outOfSequence: Array<TestBlock> = [
-        [0x000000, [[0x02, 0x01]]],
-        [0x000001, [[0x04, 0x03]]],
+        [0x000000, [[1, 2]]],
+        [0x000001, [[3, 4]]],
 
-        [0x000010, [[0x06, 0x05]]],
-        [0x000011, [[0x08, 0x07]]]
+        [0x000010, [[5, 6]]],
+        [0x000011, [[7, 8]]]
     ];
     const line = dummyLine(false, 1);
     for (const [address, code] of outOfSequence) {
@@ -189,21 +189,21 @@ Deno.test("If the address jumps out of sequence, a new record starts", () => {
 Deno.test("Long strings of bytes are stored in multiple records", () => {
     const system = systemUnderTest();
     const longString: Array<TestBlock> = [
-        [0x000000, [[ 1, 0 ], [ 3, 2 ]]],
-        [0x000002, [[ 5, 4 ], [ 7, 6 ]]],
-        [0x000004, [[ 9, 8 ], [11, 10]]],
-        [0x000006, [[13, 12], [15, 14]]],
+        [0x000000, [[ 0,  1], [ 2,  3]]],
+        [0x000002, [[ 4,  5], [ 6,  7]]],
+        [0x000004, [[ 8,  9], [10, 11]]],
+        [0x000006, [[12, 13], [14, 15]]],
 
-        [0x000008, [[14, 15], [12, 13]]],
-        [0x00000a, [[10, 11], [ 8,  9]]],
-        [0x00000c, [[ 6,  7], [ 4,  5]]],
-        [0x00000e, [[ 2,  3], [ 0,  1]]],
+        [0x000008, [[15, 14], [13, 12]]],
+        [0x00000a, [[11, 10], [ 9,  8]]],
+        [0x00000c, [[ 7,  6], [ 5,  4]]],
+        [0x00000e, [[ 3,  2], [ 1,  0]]],
 
-        [0x000010, [[0x45, 0x48], [0x4C, 0x4C]]],
-        [0x000012, [[0x20, 0x4F], [0x4F, 0x48]]],
-        [0x000014, [[0x4B, 0x4E], [0x20, 0x59]]],
-        [0x000016, [[0x4F, 0x54], [0x4B, 0x4E]]],
-        [0x000018, [[0x21, 0x53]              ]]
+        [0x000010, [[0x48, 0x45], [0x4C, 0x4C]]],
+        [0x000012, [[0x4F, 0x20], [0x48, 0x4F]]],
+        [0x000014, [[0x4E, 0x4B], [0x59, 0x20]]],
+        [0x000016, [[0x54, 0x4F], [0x4E, 0x4B]]],
+        [0x000018, [[0x53, 0x21]              ]]
     ];
     const line = dummyLine(false, 1);
     for (const [address, code] of longString) {

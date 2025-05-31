@@ -18,14 +18,14 @@ Deno.test("Immediate Mode Demo", () => {
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("AT Mega 328"); }}',
-        "000000 95 98          2     BREAK",
+        "000000 98 95          2     BREAK",
         "000001 00 00          3     NOP",
-        "000002 95 08          4     RET",
-        "000003 95 18          5     RETI",
-        "000004 95 88          6     SLEEP",
-        "000005 95 A8          7     WDR",
-        "000006 94 09          8     IJMP",
-        "000007 95 09          9     ICALL"
+        "000002 08 95          4     RET",
+        "000003 18 95          5     RETI",
+        "000004 88 95          6     SLEEP",
+        "000005 A8 95          7     WDR",
+        "000006 09 94          8     IJMP",
+        "000007 09 95          9     ICALL"
     ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",
@@ -50,8 +50,8 @@ Deno.test("Have we got a lot of program memory?", () => {
         "/var/tmp/demo.asm",
         "=================",
         '                      1     {{ device("imaginary"); }}',
-        "000000 94 19          2     EIJMP",
-        "000001 95 19          3     EICALL"
+        "000000 19 94          2     EIJMP",
+        "000001 19 95          3     EICALL"
         ]);
     expectFileContents(".hex").toEqual([
         ":020000020000FC",

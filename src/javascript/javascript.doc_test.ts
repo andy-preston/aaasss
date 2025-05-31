@@ -60,7 +60,7 @@ Deno.test("Including plain Javascript files", () => {
         "",
         "/var/tmp/demo.asm",
         "=================",
-        "000001 EF 0E          3     LDI r16, testValue",
+        "000001 0E EF          3     LDI r16, testValue",
         "",
         "Symbol Table",
         "============",

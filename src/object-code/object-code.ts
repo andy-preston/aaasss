@@ -20,7 +20,7 @@ export const objectCode = (
 ) => {
     let assemblyIsRequired = true;
 
-    const toLine = (line: Line, bytes: Array<number>) => {
+    const toLine = (line: Line, bytes: Array<number>, flipBytes: boolean) => {
         let words = 0;
 
         const push = (code: Code) => {
@@ -30,9 +30,13 @@ export const objectCode = (
 
         let pair: Array<number> = [];
         bytes.forEach((byte) => {
-            pair.push(byte);
+            if (flipBytes) {
+                pair.unshift(byte);
+            } else {
+                pair.push(byte);
+            }
             if (isTwo(pair)) {
-                push(pair);
+                push(pair as Code);
                 pair = [];
             }
         });
@@ -66,7 +70,7 @@ export const objectCode = (
             return
         };
 
-        toLine(line, encoder(instructionSet, programMemory));
+        toLine(line, encoder(instructionSet, programMemory), true);
     };
 
     const assembleIf = (required: boolean): DirectiveResult => {
@@ -96,7 +100,7 @@ export const objectCode = (
             }
         );
 
-        toLine(line, bytes);
+        toLine(line, bytes, false);
         return emptyBag();
     };
 

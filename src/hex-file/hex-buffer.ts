@@ -1,7 +1,5 @@
 import type { Code } from "../object-code/data-types.ts";
 
-export type PairOfBytes = [number, number];
-
 export const hexBuffer = () => {
     let buffer: Array<number> = [];
     // AVR Program Memory is word addressed. HEX files are byte addressed.
@@ -14,16 +12,16 @@ export const hexBuffer = () => {
         byteAddress = newByteAddress;
     };
 
-    const pairs = function* () {
-        let pairsToDeliver = Math.min(16, buffer.length) / 2;
-        while (pairsToDeliver--) {
-            byteAddress += 2;
-            yield [buffer.shift()!, buffer.shift()!] as PairOfBytes;
-        }
+    const someBytes = () => {
+        const result = buffer.slice(0, 16);
+        buffer = buffer.slice(16);
+        byteAddress = byteAddress + result.length;
+        return result;
     };
 
     const add = (code: Code) => {
-        buffer = buffer.concat(code);
+        buffer.push(code[0]);
+        buffer.push(code[1]);
     };
 
     const hasAtLeast = (wanted: number) =>
@@ -34,7 +32,7 @@ export const hexBuffer = () => {
 
     return {
         "restartAt": restartAt,
-        "pairs": pairs,
+        "someBytes": someBytes,
         "add": add,
         "address": () => byteAddress,
         "hasAtLeast": hasAtLeast,

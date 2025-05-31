@@ -66,7 +66,7 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     system.line.operandTypes = ["number"];
     system.objectCode.line(system.line);
     expect(system.line.failed()).toBe(false);
-    expect(system.line.code).toEqual([[0x94, 0xfb]]);
+    expect(system.line.code).toEqual([[0xfb, 0x94]]);
     expect(system.programMemory.address()).toBe(1);
 });
 
