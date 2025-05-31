@@ -1,4 +1,4 @@
-import { docTest, expectFileContents } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents } from "../demos-as-tests/doc-test.ts";
 
 Deno.test("Immediate Mode Demo", () => {
     const demo = docTest();

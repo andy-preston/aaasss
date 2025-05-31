@@ -1,0 +1,142 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATTiny2313"); }}
+                      2
+                      3     {{
+                      4         const clockFrequency = 14745600;
+                      5         const timerPreScale = 256;
+                      6
+                      7         const baudRate = 9600;
+                      8         const multiplier = baudRate * 16;
+                      9         define("baudSelector", (clockFrequency / multiplier) - 1);
+                     10
+                     11         const shiftMap = new Map([
+                     12             [0,    0],
+                     13             [1,    1 << CS10],
+                     14             [8,    1 << CS11],
+                     15             [64,   (1 << CS11) | (1 << CS10)],
+                     16             [256,  (1 << CS12)],
+                     17             [1024, (1 << CS12) | (1 << CS10)]
+                     18         ]);
+                     19         define("clockSelect", shiftMap.get(timerPreScale));
+                     20
+                     21         const halfPeriodMilliseconds = 20;
+                     22         const timerFrequency = clockFrequency / timerPreScale;
+                     23         const tick = (1 / timerFrequency) * 1000;
+                     24         const ticks = halfPeriodMilliseconds / tick;
+                     25         define("ticks", Math.round(ticks));
+                     26     }}
+                     27
+000000 F8 94         28     cli
+000001 00 24         29     clr R0
+                     30
+                     31 setup_timer:
+000002 0F BC         32     out TCCR1A, R0
+                     33
+000003 24 E0         34     ldi R18, clockSelect
+000004 2E BD         35     out TCCR1B, R18
+                     36
+000005 24 E0         37     ldi R18, high(ticks)
+000006 2B BD         38     out OCR1AH, R18
+000007 20 E8         39     ldi R18, low(ticks)
+000008 2A BD         40     out OCR1AL, R18
+                     41
+                     42 start_interval_timers:
+000009 0D BC         43     out TCNT1H, R0
+00000A 0C BC         44     out TCNT1L, R0
+                     45
+00000B 20 E6         46     ldi R18, (1 << OCF1A) | (1 << OCF1B)
+00000C 28 BF         47     out TIFR, R18
+                     48
+                     49 setup_serial:
+00000D 20 E0         50     ldi R18, high(baudSelector)
+00000E 22 B9         51     out UBRRH, R18
+00000F 2F E5         52     ldi R18, low(baudSelector)
+000010 29 B9         53     out UBRRL, R18
+                     54
+000011 0B B8         55     out UCSRA, R0
+                     56
+000012 28 E0         57     ldi R18, (1 << TXEN)
+000013 2A B9         58     out UCSRB, R18
+                     59
+000014 26 E0         60     ldi R18, (1 << UCSZ0) | (1 << UCSZ1)
+000015 23 B9         61     out UCSRC, R18
+                     62
+                     63 the_top:
+000016 EC E4         64     ldi ZL, low(characters_to_send << 1)
+000017 F0 E0         65     ldi ZH, high(characters_to_send << 1)
+                     66
+                     67 send_character:
+000018 0D BC         68     out TCNT1H, R0
+000019 0C BC         69     out TCNT1L, R0
+                     70
+00001A 20 E6         71     ldi R18, (1 << OCF1A) | (1 << OCF1B)
+00001B 28 BF         72     out TIFR, R18
+                     73
+                     74 wait_for_20ms_interval:
+00001C 18 B6         75     in R1, TIFR
+00001D 16 FE         76     sbrs R1, OCF1A
+00001E FD CF         77     rjmp wait_for_20ms_interval
+                     78
+                     79 get_next_character:
+00001F 35 91         80     lpm R19, Z+
+                     81
+                     82 buffer_wait:
+000020 5D 9B         83     sbis UCSRA, UDRE
+000021 FE CF         84     rjmp buffer_wait
+                     85
+000022 3C B9         86     out    UDR, R19
+                     87
+000023 30 32         88     cpi R19, " ".charCodeAt(0)
+000024 89 F3         89     breq the_top
+000025 F2 CF         90     rjmp send_character
+                     91
+                     92 characters_to_send:
+000026 54 65 73 74   93     {{ poke ("Testing1234 "); }}
+000028 69 6E 67 31
+00002A 32 33 34 20
+                     94
+
+Symbol Table
+============
+
+baudSelector           | 95   | 5F  | /var/tmp/demo.asm:26 | 2
+buffer_wait            | 32   | 20  | /var/tmp/demo.asm:82 | 1
+characters_to_send     | 38   | 26  | /var/tmp/demo.asm:92 | 0
+clockSelect            | 4    | 4   | /var/tmp/demo.asm:26 | 1
+CS10                   | 0    | 0   | /var/tmp/demo.asm:1  | 3
+CS11                   | 1    | 1   | /var/tmp/demo.asm:1  | 2
+CS12                   | 2    | 2   | /var/tmp/demo.asm:1  | 2
+get_next_character     | 31   | 1F  | /var/tmp/demo.asm:79 | 0
+OCF1A                  | 6    | 6   | /var/tmp/demo.asm:1  | 3
+OCF1B                  | 5    | 5   | /var/tmp/demo.asm:1  | 2
+OCR1AH                 | 75   | 4B  | /var/tmp/demo.asm:1  | 1
+OCR1AL                 | 74   | 4A  | /var/tmp/demo.asm:1  | 1
+R0                     |      |     | REGISTER             | 7
+R1                     |      |     | REGISTER             | 2
+R18                    |      |     | REGISTER             | 18
+R19                    |      |     | REGISTER             | 3
+send_character         | 24   | 18  | /var/tmp/demo.asm:67 | 1
+setup_serial           | 13   | D   | /var/tmp/demo.asm:49 | 0
+setup_timer            | 2    | 2   | /var/tmp/demo.asm:31 | 0
+start_interval_timers  | 9    | 9   | /var/tmp/demo.asm:42 | 0
+TCCR1A                 | 79   | 4F  | /var/tmp/demo.asm:1  | 1
+TCCR1B                 | 78   | 4E  | /var/tmp/demo.asm:1  | 1
+TCNT1H                 | 77   | 4D  | /var/tmp/demo.asm:1  | 2
+TCNT1L                 | 76   | 4C  | /var/tmp/demo.asm:1  | 2
+the_top                | 22   | 16  | /var/tmp/demo.asm:63 | 1
+ticks                  | 1152 | 480 | /var/tmp/demo.asm:26 | 2
+TIFR                   | 88   | 58  | /var/tmp/demo.asm:1  | 3
+TXEN                   | 3    | 3   | /var/tmp/demo.asm:1  | 1
+UBRRH                  | 34   | 22  | /var/tmp/demo.asm:1  | 1
+UBRRL                  | 41   | 29  | /var/tmp/demo.asm:1  | 1
+UCSRA                  | 43   | 2B  | /var/tmp/demo.asm:1  | 2
+UCSRB                  | 42   | 2A  | /var/tmp/demo.asm:1  | 1
+UCSRC                  | 35   | 23  | /var/tmp/demo.asm:1  | 1
+UCSZ0                  | 1    | 1   | /var/tmp/demo.asm:1  | 1
+UCSZ1                  | 2    | 2   | /var/tmp/demo.asm:1  | 1
+UDR                    | 44   | 2C  | /var/tmp/demo.asm:1  | 1
+UDRE                   | 5    | 5   | /var/tmp/demo.asm:1  | 1
+wait_for_20ms_interval | 28   | 1C  | /var/tmp/demo.asm:74 | 1
+ZH                     |      |     | REGISTER             | 1
+ZL                     |      |     | REGISTER             | 1

@@ -1,4 +1,4 @@
-import { docTest, expectFileContents } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents } from "../demos-as-tests/doc-test.ts";
 
 Deno.test("Data-direct without reduced core",() => {
     const demo = docTest();

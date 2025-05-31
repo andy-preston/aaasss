@@ -1,4 +1,4 @@
-import { docTest, expectFileContents, expectFileExists } from "../assembler/doc-test.ts";
+import { docTest, expectFileContents, expectFileExists } from "../demos-as-tests/doc-test.ts";
 
 Deno.test("Definition errors give the location of the original definition", () => {
     const demo = docTest();
