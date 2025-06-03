@@ -1,0 +1,16 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATTiny24"); }}
+000000 B1 F8          2     BLD R11, 1
+000001 C3 FA          3     BST R12, 3
+000002 43 FD          4     SBRC R20, 3
+000003 56 FF          5     SBRS R21, 6
+                      6
+
+Symbol Table
+============
+
+R11 |   |   | REGISTER | 1
+R12 |   |   | REGISTER | 1
+R20 |   |   | REGISTER | 1
+R21 |   |   | REGISTER | 1
