@@ -1,0 +1,3 @@
+unsupportedInstructions = []
+programMemoryBytes = 0x0100
+reducedCore = true
