@@ -4,12 +4,30 @@ import { existsSync } from "jsr:@std/fs/exists";
 
 const textFile = (name: string) => Deno.readTextFileSync(name).split("\n");
 
+const titleCase = (title: string) => title.replaceAll(
+    "--", ", "
+).replaceAll(
+    "-", " "
+).split(
+    " "
+).map(
+    word => word.charAt(0).toUpperCase() + word.slice(1)
+).join(
+    " "
+);
+
+const dirContents = (dir: string) => Deno.readDirSync(dir).filter(
+    example => example.isDirectory
+).map (
+    example => example.name
+).toArray().sort();
+
 const root = import.meta.url.split('/').slice(2, -3).join('/');
 ["programs", "instructions"].forEach(section => {
     const sectionDir = `${root}/example/${section}`;
-    Deno.readDirSync(sectionDir).forEach(example => {
-        const directory = `${sectionDir}/${example.name}`;
-        Deno.test(`${example.name} example`, () => {
+    dirContents(sectionDir).forEach(example => {
+        const directory = `${sectionDir}/${example}`;
+        Deno.test(titleCase(`${section}: ${example}`), () => {
             const demo = docTest();
             demo.source(
                 "", textFile(`${directory}/demo.asm`)

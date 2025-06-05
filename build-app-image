@@ -27,7 +27,7 @@ chmod u+x app-image-source/AppRun
 chmod u+x app-image-source/deno
 
 tar cf - --transform='s_/src/_/aaa/_g' ./devices/ $(
-    find './src/' -type f | grep -v -e /examples/ -e test.ts -e testing.ts
+    find './src/' -type f | grep -v -e test.ts -e testing.ts
 ) | (cd app-image-source ; tar xvf - )
 
 # cSpell:words appimagetool
