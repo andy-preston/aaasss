@@ -1,0 +1,42 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATMega 328"); }}
+000000 12 1C          2     ADC R1, R2
+000001 34 0C          3     ADD R3, R4
+000002 78 20          4     AND R7, R8
+000003 EE 24          5     CLR R14
+000004 F0 16          6     CP R15, R16
+000005 12 07          7     CPC R17, R18
+000006 45 13          8     CPSE R20, R21
+000007 70 25          9     EOR R23, R0
+000008 55 0C         10     LSL R5
+000009 78 2C         11     MOV R7, R8
+00000A 80 9E         12     MUL R8, R16
+00000B CD 28         13     OR R12, R13
+00000C 44 1F         14     ROL R20
+00000D 42 09         15     SBC R20, R2
+00000E 12 18         16     SUB R1, R2
+00000F 88 20         17     TST R8
+                     18
+
+Symbol Table
+============
+
+R0  |   |   | REGISTER | 1
+R1  |   |   | REGISTER | 2
+R2  |   |   | REGISTER | 3
+R3  |   |   | REGISTER | 1
+R4  |   |   | REGISTER | 1
+R5  |   |   | REGISTER | 1
+R7  |   |   | REGISTER | 2
+R8  |   |   | REGISTER | 4
+R12 |   |   | REGISTER | 1
+R13 |   |   | REGISTER | 1
+R14 |   |   | REGISTER | 1
+R15 |   |   | REGISTER | 1
+R16 |   |   | REGISTER | 2
+R17 |   |   | REGISTER | 1
+R18 |   |   | REGISTER | 1
+R20 |   |   | REGISTER | 3
+R21 |   |   | REGISTER | 1
+R23 |   |   | REGISTER | 1

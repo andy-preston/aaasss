@@ -1,0 +1,13 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATTiny 24"); }}
+                      2     MUL R0, R1
+                        notSupported_mnemonic
+                        used: MUL
+                      3
+
+Symbol Table
+============
+
+R0 |   |   | REGISTER | 1
+R1 |   |   | REGISTER | 1

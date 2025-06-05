@@ -1,4 +1,4 @@
-import { docTest, expectFileContents } from "./doc-test.ts";
+import { docTest, expectFileContents, expectFileExists } from "./doc-test.ts";
 import { defaultTomlLoader } from "../device/file.ts";
 import { existsSync } from "jsr:@std/fs/exists";
 
@@ -20,7 +20,12 @@ const root = import.meta.url.split('/').slice(2, -3).join('/');
             }
             demo.assemble();
             expectFileContents(".lst").toEqual(textFile(`${directory}/demo.lst`));
-            expectFileContents(".hex").toEqual(textFile(`${directory}/demo.hex`));
+            const hexFile = `${directory}/demo.hex`;
+            if (existsSync(hexFile)) {
+                expectFileContents(".hex").toEqual(textFile(hexFile));
+            } else {
+                expectFileExists(".hex").toBe(false);
+            }
         });
     });
 });
