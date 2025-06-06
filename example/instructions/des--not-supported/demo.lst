@@ -1,0 +1,9 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("AT-Tiny-24"); }}
+                      2     ; DES isn't actually available on any of the devices
+                      3     ; we support at this point.
+                      4     DES 15
+                        notSupported_mnemonic
+                        used: DES
+                      5

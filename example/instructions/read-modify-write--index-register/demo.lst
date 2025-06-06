@@ -1,0 +1,28 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("DemoDevice"); }}
+000000 46 93          2     LAC R30, R20
+                        operand_symbolic
+                        location.operand: 0
+                        expected: Z
+                        actual: R30
+000001 55 93          3     LAS X, R21
+                        operand_symbolic
+                        location.operand: 0
+                        expected: Z
+                        actual: X
+000002 67 93          4     LAT Y, R22
+                        operand_symbolic
+                        location.operand: 0
+                        expected: Z
+                        actual: Y
+000003 F4 92          5     XCH z, R15
+                      6
+
+Symbol Table
+============
+
+R15 |   |   | REGISTER | 1
+R20 |   |   | REGISTER | 1
+R21 |   |   | REGISTER | 1
+R22 |   |   | REGISTER | 1

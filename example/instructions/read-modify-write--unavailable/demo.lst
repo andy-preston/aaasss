@@ -1,0 +1,16 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATTiny24"); }}
+                      2     LAC Z, R20
+                        notSupported_mnemonic
+                        used: LAC
+                      3     LAS Z, R21
+                        notSupported_mnemonic
+                        used: LAS
+                      4     LAT Z, R22
+                        notSupported_mnemonic
+                        used: LAT
+                      5     XCH Z, R15
+                        notSupported_mnemonic
+                        used: XCH
+                      6

@@ -1,0 +1,16 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("DemoDevice"); }}
+000000 46 93          2     LAC Z, R20
+000001 55 93          3     LAS Z, R21
+000002 67 93          4     LAT Z, R22
+000003 F4 92          5     XCH Z, R15
+                      6
+
+Symbol Table
+============
+
+R15 |   |   | REGISTER | 1
+R20 |   |   | REGISTER | 1
+R21 |   |   | REGISTER | 1
+R22 |   |   | REGISTER | 1

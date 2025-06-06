@@ -1,0 +1,30 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATTiny24"); }}
+                      2     ; Note that we're adding 0x20 to literal IO Address here
+000000 39 B3          3     IN R19, 25 + 0x20
+                      4     ; Because operands are given as data memory addresses
+                      5     ; (to be compatible with LDS and SDS)
+000001 05 BF          6     OUT 53 + 0x20, R16
+                      7
+                      8     ; If you only use the pre-defined IO port labels, you don't need
+                      9     ; to care!
+000002 39 B3         10     IN R19, PINA
+000003 05 BF         11     OUT MCUCR, R16
+                     12
+000004 DD 98         13     CBI PORTA, 5
+000005 C0 9A         14     SBI PORTB, 0
+000006 CE 99         15     SBIC PINA, 6
+000007 B3 99         16     SBIC PINB, 3
+                     17
+
+Symbol Table
+============
+
+MCUCR | 85 | 55 | /var/tmp/demo.asm:1 | 1
+PINA  | 57 | 39 | /var/tmp/demo.asm:1 | 2
+PINB  | 54 | 36 | /var/tmp/demo.asm:1 | 1
+PORTA | 59 | 3B | /var/tmp/demo.asm:1 | 1
+PORTB | 56 | 38 | /var/tmp/demo.asm:1 | 1
+R16   |    |    | REGISTER            | 2
+R19   |    |    | REGISTER            | 2

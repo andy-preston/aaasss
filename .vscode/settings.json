@@ -1,6 +1,11 @@
 {
     "deno.enable": true,
     "deno.lint": true,
+    "files.associations": {
+        "*.asm": "plaintext",
+        "*.lst": "plaintext",
+        "*.hex": "plaintext"
+    },
     "cSpell.words": [
         "Abbb",
         "ADIW",
