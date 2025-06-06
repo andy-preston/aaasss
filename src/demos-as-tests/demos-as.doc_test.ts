@@ -26,8 +26,8 @@ const root = import.meta.url.split('/').slice(2, -3).join('/');
 ["programs", "instructions"].forEach(section => {
     const sectionDir = `${root}/example/${section}`;
     dirContents(sectionDir).forEach(example => {
-        const directory = `${sectionDir}/${example}`;
         Deno.test(titleCase(`${section}: ${example}`), () => {
+            const directory = `${sectionDir}/${example}`;
             const demo = docTest();
             demo.source(
                 "", textFile(`${directory}/demo.asm`)
