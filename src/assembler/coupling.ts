@@ -9,9 +9,9 @@ import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser } from "../device/chooser.ts";
 import { deviceCoupling } from "../device/coupling.ts";
 import { deviceSettings } from "../device/settings.ts";
-import { instructionSet } from "../device/instruction-set.ts";
 import { functionDirectives } from "../directives/function-directives.ts";
 import { hexFile } from "../hex-file/hex.ts";
+import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { embeddedJs } from "../javascript/embedded.ts";
 import { currentLine } from "../line/current-line.ts";
@@ -20,7 +20,7 @@ import { macroCoupling } from "../macros/coupling.ts";
 import { macros } from "../macros/macros.ts";
 import { objectCode } from "../object-code/object-code.ts";
 import { objectCodeCoupling } from "../object-code/coupling.ts";
-import { symbolicToNumeric } from "../operands/symbolic-to-numeric.ts";
+import { operands } from "../operands/operands.ts";
 import { programMemoryCoupling } from "../program-memory/coupling.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -45,14 +45,14 @@ export const coupling = (
     const $macros = macros($symbolTable, $fileStack);
     const $jsExpression = jSExpression($symbolTable);
     const $embeddedJs = embeddedJs($jsExpression);
-    const $symbolicToNumeric = symbolicToNumeric(
-        $symbolTable, $cpuRegisters, $jsExpression
-    );
     const $instructionSet = instructionSet($symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
     const $dataMemory = dataMemory($symbolTable);
+    const $operands = operands(
+        $symbolTable, $cpuRegisters, $programMemory, $jsExpression
+    );
     const $objectCode = objectCode(
-        $instructionSet, $programMemory, $currentLine
+        $instructionSet, $operands, $programMemory, $currentLine
     );
     const $deviceSettings = deviceSettings(
         $instructionSet, $cpuRegisters, $symbolTable
@@ -87,7 +87,6 @@ export const coupling = (
             tokens,
             $programMemoryCoupling.lineLabel,
             withDirectives(macroCoupling($macros)).processedLine,
-            $symbolicToNumeric,
             withDirectives(objectCodeCoupling($objectCode)).line,
             withDirectives(dataMemoryCoupling($dataMemory)).reset,
             withDirectives(symbolTableCoupling($symbolTable)).reset
