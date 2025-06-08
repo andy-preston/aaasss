@@ -1,6 +1,5 @@
 import type { Failure } from "../failure/bags.ts";
 import type { Line } from "../line/line-types.ts";
-import type { OperandIndex } from "../operands/data-types.ts";
 import type { Mnemonic } from "./data-types.ts";
 
 import { boringFailure } from "../failure/bags.ts";
@@ -16,7 +15,7 @@ export const pushOperandCheckingIndexOffset = (
     operand: string, mnemonic: Mnemonic, fullOperands: Array<string>, line: Line
 ) => {
     const addFailure = (failure: Failure) => {
-        failure.location = { "operand": fullOperands.length as OperandIndex };
+        failure.location = {"operand": fullOperands.length};
         line.failures.push(failure);
     };
 

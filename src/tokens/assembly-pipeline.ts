@@ -1,9 +1,7 @@
 import type { PipelineStage } from "../assembler/data-types.ts";
 import type { Line } from "../line/line-types.ts";
-import type { OperandIndex, SymbolicOperands } from "../operands/data-types.ts"
 
 import { assertionFailure, boringFailure } from "../failure/bags.ts";
-import { operands } from "../operands/data-types.ts"
 import { pushOperandCheckingIndexOffset } from "./index-offset.ts";
 import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
@@ -52,14 +50,12 @@ export const tokens: PipelineStage = (line: Line) => {
     fullOperands.forEach((operand, index) => {
         if (operand == "") {
             const failure = boringFailure("operand_blank");
-            failure.location = {"operand": index as OperandIndex};
+            failure.location = {"operand": index};
             line.failures.push(failure);
         }
     });
 
-    const mappedOperands = fullOperands.map(upperCaseRegisters);
-
+    line.symbolicOperands = fullOperands.map(upperCaseRegisters);
     line.label = label;
     line.mnemonic = mnemonic;
-    line.symbolicOperands = operands<SymbolicOperands>(mappedOperands);
 };
