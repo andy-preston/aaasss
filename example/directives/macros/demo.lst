@@ -1,0 +1,71 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATTiny24"); }}
+                      2     {{ include("/var/tmp/def.asm"); }}
+
+/var/tmp/def.asm
+================
+                      1     ; A macro can be defined in one file and used in another
+                      2     {{ macro("aMacro", "address"); }}
+                      3     LDS R30, address
+                      4     {{ end(); }}
+                      5
+
+/var/tmp/demo.asm
+=================
+                      3     {{ aMacro(1024); }}
+000000 E0 91 00 04    3     LDS R30, address
+                      4
+                      5     ; Any JS in a macro is executed during definition AND playback
+                      6     ; but any code it may generate at define time is discarded
+                      7     {{ macro("pokingMacro"); }}
+                      8     {{ poke("testing"); }}
+                      9     LDI R30, 23
+                     10     {{ end(); }}
+                     11
+                     12     {{ pokingMacro() }}
+000002 74 65 73 74   12     {{ poke("testing"); }}
+000004 69 6E 67 00
+000006 E7 E1         12     LDI R30, 23
+                     13
+                     14     ; A macro can be called from inside another macro
+                     15     {{ macro("innerMacro", "address"); }}
+                     16     LDS R30, address
+                     17     {{ end(); }}
+                     18
+                     19     {{ macro("outerMacro"); }}
+                     20     {{ innerMacro(1024); }}
+                     21     {{ innerMacro(2048); }}
+                     22     {{ end(); }}
+                     23
+                     24     {{ outerMacro() }}
+                     24     {{ innerMacro(1024); }}
+000007 E0 91 00 04   24     LDS R30, address
+                     24     {{ innerMacro(2048); }}
+000009 E0 91 00 08   24     LDS R30, address
+                     25
+                     26     ; Playing back multiple copies of a macro with JS
+                     27     ; Doing stuff in a loop means that the macros get expanded in
+                     28     ; reverse order - hence the reversing of the array
+                     29     {{ [1024, 2048].reverse().forEach(a => aMacro(a)); }}
+00000B E0 91 00 04   29     LDS R30, address
+00000D E0 91 00 08   29     LDS R30, address
+                     30
+                     31     ; Should we expect to see LDS R30, 1024
+                     32     ;                      or LDS R30, address
+                     33     ; And should macro parameters end up in the symbol table
+                     34     {{ aMacro(1024); }}
+00000F E0 91 00 04   34     LDS R30, address
+                     35
+                     36     {{ aMacro(2048); }}
+000011 E0 91 00 08   36     LDS R30, address
+                     37
+
+Symbol Table
+============
+
+aMacro      |   |   | /var/tmp/def.asm:4   | 5
+innerMacro  |   |   | /var/tmp/demo.asm:17 | 4
+outerMacro  |   |   | /var/tmp/demo.asm:22 | 1
+pokingMacro |   |   | /var/tmp/demo.asm:10 | 1
+R30         |   |   | REGISTER             | 8

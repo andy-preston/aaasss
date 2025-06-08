@@ -40,7 +40,7 @@ const root = import.meta.url.split('/').slice(2, -3).join('/');
                 if (file.endsWith(".asm")) {
                     demo.source(
                         file == "demo.asm" ? "" : file,
-                        textFile(`${directory}/demo.asm`)
+                        textFile(`${directory}/${file}`)
                     );
                     return;
                 }
