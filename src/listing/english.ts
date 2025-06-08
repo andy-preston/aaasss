@@ -58,11 +58,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Expected parameter count", "Actual parameter count",
         failure as AssertionFailure
     )),
-    "mnemonic_implicitElpmNotLpm": (failure) => withLocation(failure, [
-        "If a device has an implicit ELPM instruction, it can't have an implicit LPM instruction",
-        "The opcodes for the two instructions are identical, but ELPM uses the RAMPZ register",
-        "And it's better to use ELPM to explicitly state that in your code."
-    ]),
     "mnemonic_supportedUnknown": (failure) => withLocation(failure, clueFailure(
         ["Can't determine if instruction is supported or not"],
         "Instruction mnemonic",
@@ -88,11 +83,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "operand_count": (failure) => withLocation(failure, assertionFailure(
         ["Number of operands not expected"],
         "Expected", "Actual",
-        failure as AssertionFailure
-    )),
-    "operand_symbolic":  (failure) => withLocation(failure, assertionFailure(
-        ["Operand not as expected"],
-        "Allowed values", "Actual Value",
         failure as AssertionFailure
     )),
     "parameter_firstName": (failure) => withLocation(failure, [
@@ -126,6 +116,9 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "ram_stackAllocated": (failure) => withLocation(failure, [
         "Stack Already Allocated"
     ]),
+    "register_notFound":  (failure) => withLocation(failure, [
+        `Register ${(failure as ClueFailure).clue} not found`
+    ]),
     "notSupported_ioRange": (failure) => withLocation(failure, supportFailure(
         [
             "Some devices have extended GPIO outside of the normal IO area of data memory",
@@ -155,13 +148,8 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "type_relativeAddress": (failure) => withLocation(failure, [
         "Relative address"
     ]),
-    "type_16BitDataAddress": (failure) => withLocation(failure, numericTypeFailure(
-        ["16 Bit Data Address out of range"],
-        "Defined range", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_7BitDataAddress": (failure) => withLocation(failure, numericTypeFailure(
-        ["7 Bit Data Address out of range"],
+    "type_7Bit": (failure) => withLocation(failure, numericTypeFailure(
+        ["7 Bit Value out of range"],
         "Defined range", "Actual value",
         failure as NumericTypeFailure
     )),
@@ -200,7 +188,7 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Defined value", "Actual value",
         failure as NumericTypeFailure
     )),
-    "type_6Bits": (failure) => withLocation(failure, numericTypeFailure(
+    "type_6Bit": (failure) => withLocation(failure, numericTypeFailure(
         ["6-bit value out of range"],
         "Defined value", "Actual value",
         failure as NumericTypeFailure
@@ -220,6 +208,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Defined value", "Actual value",
         failure as NumericTypeFailure
     )),
+    "type_registerMultiply": (failure) => withLocation(failure, numericTypeFailure(
+        ['This should be a "multiply register"'],
+        "Defined value", "Actual value",
+        failure as NumericTypeFailure
+    )),
     "type_registerPair": (failure) => withLocation(failure, numericTypeFailure(
         ["This should be a register pair only"],
         "Defined value", "Actual value",
@@ -229,5 +222,10 @@ export const messages: Record<FailureKind, FailureMessage> = {
         ["16 bit word out of range"],
         "Defined value", "Actual value",
         failure as NumericTypeFailure
+    )),
+        "value_type":  (failure) => withLocation(failure, assertionFailure(
+        ["Operand not as expected"],
+        "Allowed values", "Actual Value",
+        failure as AssertionFailure
     )),
 } as const;
