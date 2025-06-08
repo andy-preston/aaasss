@@ -4,7 +4,7 @@ family = "atmega-x8"
 
 unsupportedInstructions = [
     # 1 instruction word/vector (RJMP)
-    "readModifyWrite", "DES", "FlashMore8", "FlashMore128", "SPM.Z+"
+    "readModifyWrite", "DES", "flashMore8", "flashMore128", "SPM.Z+"
 ]
 
 eepromEnd = 0x01FF

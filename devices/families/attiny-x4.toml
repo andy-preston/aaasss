@@ -1,5 +1,5 @@
 unsupportedInstructions = [
-    "multiply", "readModifyWrite", "DES", "FlashMore128", "FlashMore8", "SPM.Z+"
+    "multiply", "readModifyWrite", "DES", "flashMore128", "flashMore8", "SPM.Z+"
 ]
 
 reducedCore = false
