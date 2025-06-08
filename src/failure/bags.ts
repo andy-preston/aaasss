@@ -1,11 +1,10 @@
 import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
 import type { AllowedValues, Max, Min, NumericType } from "../numeric-values/types.ts";
-import type { OperandIndex } from "../operands/data-types.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 
 import { failureKinds } from "./kinds.ts";
 
-type OperandLocation = { "operand": OperandIndex };
+type OperandLocation = { "operand": number };
 type ParameterLocation = { "parameter": number };
 type FailureLocation = undefined | OperandLocation | ParameterLocation;
 
@@ -84,15 +83,6 @@ export type Failure = AssertionFailure | BoringFailure | ClueFailure
 export const bagOfFailures = (failures: Array<Failure>) =>
     ({ "type": "failures" as const, "it": failures });
 export type BagOfFailures = ReturnType<typeof bagOfFailures>;
-
-export const withLocation = (
-    failures: BagOfFailures, location: FailureLocation
-): BagOfFailures => {
-    failures.it.forEach((failure) => {
-        failure.location = location;
-    });
-    return failures;
-};
 
 export type NumberOrFailures = NumberBag | BagOfFailures;
 export type StringOrFailures = StringBag | BagOfFailures;

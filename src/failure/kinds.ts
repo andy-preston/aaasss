@@ -8,7 +8,6 @@ export const failureKinds = {
         "device_notSelected",
         "js_jsMode", "js_assemblerMode",
         "macro_end", "macro_noEnd",
-        "mnemonic_implicitElpmNotLpm",
         "operand_blank", "operand_offsetNotLdd", "operand_offsetNotStd",
         "operand_offsetX",
         "parameter_firstName",
@@ -16,9 +15,7 @@ export const failureKinds = {
         "ram_sizeUnknown", "ram_stackAllocated"
     ],
     "assertion": [
-        "macro_params",
-        "operand_count", "operand_symbolic",
-        "parameter_count",
+        "macro_params", "operand_count", "parameter_count", "value_type",
         "programMemory_outOfRange",
         "ram_outOfRange",
         "type_failure"
@@ -27,7 +24,7 @@ export const failureKinds = {
         "type_bytesOrString", "type_relativeAddress"
     ],
     "clue": [
-        "file_notFound",  "device_notFound",
+        "file_notFound",  "device_notFound", "register_notFound",
         "macro_multiDefine",
         "mnemonic_unknown", "mnemonic_supportedUnknown"
     ],
