@@ -23,7 +23,7 @@ const dirContents = (dir: string) => Deno.readDirSync(dir).filter(
 ).toArray().sort();
 
 const root = import.meta.url.split('/').slice(2, -3).join('/');
-["programs", "instructions"].forEach(section => {
+["programs", "directives", "instructions"].forEach(section => {
     const sectionDir = `${root}/example/${section}`;
     dirContents(sectionDir).forEach(example => {
         Deno.test(titleCase(`${section}: ${example}`), () => {
