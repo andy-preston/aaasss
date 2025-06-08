@@ -18,6 +18,12 @@
 00000E 12 18         16     SUB R1, R2
 00000F 88 20         17     TST R8
                      18
+000010 0F 03         19     FMUL R16, R23
+000011 94 03         20     FMULS R17, R20
+000012 AD 03         21     FMULSU R18, R21
+000013 0F 02         22     MULS R16, R31
+000014 02 03         23     MULSU R16, R18
+                     24
 
 Symbol Table
 ============
@@ -34,9 +40,10 @@ R12 |   |   | REGISTER | 1
 R13 |   |   | REGISTER | 1
 R14 |   |   | REGISTER | 1
 R15 |   |   | REGISTER | 1
-R16 |   |   | REGISTER | 2
-R17 |   |   | REGISTER | 1
-R18 |   |   | REGISTER | 1
-R20 |   |   | REGISTER | 3
-R21 |   |   | REGISTER | 1
-R23 |   |   | REGISTER | 1
+R16 |   |   | REGISTER | 5
+R17 |   |   | REGISTER | 2
+R18 |   |   | REGISTER | 3
+R20 |   |   | REGISTER | 4
+R21 |   |   | REGISTER | 2
+R23 |   |   | REGISTER | 2
+R31 |   |   | REGISTER | 1

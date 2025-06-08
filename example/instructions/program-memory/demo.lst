@@ -1,0 +1,19 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("Fake Device"); }}
+000000 E8 95          2     SPM
+000001 F8 95          3     SPM Z+
+000002 D8 95          4     ELPM
+000003 C6 90          5     ELPM R12, Z
+000004 D7 90          6     ELPM R13, Z+
+000005 94 91          7     LPM R25, Z
+000006 A5 91          8     LPM R26, Z+
+                      9
+
+Symbol Table
+============
+
+R12 |   |   | REGISTER | 1
+R13 |   |   | REGISTER | 1
+R25 |   |   | REGISTER | 1
+R26 |   |   | REGISTER | 1

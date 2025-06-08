@@ -2,17 +2,17 @@
 =================
                       1     {{ device("DemoDevice"); }}
 000000 46 93          2     LAC R30, R20
-                        operand_symbolic
+                        value_type
                         location.operand: 0
                         expected: Z
                         actual: R30
 000001 55 93          3     LAS X, R21
-                        operand_symbolic
+                        value_type
                         location.operand: 0
                         expected: Z
                         actual: X
 000002 67 93          4     LAT Y, R22
-                        operand_symbolic
+                        value_type
                         location.operand: 0
                         expected: Z
                         actual: Y

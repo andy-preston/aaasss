@@ -15,3 +15,9 @@
     SBC R20, R2
     SUB R1, R2
     TST R8
+
+    FMUL R16, R23
+    FMULS R17, R20
+    FMULSU R18, R21
+    MULS R16, R31
+    MULSU R16, R18
