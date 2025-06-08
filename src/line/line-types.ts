@@ -1,7 +1,7 @@
 import type { Pass } from "../assembler/data-types.ts";
 import type { Failure } from "../failure/bags.ts";
 import type { Code } from "../object-code/data-types.ts";
-import type { NumericOperands, OperandTypes, SymbolicOperands } from "../operands/data-types.ts";
+import type { SymbolicOperands } from "../operands/data-types.ts";
 import type { FileName, LineNumber, SourceCode } from "../source-code/data-types.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
 
@@ -34,8 +34,6 @@ export const line = (
         "macroName": macroName,
         "macroCount": macroCount,
         "symbolicOperands": [] as SymbolicOperands,
-        "numericOperands": [] as NumericOperands,
-        "operandTypes": [] as OperandTypes,
         "address": 0,
         "code": [] as Array<Code>
     };
