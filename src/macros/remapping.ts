@@ -1,13 +1,12 @@
 import type { StringOrFailures } from "../failure/bags.ts";
 import type { Line } from "../line/line-types.ts";
-import type { SymbolicOperand, SymbolicOperands } from "../operands/data-types.ts";
+import type { SymbolicOperand } from "../operands/data-types.ts";
 import type { FileLineIterator } from "../source-code/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
 import { assertionFailure, bagOfFailures } from "../failure/bags.ts";
-import { operands } from "../operands/data-types.ts";
 
 export const remapping = (macroList: MacroList) => {
     const mapping: Map<string, MacroParameters> = new Map();
@@ -39,7 +38,7 @@ export const remapping = (macroList: MacroList) => {
     const remappedLabel = (line: Line) =>
         line.label ? expandedLabel(line, line.label) : "";
 
-    const remappedParameters = (line: Line) => {
+    const remappedOperands = (line: Line) => {
         const macro = macroList.get(line.macroName)!;
         const actual = mapping.get(mapKey(line.macroName, line.macroCount))!;
 
@@ -62,9 +61,7 @@ export const remapping = (macroList: MacroList) => {
         line.isDefiningMacro = false;
         if (line.macroName !== "") {
             line.label = remappedLabel(line);
-            line.symbolicOperands = operands<SymbolicOperands>(
-                remappedParameters(line)
-            );
+            line.symbolicOperands = remappedOperands(line);
         }
     };
 
