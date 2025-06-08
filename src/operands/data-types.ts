@@ -1,30 +1,11 @@
-export type OperandIndex = 0 | 1 | 2;
-
-type Operands<Type> =
-    readonly [] |
-    readonly [Type] |
-    readonly [Type, Type] |
-    readonly [Type, Type, Type];
-
 export type SymbolicOperand = string;
-export type SymbolicOperands = Operands<SymbolicOperand>;
+export type SymbolicOperands = Array<SymbolicOperand>;
 
-export type NumericOperand = number;
-export type NumericOperands = Operands<NumericOperand>;
+export type OperandType =
+    "register" | "registerPair" | "registerImmediate" | "registerMultiply" |
+    "onlyZ" | "optionalZ+" | "ZorZ+" |
+    "nybble" | "6BitNumber" | "byte" | "invertedByte" | "bitIndex" |
+    "ioPort" | "16BitDataAddress" | "7BitDataAddress" |
+    "22BitProgramAddress" | "12BitRelative" | "7BitRelative";
 
-export type OperandType = "index" | "register" | "failure" | "number";
-export type OperandTypes = Operands<OperandType>;
-
-type Lookup<Goal> =
-    Goal extends SymbolicOperands ? SymbolicOperand :
-    Goal extends NumericOperands ? NumericOperand :
-    OperandType;
-
-export const operands = <
-    Goal extends SymbolicOperands | NumericOperands | OperandTypes
-> (operands: Array<Lookup<Goal>>) => {
-    if (operands.length > 3) {
-        throw Error("More than 3 operands isn't possible");
-    }
-    return operands as unknown as Goal;
-};
+export type InstructionOperands = Record<string, OperandType>;

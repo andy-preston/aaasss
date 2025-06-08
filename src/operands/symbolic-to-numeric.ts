@@ -1,74 +1,89 @@
-import type { PipelineStage } from "../assembler/data-types.ts";
-import type { Failure, NumberOrFailures } from "../failure/bags.ts";
-import type { JsExpression } from "../javascript/expression.ts";
-import type { Line } from "../line/line-types.ts";
-import type { CpuRegisters } from "../registers/cpu-registers.ts";
+import type { NumberOrFailures } from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import type {
-    NumericOperand, NumericOperands, OperandType, OperandTypes,
-    SymbolicOperand, OperandIndex
-} from "./data-types.ts";
-import type { IndexOperand } from "./index-operands.ts";
+import type { CpuRegisters } from "../registers/cpu-registers.ts";
+import type { JsExpression } from "../javascript/expression.ts";
+import type { OperandType } from "./data-types.ts";
 
 import { numberBag } from "../assembler/bags.ts";
-import { operands } from "./data-types.ts";
-import { indexOperands } from "./index-operands.ts";
+import { assertionFailure, bagOfFailures, boringFailure, clueFailure } from "../failure/bags.ts";
+
+type Converter = (
+    symbolic: string | undefined, operandType: OperandType
+) => NumberOrFailures;
 
 export const symbolicToNumeric = (
     symbolTable: SymbolTable, cpuRegisters: CpuRegisters,
     jsExpression: JsExpression
-): PipelineStage => {
-    const valueAndType = (
-        symbolicOperand: SymbolicOperand
-    ): [NumberOrFailures, OperandType] => {
-        if (indexOperands.includes(symbolicOperand as IndexOperand)) {
-            return [numberBag(0), "index"];
+) => {
+    const register = (
+        symbolic: string | undefined, _operandType: OperandType
+    ): NumberOrFailures =>
+        symbolic == undefined
+            ? bagOfFailures([boringFailure("operand_blank")])
+            : !cpuRegisters.has(symbolic)
+            ? bagOfFailures([clueFailure("register_notFound", `${symbolic}`)])
+            : numberBag(symbolTable.use(symbolic).it as number);
+
+    const aNumber = (
+        symbolic: string | undefined, operandType: OperandType
+    ): NumberOrFailures => {
+        if (symbolic == undefined) {
+            return bagOfFailures([boringFailure("operand_blank")]);
         }
-        if (cpuRegisters.has(symbolicOperand)) {
-            const usageCounted = symbolTable.use(symbolicOperand).it;
-            return [numberBag(usageCounted as number), "register"];
+        if (cpuRegisters.has(symbolic)) {
+            return bagOfFailures([assertionFailure(
+                "value_type", operandType, `register: ${symbolic}`
+            )]);
         }
-        const numeric = jsExpression(symbolicOperand);
-        return numeric.type == "failures" ? [numeric, "failure"]
-            : numeric.it == "" ? [numberBag(0), "number"]
-            : [numberBag(parseInt(numeric.it)), "number"];
+        const numeric = jsExpression(symbolic);
+        return numeric.type == "failures" ? numeric
+            : numeric.it == "" ? bagOfFailures([])
+            : numberBag(parseInt(numeric.it));
     };
 
-    return (line: Line) => {
-        // If we're recording a macro - the symbolic operands are going to be
-        // re-defined on playback and the numeric operands re-calculated then
-        // and there's nothing much to do here.
-        if (line.isDefiningMacro) {
-            return;
-        }
-
-        const numericOperands: Array<NumericOperand> = [];
-        const operandTypes: Array<OperandType> = [];
-
-        const numericFailed = (
-            failures: Array<Failure>, operandIndex: OperandIndex
-        ) => {
-            line.withFailures(failures.map(failure => {
-                failure.location = { "operand": operandIndex };
-                return failure;
-            }));
+    const specificSymbolic = (options: Record<string, number>) =>
+        (symbolic: string | undefined): NumberOrFailures => {
+            for (const [symbolOption, value] of Object.entries(options)) {
+                if (symbolic == undefined && symbolOption == "") {
+                    return numberBag(value);
+                }
+                if (symbolic == symbolOption) {
+                    return numberBag(value);
+                }
+            };
+            const expectation = Object.keys(options).map(
+                option => option == "" ? "undefined" : option
+            ).join(", ");
+            return bagOfFailures([
+                assertionFailure("value_type", expectation, `${symbolic}`)
+            ]);
         };
 
-        for (const [index, symbolic] of line.symbolicOperands.entries()) {
-            const [numeric, operandType] = valueAndType(symbolic);
-            operandTypes.push(operandType);
-            if (numeric.type == "failures") {
-                numericOperands.push(0);
-                numericFailed(
-                    numeric.it as Array<Failure>, index as OperandIndex
-                );
-            } else {
-                numericOperands.push(numeric.it);
-            }
-        }
-        line.numericOperands = operands<NumericOperands>(numericOperands);
-        line.operandTypes = operands<OperandTypes>(operandTypes);
+    const converters: Record<OperandType, Converter> = {
+        "register":            register,
+        "registerPair":        register,
+        "registerMultiply":    register,
+        "registerImmediate":   register,
+        "onlyZ":               specificSymbolic({"Z":  0}),
+        "optionalZ+":          specificSymbolic({"":   0, "Z+": 1}),
+        "ZorZ+":               specificSymbolic({"Z":  0, "Z+": 1}),
+        "nybble":              aNumber,
+        "6BitNumber":          aNumber,
+        "byte":                aNumber,
+        "invertedByte":        aNumber,
+        "bitIndex":            aNumber,
+        "ioPort":              aNumber,
+        "16BitDataAddress":    aNumber,
+        "7BitDataAddress":     aNumber,
+        "22BitProgramAddress": aNumber,
+        "7BitRelative":        aNumber,
+        "12BitRelative":       aNumber,
+    };
+
+    return (
+        symbolic: string | undefined, operandType: OperandType
+    ): NumberOrFailures => {
+        const converter = converters[operandType];
+        return converter(symbolic, operandType);
     };
 };
-
-export type SymbolicToNumeric = ReturnType<typeof symbolicToNumeric>;
