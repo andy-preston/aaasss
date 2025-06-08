@@ -10,15 +10,15 @@ const limits: Record<
     "type_anything":          [undefined, undefined,               []],
     "type_positive":          [        0, undefined,               []],
     "type_word":              [        0,    0xffff,               []],
-    "type_16BitDataAddress":  [        0,    0xffff,               []],
-    "type_7BitDataAddress":   [        0,      0x7f,               []],
-    "type_ioPort":            [     0x20,      0x5f,               []],
-    "type_bitIndex":          [        0,         7,               []],
     "type_byte":              [        0,      0xff,               []],
+    "type_7Bit":              [        0,      0x7f,               []],
+    "type_6Bit":              [        0,  0b111111,               []],
     "type_nybble":            [        0,      0x0f,               []],
-    "type_6Bits":             [        0,  0b111111,               []],
+    "type_bitIndex":          [        0,         7,               []],
+    "type_ioPort":            [     0x20,      0x5f,               []],
     "type_register":          [        0,        31,               []],
     "type_registerImmediate": [       16,        31,               []],
+    "type_registerMultiply":  [       16,        23,               []],
     "type_registerPair":      [undefined, undefined, [24, 26, 28, 30]]
 };
 
