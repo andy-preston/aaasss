@@ -24,32 +24,6 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
     });
 });
 
-Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => {
-    const systemUnderTest = testSystem();
-    const define = systemUnderTest.macros.define("testMacro", []);
-    expect(define.type).not.toBe("failures");
-    testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false, 1);
-        line.rawSource = source;
-        line.assemblySource = source;
-        line.label = label;
-        line.mnemonic = mnemonic;
-        systemUnderTest.macros.processedLine(line);
-        expect(line.isDefiningMacro).toBe(true);
-    });
-    const end = systemUnderTest.macros.end();
-    expect(end.type).not.toBe("failures");
-    testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false, 1);
-        line.rawSource = source;
-        line.assemblySource = source;
-        line.label = label;
-        line.mnemonic = mnemonic;
-        systemUnderTest.macros.processedLine(line);
-        expect(line.isDefiningMacro).toBe(false);
-    });
-});
-
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const systemUnderTest = testSystem();
 

@@ -11,6 +11,7 @@ export const macroCoupling = (macros: Macros) => {
     };
 
     return {
+        "taggedLine": macros.taggedLine,
         "processedLine": macros.processedLine,
         "macroDirective": macroDirective,
         "endDirective": endDirective

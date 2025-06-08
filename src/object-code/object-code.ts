@@ -60,7 +60,9 @@ export const objectCode = (
 
     const poke = (data: Array<number | string>): DirectiveResult => {
         const line = currentLine.directiveBackdoor()!;
-        toLine(line, pokedBytes(data, line.failures), false);
+        if (!line.isDefiningMacro) {
+            toLine(line, pokedBytes(data, line.failures), false);
+        }
         return emptyBag();
     };
 

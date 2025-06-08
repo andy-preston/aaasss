@@ -52,10 +52,20 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
     expect(failure.kind).toBe("macro_end");
 });
 
-Deno.test("Whilst defining, a flag is set on the line", () => {
+Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => {
     const systemUnderTest = testSystem();
-    const define = systemUnderTest.macros.define("plop", []);
+    const define = systemUnderTest.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
-    systemUnderTest.macros.processedLine(systemUnderTest.line);
-    expect(systemUnderTest.line.isDefiningMacro).toBe(true);
+    {
+        const line = dummyLine(false, 1);
+        systemUnderTest.macros.taggedLine(line);
+        expect(line.isDefiningMacro).toBe(true);
+    }
+    const end = systemUnderTest.macros.end();
+    expect(end.type).not.toBe("failures");
+    {
+        const line = dummyLine(false, 1);
+        systemUnderTest.macros.taggedLine(line);
+        expect(line.isDefiningMacro).toBe(false);
+    }
 });

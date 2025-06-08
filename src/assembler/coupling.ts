@@ -78,15 +78,19 @@ export const coupling = (
     const $programMemoryCoupling = withDirectives(
         programMemoryCoupling($programMemory)
     );
+    const $macroCoupling = withDirectives(
+        macroCoupling($macros)
+    );
     return thePipeline(
         withDirectives(sourceCodeCoupling($fileStack)).lines,
         [
             $currentLine.forDirectives,
+            $macroCoupling.taggedLine,
             $programMemoryCoupling.lineAddress,
             $embeddedJs,
             tokens,
             $programMemoryCoupling.lineLabel,
-            withDirectives(macroCoupling($macros)).processedLine,
+            $macroCoupling.processedLine,
             withDirectives(objectCodeCoupling($objectCode)).line,
             withDirectives(dataMemoryCoupling($dataMemory)).reset,
             withDirectives(symbolTableCoupling($symbolTable)).reset
