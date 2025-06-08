@@ -1,6 +1,8 @@
-import { instructionSet } from "../device/instruction-set.ts";
+import { instructionSet } from "../instruction-set/instruction-set.ts";
+import { jSExpression } from "../javascript/expression.ts";
 import { currentLine } from "../line/current-line.ts";
 import { dummyLine } from "../line/line-types.ts";
+import { operands } from "../operands/operands.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
@@ -14,7 +16,13 @@ export const systemUnderTest = () => {
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $instructionSet = instructionSet($symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
-    const $objectCode = objectCode($instructionSet, $programMemory, $currentLine);
+    const $jsExpression = jSExpression($symbolTable);
+    const $operands = operands(
+        $symbolTable, $cpuRegisters, $programMemory, $jsExpression
+    );
+    const $objectCode = objectCode(
+        $instructionSet, $operands, $programMemory, $currentLine
+    );
     return {
         "line": $line,
         "instructionSet": $instructionSet,

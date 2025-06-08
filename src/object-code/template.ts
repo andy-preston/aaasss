@@ -1,5 +1,4 @@
 import type { BinaryDigit } from "../object-code/data-types.ts";
-import type { NumericOperand } from "../operands/data-types.ts";
 
 type Binary = Array<BinaryDigit>;
 
@@ -13,15 +12,15 @@ const bitSource = (decimal: number) => {
     return (): BinaryDigit => (bits.length > 0 ? bits.shift()! : "0");
 };
 
-type TemplateOperand =
-    | "r" // register (pair)
-    | "s" // source register
-    | "d" // destination register
-    | "a" // address
-    | "v" // value
-    | "b" // bit index
+export type TemplateOperand =
+    | "r"  // register (pair)
+    | "s"  // source register
+    | "d"  // destination register
+    | "a"  // address
+    | "n"  // number
+    | "b"; // bit index
 
-type Substitutions = Partial<Record<TemplateOperand, NumericOperand>>;
+type Substitutions = Partial<Record<TemplateOperand, number>>;
 
 type TemplateDigit = TemplateOperand | BinaryDigit;
 

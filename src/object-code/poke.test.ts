@@ -1,4 +1,4 @@
-import type { AssertionFailure, NumericTypeFailure } from "../failure/bags.ts";
+import type { AssertionFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
@@ -83,17 +83,19 @@ Deno.test("Poked numbers must be bytes (0-255)", () => {
     expect(system.line.failed()).toBe(true);
     expect(system.line.failures.length).toBe(2);
     {
-        const failure = system.line.failures[0] as NumericTypeFailure;
-        expect(failure.kind).toBe("type_bytesOrString");
+        const failure = system.line.failures[0] as AssertionFailure;
+        expect(failure.kind).toBe("value_type");
         expect(failure.location).toEqual({"parameter": 0});
-        expect(failure.value).toBe(-1);
+        expect(failure.actual).toBe("-1");
+        expect(failure.expected).toBe("string, byte");
     } {
-        const failure = system.line.failures[1] as NumericTypeFailure;
-        expect(failure.kind).toBe("type_bytesOrString");
+        const failure = system.line.failures[1] as AssertionFailure;
+        expect(failure.kind).toBe("value_type");
         expect(failure.location).toEqual({"parameter": 2});
-        expect(failure.value).toBe(300);
+        expect(failure.actual).toBe("300");
+        expect(failure.expected).toBe("string, byte");
     }
-    expect(system.line.code).toEqual([[2, 4]]);
+    expect(system.line.code).toEqual([[0, 2], [0, 4]]);
 });
 
 Deno.test("Poking will increment the programMemory address", () => {
@@ -117,8 +119,8 @@ Deno.test("Insufficient program memory causes poking to fail", () => {
     expect(system.line.failures.length).toBe(1);
     const failure = system.line.failures[0] as AssertionFailure;
     expect(failure.kind).toBe("programMemory_outOfRange");
-    expect(failure.actual).toBe("0");
-    expect(failure.expected).toBe(`${testData.length / 2}`);
+    expect(failure.actual).toBe(`${testData.length / 2}`);
+    expect(failure.expected).toBe("0");
     // Code is still generated
     expect(system.line.code).toEqual([[1, 2], [3, 4]]);
     // But the address doesn't advance

@@ -1,48 +1,27 @@
 import type { PipelineStage } from "../assembler/data-types.ts";
-import type { InstructionSet } from "../device/instruction-set.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
+import type { InstructionSet } from "../instruction-set/instruction-set.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { Line } from "../line/line-types.ts";
+import type { Operands } from "../operands/operands.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
-import type { Code } from "./data-types.ts";
 
 import { emptyBag } from "../assembler/bags.ts";
-import { clueFailure, numericTypeFailure } from "../failure/bags.ts";
-import { encoderFor } from "./instruction-encoder-list.ts";
-
-const isTwo = (pair: Readonly<Array<number>>): pair is Code => pair.length == 2;
-
-const textEncoder = new TextEncoder();
+import { supportFailure } from "../failure/bags.ts";
+import { asWords } from "./as-words.ts";
+import { encoder } from "./encoder.ts";
+import { pokedBytes } from "./poked-bytes.ts";
+import { ioAlternatives } from "../instruction-set/alternatives.ts";
 
 export const objectCode = (
-    instructionSet: InstructionSet, programMemory: ProgramMemory,
-    currentLine: CurrentLine
+    instructionSet: InstructionSet, operands: Operands,
+    programMemory: ProgramMemory, currentLine: CurrentLine
 ) => {
-    let assemblyIsRequired = true;
+    let assemblyIsActivated = true;
+    const encode = encoder(instructionSet, operands);
 
     const toLine = (line: Line, bytes: Array<number>, flipBytes: boolean) => {
-        let words = 0;
-
-        const push = (code: Code) => {
-            line.code.push(code);
-            words = words + 1;
-        };
-
-        let pair: Array<number> = [];
-        bytes.forEach((byte) => {
-            if (flipBytes) {
-                pair.unshift(byte);
-            } else {
-                pair.push(byte);
-            }
-            if (isTwo(pair)) {
-                push(pair as Code);
-                pair = [];
-            }
-        });
-        if (pair.length == 1) {
-            push([pair[0]!, 0]);
-        }
+        const words = asWords(bytes, line.code, flipBytes);
         const memoryEnd = programMemory.addressStep(words);
         if (memoryEnd.type == "failures") {
             line.withFailures(memoryEnd.it);
@@ -51,56 +30,37 @@ export const objectCode = (
 
     const line: PipelineStage = (line: Line) => {
         if (line.lastLine) {
-            assemblyIsRequired = true;
+            assemblyIsActivated = true;
         }
-
-        if (line.isDefiningMacro || line.mnemonic == "" || !assemblyIsRequired) {
+        if (line.isDefiningMacro || line.mnemonic == "" || !assemblyIsActivated) {
             return;
         }
+        const encoded = encode(line);
 
-        const isUnsupported = instructionSet.isUnsupported(line.mnemonic);
-        if (isUnsupported.type == "failures") {
-            line.withFailures(isUnsupported.it);
-            return;
+        if (encoded != undefined) {
+           toLine(line, encoded, true);
         }
 
-        const encoder = encoderFor(line);
-        if (encoder == undefined) {
-            line.failures.push(clueFailure("mnemonic_unknown", line.mnemonic));
-            return
-        };
-
-        toLine(line, encoder(instructionSet, programMemory), true);
+        for (const failure of line.failures) {
+            const alternative = ioAlternatives[
+                `${line.mnemonic}__${failure.kind}`
+            ];
+            if (alternative != undefined) {
+                line.failures.push(supportFailure(
+                    alternative.kind, line.mnemonic, alternative.try
+                ));
+            }
+        }
     };
 
     const assembleIf = (required: boolean): DirectiveResult => {
-        assemblyIsRequired = required;
+        assemblyIsActivated = required;
         return emptyBag();
     };
 
     const poke = (data: Array<number | string>): DirectiveResult => {
         const line = currentLine.directiveBackdoor()!;
-
-        const bytes = data.flatMap(
-            (item, index) => {
-                if (typeof item == "string") {
-                    return Array.from(textEncoder.encode(item));
-                }
-
-                if (item < 0 || item > 0xff) {
-                    const failure = numericTypeFailure(
-                        "type_bytesOrString", item, 0, 0xff, []
-                    );
-                    failure.location = {"parameter": index};
-                    line.failures.push(failure);
-                    return [];
-                }
-
-                return item;
-            }
-        );
-
-        toLine(line, bytes, false);
+        toLine(line, pokedBytes(data, line.failures), false);
         return emptyBag();
     };
 

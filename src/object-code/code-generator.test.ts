@@ -16,13 +16,16 @@ Deno.test("Lines with no mnemonic don't bother generating code", () => {
 Deno.test("Attempting to generate code with no device selected fails", () => {
     const system = systemUnderTest();
     system.line.mnemonic = "DES";
+    system.line.symbolicOperands = ["1"];
     system.objectCode.line(system.line);
     expect(system.line.failed()).toBe(true);
     const failures = system.line.failures;
-    expect(failures.length).toBe(2);
+    expect(failures.length).toBe(4);
     expect(failures[0]!.kind).toBe("device_notSelected");
     expect(failures[1]!.kind).toBe("mnemonic_supportedUnknown");
-    expect(system.line.code.length).toBe(0);
+    expect(failures[2]!.kind).toBe("device_notSelected");
+    expect(failures[3]!.kind).toBe("programMemory_sizeUnknown");
+    expect(system.line.code.length).toBe(1);
 });
 
 Deno.test("Lines with unsupported instructions fail", () => {
@@ -62,8 +65,6 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     expect(system.programMemory.address()).toBe(0);
     system.line.mnemonic = "DES";
     system.line.symbolicOperands = ["15"];
-    system.line.numericOperands = [15];
-    system.line.operandTypes = ["number"];
     system.objectCode.line(system.line);
     expect(system.line.failed()).toBe(false);
     expect(system.line.code).toEqual([[0xfb, 0x94]]);
@@ -75,8 +76,6 @@ Deno.test("If a line has `isDefiningMacro == true`, no code is generated", () =>
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.line.mnemonic = "DES";
     system.line.symbolicOperands = ["15"];
-    system.line.numericOperands = [15];
-    system.line.operandTypes = ["number"];
     system.line.isDefiningMacro = true;
     system.objectCode.line(system.line);
     expect(system.line.failed()).toBe(false);
