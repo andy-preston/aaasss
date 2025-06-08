@@ -5,20 +5,20 @@ import { dummyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("The macro doesn't have to have parameters", () => {
-    const system = testSystem();
-    const define = system.macros.define("testMacro", []);
+    const systemUnderTest = testSystem();
+    const define = systemUnderTest.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
 });
 
 Deno.test("Parameter count mismatches result in a failure", () => {
-    const system = testSystem();
+    const systemUnderTest = testSystem();
 
-    const define = system.macros.define("testMacro", ["a", "b", "C"]);
+    const define = systemUnderTest.macros.define("testMacro", ["a", "b", "C"]);
     expect(define.type).not.toBe("failures");
-    const end = system.macros.end();
+    const end = systemUnderTest.macros.end();
     expect(end.type).not.toBe("failures");
 
-    const use = system.macros.use("testMacro", ["1", "2"]);
+    const use = systemUnderTest.macros.use("testMacro", ["1", "2"]);
     expect(use.type).toBe("failures");
     const failures = use.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -29,26 +29,26 @@ Deno.test("Parameter count mismatches result in a failure", () => {
 });
 
 Deno.test("A macro can be defined in both passes", () => {
-    const system = testSystem();
+    const systemUnderTest = testSystem();
     {
-        const define = system.macros.define("testMacro", []);
+        const define = systemUnderTest.macros.define("testMacro", []);
         expect(define.type).not.toBe("failures");
-        const end = system.macros.end();
+        const end = systemUnderTest.macros.end();
         expect(end.type).not.toBe("failures");
 
-        const use = system.macros.use("testMacro", []);
+        const use = systemUnderTest.macros.use("testMacro", []);
         expect(use.type).not.toBe("failures");
     }
-    system.symbolTable.reset(dummyLine(true, 1));
+    systemUnderTest.symbolTable.reset(dummyLine(true, 1));
     {
-        const inUse = system.symbolTable.alreadyInUse("testMacro");
+        const inUse = systemUnderTest.symbolTable.alreadyInUse("testMacro");
         expect(inUse.type).not.toBe("failures");
-        const define = system.macros.define("testMacro", []);
+        const define = systemUnderTest.macros.define("testMacro", []);
         expect(define.type).not.toBe("failures");
-        const end = system.macros.end();
+        const end = systemUnderTest.macros.end();
         expect(end.type).not.toBe("failures");
 
-        const use = system.macros.use("testMacro", []);
+        const use = systemUnderTest.macros.use("testMacro", []);
         expect(use.type).not.toBe("failures");
     }
 });

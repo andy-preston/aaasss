@@ -21,8 +21,8 @@ const testSystem = () => {
 };
 
 Deno.test("A device must be selected before SRAM can be allocated", () => {
-    const system = testSystem();
-    const result = system.dataMemory.alloc(23);
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.dataMemory.alloc(23);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(3);
@@ -32,12 +32,12 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
 });
 
 Deno.test("A stack allocation can't be beyond available SRAM", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    system.symbolTable.deviceSymbol("ramStart", numberBag(0));
-    system.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    systemUnderTest.symbolTable.deviceSymbol("ramStart", numberBag(0));
+    systemUnderTest.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
     const bytesRequested = 0xf2;
-    const result = system.dataMemory.allocStack(bytesRequested);
+    const result = systemUnderTest.dataMemory.allocStack(bytesRequested);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -48,12 +48,12 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
 });
 
 Deno.test("A memory allocation can't be beyond available SRAM", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    system.symbolTable.deviceSymbol("ramStart", numberBag(0));
-    system.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    systemUnderTest.symbolTable.deviceSymbol("ramStart", numberBag(0));
+    systemUnderTest.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
     const bytesRequested = 0xf2;
-    const result = system.dataMemory.alloc(bytesRequested);
+    const result = systemUnderTest.dataMemory.alloc(bytesRequested);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -64,30 +64,30 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
 });
 
 Deno.test("Memory allocations start at the top of SRAM and work down", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    system.symbolTable.deviceSymbol("ramStart", numberBag(0));
-    system.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    systemUnderTest.symbolTable.deviceSymbol("ramStart", numberBag(0));
+    systemUnderTest.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
     ["0", "25", "50"].forEach((expectedStartAddress) => {
-        const result = system.dataMemory.alloc(25);
+        const result = systemUnderTest.dataMemory.alloc(25);
         expect(result.type).not.toBe("failures");
         expect(result.it).toBe(expectedStartAddress);
     });
 });
 
 Deno.test("Stack allocations decrease the available SRAM", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
-    system.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    systemUnderTest.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
+    systemUnderTest.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
     const bytesRequested = 0x19;
 
-    const allocation = system.dataMemory.allocStack(bytesRequested);
+    const allocation = systemUnderTest.dataMemory.allocStack(bytesRequested);
     expect(allocation.type).not.toBe("failures");
     expect(allocation.it).toBe("");
     const bytesAvailable = 0x1f - bytesRequested;
 
-    const failing = system.dataMemory.alloc(bytesRequested);
+    const failing = systemUnderTest.dataMemory.alloc(bytesRequested);
     expect(failing.type).toBe("failures");
     const failures = failing.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -98,18 +98,18 @@ Deno.test("Stack allocations decrease the available SRAM", () => {
 });
 
 Deno.test("Memory allocations decrease the available SRAM", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
-    system.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    systemUnderTest.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
+    systemUnderTest.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
     const bytesRequested = 0x19;
 
-    const allocation = system.dataMemory.alloc(bytesRequested);
+    const allocation = systemUnderTest.dataMemory.alloc(bytesRequested);
     expect(allocation.type).not.toBe("failures");
     expect(allocation.it).toBe("0");
     const bytesAvailable = 0x1f - bytesRequested;
 
-    const failing = system.dataMemory.alloc(bytesRequested);
+    const failing = systemUnderTest.dataMemory.alloc(bytesRequested);
     expect(failing.type).toBe("failures");
     const failures = failing.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -120,16 +120,16 @@ Deno.test("Memory allocations decrease the available SRAM", () => {
 });
 
 Deno.test("Allocations aren't considered repeated on the second pass", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
-    system.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("test"));
+    systemUnderTest.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
+    systemUnderTest.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
     passes.forEach(pass => {
         ["0", "25"].forEach(expectedStartAddress => {
-            const result = system.dataMemory.alloc(25);
+            const result = systemUnderTest.dataMemory.alloc(25);
             expect(result.type).not.toBe("failures");
             expect(result.it).toBe(expectedStartAddress);
         });
-        system.dataMemory.reset(dummyLine(true, pass));
+        systemUnderTest.dataMemory.reset(dummyLine(true, pass));
     });
 });

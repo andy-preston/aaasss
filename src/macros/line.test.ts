@@ -9,14 +9,14 @@ const testLines: Array<[string, string, string]> = [
 ] as const;
 
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
-    const system = testSystem();
+    const systemUnderTest = testSystem();
     testLines.forEach(([source, label, mnemonic]) => {
         const line = dummyLine(false, 1);
         line.rawSource = source;
         line.assemblySource = source;
         line.label = label;
         line.mnemonic = mnemonic;
-        system.macros.processedLine(line);
+        systemUnderTest.macros.processedLine(line);
         expect(line.isDefiningMacro).toBe(false);
         expect(line.macroName).toBe("");
         expect(line.macroCount).toBe(0);
@@ -25,8 +25,8 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
 });
 
 Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => {
-    const system = testSystem();
-    const define = system.macros.define("testMacro", []);
+    const systemUnderTest = testSystem();
+    const define = systemUnderTest.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     testLines.forEach(([source, label, mnemonic]) => {
         const line = dummyLine(false, 1);
@@ -34,10 +34,10 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
         line.assemblySource = source;
         line.label = label;
         line.mnemonic = mnemonic;
-        system.macros.processedLine(line);
+        systemUnderTest.macros.processedLine(line);
         expect(line.isDefiningMacro).toBe(true);
     });
-    const end = system.macros.end();
+    const end = systemUnderTest.macros.end();
     expect(end.type).not.toBe("failures");
     testLines.forEach(([source, label, mnemonic]) => {
         const line = dummyLine(false, 1);
@@ -45,15 +45,15 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
         line.assemblySource = source;
         line.label = label;
         line.mnemonic = mnemonic;
-        system.macros.processedLine(line);
+        systemUnderTest.macros.processedLine(line);
         expect(line.isDefiningMacro).toBe(false);
     });
 });
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
-    const system = testSystem();
+    const systemUnderTest = testSystem();
 
-    const define = system.macros.define("testMacro", []);
+    const define = systemUnderTest.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     testLines.forEach(([source, label, mnemonic]) => {
         const line = dummyLine(false, 1);
@@ -61,25 +61,25 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
         line.assemblySource = source;
         line.label = label;
         line.mnemonic = mnemonic;
-        system.macros.processedLine(line);
+        systemUnderTest.macros.processedLine(line);
     });
-    const end = system.macros.end();
+    const end = systemUnderTest.macros.end();
     expect(end.type).not.toBe("failures");
 
-    const use = system.macros.use("testMacro", []);
+    const use = systemUnderTest.macros.use("testMacro", []);
     expect(use.type).not.toBe("failures");
-    const playback = [...system.mockFileStack.lines(1)];
+    const playback = [...systemUnderTest.mockFileStack.lines(1)];
     expect(playback.length).toBe(testLines.length);
     playback.forEach((line, index) => {
-        system.macros.processedLine(line);
+        systemUnderTest.macros.processedLine(line);
         expect(line.rawSource).toBe(testLines[index]![0]);
     });
 });
 
 Deno.test("Lines that are being replayed have a macro name and count", () => {
-    const system = testSystem();
+    const systemUnderTest = testSystem();
 
-    const define = system.macros.define("testMacro", []);
+    const define = systemUnderTest.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     testLines.forEach(([source, label, mnemonic]) => {
         const line = dummyLine(false, 1);
@@ -87,20 +87,20 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
         line.assemblySource = source;
         line.label = label;
         line.mnemonic = mnemonic;
-        system.macros.processedLine(line);
+        systemUnderTest.macros.processedLine(line);
     });
-    const end = system.macros.end();
+    const end = systemUnderTest.macros.end();
     expect(end.type).not.toBe("failures");
 
-    const forceSymbolIncrement = system.symbolTable.use("testMacro");
+    const forceSymbolIncrement = systemUnderTest.symbolTable.use("testMacro");
     expect(forceSymbolIncrement.type).toBe("functionUseDirective");
 
-    const use = system.macros.use("testMacro", []);
+    const use = systemUnderTest.macros.use("testMacro", []);
     expect(use.type).not.toBe("failures");
-    const playback = [...system.mockFileStack.lines(1)];
+    const playback = [...systemUnderTest.mockFileStack.lines(1)];
     expect(playback.length).toBe(testLines.length);
     playback.forEach(line => {
-        system.macros.processedLine(line);
+        systemUnderTest.macros.processedLine(line);
         expect(line.macroName).toBe("testMacro");
         expect(line.macroCount).toBe(1);
     });

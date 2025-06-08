@@ -5,37 +5,37 @@ import { dummyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("If a macro has parameters, they are substituted", () => {
-    const system = testSystem();
+    const systemUnderTest = testSystem();
 
-    const define = system.macros.define("testMacro", ["a", "b"]);
+    const define = systemUnderTest.macros.define("testMacro", ["a", "b"]);
     expect(define.type).not.toBe("failures");
-    const end = system.macros.end();
+    const end = systemUnderTest.macros.end();
     expect(end.type).not.toBe("failures");
 
-    const forceSymbolIncrement = system.symbolTable.use("testMacro");
+    const forceSymbolIncrement = systemUnderTest.symbolTable.use("testMacro");
     expect(forceSymbolIncrement.type).toBe("functionUseDirective");
 
-    const use = system.macros.use("testMacro", ["1", "2"]);
+    const use = systemUnderTest.macros.use("testMacro", ["1", "2"]);
     expect(use.type).not.toBe("failures");
 
     const line = dummyLine(false, 1);
     line.macroName = "testMacro";
     line.macroCount = 1;
     line.symbolicOperands = ["a", "b"];
-    system.macros.processedLine(line);
+    systemUnderTest.macros.processedLine(line);
     expect(line.failed()).toBe(false);
     expect(line.symbolicOperands).toEqual(["1", "2"]);
 });
 
 Deno.test("Parameter count mismatches result in a failure", () => {
-    const system = testSystem();
+    const systemUnderTest = testSystem();
 
-    const define = system.macros.define("testMacro", ["a", "b", "C"]);
+    const define = systemUnderTest.macros.define("testMacro", ["a", "b", "C"]);
     expect(define.type).not.toBe("failures");
-    const end = system.macros.end();
+    const end = systemUnderTest.macros.end();
     expect(end.type).not.toBe("failures");
 
-    const result = system.macros.use("testMacro", ["1", "2"]);
+    const result = systemUnderTest.macros.use("testMacro", ["1", "2"]);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);

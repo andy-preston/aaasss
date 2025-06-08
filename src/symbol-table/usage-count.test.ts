@@ -3,9 +3,9 @@ import { numberBag } from "../assembler/bags.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("A freshly added symbol has a count of zero", () => {
-    const system = testSystem();
-    system.symbolTable.persistentSymbol("plop", numberBag(23));
-    const result = system.symbolTable.list();
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.persistentSymbol("plop", numberBag(23));
+    const result = systemUnderTest.symbolTable.list();
     expect(result.length).toBe(1);
     const [symbolName, symbolValue, _definition, usageCount] = result[0]!;
     expect(symbolName).toBe("plop");
@@ -14,11 +14,11 @@ Deno.test("A freshly added symbol has a count of zero", () => {
 });
 
 Deno.test("Each call to use increments the usage", () => {
-    const system = testSystem();
-    system.symbolTable.persistentSymbol("plop", numberBag(23));
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.persistentSymbol("plop", numberBag(23));
     [1, 2, 3, 4].forEach((expectedCount) => {
-        system.symbolTable.use("plop");
-        const result = system.symbolTable.list();
+        systemUnderTest.symbolTable.use("plop");
+        const result = systemUnderTest.symbolTable.list();
         expect(result.length).toBe(1);
         const [symbolName, symbolValue, _definition, usageCount] = result[0]!;
         expect(symbolName).toBe("plop");

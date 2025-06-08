@@ -4,39 +4,39 @@ import { dummyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("The symbol table is reset at the end of the first pass", () => {
-    const system = testSystem();
+    const systemUnderTest = testSystem();
     {
-        const result = system.symbolTable.persistentSymbol(
+        const result = systemUnderTest.symbolTable.persistentSymbol(
             "plop", numberBag(57)
         );
         expect(result.type).not.toBe("failures");
     }
     [1, 2, 3].forEach(expectedCount => {
-        const use = system.symbolTable.use("plop");
+        const use = systemUnderTest.symbolTable.use("plop");
         expect(use).toEqual(numberBag(57));
-        expect(system.symbolTable.count("plop")).toBe(expectedCount);
+        expect(systemUnderTest.symbolTable.count("plop")).toBe(expectedCount);
     });
-    system.symbolTable.reset(
+    systemUnderTest.symbolTable.reset(
         dummyLine(true, 1)
     );
-    expect(system.symbolTable.count("plop")).toEqual(0);
+    expect(systemUnderTest.symbolTable.count("plop")).toEqual(0);
 });
 
 Deno.test("... but left intact at the end of the second pass", () => {
-    const system = testSystem();
+    const systemUnderTest = testSystem();
     {
-        const result = system.symbolTable.persistentSymbol(
+        const result = systemUnderTest.symbolTable.persistentSymbol(
             "plop", numberBag(57)
         );
         expect(result.type).not.toBe("failures");
     }
     [1, 2, 3].forEach(expectedCount => {
-        const use = system.symbolTable.use("plop");
+        const use = systemUnderTest.symbolTable.use("plop");
         expect(use).toEqual(numberBag(57));
-        expect(system.symbolTable.count("plop")).toBe(expectedCount);
+        expect(systemUnderTest.symbolTable.count("plop")).toBe(expectedCount);
     });
-    system.symbolTable.reset(
+    systemUnderTest.symbolTable.reset(
         dummyLine(true, 2)
     );
-    expect(system.symbolTable.count("plop")).toEqual(3);
+    expect(systemUnderTest.symbolTable.count("plop")).toEqual(3);
 });

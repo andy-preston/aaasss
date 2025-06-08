@@ -6,13 +6,13 @@ import { testSystem } from "./testing.ts";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 
 Deno.test("12 bit relative address can't be beyond 2048 away", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
-    system.symbolTable.deviceSymbol(
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
+    systemUnderTest.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(16 * 1024)
     );
-    system.programMemory.origin(1000);
-    const address = system.programMemory.relativeAddress(4000, 12);
+    systemUnderTest.programMemory.origin(1000);
+    const address = systemUnderTest.programMemory.relativeAddress(4000, 12);
     expect(address.type).toBe("failures");
     const failures = address as BagOfFailures;
     const failure = failures.it[0]! as NumericTypeFailure;
@@ -23,13 +23,13 @@ Deno.test("12 bit relative address can't be beyond 2048 away", () => {
 });
 
 Deno.test("12 bit relative address can't be below -2047 away", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
-    system.symbolTable.deviceSymbol(
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
+    systemUnderTest.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(16 * 1024)
     );
-    system.programMemory.origin(4000);
-    const address = system.programMemory.relativeAddress(1000, 12);
+    systemUnderTest.programMemory.origin(4000);
+    const address = systemUnderTest.programMemory.relativeAddress(1000, 12);
     expect(address.type).toBe("failures");
     const failures = address as BagOfFailures;
     const failure = failures.it[0]! as NumericTypeFailure;
@@ -40,27 +40,27 @@ Deno.test("12 bit relative address can't be below -2047 away", () => {
 });
 
 Deno.test("Testing a 12 bit relative address that is in range", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
-    system.symbolTable.deviceSymbol(
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
+    systemUnderTest.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(16 * 1024)
     );
-    system.programMemory.origin(1000);
-    const result = system.programMemory.relativeAddress(2000, 12);
+    systemUnderTest.programMemory.origin(1000);
+    const result = systemUnderTest.programMemory.relativeAddress(2000, 12);
     expect(result.type).toBe("number");
     const address = result as NumberBag;
     expect(address.it).toBe(999);
 });
 
 Deno.test("7 bit relative address can't be beyond -63 - 64 range", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
-    system.symbolTable.deviceSymbol(
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
+    systemUnderTest.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(16 * 1024)
     );
     {
-        system.programMemory.origin(0);
-        const address = system.programMemory.relativeAddress(130, 7);
+        systemUnderTest.programMemory.origin(0);
+        const address = systemUnderTest.programMemory.relativeAddress(130, 7);
         expect(address.type).toBe("failures");
         const failures = address as BagOfFailures;
         const failure = failures.it[0]! as NumericTypeFailure;
@@ -69,8 +69,8 @@ Deno.test("7 bit relative address can't be beyond -63 - 64 range", () => {
         expect(failure.min).toBe(-63);
         expect(failure.max).toBe(64);
     } {
-        system.programMemory.origin(500);
-        const address = system.programMemory.relativeAddress(100, 7);
+        systemUnderTest.programMemory.origin(500);
+        const address = systemUnderTest.programMemory.relativeAddress(100, 7);
         expect(address.type).toBe("failures");
         const failures = address as BagOfFailures;
         const failure = failures.it[0]! as NumericTypeFailure;
@@ -82,13 +82,13 @@ Deno.test("7 bit relative address can't be beyond -63 - 64 range", () => {
 });
 
 Deno.test("7 bit relative address can't be beyond program memory", () => {
-    const system = testSystem();
-    system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
     const wordsAvailable = 100;
-    system.symbolTable.deviceSymbol(
+    systemUnderTest.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(wordsAvailable * 2)
     );
-    const result = system.programMemory.relativeAddress(120, 7);
+    const result = systemUnderTest.programMemory.relativeAddress(120, 7);
     expect(result.type).toBe("failures");
     const failures = result as BagOfFailures;
     const failure = failures.it[0]! as AssertionFailure;

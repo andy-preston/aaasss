@@ -20,43 +20,43 @@ const testSystem = () => {
 };
 
 Deno.test("The last expression in the code is returned", () => {
-    const system = testSystem();
-    const result = system.jsExpression("5 + 7");
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression("5 + 7");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("12");
 });
 
 Deno.test("Javascript can contain single quoted strings", () => {
-    const system = testSystem();
-    const result = system.jsExpression("'single quoted'");
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression("'single quoted'");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("single quoted");
 });
 
 Deno.test("Javascript can contain double quoted strings", () => {
-    const system = testSystem();
-    const result = system.jsExpression('"double quoted"');
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression('"double quoted"');
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("double quoted");
 });
 
 Deno.test("If the result is undefined, `value` returns empty string", () => {
-    const system = testSystem();
-    const result = system.jsExpression("undefined;");
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression("undefined;");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("");
 });
 
 Deno.test("A plain assignment will not return a value", () => {
-    const system = testSystem();
-    const result = system.jsExpression("const test = 4;");
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression("const test = 4;");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("");
 });
 
 Deno.test("Javascript can contain newlines", () => {
-    const system = testSystem();
-    const result = system.jsExpression(
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression(
         "const test1 = 4;\nconst test2 = 6;\ntest1 + test2;"
     );
     expect(result.type).not.toBe("failures");
@@ -64,17 +64,17 @@ Deno.test("Javascript can contain newlines", () => {
 });
 
 Deno.test("Javascript can get value from the symbol table", () => {
-    const system = testSystem();
-    system.symbolTable.persistentSymbol("plop", numberBag(23));
-    const result = system.jsExpression("plop");
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.persistentSymbol("plop", numberBag(23));
+    const result = systemUnderTest.jsExpression("plop");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("23");
 });
 
 Deno.test("...but not any of the registers", () => {
-    const system = testSystem();
-    system.cpuRegisters.initialise(false);
-    const result = system.jsExpression("R7 + 5");
+    const systemUnderTest = testSystem();
+    systemUnderTest.cpuRegisters.initialise(false);
+    const result = systemUnderTest.jsExpression("R7 + 5");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -85,8 +85,8 @@ Deno.test("...but not any of the registers", () => {
 });
 
 Deno.test("An unknown variable gives a reference error", () => {
-    const system = testSystem();
-    const result = system.jsExpression("const test = plop * 10;");
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression("const test = plop * 10;");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -97,8 +97,8 @@ Deno.test("An unknown variable gives a reference error", () => {
 });
 
 Deno.test("Syntax errors are returned as errors too", () => {
-    const system = testSystem();
-    const result = system.jsExpression("this is just nonsense");
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression("this is just nonsense");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
@@ -109,8 +109,8 @@ Deno.test("Syntax errors are returned as errors too", () => {
 });
 
 Deno.test("A symbol will not be assigned using `this.symbol`", () => {
-    const system = testSystem();
-    const result = system.jsExpression("this.plop = 27");
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression("this.plop = 27");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
