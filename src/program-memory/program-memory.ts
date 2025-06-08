@@ -6,7 +6,7 @@ import type { Line } from "../line/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { emptyBag, numberBag } from "../assembler/bags.ts";
-import { assertionFailure, bagOfFailures, boringFailure, numericTypeFailure, withLocation } from "../failure/bags.ts";
+import { assertionFailure, bagOfFailures, boringFailure, numericTypeFailure } from "../failure/bags.ts";
 import { validNumeric } from "../numeric-values/valid.ts";
 
 export const programMemory = (
@@ -27,11 +27,28 @@ export const programMemory = (
             const wordsAvailable = bytesAvailable.it / 2;
             if (newAddress > wordsAvailable) {
                 failures.it.push(assertionFailure(
-                    "programMemory_outOfRange", `${newAddress}`, `${wordsAvailable}`
+                    "programMemory_outOfRange",
+                    `${wordsAvailable}`, `${newAddress}`
                 ));
             }
         }
         return failures.it.length > 0 ? failures : emptyBag();
+    };
+
+    const absoluteAddress = (
+        address: number, bits: number
+    ): NumberOrFailures => {
+        const inRange = pastEnd(address);
+        if (inRange.type == "failures") {
+            return bagOfFailures(inRange.it);
+        }
+        const range = Math.pow(2, bits);
+        if (address > range) {
+            return bagOfFailures([assertionFailure(
+                "value_type", `0-${range}`, `${address}`
+            )]);
+        }
+        return numberBag(address);
     };
 
     const relativeAddress = (
@@ -58,7 +75,7 @@ export const programMemory = (
     const setAddress = (newAddress: number): DirectiveResult => {
         const negative = validNumeric(newAddress, "type_positive");
         if (negative.type == "failures") {
-            return withLocation(negative, { "parameter": 0 });
+            return negative;
         }
 
         if (newAddress == 0) {
@@ -68,7 +85,7 @@ export const programMemory = (
 
         const tooBig = pastEnd(newAddress);
         if (tooBig.type == "failures") {
-            return withLocation(tooBig, { "parameter": 0 });
+            return tooBig;
         }
 
         address = newAddress;
@@ -84,7 +101,10 @@ export const programMemory = (
 
         const result = setAddress(newAddress);
         if (result.type == "failures") {
-            theLine.withFailures(result.it);
+            result.it.forEach(failure => {
+                failure.location = { "parameter": 0 };
+                theLine.failures.push(failure);
+            })
         } else {
             theLine!.address = address;
         }
@@ -114,6 +134,7 @@ export const programMemory = (
     const addressStep = (steps: number) => setAddress(address + steps);
 
     return {
+        "absoluteAddress": absoluteAddress,
         "relativeAddress": relativeAddress,
         "address": () => address,
         "origin": origin,

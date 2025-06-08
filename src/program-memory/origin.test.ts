@@ -49,8 +49,8 @@ Deno.test("Origin addresses must be progmem size when a device is chosen", () =>
     expect(system.line.failures.length).toBe(1);
     expect(system.line.failures[0]!.kind).toBe("programMemory_outOfRange");
     const failure = system.line.failures[0] as AssertionFailure;
-    expect(failure.actual).toBe(`${wordsAvailable}`);
-    expect(failure.expected).toBe(`${tryOrigin}`);
+    expect(failure.actual).toBe(`${tryOrigin}`);
+    expect(failure.expected).toBe(`${wordsAvailable}`);
 });
 
 Deno.test("Origin directive sets current address", () => {

@@ -93,6 +93,7 @@ Deno.test("7 bit relative address can't be beyond program memory", () => {
     const failures = result as BagOfFailures;
     const failure = failures.it[0]! as AssertionFailure;
     expect(failure.kind).toBe("programMemory_outOfRange");
-    expect(failure.expected).toBe("120");
-    expect(failure.actual).toBe(`${wordsAvailable}`);
+
+    expect(failure.expected).toBe(`${wordsAvailable}`);
+    expect(failure.actual).toBe("120");
 });
