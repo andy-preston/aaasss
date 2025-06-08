@@ -9,7 +9,7 @@ import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { dataMemory } from "./data-memory.ts";
 
-const systemUnderTest = () => {
+const testSystem = () => {
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
@@ -21,7 +21,7 @@ const systemUnderTest = () => {
 };
 
 Deno.test("A device must be selected before SRAM can be allocated", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const result = system.dataMemory.alloc(23);
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
@@ -32,7 +32,7 @@ Deno.test("A device must be selected before SRAM can be allocated", () => {
 });
 
 Deno.test("A stack allocation can't be beyond available SRAM", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("ramStart", numberBag(0));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
@@ -48,7 +48,7 @@ Deno.test("A stack allocation can't be beyond available SRAM", () => {
 });
 
 Deno.test("A memory allocation can't be beyond available SRAM", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("ramStart", numberBag(0));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0xf0));
@@ -64,7 +64,7 @@ Deno.test("A memory allocation can't be beyond available SRAM", () => {
 });
 
 Deno.test("Memory allocations start at the top of SRAM and work down", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("ramStart", numberBag(0));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));
@@ -76,7 +76,7 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
 });
 
 Deno.test("Stack allocations decrease the available SRAM", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
@@ -98,7 +98,7 @@ Deno.test("Stack allocations decrease the available SRAM", () => {
 });
 
 Deno.test("Memory allocations decrease the available SRAM", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0x1f));
@@ -120,7 +120,7 @@ Deno.test("Memory allocations decrease the available SRAM", () => {
 });
 
 Deno.test("Allocations aren't considered repeated on the second pass", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("ramStart", numberBag(0x00));
     system.symbolTable.deviceSymbol("ramEnd", numberBag(0xff));

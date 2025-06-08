@@ -1,11 +1,11 @@
 import type { AssertionFailure, BoringFailure, NumericTypeFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 
 Deno.test("A device must be selected before program memory can be set", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.programMemory.origin(10);
     expect(system.line.failed()).toBe(true);
     expect(system.line.failures.length).toBe(2);
@@ -14,7 +14,7 @@ Deno.test("A device must be selected before program memory can be set", () => {
 });
 
 Deno.test("Origin addresses can't be less than zero", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.programMemory.origin(-1);
     expect(system.line.failed()).toBe(true);
     expect(system.line.failures.length).toBe(1);
@@ -27,7 +27,7 @@ Deno.test("Origin addresses can't be less than zero", () => {
 });
 
 Deno.test("Device name is used to determine if properties have been set", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     system.programMemory.origin(10);
     expect(system.line.failed()).toBe(true);
@@ -37,7 +37,7 @@ Deno.test("Device name is used to determine if properties have been set", () => 
 });
 
 Deno.test("Origin addresses must be progmem size when a device is chosen", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     const wordsAvailable = 100;
     system.symbolTable.deviceSymbol(
@@ -54,7 +54,7 @@ Deno.test("Origin addresses must be progmem size when a device is chosen", () =>
 });
 
 Deno.test("Origin directive sets current address", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     {
@@ -70,7 +70,7 @@ Deno.test("Origin directive sets current address", () => {
 });
 
 Deno.test("Origin is blocked by code in current line", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.code.push([0, 0]);
     system.programMemory.origin(0);
     expect(system.line.failed()).toBe(true);
@@ -80,7 +80,7 @@ Deno.test("Origin is blocked by code in current line", () => {
 });
 
 Deno.test("Origin is not blocked when there's no code in current line", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.programMemory.origin(0);
     expect(system.line.failed()).toBe(false);
 });

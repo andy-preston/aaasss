@@ -4,7 +4,7 @@ import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { programMemory } from "./program-memory.ts";
 
-export const systemUnderTest = () => {
+export const testSystem = () => {
     const $currentLine = currentLine();
     const $line = dummyLine(false, 1);
     $currentLine.forDirectives($line);

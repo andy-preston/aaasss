@@ -2,10 +2,10 @@ import type { BoringFailure, ClueFailure, SupportFailure } from "../failure/bags
 
 import { expect } from "jsr:@std/expect";
 import { stringBag } from "../assembler/bags.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("Unsupported instruction check fails when no device is selected", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.mnemonic = "MUL";
     const result = system.instructionSet.instruction(system.line)!;
     expect(system.line.failed()).toBe(true);
@@ -25,7 +25,7 @@ Deno.test("Unsupported instruction check fails when no device is selected", () =
 
 Deno.test("Instructions are added to the unsupported list in groups", () => {
     ["LAC", "LAS", "LAT", "XCH"].forEach(mnemonic => {
-        const system = systemUnderTest();
+        const system = testSystem();
         system.symbolTable.deviceSymbol("deviceName", stringBag("plop"));
         system.instructionSet.unsupportedGroups(["readModifyWrite"]);
         system.line.mnemonic = mnemonic;
@@ -40,7 +40,7 @@ Deno.test("Instructions are added to the unsupported list in groups", () => {
         expect(result).toBe(undefined);
     });
     ["MUL", "MULS", "MULSU"].forEach(mnemonic => {
-        const system = systemUnderTest();
+        const system = testSystem();
         system.symbolTable.deviceSymbol("deviceName", stringBag("plop"));
         system.instructionSet.unsupportedGroups(["readModifyWrite"]);
         system.line.mnemonic = mnemonic;
@@ -54,7 +54,7 @@ Deno.test("Instructions are added to the unsupported list in groups", () => {
 });
 
 Deno.test("An unknown group throws an error", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     expect(
         () => { system.instructionSet.unsupportedGroups(["plop"]); }
     ).toThrow<Error>(
@@ -63,7 +63,7 @@ Deno.test("An unknown group throws an error", () => {
 });
 
 Deno.test("Some unsupported instructions come with suggested alternatives", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("plop"));
     system.instructionSet.unsupportedGroups(["flashMore8"]);
     system.line.mnemonic = "CALL";

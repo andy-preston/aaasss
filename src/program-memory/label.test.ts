@@ -1,10 +1,10 @@
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 import { dummyLine } from "../line/line-types.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("A label is stored in the symbol table with the current address", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     {
@@ -21,7 +21,7 @@ Deno.test("A label is stored in the symbol table with the current address", () =
 });
 
 Deno.test("Labels can only be redefined if their value doesn't change", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
     [1, 2].forEach((_try) => {
@@ -45,7 +45,7 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
 });
 
 Deno.test("Labels are available to javascript", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
 

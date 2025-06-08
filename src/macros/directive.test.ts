@@ -2,16 +2,16 @@ import type { AssertionFailure, Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { dummyLine } from "../line/line-types.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("The macro doesn't have to have parameters", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
 });
 
 Deno.test("Parameter count mismatches result in a failure", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
 
     const define = system.macros.define("testMacro", ["a", "b", "C"]);
     expect(define.type).not.toBe("failures");
@@ -29,7 +29,7 @@ Deno.test("Parameter count mismatches result in a failure", () => {
 });
 
 Deno.test("A macro can be defined in both passes", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     {
         const define = system.macros.define("testMacro", []);
         expect(define.type).not.toBe("failures");

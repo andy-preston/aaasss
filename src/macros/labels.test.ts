@@ -1,9 +1,9 @@
 import { expect } from "jsr:@std/expect";
 import { dummyLine } from "../line/line-types.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("Labels in macro operands are expanded on each invocation", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
@@ -30,7 +30,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
 });
 
 Deno.test("But label operands from outside the macro are left as is", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     {
@@ -57,7 +57,7 @@ Deno.test("But label operands from outside the macro are left as is", () => {
 });
 
 Deno.test("Actual labels in macros are also expanded on playback", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     const end = system.macros.end();

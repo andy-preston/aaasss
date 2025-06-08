@@ -2,14 +2,14 @@ import type { ClueFailure, DefinitionFailure, Failure } from "../failure/bags.ts
 
 import { expect } from "jsr:@std/expect";
 import { line } from "../line/line-types.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 const mockDefiningLine = (fileName: string, lineNumber: number) =>
     line(fileName, lineNumber, "", "", 0, false, false);
 
 Deno.test("You can choose any device that has a definition file", () => {
     for (const deviceName of ["AT-Tiny 84", "AT_Tiny 24", "AT.Tiny 44"]) {
-        const system = systemUnderTest();
+        const system = testSystem();
         const result = system.deviceChooser(deviceName);
         expect(result.type).not.toBe("failures");
         expect(result.it).toBe("");
@@ -19,7 +19,7 @@ Deno.test("You can choose any device that has a definition file", () => {
 Deno.test("Choosing multiple devices results in failure", () => {
     const firstName = "AT-Tiny 84";
     const secondName = "AT-Tiny 2313";
-    const system = systemUnderTest();
+    const system = testSystem();
     system.currentLine.forDirectives(mockDefiningLine("plop.asm", 23));
     {
         const result = system.deviceChooser(firstName);
@@ -41,7 +41,7 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
     // IN THE SOURCE for the same device is just plain confusing.
     const firstName = "AT-Tiny 84";
     const secondName = "at tiny 84";
-    const system = systemUnderTest();
+    const system = testSystem();
     system.currentLine.forDirectives(mockDefiningLine("plop.asm", 23));
     {
         const result = system.deviceChooser(firstName);
@@ -59,7 +59,7 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
 });
 
 Deno.test("Choosing an non-existant device returns a Failure", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const result = system.deviceChooser("plop");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
@@ -70,7 +70,7 @@ Deno.test("Choosing an non-existant device returns a Failure", () => {
 });
 
 Deno.test("It correctly interprets the hex stings in the TOML files", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const result = system.deviceChooser("ATTiny2313");
     expect(result.type).not.toBe("failures");
     expect(result.it).toBe("");
@@ -81,7 +81,7 @@ Deno.test("It correctly interprets the hex stings in the TOML files", () => {
 
 Deno.test("It calls a callback in instruction-set with the value of 'reducedCore'", () => {
     let testIndicator: boolean | undefined = undefined;
-    const system = systemUnderTest();
+    const system = testSystem();
     const mockCallback = (isReduced: boolean) => {
         testIndicator = isReduced;
     };

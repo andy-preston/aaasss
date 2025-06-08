@@ -1,8 +1,8 @@
 import { expect } from "jsr:@std/expect/expect";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("code is chunked into byte pairs", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.objectCode.poke([1, 2, 3, 4]);
     expect(system.line.code.length).toBe(2);
     expect(system.line.code[0]).toEqual([1, 2]);
@@ -10,7 +10,7 @@ Deno.test("code is chunked into byte pairs", () => {
 });
 
 Deno.test("an odd number of bytes is zero padded", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.objectCode.poke([1, 2, 3, 4, 5]);
     expect(system.line.code.length).toBe(3);
     expect(system.line.code[0]).toEqual([1, 2]);

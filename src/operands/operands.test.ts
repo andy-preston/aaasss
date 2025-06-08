@@ -10,7 +10,7 @@ import { jSExpression } from "../javascript/expression.ts";
 import { operands } from "./operands.ts";
 import { numberBag } from "../assembler/bags.ts";
 
-const systemUnderTest = () => {
+const testSystem = () => {
     const $currentLine = currentLine();
     const $line = dummyLine(false, 1);
     $currentLine.forDirectives($line);
@@ -28,7 +28,7 @@ const systemUnderTest = () => {
 };
 
 Deno.test("Line must have at least expected operands", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["Z"];
     system.operands(system.line, ["onlyZ", "register"]);
     expect(system.line.failed()).toBe(true);
@@ -47,7 +47,7 @@ Deno.test("Line must have at least expected operands", () => {
 });
 
 Deno.test("line must not exceed expected operands", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["R10", "R11"];
     system.operands(system.line, ["register"]);
     expect(system.line.failed()).toBe(true);
@@ -60,7 +60,7 @@ Deno.test("line must not exceed expected operands", () => {
 });
 
 Deno.test("line and expectation types must not be different", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["R10", "R12"];
     system.operands(system.line, ["nybble", "ioPort"]);
     expect(system.line.failed()).toBe(true);
@@ -82,7 +82,7 @@ Deno.test("line and expectation types must not be different", () => {
 });
 
 Deno.test("Everything's lovely when actual and expected match", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["R10", "10 / 2"];
     const result = system.operands(system.line, ["register", "nybble"]);
     expect(system.line.failed()).toBe(false);
@@ -91,7 +91,7 @@ Deno.test("Everything's lovely when actual and expected match", () => {
 });
 
 Deno.test("Some operands can be optional", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = [];
     const result = system.operands(system.line, ["optionalZ+"]);
     expect(system.line.failed()).toBe(false);
@@ -100,7 +100,7 @@ Deno.test("Some operands can be optional", () => {
 });
 
 Deno.test("An expression yields a value", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["20 / 2"];
     const result = system.operands(system.line, ["nybble"]);
     expect(system.line.failed()).toBe(false);
@@ -109,7 +109,7 @@ Deno.test("An expression yields a value", () => {
 });
 
 Deno.test("A register symbol yields a value", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["R7"];
     const result = system.operands(system.line, ["register"]);
     expect(system.line.failed()).toBe(false);
@@ -118,7 +118,7 @@ Deno.test("A register symbol yields a value", () => {
 });
 
 Deno.test("A non-existant register symbol yields failures", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["R99"];
     const result = system.operands(system.line, ["register"]);
     expect(system.line.failed()).toBe(true);
@@ -131,7 +131,7 @@ Deno.test("A non-existant register symbol yields failures", () => {
 });
 
 Deno.test("A register can't be used for a number", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["R7"];
     const result = system.operands(system.line, ["6BitNumber"]);
     expect(system.line.failed()).toBe(true);
@@ -145,7 +145,7 @@ Deno.test("A register can't be used for a number", () => {
 });
 
 Deno.test("A symbol can't be used as a register", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.builtInSymbol("plop", numberBag(5));
     system.line.symbolicOperands = ["plop", "plop"];
     const result = system.operands(system.line, ["byte", "register"]);
@@ -159,7 +159,7 @@ Deno.test("A symbol can't be used as a register", () => {
 });
 
 Deno.test("'Special' operands yield a numeric value", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["Z+"];
     const result = system.operands(system.line, ["ZorZ+"]);
     expect(system.line.failed()).toBe(false);
@@ -168,7 +168,7 @@ Deno.test("'Special' operands yield a numeric value", () => {
 });
 
 Deno.test("Bad 'special' operands yield failures", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["plop"];
     const result = system.operands(system.line, ["onlyZ"]);
     expect(system.line.failed()).toBe(true);
@@ -182,7 +182,7 @@ Deno.test("Bad 'special' operands yield failures", () => {
 });
 
 Deno.test("Optional parameters can be absent", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = [];
     const result = system.operands(system.line, ["optionalZ+"]);
     expect(system.line.failed()).toBe(false);
@@ -191,7 +191,7 @@ Deno.test("Optional parameters can be absent", () => {
 });
 
 Deno.test("... or present", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["Z+"];
     const result = system.operands(system.line, ["optionalZ+"]);
     expect(system.line.failed()).toBe(false);
@@ -200,7 +200,7 @@ Deno.test("... or present", () => {
 });
 
 Deno.test("Incorrect optional parameters yield a failure", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["plop"];
     const result = system.operands(system.line, ["optionalZ+"]);
     expect(system.line.failed()).toBe(true);
@@ -214,7 +214,7 @@ Deno.test("Incorrect optional parameters yield a failure", () => {
 });
 
 Deno.test("An uninitialised symbol yields a failure", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.symbolicOperands = ["plop"];
     const result = system.operands(system.line, ["nybble"]);
     expect(system.line.failed()).toBe(true);

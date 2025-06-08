@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
 import { dummyLine } from "../line/line-types.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 const testLines: Array<[string, string, string]> = [
     ["testLabel: TST", "testLabel", "TST"],
@@ -9,7 +9,7 @@ const testLines: Array<[string, string, string]> = [
 ] as const;
 
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     testLines.forEach(([source, label, mnemonic]) => {
         const line = dummyLine(false, 1);
         line.rawSource = source;
@@ -25,7 +25,7 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
 });
 
 Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
     testLines.forEach(([source, label, mnemonic]) => {
@@ -51,7 +51,7 @@ Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => 
 });
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
 
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");
@@ -77,7 +77,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
 });
 
 Deno.test("Lines that are being replayed have a macro name and count", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
 
     const define = system.macros.define("testMacro", []);
     expect(define.type).not.toBe("failures");

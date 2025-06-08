@@ -6,7 +6,7 @@ import { deviceChooser } from "./chooser.ts";
 import { defaultDeviceFinder, defaultTomlLoader } from "./file.ts";
 import { deviceSettings } from "./settings.ts";
 
-export const systemUnderTest = () => {
+export const testSystem = () => {
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);

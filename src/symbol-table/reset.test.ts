@@ -1,10 +1,10 @@
 import { expect } from "jsr:@std/expect";
 import { numberBag } from "../assembler/bags.ts";
 import { dummyLine } from "../line/line-types.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("The symbol table is reset at the end of the first pass", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     {
         const result = system.symbolTable.persistentSymbol(
             "plop", numberBag(57)
@@ -23,7 +23,7 @@ Deno.test("The symbol table is reset at the end of the first pass", () => {
 });
 
 Deno.test("... but left intact at the end of the second pass", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     {
         const result = system.symbolTable.persistentSymbol(
             "plop", numberBag(57)

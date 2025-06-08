@@ -6,7 +6,7 @@ import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { embeddedJs } from "./embedded.ts";
 import { jSExpression } from "./expression.ts";
 
-const systemUnderTest = () => {
+const testSystem = () => {
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
@@ -19,7 +19,7 @@ const systemUnderTest = () => {
 };
 
 Deno.test("A symbol assignment does not pollute the `this` context object", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const line = dummyLine(false, 1);
     line.rawSource = "{{ plop = 27; this.plop; }}";
     system.embeddedJs(line);
@@ -29,7 +29,7 @@ Deno.test("A symbol assignment does not pollute the `this` context object", () =
 });
 
 Deno.test("JS can be delimited with moustaches on the same line", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const line = dummyLine(false, 1);
     line.rawSource = "MOV {{ const test = 27; test; }}, R2";
     system.embeddedJs(line);
@@ -38,7 +38,7 @@ Deno.test("JS can be delimited with moustaches on the same line", () => {
 });
 
 Deno.test("JS can be delimited by moustaches across several lines", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const line = dummyLine(false, 1);
 
     line.rawSource = "some ordinary stuff {{ const test = 27;";
@@ -58,7 +58,7 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
 });
 
 Deno.test("Multiple opening moustaches are illegal", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const line = dummyLine(false, 1);
     line.rawSource = "{{ {{ }}";
     system.embeddedJs(line);
@@ -68,7 +68,7 @@ Deno.test("Multiple opening moustaches are illegal", () => {
 });
 
 Deno.test("Multiple closing moustaches are illegal", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const line = dummyLine(false, 1);
     line.rawSource = "{{ }} }}";
     system.embeddedJs(line);
@@ -78,7 +78,7 @@ Deno.test("Multiple closing moustaches are illegal", () => {
 });
 
 Deno.test("Omitting a closing moustache is illegal", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const line = dummyLine(false, 1);
     line.rawSource = "{{";
     system.embeddedJs(line);

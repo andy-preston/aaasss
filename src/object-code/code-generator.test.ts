@@ -2,10 +2,10 @@ import type { BoringFailure, SupportFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("Lines with no mnemonic don't bother generating code", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.objectCode.line(system.line);
     expect(system.line.failed()).toBe(false);
     expect(system.line.failures.length).toBe(0);
@@ -14,7 +14,7 @@ Deno.test("Lines with no mnemonic don't bother generating code", () => {
 });
 
 Deno.test("Attempting to generate code with no device selected fails", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.line.mnemonic = "DES";
     system.line.symbolicOperands = ["1"];
     system.objectCode.line(system.line);
@@ -29,7 +29,7 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
 });
 
 Deno.test("Lines with unsupported instructions fail", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.instructionSet.unsupportedGroups(["DES"]);
     system.line.mnemonic = "DES";
@@ -46,7 +46,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
 });
 
 Deno.test("Lines with unknown instructions fail", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.line.mnemonic = "NOT_REAL";
     system.objectCode.line(system.line);
@@ -59,7 +59,7 @@ Deno.test("Lines with unknown instructions fail", () => {
 });
 
 Deno.test("Lines with real/supported instructions produce code", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(10));
     expect(system.programMemory.address()).toBe(0);
@@ -72,7 +72,7 @@ Deno.test("Lines with real/supported instructions produce code", () => {
 });
 
 Deno.test("If a line has `isDefiningMacro == true`, no code is generated", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.line.mnemonic = "DES";
     system.line.symbolicOperands = ["15"];
@@ -84,7 +84,7 @@ Deno.test("If a line has `isDefiningMacro == true`, no code is generated", () =>
 });
 
 Deno.test("Generating code will increment the programMemory address", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(10));
     system.line.mnemonic = "NOP";
@@ -96,7 +96,7 @@ Deno.test("Generating code will increment the programMemory address", () => {
 });
 
 Deno.test("Insufficient program memory causes generation to fail", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0x00));
     const preFailureAddress = system.programMemory.address();

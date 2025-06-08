@@ -2,11 +2,11 @@ import type { AssertionFailure, BagOfFailures, NumericTypeFailure } from "../fai
 import type { NumberBag } from "../assembler/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 
 Deno.test("12 bit relative address can't be beyond 2048 away", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
     system.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(16 * 1024)
@@ -23,7 +23,7 @@ Deno.test("12 bit relative address can't be beyond 2048 away", () => {
 });
 
 Deno.test("12 bit relative address can't be below -2047 away", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
     system.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(16 * 1024)
@@ -40,7 +40,7 @@ Deno.test("12 bit relative address can't be below -2047 away", () => {
 });
 
 Deno.test("Testing a 12 bit relative address that is in range", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
     system.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(16 * 1024)
@@ -53,7 +53,7 @@ Deno.test("Testing a 12 bit relative address that is in range", () => {
 });
 
 Deno.test("7 bit relative address can't be beyond -63 - 64 range", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
     system.symbolTable.deviceSymbol(
         "programMemoryBytes", numberBag(16 * 1024)
@@ -82,7 +82,7 @@ Deno.test("7 bit relative address can't be beyond -63 - 64 range", () => {
 });
 
 Deno.test("7 bit relative address can't be beyond program memory", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("dummy"));
     const wordsAvailable = 100;
     system.symbolTable.deviceSymbol(

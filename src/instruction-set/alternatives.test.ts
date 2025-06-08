@@ -2,10 +2,10 @@ import type { SupportFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { stringBag } from "../assembler/bags.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("RCALL is offered as an alternative to CALL", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("plop"));
     system.instructionSet.unsupportedGroups(["flashMore8"]);
     system.line.mnemonic = "CALL";
@@ -20,7 +20,7 @@ Deno.test("RCALL is offered as an alternative to CALL", () => {
 });
 
 Deno.test("RJMP is offered as an alternative to JMP", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("plop"));
     system.instructionSet.unsupportedGroups(["flashMore8"]);
     system.line.mnemonic = "JMP";
@@ -35,7 +35,7 @@ Deno.test("RJMP is offered as an alternative to JMP", () => {
 });
 
 Deno.test("ICALL is offered as an alternative to EICALL", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("plop"));
     system.instructionSet.unsupportedGroups(["flashMore128"]);
     system.line.mnemonic = "EICALL";
@@ -50,7 +50,7 @@ Deno.test("ICALL is offered as an alternative to EICALL", () => {
 });
 
 Deno.test("IJMP is offered as an alternative to EIJMP", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("plop"));
     system.instructionSet.unsupportedGroups(["flashMore128"]);
     system.line.mnemonic = "EIJMP";
@@ -65,7 +65,7 @@ Deno.test("IJMP is offered as an alternative to EIJMP", () => {
 });
 
 Deno.test("DES has no alternative", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("plop"));
     system.instructionSet.unsupportedGroups(["DES"]);
     system.line.mnemonic = "DES";

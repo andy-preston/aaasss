@@ -2,10 +2,10 @@ import type { Failure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { dummyLine } from "../line/line-types.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("the last line has a failure is a definition wasn't closed", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const define = system.macros.define("plop", []);
     expect(define.type).not.toBe("failures");
 
@@ -18,7 +18,7 @@ Deno.test("the last line has a failure is a definition wasn't closed", () => {
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     {
         const define = system.macros.define("aMacro", []);
         expect(define.type).not.toBe("failures");
@@ -33,7 +33,7 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
 });
 
 Deno.test("Multiple macros can be defined", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     for (const macroName of ["aMacro", "anotherOne", "yetAnotherOne"]) {
         const define = system.macros.define(macroName, []);
         expect(define.type).not.toBe("failures");
@@ -43,7 +43,7 @@ Deno.test("Multiple macros can be defined", () => {
 });
 
 Deno.test("You can't end a macro definition if one isn't being defined", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const end = system.macros.end();
     expect(end.type).toBe("failures");
     const failures = end.it as Array<Failure>;
@@ -53,7 +53,7 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
 });
 
 Deno.test("Whilst defining, a flag is set on the line", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     const define = system.macros.define("plop", []);
     expect(define.type).not.toBe("failures");
     system.macros.processedLine(system.line);

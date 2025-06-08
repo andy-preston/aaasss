@@ -1,10 +1,10 @@
 import { expect } from "jsr:@std/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
 import { dummyLine } from "../line/line-types.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("By default, code is generated", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0x10));
 
@@ -15,7 +15,7 @@ Deno.test("By default, code is generated", () => {
 });
 
 Deno.test("The assembleIf directive can turn code generation off", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0x10));
 
@@ -27,7 +27,7 @@ Deno.test("The assembleIf directive can turn code generation off", () => {
 });
 
 Deno.test("The assembleIf directive can turn code generation back on", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0x10));
 

@@ -2,10 +2,10 @@ import type { AssertionFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect/expect";
 import { numberBag, stringBag } from "../assembler/bags.ts";
-import { systemUnderTest } from "./testing.ts";
+import { testSystem } from "./testing.ts";
 
 Deno.test("You can poke bytes", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(20));
     system.objectCode.poke([1, 2, 3, 4]);
@@ -14,7 +14,7 @@ Deno.test("You can poke bytes", () => {
 });
 
 Deno.test("Poked bytes are grouped in sets of 4", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(20));
     system.objectCode.poke([1, 2, 3, 4, 5, 6]);
@@ -23,7 +23,7 @@ Deno.test("Poked bytes are grouped in sets of 4", () => {
 });
 
 Deno.test("Poked bytes are padded to an even number", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(20));
 
@@ -42,7 +42,7 @@ Deno.test("Poked bytes are padded to an even number", () => {
 });
 
 Deno.test("You can also poke ASCII strings", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(20));
     system.objectCode.poke(["Hello"]);
@@ -53,7 +53,7 @@ Deno.test("You can also poke ASCII strings", () => {
 });
 
 Deno.test("... or UTF-8 strings", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(20));
     system.objectCode.poke(["ਕਿੱਦਾਂ"]);
@@ -65,7 +65,7 @@ Deno.test("... or UTF-8 strings", () => {
 });
 
 Deno.test("... or a combination of bytes and strings", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(20));
     system.objectCode.poke([1, 2, 3, 4, "Hello"]);
@@ -76,7 +76,7 @@ Deno.test("... or a combination of bytes and strings", () => {
 })
 
 Deno.test("Poked numbers must be bytes (0-255)", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(20));
     system.objectCode.poke([-1, 2, 300, 4]);
@@ -99,7 +99,7 @@ Deno.test("Poked numbers must be bytes (0-255)", () => {
 });
 
 Deno.test("Poking will increment the programMemory address", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(20));
     expect(system.programMemory.address()).toBe(0);
@@ -109,7 +109,7 @@ Deno.test("Poking will increment the programMemory address", () => {
 });
 
 Deno.test("Insufficient program memory causes poking to fail", () => {
-    const system = systemUnderTest();
+    const system = testSystem();
     system.symbolTable.deviceSymbol("deviceName", stringBag("test"));
     system.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0x00));
     const preFailureAddress = system.programMemory.address();

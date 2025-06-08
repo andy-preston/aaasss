@@ -4,7 +4,7 @@ import { currentLine } from "../line/current-line.ts";
 import { dummyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 
-export const systemUnderTest = () => {
+export const testSystem = () => {
     const $currentLine = currentLine();
     const $line = dummyLine(false, 1);
     $currentLine.forDirectives($line);
