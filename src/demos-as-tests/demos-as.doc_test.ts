@@ -16,28 +16,46 @@ const titleCase = (title: string) => title.replaceAll(
     " "
 );
 
-const dirContents = (dir: string) => Deno.readDirSync(dir).filter(
+const sectionContents = (dir: string) => Deno.readDirSync(dir).filter(
     example => example.isDirectory
 ).map (
     example => example.name
 ).toArray().sort();
 
+const demoContents = (dir: string) => Deno.readDirSync(dir).map (
+    file => file.name
+).toArray().sort();
+
 const root = import.meta.url.split('/').slice(2, -3).join('/');
 ["programs", "directives", "instructions"].forEach(section => {
     const sectionDir = `${root}/example/${section}`;
-    dirContents(sectionDir).forEach(example => {
+    sectionContents(sectionDir).forEach(example => {
         Deno.test(titleCase(`${section}: ${example}`), () => {
             const directory = `${sectionDir}/${example}`;
             const demo = docTest();
-            demo.source(
-                "", textFile(`${directory}/demo.asm`)
-            );
-            const mockDevice = `${directory}/mock-unsupported-device.toml`;
-            if (existsSync(mockDevice)) {
-                demo.mockUnsupportedDevice(defaultTomlLoader(mockDevice));
-            }
+            demoContents(directory).forEach(file => {
+                if (["demo.lst", "demo.hex"].includes(file)) {
+                    return;
+                }
+                if (file.endsWith(".asm")) {
+                    demo.source(
+                        file == "demo.asm" ? "" : file,
+                        textFile(`${directory}/demo.asm`)
+                    );
+                    return;
+                }
+                if (file == "mock-unsupported-device.toml") {
+                    demo.mockUnsupportedDevice(
+                        defaultTomlLoader(`${directory}/${file}`)
+                    );
+                    return;
+                }
+                throw new Error(`weird file ${file} in example directory`);
+            });
             demo.assemble();
-            expectFileContents(".lst").toEqual(textFile(`${directory}/demo.lst`));
+            expectFileContents(".lst").toEqual(
+                textFile(`${directory}/demo.lst`)
+            );
             const hexFile = `${directory}/demo.hex`;
             if (existsSync(hexFile)) {
                 expectFileContents(".hex").toEqual(textFile(hexFile));
