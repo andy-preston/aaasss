@@ -1,8 +1,8 @@
 import type { StringOrFailures } from "../failure/bags.ts";
+import type { InstructionSet } from "../instruction-set/instruction-set.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { SpecItems } from "./data-types.ts";
-import type { InstructionSet } from "./instruction-set.ts";
 
 import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
 import { bagOfFailures } from "../failure/bags.ts";

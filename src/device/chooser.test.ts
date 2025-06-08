@@ -60,14 +60,13 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
 
 Deno.test("Choosing an non-existant device returns a Failure", () => {
     const system = systemUnderTest();
-    const result = system.deviceChooser("notARealDevice");
+    const result = system.deviceChooser("plop");
     expect(result.type).toBe("failures");
     const failures = result.it as Array<Failure>;
     expect(failures.length).toBe(1);
     const failure = failures[0] as ClueFailure;
     expect(failure.kind).toBe("device_notFound");
-    // cSpell:words notarealdevice
-    expect(failure.clue).toBe("./devices/notarealdevice.toml");
+    expect(failure.clue).toBe("./devices/plop.toml");
 });
 
 Deno.test("It correctly interprets the hex stings in the TOML files", () => {
@@ -78,4 +77,18 @@ Deno.test("It correctly interprets the hex stings in the TOML files", () => {
     const value = system.symbolTable.symbolValue("TCCR1A");
     expect(value.type).toBe("number");
     expect(value.it).toBe(0x4f);
+});
+
+Deno.test("It calls a callback in instruction-set with the value of 'reducedCore'", () => {
+    let testIndicator: boolean | undefined = undefined;
+    const system = systemUnderTest();
+    const mockCallback = (isReduced: boolean) => {
+        testIndicator = isReduced;
+    };
+    system.instructionSet.reducedCore = mockCallback;
+    expect(testIndicator).toBe(undefined);
+    const result = system.deviceChooser("ATTiny2313");
+    expect(result.type).not.toBe("failures");
+    expect(result.it).toBe("");
+    expect(testIndicator).toBe(false);
 });

@@ -24,16 +24,18 @@ Deno.test("Device demo", () => {
 Deno.test("A device must be specified before any instructions can be assembled", () => {
     const demo = docTest();
     demo.source("", [
-        "    DES 23",
+        "    DES 12",
     ]);
     demo.assemble();
     expectFileContents(".lst").toEqual([
         "/var/tmp/demo.asm",
         "=================",
-        "                      1     DES 23",
+        "000000 CB 94          1     DES 12",
         "                        device_notSelected",
         "                        mnemonic_supportedUnknown",
-        "                        clue: DES"
+        "                        clue: DES",
+        "                        device_notSelected",
+        "                        programMemory_sizeUnknown",
     ]);
     expectFileExists(".hex").toBe(false);
 });

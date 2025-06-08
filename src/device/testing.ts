@@ -1,9 +1,9 @@
+import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { currentLine } from "../line/current-line.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { deviceChooser } from "./chooser.ts";
 import { defaultDeviceFinder, defaultTomlLoader } from "./file.ts";
-import { instructionSet } from "./instruction-set.ts";
 import { deviceSettings } from "./settings.ts";
 
 export const systemUnderTest = () => {
@@ -19,8 +19,8 @@ export const systemUnderTest = () => {
     );
     return {
         "currentLine": $currentLine,
-        "symbolTable": $symbolTable,
         "instructionSet": $instructionSet,
+        "symbolTable": $symbolTable,
         "deviceChooser": $deviceChooser
     };
 }
