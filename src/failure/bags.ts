@@ -31,7 +31,8 @@ export const numericTypeFailure = (
     value: unknown, min: Min, max: Max, allowed: AllowedValues
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
-    "value": value, "min": min, "max": max, "allowed": allowed.join(", ")
+    "value": value, "min": min, "max": max,
+    "allowed": allowed == undefined ? "" : allowed.join(", ")
 });
 
 export type NumericTypeFailure = ReturnType<typeof numericTypeFailure>;

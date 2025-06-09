@@ -1,0 +1,69 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATMega 328"); }}
+                      2
+000000 6F 90          3     POP R6
+000001 7F 92          4     PUSH R7
+000002 E0 94          5     COM R14
+000003 6A 95          6     DEC R22
+000004 43 95          7     INC R20
+000005 66 94          8     LSR R6
+000006 A5 94          9     ASR R10
+000007 B1 94         10     NEG R11
+000008 72 94         11     SWAP R7
+000009 37 95         12     ROR R19
+                     13
+00000A 12 1C         14     ADC R1, R2
+00000B 34 0C         15     ADD R3, R4
+00000C 78 20         16     AND R7, R8
+00000D EE 24         17     CLR R14
+00000E F0 16         18     CP R15, R16
+00000F 12 07         19     CPC R17, R18
+000010 45 13         20     CPSE R20, R21
+000011 70 25         21     EOR R23, R0
+000012 55 0C         22     LSL R5
+000013 78 2C         23     MOV R7, R8
+000014 80 9E         24     MUL R8, R16
+000015 CD 28         25     OR R12, R13
+000016 44 1F         26     ROL R20
+000017 42 09         27     SBC R20, R2
+000018 12 18         28     SUB R1, R2
+000019 88 20         29     TST R8
+                     30
+00001A 0F 03         31     FMUL R16, R23
+00001B 94 03         32     FMULS R17, R20
+00001C AD 03         33     FMULSU R18, R21
+00001D 0F 02         34     MULS R16, R31
+00001E 02 03         35     MULSU R16, R18
+                     36
+00001F 0F 01         37     MOVW R0, R30
+                     38
+
+Symbol Table
+============
+
+R0  |   |   | REGISTER | 2
+R1  |   |   | REGISTER | 2
+R2  |   |   | REGISTER | 3
+R3  |   |   | REGISTER | 1
+R4  |   |   | REGISTER | 1
+R5  |   |   | REGISTER | 1
+R6  |   |   | REGISTER | 2
+R7  |   |   | REGISTER | 4
+R8  |   |   | REGISTER | 4
+R10 |   |   | REGISTER | 1
+R11 |   |   | REGISTER | 1
+R12 |   |   | REGISTER | 1
+R13 |   |   | REGISTER | 1
+R14 |   |   | REGISTER | 2
+R15 |   |   | REGISTER | 1
+R16 |   |   | REGISTER | 5
+R17 |   |   | REGISTER | 2
+R18 |   |   | REGISTER | 3
+R19 |   |   | REGISTER | 1
+R20 |   |   | REGISTER | 5
+R21 |   |   | REGISTER | 2
+R22 |   |   | REGISTER | 1
+R23 |   |   | REGISTER | 2
+R30 |   |   | REGISTER | 1
+R31 |   |   | REGISTER | 1

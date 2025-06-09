@@ -1,4 +1,16 @@
     {{ device("ATMega 328"); }}
+
+    POP R6
+    PUSH R7
+    COM R14
+    DEC R22
+    INC R20
+    LSR R6
+    ASR R10
+    NEG R11
+    SWAP R7
+    ROR R19
+
     ADC R1, R2
     ADD R3, R4
     AND R7, R8
@@ -21,3 +33,5 @@
     FMULSU R18, R21
     MULS R16, R31
     MULSU R16, R18
+
+    MOVW R0, R30

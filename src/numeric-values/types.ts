@@ -1,6 +1,6 @@
 export type Min = number | undefined;
 export type Max = number | undefined;
-export type AllowedValues = Array<number>;
+export type AllowedValues = Array<number> | undefined;
 
 export const numericTypes = [
     "type_anything",
@@ -8,7 +8,7 @@ export const numericTypes = [
     "type_nybble", "type_bitIndex",
     "type_ioPort",
     "type_register", "type_registerImmediate",
-    "type_registerPair", "type_registerMultiply"
+    "type_registerPair", "type_anyRegisterPair", "type_registerMultiply"
 ] as const;
 
 export type NumericType = typeof numericTypes[number];

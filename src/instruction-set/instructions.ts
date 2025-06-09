@@ -109,6 +109,8 @@ export const instructions: Instructions = {
     "FMULSU": ["0000_0011 1ddd_1sss", {"d":  "registerMultiply",  "s": "registerMultiply" }],
     "MULSU":  ["0000_0011 0ddd_0sss", {"d":  "registerMultiply",  "s": "registerMultiply" }],
     "MULS":   ["0000_0010 dddd_ssss", {"d":  "registerImmediate", "s": "registerImmediate"}],
+    // Word Direct
+    "MOVW":   ["0000_0001 dddd_ssss", {"d":  "anyRegisterPair",   "s": "anyRegisterPair"  }],
     // Word Immediate    cSpell:words nnrr
     "ADIW":   ["1001_0110 nnrr_nnnn", {"r":  "registerPair",      "n": "6BitNumber"       }],
     "SBIW":   ["1001_0111 nnrr_nnnn", {"r":  "registerPair",      "n": "6BitNumber"       }],

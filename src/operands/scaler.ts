@@ -10,6 +10,7 @@ export const scaler = (programMemory: ProgramMemory) => {
     const scalers: Record<OperandType, Scaler | undefined> = {
         "register":            undefined,
         "registerPair":        value => numberBag((value - 24) / 2),
+        "anyRegisterPair":     value => numberBag(value / 2),
         "registerImmediate":   value => numberBag(value - 16),
         "registerMultiply":    value => numberBag(value - 16),
         "onlyZ":               undefined,

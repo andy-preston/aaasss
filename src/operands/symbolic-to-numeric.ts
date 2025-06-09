@@ -62,6 +62,7 @@ export const symbolicToNumeric = (
     const converters: Record<OperandType, Converter> = {
         "register":            register,
         "registerPair":        register,
+        "anyRegisterPair":     register,
         "registerMultiply":    register,
         "registerImmediate":   register,
         "onlyZ":               specificSymbolic({"Z":  0}),

@@ -2,7 +2,8 @@ export type SymbolicOperand = string;
 export type SymbolicOperands = Array<SymbolicOperand>;
 
 export type OperandType =
-    "register" | "registerPair" | "registerImmediate" | "registerMultiply" |
+    "register" | "anyRegisterPair" | "registerPair" |
+    "registerImmediate" | "registerMultiply" |
     "onlyZ" | "optionalZ+" | "ZorZ+" |
     "nybble" | "6BitNumber" | "byte" | "invertedByte" | "bitIndex" |
     "ioPort" | "16BitDataAddress" | "7BitDataAddress" |

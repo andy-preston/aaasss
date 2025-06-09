@@ -7,6 +7,7 @@ import { validNumeric } from "../numeric-values/valid.ts";
 const numericTypes: Record<OperandType, NumericType | undefined> = {
     "register":            "type_register",
     "registerPair":        "type_registerPair",
+    "anyRegisterPair":     "type_anyRegisterPair",
     "registerImmediate":   "type_registerImmediate",
     "registerMultiply":    "type_registerMultiply",
     "onlyZ":               undefined,
