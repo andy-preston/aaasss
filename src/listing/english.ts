@@ -218,6 +218,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Defined value", "Actual value",
         failure as NumericTypeFailure
     )),
+    "type_anyRegisterPair": (failure) => withLocation(failure, numericTypeFailure(
+        ["This should be a register pair only"],
+        "Defined value", "Actual value",
+        failure as NumericTypeFailure
+    )),
     "type_word": (failure) => withLocation(failure, numericTypeFailure(
         ["16 bit word out of range"],
         "Defined value", "Actual value",
