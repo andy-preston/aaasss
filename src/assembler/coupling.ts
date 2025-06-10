@@ -31,6 +31,7 @@ import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { tokens } from "../tokens/assembly-pipeline.ts";
 import { assemblyPipeline as thePipeline } from "./assembly-pipeline.ts";
 import { outputFile } from "./output-file.ts";
+import { directiveFunction } from "../directives/directives.ts";
 
 export const coupling = (
     fileName: FileName,
@@ -43,7 +44,8 @@ export const coupling = (
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $fileStack = fileStack(readerMethod, fileName);
     const $macros = macros($symbolTable, $fileStack);
-    const $jsExpression = jSExpression($symbolTable);
+    const $directiveFunction = directiveFunction($currentLine);
+    const $jsExpression = jSExpression($symbolTable, $directiveFunction);
     const $embeddedJs = embeddedJs($jsExpression);
     const $instructionSet = instructionSet($symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);

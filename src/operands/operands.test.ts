@@ -1,6 +1,8 @@
 import type { AssertionFailure, BoringFailure, ClueFailure, ExceptionFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
+import { numberBag } from "../assembler/bags.ts";
+import { directiveFunction } from "../directives/directives.ts";
 import { currentLine } from "../line/current-line.ts";
 import { dummyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -8,7 +10,6 @@ import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { operands } from "./operands.ts";
-import { numberBag } from "../assembler/bags.ts";
 
 const testSystem = () => {
     const $currentLine = currentLine();
@@ -17,8 +18,9 @@ const testSystem = () => {
     const $cpuRegisters = cpuRegisters();
     $cpuRegisters.initialise(false);
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
+    const $directiveFunction = directiveFunction($currentLine);
     const $programMemory = programMemory($currentLine, $symbolTable);
-    const $jsExpression = jSExpression($symbolTable);
+    const $jsExpression = jSExpression($symbolTable, $directiveFunction);
     const $operands = operands($symbolTable, $cpuRegisters, $programMemory, $jsExpression);
     return {
         "line": $line,

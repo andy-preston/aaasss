@@ -1,3 +1,4 @@
+import { Failure } from "../failure/bags.ts";
 import type { Line } from "./line-types.ts";
 
 export const currentLine = () => {
@@ -7,10 +8,20 @@ export const currentLine = () => {
         theLine = line;
     };
 
-    const directiveBackdoor = () => theLine;
+    const directiveBackdoor = () => theLine!;
+
+    const failure = (failure: Failure) => {
+        theLine!.failures.push(failure);
+    };
+
+    const failures = (failures: Array<Failure>) => {
+        failures.forEach(failure);
+    };
 
     return {
         "directiveBackdoor": directiveBackdoor,
+        "failure": failure,
+        "failures": failures,
         "forDirectives": forDirectives
     };
 };

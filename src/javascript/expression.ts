@@ -1,10 +1,10 @@
 import type { BaggedDirective } from "../directives/bags.ts";
+import type { DirectiveFunction } from "../directives/directives.ts";
 import type { BagOfFailures, BagOrFailures, StringOrFailures } from "../failure/bags.ts";
 import type { SymbolBag } from "../symbol-table/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { emptyBag, stringBag, type NumberBag, type StringBag } from "../assembler/bags.ts";
-import { directiveFunction } from "../directives/directive-function.ts";
 import { bagOfFailures, exceptionFailure } from "../failure/bags.ts";
 
 const isBagOrFailures = (it: object): it is BagOrFailures =>
@@ -29,17 +29,20 @@ const mappedResult = (result: unknown): StringOrFailures =>
 
 const discreteTypes = ["string", "number"];
 
-const mappedCall = (symbolName: string, symbol: SymbolBag) => {
-    return discreteTypes.includes(symbol.type)
-        ? symbol.it
-        : symbol.type.endsWith("Directive")
-        ? directiveFunction(symbolName, symbol as BaggedDirective)
-        : undefined;
-};
 
 const trailingSemicolons = /;*$/;
 
-export const jSExpression = (symbolTable: SymbolTable) => {
+export const jSExpression = (
+    symbolTable: SymbolTable, directiveFunction: DirectiveFunction
+) => {
+    const mappedCall = (symbolName: string, symbol: SymbolBag) => {
+        return discreteTypes.includes(symbol.type)
+            ? symbol.it
+            : symbol.type.endsWith("Directive")
+            ? directiveFunction(symbolName, symbol as BaggedDirective)
+            : undefined;
+    };
+
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
             return symbolTable.isDefinedSymbol(symbolName);

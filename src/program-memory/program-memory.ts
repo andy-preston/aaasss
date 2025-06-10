@@ -93,7 +93,7 @@ export const programMemory = (
     }
 
     const origin = (newAddress: number): DirectiveResult => {
-        const theLine = currentLine.directiveBackdoor()!;
+        const theLine = currentLine.directiveBackdoor();
         if (theLine.code.length > 0) {
             theLine.failures.push(boringFailure("programMemory_cantOrg"));
             return emptyBag();

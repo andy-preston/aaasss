@@ -1,4 +1,5 @@
 import { expect } from "jsr:@std/expect";
+import { directiveFunction } from "../directives/directives.ts";
 import { currentLine } from "../line/current-line.ts";
 import { dummyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -10,7 +11,8 @@ const testSystem = () => {
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $jsExpression = jSExpression($symbolTable);
+    const $directiveFunction = directiveFunction($currentLine);
+    const $jsExpression = jSExpression($symbolTable, $directiveFunction);
     const $embeddedJs = embeddedJs($jsExpression);
     return {
         "embeddedJs": $embeddedJs,
