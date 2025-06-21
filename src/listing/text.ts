@@ -8,9 +8,7 @@ const textLine = (lineNumber: string, theText: string) =>
 export const extractedText = function* (
     line: Line, messages: Array<string>
 ) {
-    if (!line.lastLine) {
-        yield textLine(`${line.lineNumber}`, line.rawSource);
-    }
+    yield textLine(`${line.lineNumber}`, line.rawSource);
     for (const message of messages) {
         yield textLine("", message);
     }

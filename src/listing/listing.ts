@@ -1,5 +1,6 @@
+import type { PipelineSink } from "../assembler/data-types.ts";
 import type { OutputFile } from "../assembler/output-file.ts";
-import type { Line } from "../line/line-types.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { ExtractedCode } from "./code.ts";
@@ -11,10 +12,11 @@ import { formattedSymbolTable } from "./symbols.ts";
 import { extractedText } from "./text.ts";
 
 export const listing = (
+    currentLine: CurrentLine,
     outputFile: OutputFile, topFileName: FileName,
     failureMessages: FailureMessageTranslator,
     symbolTable: SymbolTable
-) => {
+): PipelineSink => {
     const file = outputFile(topFileName, ".lst");
     let currentName = "";
 
@@ -25,20 +27,6 @@ export const listing = (
         file.write(text);
         file.write("=".repeat(text.length));
     };
-
-    const fileName = (newName: FileName) => {
-        if (newName != currentName) {
-            heading(newName);
-            currentName = newName;
-        }
-    };
-
-    const messagesForLine = (line: Line) =>
-        line.failures.reduce(
-            (messages, failure) =>
-                messages.concat(failureMessages(failure)),
-            [] as Array<string>
-        );
 
     const body = (code: ExtractedCode, text: ExtractedText) => {
         const pad = (text: string | undefined, width: number) =>
@@ -56,10 +44,20 @@ export const listing = (
         }
     };
 
-    const line = (theLine: Line) => {
-        fileName(theLine.fileName);
-        const messages = messagesForLine(theLine);
-        body(extractedCode(theLine), extractedText(theLine, messages));
+    const line = () => {
+        if (currentLine().fileName != currentName) {
+            currentName = currentLine().fileName;
+            heading(currentName);
+        }
+        const messages = currentLine().failures.reduce(
+            (messages, failure) =>
+                messages.concat(failureMessages(failure)),
+            [] as Array<string>
+        );
+        body(
+            extractedCode(currentLine()),
+            extractedText(currentLine(), messages)
+        );
     };
 
     const close = () => {

@@ -148,21 +148,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "type_relativeAddress": (failure) => withLocation(failure, [
         "Relative address"
     ]),
-    "type_7Bit": (failure) => withLocation(failure, numericTypeFailure(
-        ["7 Bit Value out of range"],
-        "Defined range", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_bitIndex": (failure) => withLocation(failure, numericTypeFailure(
-        ["Bit index out of range"],
-        "Defined range", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_byte":  (failure) => withLocation(failure, numericTypeFailure(
-        ["Byte out of range"],
-        "Defined range", "Actual value",
-        failure as NumericTypeFailure
-    )),
     "type_bytesOrString": (failure) => withLocation(failure, numericTypeFailure(
         ["Should be a string or an array of byte values"],
         "Defined range", "Actual value",
@@ -173,62 +158,12 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Expected type", "Actual type",
         failure as AssertionFailure
     )),
-    "type_ioPort": (failure) => withLocation(failure, numericTypeFailure(
-        ["IO port address out of range"],
-        "Defined range", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_anything": (failure) => withLocation(failure, numericTypeFailure(
-        ["This operand should only have a symbolic value"],
-        "Defined range", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_nybble": (failure) => withLocation(failure, numericTypeFailure(
-        ["Nybble (half byte) out of range"],
-        "Defined value", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_6Bit": (failure) => withLocation(failure, numericTypeFailure(
-        ["6-bit value out of range"],
-        "Defined value", "Actual value",
-        failure as NumericTypeFailure
-    )),
     "type_positive": (failure) => withLocation(failure, numericTypeFailure(
         ["This should be a positive number only"],
         "Defined value", "Actual value",
         failure as NumericTypeFailure
     )),
-    "type_register": (failure) => withLocation(failure, numericTypeFailure(
-        ["This should be a register only"],
-        "Defined value", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_registerImmediate": (failure) => withLocation(failure, numericTypeFailure(
-        ["This should be an immediate register only"],
-        "Defined value", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_registerMultiply": (failure) => withLocation(failure, numericTypeFailure(
-        ['This should be a "multiply register"'],
-        "Defined value", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_registerPair": (failure) => withLocation(failure, numericTypeFailure(
-        ["This should be a register pair only"],
-        "Defined value", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_anyRegisterPair": (failure) => withLocation(failure, numericTypeFailure(
-        ["This should be a register pair only"],
-        "Defined value", "Actual value",
-        failure as NumericTypeFailure
-    )),
-    "type_word": (failure) => withLocation(failure, numericTypeFailure(
-        ["16 bit word out of range"],
-        "Defined value", "Actual value",
-        failure as NumericTypeFailure
-    )),
-        "value_type":  (failure) => withLocation(failure, assertionFailure(
+    "value_type":  (failure) => withLocation(failure, assertionFailure(
         ["Operand not as expected"],
         "Allowed values", "Actual Value",
         failure as AssertionFailure
