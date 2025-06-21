@@ -8,7 +8,6 @@ import { existsSync } from "jsr:@std/fs/exists";
 import { defaultDeviceFinder, defaultTomlLoader } from "../device/file.ts";
 import { mockFailureMessages } from "../listing/testing.ts";
 import { defaultReaderMethod } from "../source-code/file-stack.ts";
-import { stringBag } from "../assembler/bags.ts";
 import { coupling } from "../assembler/coupling.ts";
 import { extensionSwap } from "../assembler/output-file.ts";
 
@@ -48,7 +47,7 @@ export const docTest = () => {
 
     const mockUnsupportedDevice = (spec: object) => {
         deviceFile = [
-            (name: string) => stringBag(name),
+            (name: string) => name,
             (_fileName: string): DeviceSpec => ({ "spec": spec as SpecItems })
         ];
     };
