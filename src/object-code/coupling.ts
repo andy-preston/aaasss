@@ -14,6 +14,7 @@ export const objectCodeCoupling = (objectCode: ObjectCode) => {
     return {
         "pokeDirective": pokeDirective,
         "assembleIfDirective": assembleIfDirective,
-        "line": objectCode.line
+        "line": objectCode.line,
+        "reset": objectCode.reset
     };
 };

@@ -1,3 +1,4 @@
+import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure, type Failure } from "../failure/bags.ts";
 
 const textEncoder = new TextEncoder();
@@ -15,6 +16,6 @@ export const pokedBytes = (
 
     const failure = assertionFailure("value_type", "string, byte", `${item}`);
     failure.location = {"parameter": index};
-    failures.push(failure);
+    addFailure(failures, failure);
     return 0;
 });

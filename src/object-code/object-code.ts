@@ -1,72 +1,77 @@
-import type { PipelineStage } from "../assembler/data-types.ts";
+import type { Pass, PipelineProcess, PipelineReset } from "../assembler/data-types.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { InstructionSet } from "../instruction-set/instruction-set.ts";
 import type { CurrentLine } from "../line/current-line.ts";
-import type { Line } from "../line/line-types.ts";
 import type { Operands } from "../operands/operands.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
-import { emptyBag } from "../assembler/bags.ts";
-import { supportFailure } from "../failure/bags.ts";
+import { addFailure } from "../failure/add-failure.ts";
+import { AssertionFailure, supportFailure } from "../failure/bags.ts";
+import { ioAlternatives } from "../instruction-set/alternatives.ts";
 import { asWords } from "./as-words.ts";
 import { encoder } from "./encoder.ts";
 import { pokedBytes } from "./poked-bytes.ts";
-import { ioAlternatives } from "../instruction-set/alternatives.ts";
 
 export const objectCode = (
+    currentLine: CurrentLine,
     instructionSet: InstructionSet, operands: Operands,
-    programMemory: ProgramMemory, currentLine: CurrentLine
+    programMemory: ProgramMemory
 ) => {
     let assemblyIsActivated = true;
     const encode = encoder(instructionSet, operands);
 
-    const toLine = (line: Line, bytes: Array<number>, flipBytes: boolean) => {
-        const words = asWords(bytes, line.code, flipBytes);
-        const memoryEnd = programMemory.addressStep(words);
-        if (memoryEnd.type == "failures") {
-            line.withFailures(memoryEnd.it);
-        }
+    const toLine = (bytes: Array<number>, flipBytes: boolean) => {
+        const words = asWords(bytes, currentLine().code, flipBytes);
+        programMemory.addressStep(words);
     };
 
-    const line: PipelineStage = (line: Line) => {
-        if (line.lastLine) {
-            assemblyIsActivated = true;
-        }
-        if (line.isDefiningMacro || line.mnemonic == "" || !assemblyIsActivated) {
+    const disabled = () => !assemblyIsActivated
+        || currentLine().isDefiningMacro;
+
+    const line: PipelineProcess = () => {
+        const emptyLine = currentLine().mnemonic == ""
+            && currentLine().operands.length == 0;
+        if (emptyLine || disabled()) {
             return;
         }
-        const encoded = encode(line);
 
+        const encoded = encode();
         if (encoded != undefined) {
-           toLine(line, encoded, true);
+           toLine(encoded, true);
         }
-
-        for (const failure of line.failures) {
-            const alternative = ioAlternatives[
-                `${line.mnemonic}__${failure.kind}`
-            ];
-            if (alternative != undefined) {
-                line.failures.push(supportFailure(
-                    alternative.kind, line.mnemonic, alternative.try
-                ));
+        for (const failure of currentLine().failures) {
+            if (failure.kind == "value_type") {
+                const expected = (failure as AssertionFailure).expected;
+                const alternative = ioAlternatives[
+                    `${currentLine().mnemonic}__${expected}`
+                ];
+                if (alternative != undefined) {
+                    addFailure(currentLine().failures, supportFailure(
+                        alternative.kind, currentLine().mnemonic, alternative.try
+                    ));
+                }
             }
         }
     };
 
+    const reset: PipelineReset = (_: Pass) => {
+        assemblyIsActivated = true;
+    };
+
     const assembleIf = (required: boolean): DirectiveResult => {
         assemblyIsActivated = required;
-        return emptyBag();
     };
 
     const poke = (data: Array<number | string>): DirectiveResult => {
-        const line = currentLine.directiveBackdoor()!;
-        if (!line.isDefiningMacro) {
-            toLine(line, pokedBytes(data, line.failures), false);
+        if (!disabled()) {
+            toLine(pokedBytes(data, currentLine().failures), false);
         }
-        return emptyBag();
     };
 
-    return { "line": line, "poke": poke, "assembleIf": assembleIf };
+    return {
+        "line": line, "reset": reset,
+        "poke": poke, "assembleIf": assembleIf
+    };
 };
 
 export type ObjectCode = ReturnType<typeof objectCode>;

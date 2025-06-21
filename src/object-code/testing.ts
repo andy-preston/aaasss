@@ -2,7 +2,7 @@ import { directiveFunction } from "../directives/directives.ts";
 import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { currentLine } from "../line/current-line.ts";
-import { dummyLine } from "../line/line-types.ts";
+import { emptyLine } from "../line/line-types.ts";
 import { operands } from "../operands/operands.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -11,22 +11,22 @@ import { objectCode } from "./object-code.ts";
 
 export const testSystem = () => {
     const $currentLine = currentLine();
-    const $line = dummyLine(false, 1);
-    $currentLine.forDirectives($line);
+    $currentLine(emptyLine("plop.asm"));
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $directiveFunction = directiveFunction($currentLine);
-    const $instructionSet = instructionSet($symbolTable);
+    const $instructionSet = instructionSet($currentLine, $symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
-    const $jsExpression = jSExpression($symbolTable, $directiveFunction);
+    const $jsExpression = jSExpression(
+        $currentLine, $symbolTable, $directiveFunction);
     const $operands = operands(
-        $symbolTable, $cpuRegisters, $programMemory, $jsExpression
+        $currentLine, $symbolTable, $cpuRegisters, $programMemory, $jsExpression
     );
     const $objectCode = objectCode(
-        $instructionSet, $operands, $programMemory, $currentLine
+        $currentLine, $instructionSet, $operands, $programMemory
     );
     return {
-        "line": $line,
+        "currentLine": $currentLine,
         "instructionSet": $instructionSet,
         "symbolTable": $symbolTable,
         "programMemory": $programMemory,
