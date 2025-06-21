@@ -1,48 +1,48 @@
-import type { NumberBag } from "../assembler/bags.ts";
-import type { PipelineStage } from "../assembler/data-types.ts";
+import type { Pass, PipelineReset } from "../assembler/data-types.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { Failure, NumberOrFailures } from "../failure/bags.ts";
-import type { Line } from "../line/line-types.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-import { emptyBag, numberBag, stringBag } from "../assembler/bags.ts";
-import { assertionFailure, bagOfFailures, boringFailure } from "../failure/bags.ts";
+import { addFailure } from "../failure/add-failure.ts";
+import { assertionFailure, boringFailure } from "../failure/bags.ts";
 
-export const dataMemory = (symbolTable: SymbolTable) => {
+export const dataMemory = (
+    currentLine: CurrentLine, symbolTable: SymbolTable
+) => {
     let stack = 0;
     let allocated = 0;
 
-    const availableAddress = (bytesRequested: number): NumberOrFailures => {
+    const availableAddress = (): number | undefined => {
         const ramStart = symbolTable.deviceSymbolValue("ramStart", "number");
-        const ramEnd = symbolTable.deviceSymbolValue("ramEnd", "number");
-        const failures: Array<Failure> = (
-            ramStart.type == "failures" ? ramStart.it : []
-        ).concat(
-            ramEnd.type == "failures" ? ramEnd.it : []
-        );
-        if (failures.length > 0) {
-            failures.push(boringFailure("ram_sizeUnknown"));
-            return bagOfFailures(failures);
-        };
-
-        const startAddress = (ramStart as NumberBag).it;
-        const endAddress = (ramEnd as NumberBag).it;
-        const currentAddress = startAddress + allocated;
-        const bytesAvailable = endAddress - stack - currentAddress;
-        return bytesRequested > bytesAvailable
-            ? bagOfFailures([assertionFailure(
-                "ram_outOfRange", `${bytesAvailable}`, `${bytesRequested}`
-            )])
-            : numberBag(currentAddress);
+        return typeof ramStart != "number" ? undefined : ramStart + allocated;
     };
 
-    const alloc = (bytes: number): DirectiveResult => {
-        const startAddress = availableAddress(bytes);
-        if (startAddress.type == "failures") {
-            return startAddress;
+    const pastEnd = (bytesRequested: number): boolean => {
+        const currentAddress = availableAddress();
+        const ramEnd = symbolTable.deviceSymbolValue("ramEnd", "number");
+        if (currentAddress == undefined || typeof ramEnd != "number") {
+            addFailure(currentLine().failures, boringFailure(
+                "ram_sizeUnknown"
+            ));
+            return false;
         }
+
+        const bytesAvailable = ramEnd - stack - currentAddress;
+        if (bytesRequested <= bytesAvailable) {
+            return false;
+        }
+
+        addFailure(currentLine().failures, assertionFailure(
+            "ram_outOfRange", `${bytesAvailable}`, `${bytesRequested}`
+        ));
+        return true;
+    }
+
+    const alloc = (symbolName: string, bytes: number): DirectiveResult => {
+        symbolTable.persistentSymbol(
+            symbolName, pastEnd(bytes) ? 0 : availableAddress()!
+        );
         allocated = allocated + bytes;
-        return stringBag(`${startAddress.it}`);
     };
 
     const allocStack = (bytes: number): DirectiveResult => {
@@ -51,21 +51,17 @@ export const dataMemory = (symbolTable: SymbolTable) => {
         // all the space.
         // On AVRs, the stack is at RamEnd and grows down!
         if (stack != 0) {
-            return bagOfFailures([boringFailure("ram_stackAllocated")]);
+            addFailure(currentLine().failures, boringFailure(
+                "ram_stackAllocated"
+            ));
+        } else {
+            stack = pastEnd(bytes) ? 0 : bytes;
         }
-        const check = availableAddress(bytes);
-        if (check.type == "failures") {
-            return check;
-        }
-        stack = bytes;
-        return emptyBag();
     };
 
-    const reset: PipelineStage = (line: Line) => {
-        if (line.lastLine) {
-            stack = 0;
-            allocated = 0;
-        }
+    const reset: PipelineReset = (_: Pass) => {
+        stack = 0;
+        allocated = 0;
     };
 
     return {
