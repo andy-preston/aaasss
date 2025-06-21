@@ -1,46 +1,48 @@
-import type { PipelineStage } from "../assembler/data-types.ts";
-import type { Line } from "../line/line-types.ts";
+import type { PipelineProcess, PipelineReset } from "../assembler/data-types.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 import type { JsExpression } from "./expression.ts";
 
+import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure } from "../failure/bags.ts";
 
 const scriptDelimiter = /({{|}})/;
 
-export const embeddedJs = (expression: JsExpression): PipelineStage => {
+export const embeddedJs = (
+    currentLine: CurrentLine, expression: JsExpression
+) => {
     const buffer = {
         "javascript": [] as Array<string>,
         "assembler": [] as Array<string>,
     };
     let current: keyof typeof buffer = "assembler";
 
-    const failIfInJsMode = (line: Line): boolean => {
+    const failIfInJsMode = (): boolean => {
         const fail = current == "javascript";
         if (fail) {
-            line.failures.push(boringFailure("js_jsMode"));
+            addFailure(currentLine().failures, boringFailure(
+                "js_jsMode"
+            ));
         }
         return fail;
     };
 
-    const openMoustache = (line: Line) => {
-        if (!failIfInJsMode(line)) {
+    const openMoustache = () => {
+        if (!failIfInJsMode()) {
             current = "javascript";
         }
     };
 
-    const closeMoustache = (line: Line) => {
+    const closeMoustache = () => {
         if (current == "assembler") {
-            line.failures.push(boringFailure("js_assemblerMode"));
+            addFailure(currentLine().failures, boringFailure(
+                "js_assemblerMode"
+            ));
             return;
         }
 
         const javascriptCode = buffer.javascript.join("\n").trim();
         buffer.javascript = [];
-        const result = expression(javascriptCode);
-        if (result.type == "failures") {
-            line.withFailures(result.it);
-        } else {
-            buffer.assembler.push(result.it);
-        }
+        buffer.assembler.push(expression(javascriptCode));
         current = "assembler";
     };
 
@@ -48,38 +50,43 @@ export const embeddedJs = (expression: JsExpression): PipelineStage => {
         ["{{", openMoustache], ["}}", closeMoustache]
     ]);
 
-    const plainJsLine = (line: Line) => {
-        if (line.lineNumber == 1) {
-            openMoustache(line);
+    const plainJsLine = () => {
+        if (currentLine().lineNumber == 1) {
+            openMoustache();
         }
-        buffer.javascript.push(line.rawSource);
-        if (line.eof) {
-            closeMoustache(line);
+        buffer.javascript.push(currentLine().rawSource);
+        if (currentLine().eof) {
+            closeMoustache();
         }
     }
 
-    const mixedLine = (line: Line) => {
-        line.rawSource.split(scriptDelimiter).forEach(part => {
+    const mixedLine = () => {
+        currentLine().rawSource.split(scriptDelimiter).forEach(part => {
             if (actions.has(part)) {
-                actions.get(part)!(line);
+                const moustache = actions.get(part)!;
+                moustache();
             } else {
                 buffer[current]!.push(part);
             }
         });
     };
 
-    const pipeline = (line: Line) => {
-        if (line.fileName.endsWith(".js")) {
-            plainJsLine(line);
+    const pipeline: PipelineProcess = () => {
+        if (currentLine().fileName.endsWith(".js")) {
+            plainJsLine();
         } else {
-            mixedLine(line);
+            mixedLine();
         }
-        line.assemblySource = buffer.assembler.join("").trimEnd();
+        currentLine().assemblySource = buffer.assembler.join("").trimEnd();
         buffer.assembler = [];
-        if (line.lastLine) {
-            failIfInJsMode(line);
-        }
-    };
+    }
 
-    return pipeline;
+    const reset: PipelineReset = () => failIfInJsMode();
+
+    return {
+        "pipeline": pipeline,
+        "reset": reset
+    };
 };
+
+export type EmbeddedJs = ReturnType<typeof embeddedJs>;
