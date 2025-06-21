@@ -1,17 +1,16 @@
-import type { StringOrFailures } from "../failure/bags.ts";
+import type { StringOrFailure } from "../failure/bags.ts";
 import type { DeviceSpec, SpecItems } from "./data-types.ts";
 
 import { existsSync } from "jsr:@std/fs/exists";
 import { parse } from "jsr:@std/toml";
-import { stringBag } from "../assembler/bags.ts";
-import { bagOfFailures, clueFailure } from "../failure/bags.ts";
+import { clueFailure } from "../failure/bags.ts";
 
-export const defaultDeviceFinder = (deviceName: string): StringOrFailures => {
+export const defaultDeviceFinder = (deviceName: string): StringOrFailure => {
     const fileName = deviceName.replace(/[^\w]|_/g, "").toLowerCase();
     const baseName = `./devices/${fileName}.toml`;
     return existsSync(baseName)
-        ? stringBag(baseName)
-        : bagOfFailures([clueFailure("device_notFound", baseName)]);
+        ? baseName
+        : clueFailure("device_notFound", baseName);
 };
 
 export type DeviceFinder = typeof defaultDeviceFinder;
