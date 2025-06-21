@@ -1,16 +1,21 @@
-import type { PipelineSink, PipelineSource, PipelineStage } from "./data-types.ts";
+import type { PipelineProcess, PipelineReset, PipelineSink, PipelineSource } from "./data-types.ts";
 
 import { passes } from "./data-types.ts";
 
 export const assemblyPipeline = (
     source: PipelineSource,
-    stages: Array<PipelineStage>, sinks: Array<PipelineSink>
+    processes: Array<PipelineProcess>, sinks: Array<PipelineSink>,
+    resets: Array<PipelineReset>
 ) => {
-    passes.forEach(pass => source(pass).forEach(line => {
-        stages.forEach(stage => stage(line));
-        if (line.pass == 2) {
-            sinks.forEach(sink => sink.line(line));
+    passes.forEach((pass) => {
+        const eachLine = () => {
+            processes.forEach(process => process());
+            if (pass == 2) sinks.forEach(sink => sink.line());
+        };
+        const atEnd = () => {
+            resets.forEach(reset => reset(pass));
+            if (pass == 2) sinks.forEach(sink => sink.close());
         }
-    }));
-    sinks.forEach(sink => sink.close());
+        source(eachLine, atEnd);
+    });
 };

@@ -42,25 +42,28 @@ export const coupling = (
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $fileStack = fileStack(readerMethod, fileName);
-    const $macros = macros($symbolTable, $fileStack);
+    const $fileStack = fileStack($currentLine, readerMethod, fileName);
+    const $macros = macros($currentLine, $symbolTable, $fileStack);
     const $directiveFunction = directiveFunction($currentLine);
-    const $jsExpression = jSExpression($symbolTable, $directiveFunction);
-    const $embeddedJs = embeddedJs($jsExpression);
-    const $instructionSet = instructionSet($symbolTable);
+    const $jsExpression = jSExpression(
+        $currentLine, $symbolTable, $directiveFunction
+    );
+    const $embeddedJs = embeddedJs($currentLine, $jsExpression);
+    const $tokens = tokens($currentLine);
+    const $instructionSet = instructionSet($currentLine, $symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
-    const $dataMemory = dataMemory($symbolTable);
+    const $dataMemory = dataMemory($currentLine, $symbolTable);
     const $operands = operands(
-        $symbolTable, $cpuRegisters, $programMemory, $jsExpression
+        $currentLine, $symbolTable, $cpuRegisters, $programMemory, $jsExpression
     );
     const $objectCode = objectCode(
-        $instructionSet, $operands, $programMemory, $currentLine
+        $currentLine, $instructionSet, $operands, $programMemory
     );
     const $deviceSettings = deviceSettings(
         $instructionSet, $cpuRegisters, $symbolTable
     );
     const $deviceChooser = deviceChooser(
-        $deviceSettings, deviceFileOperations
+        $currentLine, $deviceSettings, deviceFileOperations
     );
 
     const withDirectives = <Component extends object>(component: Component) => {
@@ -76,30 +79,51 @@ export const coupling = (
     }
 
     withDirectives(deviceCoupling($deviceChooser));
-    withDirectives(functionDirectives);
+    withDirectives(functionDirectives($currentLine));
+    const $sourceCodeCoupling = withDirectives(
+        sourceCodeCoupling($fileStack)
+    );
     const $programMemoryCoupling = withDirectives(
         programMemoryCoupling($programMemory)
     );
     const $macroCoupling = withDirectives(
         macroCoupling($macros)
     );
+    const $objectCodeCoupling = withDirectives(
+        objectCodeCoupling($objectCode)
+    );
+    const $dataMemoryCoupling = withDirectives(
+        dataMemoryCoupling($dataMemory)
+    );
+    const $symbolTableCoupling = withDirectives(
+        symbolTableCoupling($symbolTable)
+    );
+
+    const $listing = listing(
+        $currentLine,
+        outputFile, fileName, failureMessageTranslator, $symbolTable
+    );
+    const $hexFile = hexFile($currentLine, outputFile, fileName);
+
     return thePipeline(
-        withDirectives(sourceCodeCoupling($fileStack)).lines,
+        $sourceCodeCoupling.lines,
         [
-            $currentLine.forDirectives,
             $macroCoupling.taggedLine,
             $programMemoryCoupling.lineAddress,
-            $embeddedJs,
-            tokens,
-            $programMemoryCoupling.lineLabel,
+            $embeddedJs.pipeline,
+            $tokens,
             $macroCoupling.processedLine,
-            withDirectives(objectCodeCoupling($objectCode)).line,
-            withDirectives(dataMemoryCoupling($dataMemory)).reset,
-            withDirectives(symbolTableCoupling($symbolTable)).reset
-        ],
-        [
-            listing(outputFile, fileName, failureMessageTranslator, $symbolTable),
-            hexFile(outputFile, fileName)
+            $programMemoryCoupling.lineLabel,
+            $objectCodeCoupling.line
+        ], [
+            $listing, $hexFile
+        ], [
+            $programMemoryCoupling.reset,
+            $embeddedJs.reset,
+            $macroCoupling.reset,
+            $objectCodeCoupling.reset,
+            $dataMemoryCoupling.reset,
+            $symbolTableCoupling.reset
         ]
     );
 };
