@@ -2,6 +2,7 @@ import type { Line } from "../line/line-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 
+import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure, clueFailure, supportFailure } from "../failure/bags.ts";
 import { simpleAlternatives } from "./alternatives.ts";
 
@@ -35,14 +36,14 @@ export const unsupportedInstructions = (symbolTable: SymbolTable) => {
 
         const deviceDefined = (): boolean => {
             const deviceName = symbolTable.symbolValue("deviceName");
-            if (deviceName.type == "string" && deviceName.it != "") {
+            if (typeof deviceName == "string" && deviceName != "") {
                 return true;
             }
 
-            line.failures.push(boringFailure(
+            addFailure(line.failures, boringFailure(
                 "device_notSelected"
             ));
-            line.failures.push(clueFailure(
+            addFailure(line.failures, clueFailure(
                 "mnemonic_supportedUnknown", line.mnemonic
             ));
             return false;
@@ -56,7 +57,7 @@ export const unsupportedInstructions = (symbolTable: SymbolTable) => {
             // I think this is just to test for "SPM.Z+"
             // But others might come later????
             const withOperands = [
-                line.mnemonic, line.symbolicOperands
+                line.mnemonic, line.operands
             ].flat().join(".");
             return unsupportedInstructions.includes(withOperands)
                 ? withOperands : "";
@@ -71,7 +72,7 @@ export const unsupportedInstructions = (symbolTable: SymbolTable) => {
             return false;
         }
 
-        line.failures.push(supportFailure(
+        addFailure(line.failures, supportFailure(
             "notSupported_mnemonic",
             unsupported, simpleAlternatives[unsupported]
         ));

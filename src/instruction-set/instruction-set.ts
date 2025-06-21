@@ -1,11 +1,14 @@
-import type { Line } from "../line/line-types.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
+import { addFailure } from "../failure/add-failure.ts";
 import { clueFailure } from "../failure/bags.ts";
 import { instructions, lpmImplied, nonReducedCore, withReducedCore } from "./instructions.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 
-export const instructionSet = (symbolTable: SymbolTable) => {
+export const instructionSet = (
+    currentLine: CurrentLine, symbolTable: SymbolTable
+) => {
     const unsupported = unsupportedInstructions(symbolTable);
     let variations = nonReducedCore;
 
@@ -15,21 +18,23 @@ export const instructionSet = (symbolTable: SymbolTable) => {
         }
     };
 
-    const instruction = (line: Line) => {
-        if (unsupported.isIt(line)) {
+    const instruction = () => {
+        if (unsupported.isIt(currentLine())) {
             return undefined;
         }
 
         const templateAndOperands =
-            ["LPM", "ELPM"].includes(line.mnemonic)
-            && line.symbolicOperands.length == 0
-            ? lpmImplied[line.mnemonic]
-            : line.mnemonic in variations
-            ? variations[line.mnemonic]
-            : instructions[line.mnemonic];
+            ["LPM", "ELPM"].includes(currentLine().mnemonic)
+            && currentLine().operands.length == 0
+            ? lpmImplied[currentLine().mnemonic]
+            : currentLine().mnemonic in variations
+            ? variations[currentLine().mnemonic]
+            : instructions[currentLine().mnemonic];
 
         if (templateAndOperands == undefined) {
-            line.failures.push(clueFailure("mnemonic_unknown", line.mnemonic));
+            addFailure(currentLine().failures, clueFailure(
+                "mnemonic_unknown", currentLine().mnemonic
+            ));
         }
 
         return templateAndOperands;
