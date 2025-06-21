@@ -1,4 +1,4 @@
-import type { Min, Max } from "../assembler/validation.ts";
+import type { Min, Max } from "../assembler/data-types.ts";
 import type { Failure } from "../failure/bags.ts";
 
 import { assertionFailure } from "../failure/bags.ts";
