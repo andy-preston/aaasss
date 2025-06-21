@@ -1,6 +1,7 @@
-import type { PipelineStage } from "../assembler/data-types.ts";
-import type { Line } from "../line/line-types.ts";
+import type { PipelineProcess } from "../assembler/data-types.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 
+import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure, boringFailure } from "../failure/bags.ts";
 import { pushOperandCheckingIndexOffset } from "./index-offset.ts";
 import { splitSource } from "./split-source.ts";
@@ -13,17 +14,17 @@ const validLabel = /^\w*$/;
 const clean = (sourceLine: string) =>
     sourceLine.replace(comment, "").replace(anyWhitespace, " ").trim();
 
-const invalidLabel = (label: string) => !validLabel.test(label);
-
 const splitOperands = (text: string): Array<string> =>
     text == "" ? [] : text.split(",").map(operand => operand.trim());
 
-export const tokens: PipelineStage = (line: Line) => {
-    const cleaned = clean(line.assemblySource);
+export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
+    const cleaned = clean(currentLine().assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
-    if (invalidLabel(label)) {
-        line.failures.push(boringFailure("syntax_invalidLabel"));
+    if (!validLabel.test(label)) {
+        addFailure(currentLine().failures, boringFailure(
+            "syntax_invalidLabel"
+        ));
     }
 
     const mnemonicAndOperands = splitSource("before", " ", withoutLabel);
@@ -31,12 +32,14 @@ export const tokens: PipelineStage = (line: Line) => {
     const operandsText = mnemonicAndOperands[1];
 
     if (mnemonic != "" && !mnemonic.match("^[A-Z]+$")) {
-        line.failures.push(boringFailure("syntax_invalidMnemonic"));
+        addFailure(currentLine().failures, boringFailure(
+            "syntax_invalidMnemonic"
+        ));
     }
 
     const operandsList = splitOperands(operandsText);
     if (operandsList.length > 2) {
-        line.failures.push(assertionFailure(
+        addFailure(currentLine().failures, assertionFailure(
             "operand_count", "2", `${operandsList.length}`
         ));
     }
@@ -44,18 +47,20 @@ export const tokens: PipelineStage = (line: Line) => {
     const fullOperands: Array<string> = [];
 
     operandsList.slice(0, 2).forEach(operand => {
-        pushOperandCheckingIndexOffset(operand, mnemonic, fullOperands, line);
+        pushOperandCheckingIndexOffset(
+            operand, mnemonic, fullOperands, currentLine()
+        );
     });
 
     fullOperands.forEach((operand, index) => {
         if (operand == "") {
             const failure = boringFailure("operand_blank");
             failure.location = {"operand": index};
-            line.failures.push(failure);
+            addFailure(currentLine().failures, failure);
         }
     });
 
-    line.symbolicOperands = fullOperands.map(upperCaseRegisters);
-    line.label = label;
-    line.mnemonic = mnemonic;
+    currentLine().operands = fullOperands.map(upperCaseRegisters);
+    currentLine().label = label;
+    currentLine().mnemonic = mnemonic;
 };

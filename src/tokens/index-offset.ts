@@ -1,7 +1,7 @@
-import type { Failure } from "../failure/bags.ts";
 import type { Line } from "../line/line-types.ts";
 import type { Mnemonic } from "./data-types.ts";
 
+import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure } from "../failure/bags.ts";
 
 const pattern = /^[XYZ]\+/;
@@ -14,11 +14,6 @@ const indexRegisterWithPlus = (operand: string) => {
 export const pushOperandCheckingIndexOffset = (
     operand: string, mnemonic: Mnemonic, fullOperands: Array<string>, line: Line
 ) => {
-    const addFailure = (failure: Failure) => {
-        failure.location = {"operand": fullOperands.length};
-        line.failures.push(failure);
-    };
-
     const operandPositionIs = (position: number) =>
         fullOperands.length == position;
 
@@ -29,19 +24,25 @@ export const pushOperandCheckingIndexOffset = (
     }
 
     if (indexing == "X+") {
-        addFailure(boringFailure("operand_offsetX"));
+        const failure = boringFailure("operand_offsetX");
+        failure.location = {"operand": fullOperands.length};
+        addFailure(line.failures, failure);
         fullOperands.push(operand);
         return;
     }
 
     if (operandPositionIs(0) && mnemonic != "STD") {
-        addFailure(boringFailure("operand_offsetNotStd"));
+        const failure = boringFailure("operand_offsetNotStd");
+        failure.location = {"operand": fullOperands.length};
+        addFailure(line.failures, failure);
         fullOperands.push(operand);
         return;
     }
 
     if (operandPositionIs(1) && mnemonic != "LDD") {
-        addFailure(boringFailure("operand_offsetNotLdd"));
+        const failure = boringFailure("operand_offsetNotLdd");
+        failure.location = {"operand": fullOperands.length};
+        addFailure(line.failures, failure);
         fullOperands.push(operand);
         return;
     }
