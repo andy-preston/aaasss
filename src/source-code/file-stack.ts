@@ -3,9 +3,9 @@ import type { DirectiveResult } from "../directives/data-types.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { FileLineIterator, FileName, LineNumber } from "./data-types.ts";
 
+import { addFailure } from "../failure/add-failure.ts";
 import { clueFailure } from "../failure/bags.ts";
 import { emptyLine } from "../line/line-types.ts";
-import { addFailure } from "../failure/add-failure.ts";
 
 type StackEntry = {
     "fileName": FileName;
