@@ -1,12 +1,11 @@
-import type { BooleanBag, NumberBag, StringBag, StringsBag } from "../assembler/bags.ts";
-import type { AllowedValues, Max, Min, NumericType } from "../numeric-values/types.ts";
+import type { AllowedValues, Max, Min } from "../assembler/data-types.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 
 import { failureKinds } from "./kinds.ts";
 
 type OperandLocation = { "operand": number };
 type ParameterLocation = { "parameter": number };
-type FailureLocation = undefined | OperandLocation | ParameterLocation;
+export type FailureLocation = undefined | OperandLocation | ParameterLocation;
 
 export const boringFailure = (
     kind: typeof failureKinds["boring"][number]
@@ -27,7 +26,7 @@ export const assertionFailure = (
 export type AssertionFailure = ReturnType<typeof assertionFailure>;
 
 export const numericTypeFailure = (
-    kind: typeof failureKinds["numericType"][number] | NumericType,
+    kind: typeof failureKinds["numericType"][number],
     value: unknown, min: Min, max: Max, allowed: AllowedValues
 ) => ({
     "kind": kind, "location": undefined as FailureLocation,
@@ -81,14 +80,7 @@ export type Failure = AssertionFailure | BoringFailure | ClueFailure
     | DefinitionFailure | ExceptionFailure
     | NumericTypeFailure | SupportFailure;
 
-export const bagOfFailures = (failures: Array<Failure>) =>
-    ({ "type": "failures" as const, "it": failures });
-export type BagOfFailures = ReturnType<typeof bagOfFailures>;
-
-export type NumberOrFailures = NumberBag | BagOfFailures;
-export type StringOrFailures = StringBag | BagOfFailures;
-export type StringsOrFailures = StringsBag | BagOfFailures;
-export type BooleanOrFailures = BooleanBag | BagOfFailures;
-
-export type BagOrFailures =
-    NumberBag | StringBag | StringsBag | BooleanBag | BagOfFailures;
+export type NumberOrFailure = number | Failure;
+export type StringOrFailure = string | Failure;
+export type StringsOrFailure = Array<string> | Failure;
+export type BooleanOrFailure = boolean | Failure;

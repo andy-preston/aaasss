@@ -1,7 +1,3 @@
-import type { NumericType } from "../numeric-values/types.ts";
-
-import { numericTypes } from "../numeric-values/types.ts";
-
 export const failureKinds = {
     "boring": [
         "syntax_invalidLabel", "syntax_invalidMnemonic",
@@ -21,7 +17,7 @@ export const failureKinds = {
         "type_failure"
     ],
     "numericType": [
-        "type_bytesOrString", "type_relativeAddress"
+        "type_bytesOrString", "type_relativeAddress", "type_positive"
     ],
     "clue": [
         "file_notFound",  "device_notFound", "register_notFound",
@@ -39,10 +35,5 @@ export const failureKinds = {
     ]
 } as const;
 
-export type FailureKind = NumericType |
+export type FailureKind = /*NumericType |*/
     typeof failureKinds[keyof typeof failureKinds][number];
-
-export const allFailureKinds = () => (
-    Object.entries(failureKinds).flatMap(
-        ([_key, failures]) => failures
-    ) as Array<string>).concat(numericTypes);
