@@ -1,27 +1,25 @@
-import type { PipelineStage } from "../assembler/data-types.ts";
+import type { DiscreteType, Pass, PipelineReset } from "../assembler/data-types.ts";
 import type { CurrentLine } from "../line/current-line.ts";
-import type { Line } from "../line/line-types.ts";
-import type { DirectiveResult } from "../directives/data-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
-import type { SymbolBag } from "./bags.ts";
+import type { SymbolValue } from "./data-types.ts";
 
-import { emptyBag, numberBag } from "../assembler/bags.ts";
-import { bagOfFailures, boringFailure, definitionFailure } from "../failure/bags.ts";
+import { isDiscrete } from "../assembler/data-types.ts";
+import { addFailure } from "../failure/add-failure.ts";
+import { boringFailure, definitionFailure } from "../failure/bags.ts";
 import { counting } from "./counting.ts";
 import { definitionList } from "./definition-list.ts";
 
 export const symbolTable = (
-    currentLine: CurrentLine,
-    cpuRegisters: CpuRegisters
+    currentLine: CurrentLine, cpuRegisters: CpuRegisters
 ) => {
-    const varSymbols:   Map<string, SymbolBag> = new Map();
-    const constSymbols: Map<string, SymbolBag> = new Map();
+    const varSymbols:   Map<string, SymbolValue> = new Map();
+    const constSymbols: Map<string, SymbolValue> = new Map();
 
     const counts = counting();
     const definitions = definitionList(currentLine);
 
-    const reset: PipelineStage = (line: Line) => {
-        if (line.lastLine && line.pass == 1) {
+    const reset: PipelineReset = (pass: Pass) => {
+        if (pass == 1) {
             counts.reset();
             definitions.reset();
             varSymbols.clear();
@@ -31,102 +29,95 @@ export const symbolTable = (
     const isDefinedSymbol = (symbolName: string) =>
         constSymbols.has(symbolName) || varSymbols.has(symbolName);
 
-    const inUseFailure = (symbolName: string, definition: string) =>
-        bagOfFailures([definitionFailure(
-            "symbol_alreadyExists", symbolName, definition
-        )]);
+    const alreadyInUse = (
+        symbolName: string, checkExistingValue?: SymbolValue
+    ): boolean => {
+        if (cpuRegisters.has(symbolName)) {
+            addFailure(currentLine().failures, definitionFailure(
+                "symbol_alreadyExists", symbolName, "REGISTER"
+            ));
+            return true;
+        }
+        if (!isDefinedSymbol(symbolName)) {
+            return false;
+        }
+        const withDifferentValue = checkExistingValue == undefined
+            || symbolValue(symbolName) !== checkExistingValue
+        if (withDifferentValue) {
+            addFailure(currentLine().failures, definitionFailure(
+                "symbol_alreadyExists", symbolName,
+                definitions.text(symbolName, 'BUILT_IN')
+            ));
+            return true;
+        }
+        return false;
+    };
 
-    const alreadyInUse = (symbolName: string) =>
-        cpuRegisters.has(symbolName)
-        ? inUseFailure(symbolName, "REGISTER")
-        : isDefinedSymbol(symbolName)
-        ? inUseFailure(symbolName, definitions.text(symbolName, 'BUILT_IN'))
-        : emptyBag();
-
-    const symbolValue = (symbolName: string) =>
+    const symbolValue = (symbolName: string): SymbolValue =>
         constSymbols.has(symbolName) ? constSymbols.get(symbolName)!
         : varSymbols.has(symbolName) ? varSymbols.get(symbolName)!
-        : emptyBag();
+        : ("" as SymbolValue);
 
     const deviceNameForError = () => {
         const device = varSymbols.get("deviceName");
-        return device == undefined || device.type != "string"
-            ? undefined : device.it;
+        return typeof device != "string" ? "" : (device as string);
     };
 
     const deviceSymbolValue = (
-        symbolName: string, expectedType: "string" | "number"
-    ) => {
+        symbolName: string, expectedType: DiscreteType
+    ): SymbolValue | undefined => {
         if (!varSymbols.has("deviceName")) {
-            return bagOfFailures([boringFailure("device_notSelected")]);
+            addFailure(currentLine().failures, boringFailure(
+                "device_notSelected"
+            ));
+            return undefined;
         }
         const value = symbolValue(symbolName);
-        if (value.type != expectedType) {
+        if ((typeof value) != expectedType) {
             throw new Error([
                 "Device configuration error",
-                deviceNameForError(), symbolName, expectedType, value.type
+                deviceNameForError(), symbolName, expectedType, `${value}`
             ].join(" - "));
         }
         return value;
     };
 
-    const existingValueIs = (symbolName: string, value: SymbolBag) => {
-        const existing = symbolValue(symbolName);
-        return existing.type == value.type && existing.it == value.it;
-    };
-
-    const userSymbol = (
-        symbolName: string, value: SymbolBag
-    ): DirectiveResult => {
-        const inUse = alreadyInUse(symbolName);
-        if (inUse.type == "failures") {
-            return inUse;
+    const userSymbol = (symbolName: string, value: SymbolValue): void => {
+        if (!alreadyInUse(symbolName)) {
+            varSymbols.set(symbolName, value);
+            counts.set(symbolName);
+            definitions.set(symbolName);
         }
-        varSymbols.set(symbolName, value);
-        counts.set(symbolName);
-        definitions.set(symbolName);
-        return emptyBag();
     };
 
-    const deviceSymbol = (
-        symbolName: string, value: SymbolBag
-    ): DirectiveResult => {
-        const inUse = alreadyInUse(symbolName);
-        if (inUse.type == "failures") {
-            return inUse;
+    const deviceSymbol = (symbolName: string, value: SymbolValue): boolean => {
+        const result = !alreadyInUse(symbolName);
+        if (result) {
+            varSymbols.set(symbolName, value);
+            definitions.set(symbolName);
         }
-        varSymbols.set(symbolName, value);
-        definitions.set(symbolName);
-        return emptyBag();
+        return result;
     };
 
-    const persistentSymbol = (
-        symbolName: string, value: SymbolBag
-    ): DirectiveResult => {
-        const inUse = alreadyInUse(symbolName);
-        if (inUse.type == "failures" && !existingValueIs(symbolName, value)) {
-            return inUse;
+    const persistentSymbol = (symbolName: string, value: SymbolValue): void => {
+        if (!alreadyInUse(symbolName, value)) {
+            constSymbols.set(symbolName, value);
+            counts.set(symbolName);
+            definitions.set(symbolName);
         }
-        constSymbols.set(symbolName, value);
-        counts.set(symbolName);
-        definitions.set(symbolName);
-        return emptyBag();
     };
 
-    const builtInSymbol = (
-        symbolName: string, value: SymbolBag
-    ): DirectiveResult => {
+    const builtInSymbol = (symbolName: string, value: SymbolValue): void => {
         if (isDefinedSymbol(symbolName)) {
             throw new Error(`Redefined built in symbol: ${symbolName}`);
         }
         constSymbols.set(symbolName, value);
-        return emptyBag();
     };
 
-    const use = (symbolName: string): SymbolBag => {
+    const use = (symbolName: string): SymbolValue => {
         if (cpuRegisters.has(symbolName)) {
             counts.increment(symbolName, "revealIfHidden");
-            return numberBag(cpuRegisters.value(symbolName)!);
+            return cpuRegisters.value(symbolName);
         }
         if (varSymbols.has(symbolName)) {
             counts.increment(symbolName, "revealIfHidden");
@@ -136,21 +127,24 @@ export const symbolTable = (
             counts.increment(symbolName, "keepHidden");
             return constSymbols.get(symbolName)!;
         }
-        return emptyBag();
+        return "";
     };
 
-    const listValue = (symbolName: string) => {
+    const listValue = (symbolName: string): DiscreteType => {
         const value = symbolValue(symbolName);
-        return ["number", "string"].includes(value.type) ? value.it : "";
+        return isDiscrete(value) ? value : "";
     };
 
     const list = () => counts.list().map(
         ([symbolName, count]) => [
-            symbolName, listValue(symbolName), definitions.text(
+            symbolName,
+            listValue(symbolName),
+            definitions.text(
                 symbolName,
                 cpuRegisters.has(symbolName) ? "REGISTER" : "BUILT_IN"
-            ), count
-        ] as [string, number | string, string, number]
+            ),
+            count
+        ] as [string, DiscreteType, string, number]
     );
 
     return {

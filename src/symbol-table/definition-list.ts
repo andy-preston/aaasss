@@ -1,8 +1,6 @@
 import type { CurrentLine } from "../line/current-line.ts";
 
-export const definitionList = (
-    currentLine: CurrentLine
-) => {
+export const definitionList = (currentLine: CurrentLine) => {
     const list: Map<string, string> = new Map();
 
     const reset = () => {
@@ -10,9 +8,10 @@ export const definitionList = (
     }
 
     const set = (symbolName: string) => {
-        const line = currentLine.directiveBackdoor();
-        if (line) {
-            list.set(symbolName, `${line.fileName}:${line.lineNumber}`);
+        if (currentLine()) {
+            const definition =
+                `${currentLine().fileName}:${currentLine().lineNumber}`;
+            list.set(symbolName, definition);
         }
     };
 
