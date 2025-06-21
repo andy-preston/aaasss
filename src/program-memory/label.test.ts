@@ -1,65 +1,57 @@
+import type { DefinitionFailure } from "../failure/bags.ts";
+
 import { expect } from "jsr:@std/expect";
-import { numberBag, stringBag } from "../assembler/bags.ts";
-import { dummyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("A label is stored in the symbol table with the current address", () => {
     const systemUnderTest = testSystem();
-    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    systemUnderTest.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
-    {
-        const result = systemUnderTest.programMemory.origin(10);
-        expect(result.type).not.toBe("failures");
-    } {
-        const line = dummyLine(false, 1);
-        line.label = "A_LABEL";
-        systemUnderTest.programMemory.lineLabel(line);
-        expect(line.failed(), "Unexpected failure").toBe(false);
-        expect(line.failures.length).toBe(0);
-        expect(systemUnderTest.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
-    }
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", "test");
+    systemUnderTest.symbolTable.deviceSymbol("programMemoryBytes", 0xff);
+    systemUnderTest.programMemory.origin(10);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+
+    systemUnderTest.currentLine().label = "A_LABEL";
+    systemUnderTest.programMemory.lineLabel();
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.symbolTable.use("A_LABEL")).toEqual(10);
 });
 
 Deno.test("Labels can only be redefined if their value doesn't change", () => {
     const systemUnderTest = testSystem();
-    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    systemUnderTest.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", "test");
+    systemUnderTest.symbolTable.deviceSymbol("programMemoryBytes", 0xff);
     [1, 2].forEach((_try) => {
-        const sameAddress = systemUnderTest.programMemory.origin(10);
-        expect(sameAddress.type).not.toBe("failures");
+        systemUnderTest.programMemory.origin(10);
+        expect(systemUnderTest.currentLine().failures.length).toBe(0);
 
-        const line = dummyLine(false, 1);
-        line.label = "A_LABEL";
-        systemUnderTest.programMemory.lineLabel(line);
-        expect(line.failed()).toBe(false);
-        expect(systemUnderTest.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
+        systemUnderTest.currentLine().fileName = "plop.asm";
+        systemUnderTest.currentLine().lineNumber = 23;
+        systemUnderTest.currentLine().label = "A_LABEL";
+        systemUnderTest.programMemory.lineLabel();
+        expect(systemUnderTest.currentLine().failures.length).toBe(0);
+        expect(systemUnderTest.symbolTable.use("A_LABEL")).toEqual(10);
     });
-    const differentAddress = systemUnderTest.programMemory.origin(20);
-    expect(differentAddress.type).not.toBe("failures");
-
-    const line = dummyLine(false, 1);
-    line.label = "A_LABEL";
-    systemUnderTest.programMemory.lineLabel(line);
-    expect(line.failed()).toBe(true);
-    expect(systemUnderTest.symbolTable.use("A_LABEL")).toEqual(numberBag(10));
+    systemUnderTest.programMemory.origin(20);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    systemUnderTest.programMemory.lineLabel();
+    expect(systemUnderTest.currentLine().failures.length).toBe(1);
+    const failure =
+        systemUnderTest.currentLine().failures[0] as DefinitionFailure;
+    expect(failure.kind).toBe("symbol_alreadyExists");
+    expect(failure.name).toBe("A_LABEL");
+    expect(failure.definition).toBe("plop.asm:23");
+    expect(systemUnderTest.symbolTable.use("A_LABEL")).toEqual(10);
 });
 
 Deno.test("Labels are available to javascript", () => {
     const systemUnderTest = testSystem();
-    systemUnderTest.symbolTable.deviceSymbol("deviceName", stringBag("test"));
-    systemUnderTest.symbolTable.deviceSymbol("programMemoryBytes", numberBag(0xff));
-
-    const line = dummyLine(false, 1);
-    line.label = "A_LABEL";
-    systemUnderTest.currentLine.forDirectives(line);
-
-    const address = systemUnderTest.programMemory.origin(10);
-    expect(address.type).not.toBe("failures");
-    expect(line.address).toBe(10);
-
-    systemUnderTest.programMemory.lineLabel(line);
-    expect(line.failed()).toBe(false);
-
-    const value = systemUnderTest.symbolTable.symbolValue("A_LABEL");
-    expect(value).toEqual(numberBag(10));
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", "test");
+    systemUnderTest.symbolTable.deviceSymbol("programMemoryBytes", 0xff);
+    systemUnderTest.currentLine().label = "A_LABEL";
+    systemUnderTest.programMemory.origin(10);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().address).toBe(10);
+    systemUnderTest.programMemory.lineLabel();
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.symbolTable.symbolValue("A_LABEL")).toEqual(10);
 });

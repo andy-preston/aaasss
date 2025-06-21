@@ -14,6 +14,7 @@ export const programMemoryCoupling = (programMemory: ProgramMemory) => {
     return {
         "originDirective": originDirective,
         "labelDirective": labelDirective,
+        "reset": programMemory.reset,
         "lineAddress": programMemory.lineAddress,
         "lineLabel": programMemory.lineLabel
     };
