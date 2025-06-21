@@ -1,71 +1,54 @@
-import type { Failure } from "../failure/bags.ts";
+import type { BoringFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { dummyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("the last line has a failure is a definition wasn't closed", () => {
-    const systemUnderTest = testSystem();
-    const define = systemUnderTest.macros.define("plop", []);
-    expect(define.type).not.toBe("failures");
-
-    const line = dummyLine(true, 1);
-    systemUnderTest.macros.processedLine(line);
-    expect(line.failed()).toBe(true);
-    expect(line.failures.length).toBe(1);
-    const failure = line.failures[0]!;
+    const systemUnderTest = testSystem(() => [], "plop.asm");
+    systemUnderTest.macros.define("plop", []);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    systemUnderTest.macros.reset(1);
+    expect(systemUnderTest.currentLine().failures.length).toBe(1);
+    const failure = systemUnderTest.currentLine().failures[0] as BoringFailure;
     expect(failure.kind).toBe("macro_noEnd");
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
-    const systemUnderTest = testSystem();
-    {
-        const define = systemUnderTest.macros.define("aMacro", []);
-        expect(define.type).not.toBe("failures");
-    } {
-        const define = systemUnderTest.macros.define("anotherOne", []);
-        expect(define.type).toBe("failures");
-        const failures = define.it as Array<Failure>;
-        expect(failures.length).toBe(1);
-        const failure = failures[0]!;
-        expect(failure.kind).toBe("macro_multiDefine");
-    }
+    const systemUnderTest = testSystem(() => [], "plop.asm");
+    systemUnderTest.macros.define("aMacro", []);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    systemUnderTest.macros.define("anotherOne", []);
+    expect(systemUnderTest.currentLine().failures.length).toBe(1);
+    const failure = systemUnderTest.currentLine().failures[0] as BoringFailure;
+    expect(failure.kind).toBe("macro_multiDefine");
 });
 
 Deno.test("Multiple macros can be defined", () => {
-    const systemUnderTest = testSystem();
+    const systemUnderTest = testSystem(() => [], "plop.asm");
     for (const macroName of ["aMacro", "anotherOne", "yetAnotherOne"]) {
-        const define = systemUnderTest.macros.define(macroName, []);
-        expect(define.type).not.toBe("failures");
-        const end = systemUnderTest.macros.end();
-        expect(end.type).not.toBe("failures");
+        systemUnderTest.macros.define(macroName, []);
+        expect(systemUnderTest.currentLine().failures.length).toBe(0);
+        systemUnderTest.macros.end();
+        expect(systemUnderTest.currentLine().failures.length).toBe(0);
     };
 });
 
 Deno.test("You can't end a macro definition if one isn't being defined", () => {
-    const systemUnderTest = testSystem();
-    const end = systemUnderTest.macros.end();
-    expect(end.type).toBe("failures");
-    const failures = end.it as Array<Failure>;
-    expect(failures.length).toBe(1);
-    const failure = failures[0]!;
+    const systemUnderTest = testSystem(() => [], "plop.asm");
+    systemUnderTest.macros.end();
+    expect(systemUnderTest.currentLine().failures.length).toBe(1);
+    const failure = systemUnderTest.currentLine().failures[0] as BoringFailure;
     expect(failure.kind).toBe("macro_end");
 });
 
-Deno.test("Whilst a macro is being defined, the isRecording flag is set", () => {
-    const systemUnderTest = testSystem();
-    const define = systemUnderTest.macros.define("testMacro", []);
-    expect(define.type).not.toBe("failures");
-    {
-        const line = dummyLine(false, 1);
-        systemUnderTest.macros.taggedLine(line);
-        expect(line.isDefiningMacro).toBe(true);
-    }
-    const end = systemUnderTest.macros.end();
-    expect(end.type).not.toBe("failures");
-    {
-        const line = dummyLine(false, 1);
-        systemUnderTest.macros.taggedLine(line);
-        expect(line.isDefiningMacro).toBe(false);
-    }
+Deno.test("Whilst a macro is being defined, isDefiningMacro is set", () => {
+    const systemUnderTest = testSystem(() => [], "plop.asm");
+    systemUnderTest.macros.define("testMacro", []);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    systemUnderTest.macros.taggedLine();
+    expect(systemUnderTest.currentLine().isDefiningMacro).toBe(true);
+    systemUnderTest.macros.end();
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    systemUnderTest.macros.taggedLine();
+    expect(systemUnderTest.currentLine().isDefiningMacro).toBe(false);
 });

@@ -1,7 +1,7 @@
 import type { Line } from "../line/line-types.ts";
 import type { MacroName } from "./data-types.ts";
 
-import { line as newLine } from "../line/line-types.ts";
+import { emptyLine } from "../line/line-types.ts";
 
 export const removedDirective = (
     macroName: MacroName, line: Line
@@ -22,8 +22,10 @@ export const removedDirective = (
         return undefined;
     }
 
-    return newLine(
-        line.fileName, line.lineNumber,
-        replaced, line.macroName, line.macroCount, false, false
-    );
+    const newLine = emptyLine(line.fileName);
+    newLine.lineNumber = line.lineNumber;
+    newLine.rawSource = replaced;
+    newLine.macroName = line.macroName;
+    newLine.macroCount = line.macroCount;
+    return newLine;
 };

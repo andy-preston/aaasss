@@ -1,12 +1,11 @@
-import type { StringOrFailures } from "../failure/bags.ts";
+import type { Failure } from "../failure/bags.ts";
 import type { Line } from "../line/line-types.ts";
-import type { SymbolicOperand } from "../operands/data-types.ts";
+import type { Operand } from "../operands/data-types.ts";
 import type { FileLineIterator } from "../source-code/data-types.ts";
 import type { Label } from "../tokens/data-types.ts";
 import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
 
-import { emptyBag } from "../assembler/bags.ts";
-import { assertionFailure, bagOfFailures } from "../failure/bags.ts";
+import { assertionFailure } from "../failure/bags.ts";
 
 export const remapping = (macroList: MacroList) => {
     const mapping: Map<string, MacroParameters> = new Map();
@@ -21,15 +20,15 @@ export const remapping = (macroList: MacroList) => {
     const prepared = (
         macroName: MacroName, macroCount: number,
         macro: Macro, actualParameters: MacroParameters
-    ): StringOrFailures => {
+    ): Failure | undefined => {
         if (macro.parameters.length != actualParameters.length) {
-            return bagOfFailures([assertionFailure(
+            return assertionFailure(
                 "macro_params",
                 `${macro.parameters.length}`, `${actualParameters.length}`
-            )]);
+            );
         }
         mapping.set(mapKey(macroName, macroCount), actualParameters);
-        return emptyBag();
+        return;
     };
 
     const expandedLabel = (line: Line, label: Label) =>
@@ -42,18 +41,18 @@ export const remapping = (macroList: MacroList) => {
         const macro = macroList.get(line.macroName)!;
         const actual = mapping.get(mapKey(line.macroName, line.macroCount))!;
 
-        const isLabel = (parameter: SymbolicOperand) =>
-            macro.lines.find(line => line.label == parameter) != undefined;
+        const isLabel = (operand: Operand) =>
+            macro.lines.find(line => line.label == operand) != undefined;
 
-        return line.symbolicOperands.map(symbolicOperand => {
-            if (isLabel(symbolicOperand)) {
-                return expandedLabel(line, symbolicOperand);
+        return line.operands.map(operand => {
+            if (isLabel(operand)) {
+                return expandedLabel(line, operand);
             }
-            const parameterIndex = macro.parameters.indexOf(symbolicOperand);
+            const parameterIndex = macro.parameters.indexOf(operand);
             if (parameterIndex >= 0) {
                 return `${actual[parameterIndex]}`;
             }
-            return symbolicOperand;
+            return operand;
         });
     };
 
@@ -61,7 +60,7 @@ export const remapping = (macroList: MacroList) => {
         line.isDefiningMacro = false;
         if (line.macroName !== "") {
             line.label = remappedLabel(line);
-            line.symbolicOperands = remappedOperands(line);
+            line.operands = remappedOperands(line);
         }
     };
 

@@ -1,18 +1,20 @@
-import type { PipelineStage } from "../assembler/data-types.ts";
+import type { PipelineProcess, PipelineReset } from "../assembler/data-types.ts";
 import type { FunctionUseDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { Line } from "../line/line-types.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
 
-import { emptyBag } from "../assembler/bags.ts";
-import { assertionFailure, bagOfFailures, boringFailure, clueFailure } from "../failure/bags.ts";
+import { addFailure } from "../failure/add-failure.ts";
+import { boringFailure, clueFailure } from "../failure/bags.ts";
 import { macro } from "./data-types.ts";
 import { remapping } from "./remapping.ts";
 import { removedDirective } from "./removed-directive.ts";
 
-export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
+export const macros = (
+    currentLine: CurrentLine, symbolTable: SymbolTable, fileStack: FileStack
+) => {
     const macroList: MacroList = new Map();
 
     let definingMacro: Macro | undefined = undefined;
@@ -27,25 +29,23 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         newName: MacroName, parameters: MacroParameters
     ): DirectiveResult => {
         if (isDefining()) {
-            return bagOfFailures([
-                clueFailure("macro_multiDefine", definingName)
-            ]);
+            addFailure(currentLine().failures, clueFailure(
+                "macro_multiDefine", definingName
+            ));
+            return;
         }
-
-        const inUse = symbolTable.alreadyInUse(newName);
-        if (inUse.type == "failures") {
-            return inUse;
+        if (symbolTable.alreadyInUse(newName)) {
+            return;
         }
-
         definingName = newName;
         definingMacro = macro(parameters);
         firstLine = true;
-        return emptyBag();
     };
 
     const end = (): DirectiveResult => {
         if (!isDefining()) {
-            return bagOfFailures([boringFailure("macro_end")]);
+            addFailure(currentLine().failures, boringFailure("macro_end"));
+            return;
         }
 
         macroList.set(definingName, definingMacro!);
@@ -55,70 +55,64 @@ export const macros = (symbolTable: SymbolTable, fileStack: FileStack) => {
         symbolTable.userSymbol(definingName, useMacroDirective);
         definingMacro = undefined;
         definingName = "";
-        return emptyBag();
+        return;
     };
 
     const use = (
         macroName: string, parameters: MacroParameters
     ): DirectiveResult => {
         const macro = macroList.get(macroName)!;
-        if (parameters.length != macro.parameters.length) {
-            return bagOfFailures([assertionFailure(
-                "macro_params",
-                `${macro.parameters.length}`, `${parameters.length}`
-            )]);
-        }
-
         const macroCount = symbolTable.count(macroName);
-        const prepared = remap.prepared(
+        const prepareFailure = remap.prepared(
             macroName, macroCount, macro, parameters
         );
-        if (prepared.type == "failures") {
-            return prepared;
+        if (prepareFailure) {
+            addFailure(currentLine().failures, prepareFailure);
+            return;
         }
 
         if (!isDefining()) {
             fileStack.pushImaginary(remap.imaginaryFile(macroName, macroCount));
         }
-        return emptyBag();
     };
 
     const useMacroDirective: FunctionUseDirective = {
         "type": "functionUseDirective", "it": use
     };
 
-    const taggedLine = (line: Line) => {
-        line.isDefiningMacro = isDefining();
+    const taggedLine: PipelineProcess = () => {
+        currentLine().isDefiningMacro = isDefining();
     };
 
-    const recordedLine = (line: Line) => {
+    const recordedLine = () => {
         const lineToPush = firstLine
-            ? removedDirective(definingName, line) : line;
+            ? removedDirective(definingName, currentLine()) : currentLine();
         if (lineToPush != undefined) {
             definingMacro!.lines.push(lineToPush);
         }
         firstLine = false;
     };
 
-    const processedLine: PipelineStage = (line: Line) => {
+    const processedLine: PipelineProcess = () => {
         if (isDefining()) {
-            recordedLine(line);
-            if (line.lastLine) {
-                line.failures.push(boringFailure("macro_noEnd"));
-            }
+            recordedLine();
         } else {
-            remap.remapped(line);
+            remap.remapped(currentLine());
         }
-        if (line.lastLine) {
-            definingMacro = undefined;
-            definingName = "";
-            macroList.clear();
+    };
+
+    const reset: PipelineReset = () => {
+        if (isDefining()) {
+            addFailure(currentLine().failures, boringFailure("macro_noEnd"));
         }
+        definingMacro = undefined;
+        definingName = "";
+        macroList.clear();
     };
 
     return {
         "define": define, "end": end, "use": use,
-        "taggedLine": taggedLine, "processedLine": processedLine
+        "taggedLine": taggedLine, "processedLine": processedLine, "reset": reset
     };
 };
 

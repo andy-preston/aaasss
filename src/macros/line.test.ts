@@ -1,5 +1,7 @@
+import type { BaggedDirective } from "../directives/bags.ts";
+
 import { expect } from "jsr:@std/expect";
-import { dummyLine } from "../line/line-types.ts";
+import { emptyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
 const testLines: Array<[string, string, string]> = [
@@ -9,73 +11,78 @@ const testLines: Array<[string, string, string]> = [
 ] as const;
 
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
-    const systemUnderTest = testSystem();
+    const systemUnderTest = testSystem(() => [], "plop.asm");
     testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false, 1);
-        line.rawSource = source;
-        line.assemblySource = source;
-        line.label = label;
-        line.mnemonic = mnemonic;
-        systemUnderTest.macros.processedLine(line);
-        expect(line.isDefiningMacro).toBe(false);
-        expect(line.macroName).toBe("");
-        expect(line.macroCount).toBe(0);
-        expect(line.label).toBe(label);
+        systemUnderTest.currentLine(emptyLine("plop.asm"));
+        systemUnderTest.currentLine().rawSource = source;
+        systemUnderTest.currentLine().assemblySource = source;
+        systemUnderTest.currentLine().label = label;
+        systemUnderTest.currentLine().mnemonic = mnemonic;
+        systemUnderTest.macros.processedLine();
+        expect(systemUnderTest.currentLine().isDefiningMacro).toBe(false);
+        expect(systemUnderTest.currentLine().macroName).toBe("");
+        expect(systemUnderTest.currentLine().macroCount).toBe(0);
+        expect(systemUnderTest.currentLine().label).toBe(label);
     });
 });
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
-    const systemUnderTest = testSystem();
+    const systemUnderTest = testSystem(() => [], "plop.asm");
 
-    const define = systemUnderTest.macros.define("testMacro", []);
-    expect(define.type).not.toBe("failures");
+    systemUnderTest.macros.define("testMacro", []);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
     testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false, 1);
-        line.rawSource = source;
-        line.assemblySource = source;
-        line.label = label;
-        line.mnemonic = mnemonic;
-        systemUnderTest.macros.processedLine(line);
+        systemUnderTest.currentLine(emptyLine("plop.asm"));
+        systemUnderTest.currentLine().rawSource = source;
+        systemUnderTest.currentLine().assemblySource = source;
+        systemUnderTest.currentLine().label = label;
+        systemUnderTest.currentLine().mnemonic = mnemonic;
+        systemUnderTest.macros.processedLine();
     });
-    const end = systemUnderTest.macros.end();
-    expect(end.type).not.toBe("failures");
+    systemUnderTest.macros.end();
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
 
-    const use = systemUnderTest.macros.use("testMacro", []);
-    expect(use.type).not.toBe("failures");
-    const playback = [...systemUnderTest.mockFileStack.lines(1)];
-    expect(playback.length).toBe(testLines.length);
-    playback.forEach((line, index) => {
-        systemUnderTest.macros.processedLine(line);
-        expect(line.rawSource).toBe(testLines[index]![0]);
-    });
+    systemUnderTest.macros.use("testMacro", []);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    let index = 0;
+    systemUnderTest.fileStack.lines(() => {
+        expect(
+            systemUnderTest.currentLine().rawSource
+        ).toBe(
+            testLines[index]![0]
+        );
+        index = index + 1;
+    }, () => {});
+    expect(index).toBe(3);
 });
 
 Deno.test("Lines that are being replayed have a macro name and count", () => {
-    const systemUnderTest = testSystem();
+    const systemUnderTest = testSystem(() => [], "plop.asm");
 
-    const define = systemUnderTest.macros.define("testMacro", []);
-    expect(define.type).not.toBe("failures");
+    systemUnderTest.macros.define("testMacro", []);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
     testLines.forEach(([source, label, mnemonic]) => {
-        const line = dummyLine(false, 1);
-        line.rawSource = source;
-        line.assemblySource = source;
-        line.label = label;
-        line.mnemonic = mnemonic;
-        systemUnderTest.macros.processedLine(line);
+        systemUnderTest.currentLine(emptyLine("plop.asm"));
+        systemUnderTest.currentLine().rawSource = source;
+        systemUnderTest.currentLine().assemblySource = source;
+        systemUnderTest.currentLine().label = label;
+        systemUnderTest.currentLine().mnemonic = mnemonic;
+        systemUnderTest.macros.processedLine();
     });
-    const end = systemUnderTest.macros.end();
-    expect(end.type).not.toBe("failures");
-
+    systemUnderTest.macros.end();
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
     const forceSymbolIncrement = systemUnderTest.symbolTable.use("testMacro");
-    expect(forceSymbolIncrement.type).toBe("functionUseDirective");
+    expect((forceSymbolIncrement as BaggedDirective).type).toBe(
+        "functionUseDirective"
+    );
 
-    const use = systemUnderTest.macros.use("testMacro", []);
-    expect(use.type).not.toBe("failures");
-    const playback = [...systemUnderTest.mockFileStack.lines(1)];
-    expect(playback.length).toBe(testLines.length);
-    playback.forEach(line => {
-        systemUnderTest.macros.processedLine(line);
-        expect(line.macroName).toBe("testMacro");
-        expect(line.macroCount).toBe(1);
-    });
+    systemUnderTest.macros.use("testMacro", []);
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    let index = 0;
+    systemUnderTest.fileStack.lines(() => {
+        expect(systemUnderTest.currentLine().macroName).toBe("testMacro");
+        expect(systemUnderTest.currentLine().macroCount).toBe(1);
+        index = index + 1;
+    }, () => {});
+    expect(index).toBe(3);
 });

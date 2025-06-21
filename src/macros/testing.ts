@@ -1,48 +1,24 @@
-import type { PipelineSource } from "../assembler/data-types.ts";
-import type { DirectiveResult } from "../directives/data-types.ts";
-import type { FileLineIterator, FileName } from "../source-code/data-types.ts";
+import type { FileName } from "../source-code/data-types.ts";
+import type { ReaderMethod } from "../source-code/file-stack.ts";
 
-import { emptyBag } from "../assembler/bags.ts";
 import { currentLine } from "../line/current-line.ts";
-import { dummyLine, line } from "../line/line-types.ts";
+import { emptyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
+import { fileStack } from "../source-code/file-stack.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { macros } from "./macros.ts";
 
-const mockFileStack = () => {
-    let lineIterator: FileLineIterator | undefined;
-    const include = (_: FileName): DirectiveResult => emptyBag();
-    const pushImaginary = (iterator: FileLineIterator) => {
-        lineIterator = iterator;
-    };
-    const lines: PipelineSource = function* () {
-        if (lineIterator == undefined) {
-            yield dummyLine(false, 1);
-            return;
-        }
-        for (const [source, macroName, macroCount] of lineIterator) {
-            yield line("", 0, source, macroName, macroCount, false, false);
-        }
-    };
-    return {
-        "include": include,
-        "pushImaginary": pushImaginary,
-        "lines": lines
-    };
-};
-
-export const testSystem = () => {
+export const testSystem = (mockReader: ReaderMethod, topFileName: FileName) => {
     const $currentLine = currentLine();
-    const $line = dummyLine(false, 1);
-    $currentLine.forDirectives($line);
+    $currentLine(emptyLine(topFileName));
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $mockFileStack = mockFileStack();
-    const $macros = macros($symbolTable, $mockFileStack);
+    const $fileStack = fileStack($currentLine, mockReader, topFileName);
+    const $macros = macros($currentLine, $symbolTable, $fileStack);
     return {
         "symbolTable": $symbolTable,
-        "mockFileStack": $mockFileStack,
+        "fileStack": $fileStack,
         "macros": $macros,
-        "line": $line
+        "currentLine": $currentLine
     };
 };
