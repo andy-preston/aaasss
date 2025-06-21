@@ -1,36 +1,43 @@
+import type { CurrentLine } from "../line/current-line.ts";
 import type { NumberDirective } from "./bags.ts";
 
-import { stringBag } from "../assembler/bags.ts";
 import { complement, highByte, lowByte } from "../assembler/byte-operations.ts";
-import { validNumeric } from "../numeric-values/valid.ts";
+import { addFailure } from "../failure/add-failure.ts";
+import { range } from "./valid-parameters.ts";
 
-const lowDirective: NumberDirective = {
-    "type": "numberDirective",
-    "it": (word: number) => {
-        const parameter = validNumeric(word, "type_word");
-        return parameter.type == "failures"
-            ? parameter
-            : stringBag(`${lowByte(parameter.it)}`);
-    }
-};
+export const functionDirectives = (currentLine: CurrentLine) => {
+    const lowDirective: NumberDirective = {
+        "type": "numberDirective",
+        "it": (word: number) => {
+            const invalid = range(word, "word", 1);
+            if (invalid != undefined) {
+                addFailure(currentLine().failures, invalid);
+                return "0";
+            }
+            return `${lowByte(word)}`;
+        }
+    };
 
-const highDirective: NumberDirective = {
-    "type": "numberDirective",
-    "it": (word: number) => {
-        const parameter = validNumeric(word, "type_word");
-        return parameter.type == "failures"
-            ? parameter
-            : stringBag(`${highByte(parameter.it)}`);
-    }
-};
+    const highDirective: NumberDirective = {
+        "type": "numberDirective",
+        "it": (word: number) => {
+            const invalid = range(word, "word", 1);
+            if (invalid != undefined) {
+                addFailure(currentLine().failures, invalid);
+                return "0";
+            }
+            return `${highByte(word)}`;
+        }
+    };
 
-const complementDirective: NumberDirective = {
-    "type": "numberDirective",
-    "it": (value: number) => stringBag(`${complement(value)}`)
-};
+    const complementDirective: NumberDirective = {
+        "type": "numberDirective",
+        "it": (value: number) => `${complement(value)}`
+    };
 
-export const functionDirectives = {
-    "lowDirective": lowDirective,
-    "highDirective": highDirective,
-    "complementDirective": complementDirective
+    return {
+        "lowDirective": lowDirective,
+        "highDirective": highDirective,
+        "complementDirective": complementDirective
+    };
 };

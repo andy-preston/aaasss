@@ -46,3 +46,8 @@ export type BaggedDirective = VoidDirective
     | FunctionDefineDirective | FunctionUseDirective;
 
 export type DirectiveType = BaggedDirective["type"];
+
+export const isDirective = (thingy: unknown) : thingy is BaggedDirective =>
+    typeof thingy == "object"
+        && Object.hasOwn(thingy as object, "type")
+        && (thingy as BaggedDirective).type.endsWith("Directive");

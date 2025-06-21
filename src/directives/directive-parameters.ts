@@ -1,35 +1,44 @@
 import type { CurrentLine } from "../line/current-line.ts";
 
+import { typeOf } from "../assembler/data-types.ts";
+import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure, boringFailure } from "../failure/bags.ts";
-import { validNumeric } from "../numeric-values/valid.ts";
 
 type ParameterType = "boolean" | "number" | "string";
+
 type ParameterTypes = Array<ParameterType>;
 
-const typeOf = (it: unknown) => Array.isArray(it) ? "array" : typeof it;
-
 export const directiveParameters = (currentLine: CurrentLine) => {
-    const failed = (expected: string, actual: string, index: number) => {
-        const failure = assertionFailure("value_type", expected, actual);
-        failure.location = {"parameter": index + 1};
-        currentLine.failure(failure);
-    };
 
     const numeric = (given: unknown, index: number) => {
-        const numeric = validNumeric(given, undefined);
-        if (numeric.type == "failures") {
-            numeric.it.forEach((failure) => {
-                failure.location = { "parameter": index };
-                currentLine.failure(failure);
-            });
+
+        if (!["number", "string"].includes(typeOf(given))) {
+            const failure = assertionFailure(
+                "type_failure", "number | string", typeOf(given)
+            );
+            failure.location = {"parameter": index + 1};
+            addFailure(currentLine().failures, failure);
             return 0;
         }
-        return numeric.it;
+
+        const numeric = typeof given == "number" ? given : parseInt(`${given}`);
+        if (`${numeric}` != `${given}`) {
+            const failure = assertionFailure(
+                "type_failure", "numeric", `"${given}"`
+            );
+            failure.location = {"parameter": index + 1};
+            addFailure(currentLine().failures, failure);
+            return 0;
+        }
+
+        return numeric;
     };
 
     const firstName = (actual: Array<unknown>) => {
         if (actual.length < 1 || typeOf(actual[0]) != "string") {
-            currentLine.failure(boringFailure("parameter_firstName"));
+            addFailure(currentLine().failures, boringFailure(
+                "parameter_firstName"
+            ));
         }
         return `${actual[0]}`;
     };
@@ -38,7 +47,7 @@ export const directiveParameters = (currentLine: CurrentLine) => {
         expected: ParameterTypes, actual: Array<unknown>, indexOffset: number
     ) => {
         if (expected.length != actual.length) {
-            currentLine.failure(assertionFailure(
+            addFailure(currentLine().failures, assertionFailure(
                 "parameter_count", `${expected.length}`, `${actual.length}`
             ));
         }
@@ -50,10 +59,15 @@ export const directiveParameters = (currentLine: CurrentLine) => {
             if (expected == "boolean") {
                 return parameter ? true : false;
             }
-            if (expected != typeOf(parameter)) {
-                failed(expected, typeOf(parameter), index + indexOffset);
+            if (expected == typeOf(parameter)) {
+                return parameter;
             }
-            return parameter;
+            const failure = assertionFailure(
+                "value_type", expected, `${typeOf(parameter)} (${parameter})`
+            );
+            failure.location = {"parameter": index + 1};
+            addFailure(currentLine().failures, failure);
+            return undefined;
         });
     };
 
@@ -61,7 +75,11 @@ export const directiveParameters = (currentLine: CurrentLine) => {
         expected: ParameterTypes, actual: Array<unknown>, indexOffset: number
     ) => actual.map((actual, index) => {
         if (!(expected as Array<string>).includes(typeOf(actual))) {
-            failed(expected.join(", "), typeOf(actual), index + indexOffset);
+            const failure = assertionFailure(
+                "value_type", expected.join(", "), `${typeOf(actual)} (${actual})`
+            );
+            failure.location = {"parameter": index + 1 + indexOffset};
+            addFailure(currentLine().failures, failure);
         }
         return expected.length == 1 && expected[0] == "number"
             ? numeric(actual, index) : actual;
