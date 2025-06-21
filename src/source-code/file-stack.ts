@@ -1,11 +1,11 @@
-import type { Pass, PipelineSource } from "../assembler/data-types.ts";
+import type { PipelineProcess, PipelineSource } from "../assembler/data-types.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { StringsOrFailures } from "../failure/bags.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 import type { FileLineIterator, FileName, LineNumber } from "./data-types.ts";
 
-import { emptyBag, stringsBag } from "../assembler/bags.ts";
-import { bagOfFailures, clueFailure } from "../failure/bags.ts";
-import { dummyLine, line } from "../line/line-types.ts";
+import { clueFailure } from "../failure/bags.ts";
+import { emptyLine } from "../line/line-types.ts";
+import { addFailure } from "../failure/add-failure.ts";
 
 type StackEntry = {
     "fileName": FileName;
@@ -17,23 +17,11 @@ export const defaultReaderMethod = (fileName: FileName) =>
 
 export type ReaderMethod = typeof defaultReaderMethod;
 
-export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
+export const fileStack = (
+    currentLine: CurrentLine, read: ReaderMethod, topFileName: FileName
+) => {
     const fileStack: Array<StackEntry> = [];
     let lineNumber: LineNumber = 0;
-
-    const fileContents = (fileName: FileName): StringsOrFailures => {
-        try {
-            return stringsBag(read(fileName));
-        }
-        catch (error) {
-            if (error instanceof Deno.errors.NotFound) {
-                return bagOfFailures([
-                    clueFailure("file_notFound", error.message)
-                ]);
-            }
-            throw error;
-        }
-    };
 
     const fileLineByLine = function*(lines: Array<string>): FileLineIterator {
         for (const [index, text] of lines.entries()) {
@@ -45,15 +33,28 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     };
 
     const include = (fileName: FileName): DirectiveResult => {
-        const contents = fileContents(fileName);
-        if (contents.type == "failures") {
-            return contents;
+        const fileContents = () => {
+            try {
+                return read(fileName);
+            }
+            catch (error) {
+                if (error instanceof Deno.errors.NotFound) {
+                    addFailure(currentLine().failures, clueFailure(
+                        "file_notFound", error.message
+                    ));
+                    return;
+                }
+                throw error;
+            }
+        };
+
+        const contents = fileContents();
+        if (contents) {
+            fileStack.push({
+                "fileName": fileName,
+                "iterator": fileLineByLine(contents)
+            });
         }
-        fileStack.push({
-            "fileName": fileName,
-            "iterator": fileLineByLine(contents.it)
-        });
-        return emptyBag();
     };
 
     // Another file could have been pushed by an include directive
@@ -61,48 +62,51 @@ export const fileStack = (read: ReaderMethod, topFileName: FileName) => {
     const currentFile = () => fileStack.at(-1);
 
     const pushImaginary = (iterator: FileLineIterator) => {
-        const current = currentFile()!;
         fileStack.push({
-            "fileName": current.fileName,
+            "fileName": currentFile() == undefined
+                ? topFileName : currentFile()!.fileName,
             "iterator": iterator
         });
     };
 
-    const nextLine = (file: StackEntry) => {
-        const next = file.iterator.next();
-        if (next.done) {
-            fileStack.pop();
-            return undefined;
-        } else {
-            const [rawSource, macroName, macroCount, eof] = next.value;
-            return line(
-                file.fileName, lineNumber,
-                rawSource, macroName, macroCount, eof, false
-            );
+    const nextLine = () => {
+        while (currentFile() != undefined) {
+            const next = currentFile()!.iterator.next();
+            if (next.done) {
+                fileStack.pop();
+            } else {
+                return next.value;
+            }
         }
+        return undefined;
     };
 
-    const lines: PipelineSource = function* (pass: Pass) {
-        const topFile = include(topFileName);
-        if (topFile.type == "failures") {
-            const line = dummyLine(false, pass).withFailures(topFile.it);
-            line.fileName = topFileName;
-            yield line
+    const lines: PipelineSource = (
+        eachLine: PipelineProcess, atEnd: PipelineProcess
+    ) => {
+        currentLine(emptyLine(topFileName));
+        include(topFileName);
+        if (currentLine().failures.length > 0) {
+            eachLine();
+            atEnd();
             return;
         }
+
         while (true) {
-            const file = currentFile();
-            if (file == undefined) {
-                const line = dummyLine(true, pass);
-                line.fileName = topFileName;
-                yield line;
+            const next = nextLine();
+            if (next == undefined) {
+                currentLine(emptyLine(topFileName));
+                atEnd();
                 return;
             }
-            const next = nextLine(file);
-            if (next != undefined) {
-                next.pass = pass;
-                yield next;
-            }
+            currentLine(emptyLine(currentFile()!.fileName));
+            [
+                currentLine().rawSource,
+                currentLine().macroName, currentLine().macroCount,
+                currentLine().eof
+            ] = next;
+            currentLine().lineNumber = lineNumber;
+            eachLine();
         }
     };
 
