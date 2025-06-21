@@ -1,49 +1,26 @@
 import type { Pass } from "../assembler/data-types.ts";
 import type { Failure } from "../failure/bags.ts";
 import type { Code } from "../object-code/data-types.ts";
-import type { SymbolicOperands } from "../operands/data-types.ts";
+import type { Operands } from "../operands/data-types.ts";
 import type { FileName, LineNumber, SourceCode } from "../source-code/data-types.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
 
-export const line = (
-    fileName: FileName, lineNumber: LineNumber, source: SourceCode,
-    macroName: string, macroCount: number, eof: boolean, lastLine: boolean
-) => {
-    const failures: Array<Failure> = [];
+export const emptyLine = (fileName: FileName) => ({
+    "failures": [] as Array<Failure>,
+    "pass": 0 as Pass,
+    "fileName": fileName,
+    "lineNumber": 0 as LineNumber,
+    "eof": false,
+    "rawSource": "" as SourceCode,
+    "assemblySource": "" as SourceCode,
+    "label": "" as Label,
+    "mnemonic": "" as Mnemonic,
+    "isDefiningMacro": false,
+    "macroName": "",
+    "macroCount": 0,
+    "operands": [] as Operands,
+    "address": 0,
+    "code": [] as Array<Code>
+});
 
-    const withFailures = (moreFailures: Array<Failure>) => {
-        moreFailures.forEach(failure => failures.push(failure));
-        return theLine;
-    };
-    const failed = () => failures.length > 0;
-
-    const theLine = {
-        "failures": failures,
-        "failed": failed,
-        "withFailures": withFailures,
-        "pass": 0 as Pass,
-        "fileName": fileName as FileName,
-        "lineNumber": lineNumber as LineNumber,
-        "eof": eof,
-        "lastLine": lastLine,
-        "rawSource": source as SourceCode,
-        "assemblySource": "" as SourceCode,
-        "label": "" as Label,
-        "mnemonic": "" as Mnemonic,
-        "isDefiningMacro": false,
-        "macroName": macroName,
-        "macroCount": macroCount,
-        "symbolicOperands": [] as SymbolicOperands,
-        "address": 0,
-        "code": [] as Array<Code>
-    };
-    return theLine;
-};
-
-export type Line = ReturnType<typeof line>;
-
-export const dummyLine = (last: boolean, pass: Pass) => {
-    const $line = line("", 0, "", "", 0, last, last);
-    $line.pass = pass;
-    return $line;
-};
+export type Line = ReturnType<typeof emptyLine>;
