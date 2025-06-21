@@ -1,5 +1,5 @@
-export type SymbolicOperand = string;
-export type SymbolicOperands = Array<SymbolicOperand>;
+export type Operand = string;
+export type Operands = Array<Operand>;
 
 export type OperandType =
     "register" | "anyRegisterPair" | "registerPair" |
