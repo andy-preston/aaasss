@@ -3,7 +3,7 @@
                       1     {{ device("AT Mega 168A"); }}
 000000 0C 94 00 00    2     JMP 9216
                         programMemory_outOfRange
-                        location.operand: 0
+                        location.operand: 1
                         expected: 8192
                         actual: 9216
                       3

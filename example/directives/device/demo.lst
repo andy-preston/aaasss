@@ -5,7 +5,6 @@
                         device_notSelected
                         mnemonic_supportedUnknown
                         clue: DES
-                        device_notSelected
                         programMemory_sizeUnknown
                       3
                       4 ; The device name needs to be a string

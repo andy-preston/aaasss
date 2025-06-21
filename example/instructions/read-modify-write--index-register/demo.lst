@@ -3,17 +3,17 @@
                       1     {{ device("DemoDevice"); }}
 000000 46 93          2     LAC R30, R20
                         value_type
-                        location.operand: 0
+                        location.operand: 1
                         expected: Z
                         actual: R30
 000001 55 93          3     LAS X, R21
                         value_type
-                        location.operand: 0
+                        location.operand: 1
                         expected: Z
                         actual: X
 000002 67 93          4     LAT Y, R22
                         value_type
-                        location.operand: 0
+                        location.operand: 1
                         expected: Z
                         actual: Y
 000003 F4 92          5     XCH z, R15

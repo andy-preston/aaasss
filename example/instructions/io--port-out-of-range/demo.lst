@@ -2,20 +2,18 @@
 =================
                       1     {{ device("ATTiny24"); }}
 000000 30 B1          2     IN R19, 0x60
-                        type_ioPort
-                        location.operand: 1
-                        value: 96
-                        min: 32
-                        max: 95
+                        value_type
+                        location.operand: 2
+                        expected: ioPort
+                        actual: 96 > 95
                         notSupported_ioRange
                         used: IN
                         suggestion: LDS
 000001 05 98          3     CBI 0x60, 5
-                        type_ioPort
-                        location.operand: 0
-                        value: 96
-                        min: 32
-                        max: 95
+                        value_type
+                        location.operand: 1
+                        expected: ioPort
+                        actual: 96 > 95
                         notSupported_ioRange
                         used: CBI
                         suggestion: CBR & STS
