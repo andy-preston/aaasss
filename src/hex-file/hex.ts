@@ -1,5 +1,6 @@
+import type { PipelineSink } from "../assembler/data-types.ts";
 import type { OutputFile } from "../assembler/output-file.ts";
-import type { Line } from "../line/line-types.ts";
+import type { CurrentLine } from "../line/current-line.ts";
 import type { FileName } from "../source-code/data-types.ts";
 
 import { highByte, lowByte } from "../assembler/byte-operations.ts";
@@ -10,7 +11,7 @@ const dataRecordType = "00";
 const hex = (value: number, digits: number) =>
     value.toString(16).toUpperCase().padStart(digits, "0");
 
-export const hexRecord = (address: number, bytes: Array<number>) => {
+const hexRecord = (address: number, bytes: Array<number>) => {
     const checksum = () => {
         // https://en.wikipedia.org/wiki/Intel_HEX
         const total = bytes.reduce(
@@ -33,21 +34,26 @@ export const hexRecord = (address: number, bytes: Array<number>) => {
 const programMemoryAddressInBytes = (programMemoryAddress: number): number =>
     programMemoryAddress * 2;
 
-export const hexFile = (outputFile: OutputFile, topFileName: FileName) => {
+export const hexFile = (
+    currentLine: CurrentLine,
+    outputFile: OutputFile, topFileName: FileName
+): PipelineSink => {
     const dataRecords: Array<string> = [];
     const buffer = hexBuffer();
     let noHexFile: boolean = false;
 
-    const line = (line: Line) => {
-        if (line.failed()) {
+    const line = () => {
+        if (currentLine().failures.length > 0) {
             noHexFile = true;
         }
-        const newAddress = programMemoryAddressInBytes(line.address);
+        const newAddress = programMemoryAddressInBytes(
+            currentLine().address
+        );
         if (!buffer.isContinuous(newAddress)) {
             saveRecordsFromByteBuffer(1);
             buffer.restartAt(newAddress);
         }
-        for (const block of line.code) {
+        for (const block of currentLine().code) {
             buffer.add(block);
         }
         saveRecordsFromByteBuffer(16);
