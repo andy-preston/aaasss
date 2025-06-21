@@ -1,27 +1,26 @@
-import type { NumberOrFailures } from "../failure/bags.ts";
+import type { Failure } from "../failure/bags.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { OperandType } from "./data-types.ts";
 
-import { numberBag } from "../assembler/bags.ts";
+type ScalerFunction = (value: number) => number | Failure;
+export type Scaler = ScalerFunction | undefined;
 
-type Scaler = (value: number) => NumberOrFailures
-
-export const scaler = (programMemory: ProgramMemory) => {
-    const scalers: Record<OperandType, Scaler | undefined> = {
+export const scale = (programMemory: ProgramMemory) => {
+    const scalers: Record<OperandType, Scaler> = {
         "register":            undefined,
-        "registerPair":        value => numberBag((value - 24) / 2),
-        "anyRegisterPair":     value => numberBag(value / 2),
-        "registerImmediate":   value => numberBag(value - 16),
-        "registerMultiply":    value => numberBag(value - 16),
+        "registerPair":        value => (value - 24) / 2,
+        "anyRegisterPair":     value => value / 2,
+        "registerImmediate":   value => value - 16,
+        "registerMultiply":    value => value - 16,
         "onlyZ":               undefined,
         "optionalZ+":          undefined,
         "ZorZ+":               undefined,
         "nybble":              undefined,
         "6BitNumber":          undefined,
         "byte":                undefined,
-        "invertedByte":        value => numberBag(0xff - value),
+        "invertedByte":        value => 0xff - value,
         "bitIndex":            undefined,
-        "ioPort":              value => numberBag(value - 0x20),
+        "ioPort":              value => value - 0x20,
         "16BitDataAddress":    undefined,
         "7BitDataAddress":     undefined,
         "22BitProgramAddress": value => programMemory.absoluteAddress(value, 22),
@@ -30,6 +29,6 @@ export const scaler = (programMemory: ProgramMemory) => {
     };
     return (value: number, operandType: OperandType) => {
         const scaler = scalers[operandType];
-        return scaler == undefined ? numberBag(value) : scaler(value);
+        return scaler == undefined ? value : scaler(value);
     };
 };
