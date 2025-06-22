@@ -52,14 +52,6 @@ export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
         );
     });
 
-    fullOperands.forEach((operand, index) => {
-        if (operand == "") {
-            const failure = boringFailure("operand_blank");
-            failure.location = {"operand": index};
-            addFailure(currentLine().failures, failure);
-        }
-    });
-
     currentLine().operands = fullOperands.map(upperCaseRegisters);
     currentLine().label = label;
     currentLine().mnemonic = mnemonic;

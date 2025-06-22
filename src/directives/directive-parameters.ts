@@ -2,7 +2,7 @@ import type { CurrentLine } from "../line/current-line.ts";
 
 import { typeOf } from "../assembler/data-types.ts";
 import { addFailure } from "../failure/add-failure.ts";
-import { assertionFailure, boringFailure } from "../failure/bags.ts";
+import { assertionFailure, boringFailure, valueTypeFailure } from "../failure/bags.ts";
 
 type ParameterType = "boolean" | "number" | "string";
 
@@ -13,9 +13,7 @@ export const directiveParameters = (currentLine: CurrentLine) => {
     const numeric = (given: unknown, index: number) => {
 
         if (!["number", "string"].includes(typeOf(given))) {
-            const failure = assertionFailure(
-                "value_type", "number | string", `${typeOf(given)} = "${given}"`
-            );
+            const failure = valueTypeFailure("number | string", given);
             failure.location = {"parameter": index + 1};
             addFailure(currentLine().failures, failure);
             return 0;
@@ -23,9 +21,7 @@ export const directiveParameters = (currentLine: CurrentLine) => {
 
         const numeric = typeof given == "number" ? given : parseInt(`${given}`);
         if (`${numeric}` != `${given}`) {
-            const failure = assertionFailure(
-                "value_type", "numeric", `${typeOf(given)} = "${given}"`
-            );
+            const failure = valueTypeFailure("numeric", given);
             failure.location = {"parameter": index + 1};
             addFailure(currentLine().failures, failure);
             return 0;
@@ -62,9 +58,7 @@ export const directiveParameters = (currentLine: CurrentLine) => {
             if (expected == typeOf(parameter)) {
                 return parameter;
             }
-            const failure = assertionFailure(
-                "value_type", expected, `${typeOf(parameter)} (${parameter})`
-            );
+            const failure = valueTypeFailure(expected, parameter);
             failure.location = {"parameter": index + 1};
             addFailure(currentLine().failures, failure);
             return undefined;
@@ -75,9 +69,7 @@ export const directiveParameters = (currentLine: CurrentLine) => {
         expected: ParameterTypes, actual: Array<unknown>, indexOffset: number
     ) => actual.map((actual, index) => {
         if (!(expected as Array<string>).includes(typeOf(actual))) {
-            const failure = assertionFailure(
-                "value_type", expected.join(", "), `${typeOf(actual)} (${actual})`
-            );
+            const failure = valueTypeFailure(expected.join(", "), actual);
             failure.location = {"parameter": index + 1 + indexOffset};
             addFailure(currentLine().failures, failure);
         }

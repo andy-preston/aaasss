@@ -1,6 +1,7 @@
 import type { AllowedValues, Max, Min } from "../assembler/data-types.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 
+import { typeOf } from "../assembler/data-types.ts";
 import { failureKinds } from "./kinds.ts";
 
 type OperandLocation = { "operand": number };
@@ -22,6 +23,12 @@ export const assertionFailure = (
     "kind": kind, "location": undefined as FailureLocation,
     "expected": expected, "actual": actual
 });
+
+export const valueTypeFailure = (
+    expectedType: string, given: unknown
+) => assertionFailure(
+    "value_type", expectedType, `${typeOf(given)}: (${given})`
+);
 
 export type AssertionFailure = ReturnType<typeof assertionFailure>;
 

@@ -83,14 +83,14 @@ Deno.test("Poked numbers must be bytes (0-255)", () => {
             systemUnderTest.currentLine().failures[0] as AssertionFailure;
         expect(failure.kind).toBe("value_type");
         expect(failure.location).toEqual({"parameter": 0});
-        expect(failure.actual).toBe("-1");
+        expect(failure.actual).toBe("number: (-1)");
         expect(failure.expected).toBe("string, byte");
     } {
         const failure =
             systemUnderTest.currentLine().failures[1] as AssertionFailure;
         expect(failure.kind).toBe("value_type");
         expect(failure.location).toEqual({"parameter": 2});
-        expect(failure.actual).toBe("300");
+        expect(failure.actual).toBe("number: (300)");
         expect(failure.expected).toBe("string, byte");
     }
     expect(systemUnderTest.currentLine().code).toEqual([[0, 2], [0, 4]]);

@@ -4,7 +4,7 @@ export const failureKinds = {
         "device_notSelected",
         "js_jsMode", "js_assemblerMode",
         "macro_end", "macro_noEnd",
-        "operand_blank", "operand_offsetNotLdd", "operand_offsetNotStd",
+        "operand_offsetNotLdd", "operand_offsetNotStd",
         "operand_offsetX",
         "parameter_firstName",
         "programMemory_cantOrg", "programMemory_sizeUnknown",
@@ -12,16 +12,14 @@ export const failureKinds = {
     ],
     "assertion": [
         "macro_params", "operand_count", "parameter_count", "value_type",
-        "programMemory_outOfRange",
-        "ram_outOfRange"
+        "programMemory_outOfRange", "ram_outOfRange"
     ],
     "numericType": [
         "type_bytesOrString", "type_relativeAddress", "type_positive"
     ],
     "clue": [
         "file_notFound",  "device_notFound", "register_notFound",
-        "macro_multiDefine",
-        "mnemonic_unknown", "mnemonic_supportedUnknown"
+        "macro_multiDefine", "mnemonic_unknown", "mnemonic_supportedUnknown"
     ],
     "notSupported": [
         "notSupported_mnemonic", "notSupported_ioRange"

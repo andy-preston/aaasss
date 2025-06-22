@@ -34,26 +34,20 @@ Deno.test("No instruction has three (or more) operands", () => {
     expect(failure.actual).toBe("3")
 });
 
-Deno.test("An operand must not be empty", () => {
+Deno.test("A missing parameter is tokenised as an empty string", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().assemblySource = "LDI , 23";
     systemUnderTest.tokens();
     expect(systemUnderTest.currentLine().operands).toEqual(["", "23"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as BoringFailure;
-    expect(failure.kind).toBe("operand_blank");
-    expect(failure.location).toEqual({"operand": 0});
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
 });
 
-Deno.test("Trailing commas count as an (empty operand)", () => {
+Deno.test("Trailing commas count as an empty operand", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().assemblySource = "LDI r16, ";
     systemUnderTest.tokens();
     expect(systemUnderTest.currentLine().operands).toEqual(["R16", ""]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as BoringFailure;
-    expect(failure.kind).toBe("operand_blank");
-    expect(failure.location).toEqual({"operand": 1});
+    expect(systemUnderTest.currentLine().failures.length).toBe(0);
 });
 
 Deno.test("Some instructions only have one operand", () => {

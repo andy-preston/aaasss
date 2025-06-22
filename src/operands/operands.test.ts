@@ -1,4 +1,4 @@
-import type { AssertionFailure, BoringFailure, ClueFailure, ExceptionFailure } from "../failure/bags.ts";
+import type { AssertionFailure, ClueFailure, ExceptionFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directives.ts";
@@ -31,21 +31,43 @@ const testSystem = () => {
     };
 };
 
-Deno.test("Line must have at least expected operands", () => {
+Deno.test("Line must have at least the expected register operands", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["Z"];
     systemUnderTest.operands(["onlyZ", "register"]);
-    const failures = systemUnderTest.currentLine().failures;
-    expect(failures.length).toBe(2);
+    expect(systemUnderTest.currentLine().failures.length).toBe(2);
     {
-        const failure = failures[0] as AssertionFailure;
+        const failure =
+            systemUnderTest.currentLine().failures[0] as AssertionFailure;
         expect(failure.kind).toBe("operand_count");
         expect(failure.expected).toBe("2");
         expect(failure.actual).toBe("1");
     } {
-        const failure = failures[1] as BoringFailure;
-        expect(failure.kind).toBe("operand_blank");
-        expect(failure.location!).toEqual({"operand": 2});
+        const failure =
+            systemUnderTest.currentLine().failures[1] as ClueFailure;
+        expect(failure.kind).toBe("register_notFound");
+        expect(failure.clue).toBe(undefined);
+    }
+});
+
+Deno.test("Line must have at least the expected register operands", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().operands = ["Z"];
+    systemUnderTest.operands(["onlyZ", "6BitNumber"]);
+    expect(systemUnderTest.currentLine().failures.length).toBe(2);
+    {
+        const failure =
+            systemUnderTest.currentLine().failures[0] as AssertionFailure;
+        expect(failure.kind).toBe("operand_count");
+        expect(failure.expected).toBe("2");
+        expect(failure.actual).toBe("1");
+    } {
+        const failure =
+            systemUnderTest.currentLine().failures[1] as AssertionFailure;
+        expect(failure.kind).toBe("value_type");
+        expect(failure.expected).toBe("6BitNumber");
+        expect(failure.actual).toBe("string: ()");
+        expect(failure.location).toEqual({"operand": 2});
     }
 });
 
@@ -93,9 +115,8 @@ Deno.test("Everything's lovely when actual and expected match", () => {
 Deno.test("Some operands can be optional", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = [];
-    const result = systemUnderTest.operands(["optionalZ+"]);
+    expect(systemUnderTest.operands(["optionalZ+"])).toEqual([0]);
     expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    expect(result).toEqual([0]);
 });
 
 Deno.test("An expression yields a value", () => {
@@ -168,7 +189,7 @@ Deno.test("Bad 'special' operands yield failures", () => {
     const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
     expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("Z");
-    expect(failure.actual).toBe("plop");
+    expect(failure.actual).toBe("string: (plop)");
     expect(failure.location).toEqual({"operand": 1});
     expect(result).toEqual([0]);
 });
@@ -197,7 +218,7 @@ Deno.test("Incorrect optional parameters yield a failure", () => {
     const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
     expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("undefined, Z+");
-    expect(failure.actual).toBe("plop");
+    expect(failure.actual).toBe("string: (plop)");
     expect(failure.location).toEqual({"operand": 1});
     expect(result).toEqual([0]);
 });
@@ -219,7 +240,7 @@ Deno.test("An uninitialised symbol yields a failure", () => {
             systemUnderTest.currentLine().failures[1] as AssertionFailure;
         expect(failure.kind).toBe("value_type");
         expect(failure.expected).toBe("nybble");
-        expect(failure.actual).toBe("");
+        expect(failure.actual).toBe("string: ()");
         expect(failure.location).toEqual({"operand": 1});
         expect(result).toEqual([0]);
     }

@@ -4,7 +4,7 @@ import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { OperandType } from "./data-types.ts";
 
-import { assertionFailure, boringFailure, clueFailure } from "../failure/bags.ts";
+import { assertionFailure, clueFailure, valueTypeFailure } from "../failure/bags.ts";
 
 type Converter = (
     symbolic: string | undefined, operandType: OperandType
@@ -17,27 +17,22 @@ export const numeric = (
     const register = (
         operand: string | undefined, _operandType: OperandType
     ): number | Failure =>
-        operand == undefined
-        ? boringFailure("operand_blank")
-        : !cpuRegisters.has(operand)
-        ? clueFailure("register_notFound", operand)
-        : parseInt(symbolTable.use(operand) as string);
+        !cpuRegisters.has(operand!)
+        ? clueFailure("register_notFound", operand!)
+        : parseInt(symbolTable.use(operand!) as string);
 
     const aNumber = (
         operand: string | undefined, operandType: OperandType
     ): number | Failure => {
-        if (operand == undefined) {
-            return boringFailure("operand_blank");
-        }
-        if (cpuRegisters.has(operand)) {
+        if (cpuRegisters.has(operand!)) {
             return assertionFailure(
                 "value_type", operandType, `register: ${operand}`
             );
         }
-        const result = jsExpression(operand);
+        const result = operand ? jsExpression(operand) : "";
         const integer = parseInt(result);
         if (`${integer}` != result) {
-            return assertionFailure("value_type", operandType, result);
+            return valueTypeFailure(operandType, result);
         }
         return integer;
     };
@@ -58,7 +53,7 @@ export const numeric = (
         const explanation = Object.keys(options).map(
             optionSymbol => optionSymbol == "" ? "undefined" : optionSymbol
         ).join(", ");
-        return assertionFailure("value_type", explanation, `${operand}`);
+        return valueTypeFailure(explanation, operand);
     };
 
     const converters: Record<OperandType, Converter> = {

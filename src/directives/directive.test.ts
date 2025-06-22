@@ -73,7 +73,7 @@ Deno.test("A StringDirective can't have zero parameters", () => {
         const failure = systemUnderTest.currentLine().failures[1] as AssertionFailure;
         expect(failure.kind).toBe("value_type");
         expect(failure.expected).toBe("string");
-        expect(failure.actual).toBe("undefined (undefined)");
+        expect(failure.actual).toBe("undefined: (undefined)");
         expect(failure.location).toEqual({"parameter": 1});
     }
 });
@@ -103,7 +103,7 @@ Deno.test("A StringDirective can't have a number parameter", () => {
     const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
     expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("string");
-    expect(failure.actual).toBe("number (4)");
+    expect(failure.actual).toBe("number: (4)");
     expect(failure.location).toEqual({"parameter": 1});
 });
 
@@ -119,7 +119,7 @@ Deno.test("A StringDirective can't have a boolean parameters", () => {
         systemUnderTest.currentLine().failures[0] as AssertionFailure;
     expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("string");
-    expect(failure.actual).toBe("boolean (false)");
+    expect(failure.actual).toBe("boolean: (false)");
     expect(failure.location).toEqual({"parameter": 1});
 });
 
@@ -144,7 +144,7 @@ Deno.test("A NumberDirective can't have a non-numeric string parameter", () => {
     const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
     expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("numeric");
-    expect(failure.actual).toBe('string = "five"');
+    expect(failure.actual).toBe("string: (five)");
     expect(failure.location).toEqual({"parameter": 1});
 });
 
@@ -216,7 +216,7 @@ Deno.test("A ValueDirective can't have a non-numeric string as the second parame
 
     expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("numeric");
-    expect(failure.actual).toBe('string = "five"');
+    expect(failure.actual).toBe("string: (five)");
     expect(failure.location).toEqual({"parameter": 2});
 });
 
@@ -244,7 +244,7 @@ Deno.test("A DataDirective can't have boolean parameters", () => {
     const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
     expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("string, number");
-    expect(failure.actual).toBe("boolean (false)");
+    expect(failure.actual).toBe("boolean: (false)");
     expect(failure.location).toEqual({"parameter": 1});
 });
 
@@ -260,13 +260,13 @@ Deno.test("A DataDirective can't have object or array parameters", () => {
         const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
         expect(failure.kind).toBe("value_type");
         expect(failure.expected).toBe("string, number");
-        expect(failure.actual).toBe("object ([object Object])");
+        expect(failure.actual).toBe("object: ([object Object])");
         expect(failure.location).toEqual({"parameter": 1});
     } {
         const failure = systemUnderTest.currentLine().failures[1] as AssertionFailure;
         expect(failure.kind).toBe("value_type");
         expect(failure.expected).toBe("string, number");
-        expect(failure.actual).toBe("array ()");
+        expect(failure.actual).toBe("array: ()");
         expect(failure.location).toEqual({"parameter": 2});
     }
 });
@@ -292,7 +292,7 @@ Deno.test("A FunctionUseDirective can't have boolean parameters", () => {
     const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
     expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("string, number");
-    expect(failure.actual).toBe("boolean (false)");
+    expect(failure.actual).toBe("boolean: (false)");
     expect(failure.location).toEqual({"parameter": 1});
 });
 
@@ -308,13 +308,13 @@ Deno.test("A FunctionUseDirective can't have object or array parameters", () => 
         const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
         expect(failure.kind).toBe("value_type");
         expect(failure.expected).toBe("string, number");
-        expect(failure.actual).toBe("object ([object Object])");
+        expect(failure.actual).toBe("object: ([object Object])");
         expect(failure.location).toEqual({"parameter": 1});
     } {
         const failure = systemUnderTest.currentLine().failures[1] as AssertionFailure;
         expect(failure.kind).toBe("value_type");
         expect(failure.expected).toBe("string, number");
-        expect(failure.actual).toBe("array ()");
+        expect(failure.actual).toBe("array: ()");
         expect(failure.location).toEqual({"parameter": 2});
     }
 });
@@ -356,7 +356,7 @@ Deno.test("A FunctionDefineDirective can't have object or array parameters", () 
         const failure = systemUnderTest.currentLine().failures[1] as AssertionFailure;
         expect(failure.kind).toBe("value_type");
         expect(failure.expected).toBe("string");
-        expect(failure.actual).toBe("array ()");
+        expect(failure.actual).toBe("array: ()");
         expect(failure.location).toEqual({"parameter": 2});
     }
 });

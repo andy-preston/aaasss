@@ -38,7 +38,9 @@ export const programMemory = (
 
         const range = Math.pow(2, bits);
         if (address > range) {
-            return assertionFailure("value_type", `0-${range}`, `${address}`);
+            return assertionFailure(
+                "programMemory_outOfRange", `0-${range}`, `${address}`
+            );
         }
 
         return address;

@@ -68,9 +68,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Instruction mnemonic",
         failure as ClueFailure
     )),
-    "operand_blank": (failure) => withLocation(failure, [
-        "Operand seems to be blank"
-    ]),
     "operand_offsetNotLdd": (failure) => withLocation(failure, [
         "An Index offset in the second parameter can only be used on the LDD instruction"
     ]),
@@ -145,6 +142,12 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "syntax_invalidMnemonic": (failure) => withLocation(failure, [
         "A mnemonic should only contain letters"
     ]),
+    ////////////////////////////////////////////////////////////////////////////
+    //
+    // All of these `type_*` failures should go too
+    // `value_*` is better
+    //
+    ////////////////////////////////////////////////////////////////////////////
     "type_relativeAddress": (failure) => withLocation(failure, [
         "Relative address"
     ]),
