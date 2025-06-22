@@ -1,4 +1,4 @@
-import type { AssertionFailure, BoringFailure } from "../failure/bags.ts";
+import type { BoringFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { testSystem } from "./testing.ts";
@@ -19,19 +19,6 @@ Deno.test("The operands are separated by a comma", () => {
     expect(systemUnderTest.currentLine().label).toBe("label");
     expect(systemUnderTest.currentLine().mnemonic).toBe("LDI");
     expect(systemUnderTest.currentLine().operands).toEqual(["R16", "23"]);
-});
-
-Deno.test("No instruction has three (or more) operands", () => {
-    const systemUnderTest = testSystem();
-    systemUnderTest.currentLine().assemblySource = "LDI R16, 23, 999";
-    systemUnderTest.tokens();
-    expect(systemUnderTest.currentLine().operands).toEqual(["R16", "23"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure =
-        systemUnderTest.currentLine().failures[0] as AssertionFailure;
-    expect(failure.kind).toBe("operand_count");
-    expect(failure.expected).toBe("2");
-    expect(failure.actual).toBe("3")
 });
 
 Deno.test("A missing parameter is tokenised as an empty string", () => {

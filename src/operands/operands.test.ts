@@ -73,14 +73,14 @@ Deno.test("Line must have at least the expected register operands", () => {
 
 Deno.test("line must not exceed expected operands", () => {
     const systemUnderTest = testSystem();
-    systemUnderTest.currentLine().operands = ["R10", "R11"];
-    systemUnderTest.operands(["register"]);
+    systemUnderTest.currentLine().operands = ["R10", "R11", "R12"];
+    systemUnderTest.operands(["register", "register"]);
     const failures = systemUnderTest.currentLine().failures;
     expect(failures.length).toBe(1);
     const failure = failures[0] as AssertionFailure;
     expect(failure.kind).toBe("operand_count");
-    expect(failure.expected).toBe("1");
-    expect(failure.actual).toBe("2");
+    expect(failure.expected).toBe("2");
+    expect(failure.actual).toBe("3");
 });
 
 Deno.test("line and expectation types must not be different", () => {
