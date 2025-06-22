@@ -14,7 +14,7 @@ export const directiveParameters = (currentLine: CurrentLine) => {
 
         if (!["number", "string"].includes(typeOf(given))) {
             const failure = assertionFailure(
-                "type_failure", "number | string", typeOf(given)
+                "value_type", "number | string", `${typeOf(given)} = "${given}"`
             );
             failure.location = {"parameter": index + 1};
             addFailure(currentLine().failures, failure);
@@ -24,7 +24,7 @@ export const directiveParameters = (currentLine: CurrentLine) => {
         const numeric = typeof given == "number" ? given : parseInt(`${given}`);
         if (`${numeric}` != `${given}`) {
             const failure = assertionFailure(
-                "type_failure", "numeric", `"${given}"`
+                "value_type", "numeric", `${typeOf(given)} = "${given}"`
             );
             failure.location = {"parameter": index + 1};
             addFailure(currentLine().failures, failure);

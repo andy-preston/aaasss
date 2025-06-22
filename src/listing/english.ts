@@ -153,11 +153,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Defined range", "Actual value",
         failure as NumericTypeFailure
     )),
-    "type_failure": (failure) => withLocation(failure, assertionFailure(
-        ["The type of the operand / parameter doesn't match the requirements"],
-        "Expected type", "Actual type",
-        failure as AssertionFailure
-    )),
     "type_positive": (failure) => withLocation(failure, numericTypeFailure(
         ["This should be a positive number only"],
         "Defined value", "Actual value",

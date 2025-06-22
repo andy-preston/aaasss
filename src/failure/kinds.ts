@@ -13,8 +13,7 @@ export const failureKinds = {
     "assertion": [
         "macro_params", "operand_count", "parameter_count", "value_type",
         "programMemory_outOfRange",
-        "ram_outOfRange",
-        "type_failure"
+        "ram_outOfRange"
     ],
     "numericType": [
         "type_bytesOrString", "type_relativeAddress", "type_positive"

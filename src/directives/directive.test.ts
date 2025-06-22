@@ -142,9 +142,10 @@ Deno.test("A NumberDirective can't have a non-numeric string parameter", () => {
     expect(untyped("five")).toBe("0");
     expect(systemUnderTest.currentLine().failures.length).toBe(1);
     const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
-    expect(failure.kind).toBe("type_failure");
+    expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("numeric");
-    expect(failure.actual).toBe('"five"');
+    expect(failure.actual).toBe('string = "five"');
+    expect(failure.location).toEqual({"parameter": 1});
 });
 
 Deno.test("A NumberDirective has a single number or NUMERIC string parameter", () => {
@@ -213,9 +214,10 @@ Deno.test("A ValueDirective can't have a non-numeric string as the second parame
     expect(systemUnderTest.currentLine().failures.length).toBe(1);
     const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
 
-    expect(failure.kind).toBe("type_failure");
+    expect(failure.kind).toBe("value_type");
     expect(failure.expected).toBe("numeric");
-    expect(failure.actual).toBe('"five"');
+    expect(failure.actual).toBe('string = "five"');
+    expect(failure.location).toEqual({"parameter": 2});
 });
 
 Deno.test("A ValueDirective has a string and a NUMERIC parameter", () => {
