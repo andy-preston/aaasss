@@ -5,22 +5,22 @@
                         value_type
                         location.operand: 1
                         expected: undefined, Z+
-                        actual: X
+                        actual: string: (X)
 000001 C6 90          3     ELPM R12, 10
                         value_type
                         location.operand: 2
                         expected: Z, Z+
-                        actual: 10
+                        actual: string: (10)
 000002 94 91          4     LPM R25, Y
                         value_type
                         location.operand: 2
                         expected: Z, Z+
-                        actual: Y
+                        actual: string: (Y)
 000003 A4 91          5     LPM R26, -Y
                         value_type
                         location.operand: 2
                         expected: Z, Z+
-                        actual: -Y
+                        actual: string: (-Y)
                       6
 
 Symbol Table

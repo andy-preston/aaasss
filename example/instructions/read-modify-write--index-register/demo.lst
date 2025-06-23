@@ -5,17 +5,17 @@
                         value_type
                         location.operand: 1
                         expected: Z
-                        actual: R30
+                        actual: string: (R30)
 000001 55 93          3     LAS X, R21
                         value_type
                         location.operand: 1
                         expected: Z
-                        actual: X
+                        actual: string: (X)
 000002 67 93          4     LAT Y, R22
                         value_type
                         location.operand: 1
                         expected: Z
-                        actual: Y
+                        actual: string: (Y)
 000003 F4 92          5     XCH z, R15
                       6
 
