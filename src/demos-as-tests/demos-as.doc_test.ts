@@ -26,18 +26,20 @@ const demoContents = (dir: string) => Deno.readDirSync(dir).map (
     file => file.name
 ).toArray().sort();
 
+let filterIndex = 0;
 const root = import.meta.url.split('/').slice(2, -3).join('/');
 ["programs", "directives", "instructions"].forEach(section => {
     const sectionDir = `${root}/example/${section}`;
     sectionContents(sectionDir).forEach(example => {
-        Deno.test(titleCase(`${section}: ${example}`), () => {
+        filterIndex = filterIndex + 1;
+        Deno.test(titleCase(`${section}: ${example} [${filterIndex}]`), () => {
             const directory = `${sectionDir}/${example}`;
             const demo = docTest();
             demoContents(directory).forEach(file => {
                 if (["demo.lst", "demo.hex"].includes(file)) {
                     return;
                 }
-                if (file.endsWith(".asm")) {
+                if (file.endsWith(".asm") || file.endsWith(".js")) {
                     demo.source(
                         file == "demo.asm" ? "" : file,
                         textFile(`${directory}/${file}`)
