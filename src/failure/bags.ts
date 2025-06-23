@@ -4,9 +4,8 @@ import type { Mnemonic } from "../tokens/data-types.ts";
 import { typeOf } from "../assembler/data-types.ts";
 import { failureKinds } from "./kinds.ts";
 
-type OperandLocation = { "operand": number };
-type ParameterLocation = { "parameter": number };
-export type FailureLocation = undefined | OperandLocation | ParameterLocation;
+export type FailureLocation = undefined |
+    {"operand": number} | {"parameter": number};
 
 export const boringFailure = (
     kind: typeof failureKinds["boring"][number]
