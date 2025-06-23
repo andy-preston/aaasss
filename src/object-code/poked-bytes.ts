@@ -17,7 +17,7 @@ export const pokedBytes = (
     }
 
     const failure = valueTypeFailure("string, byte", item);
-    failure.location = {"parameter": index};
+    failure.location = {"parameter": index + 1};
     addFailure(failures, failure);
     return 0;
 });
