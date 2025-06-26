@@ -40,7 +40,8 @@ export const directiveParameters = (currentLine: CurrentLine) => {
     };
 
     const fixed = (
-        expected: ParameterTypes, actual: Array<unknown>, indexOffset: number
+        expected: ParameterTypes, actual: Array<unknown>,
+        parameterOffset: number
     ) => {
         if (expected.length != actual.length) {
             addFailure(currentLine().failures, assertionFailure(
@@ -50,7 +51,7 @@ export const directiveParameters = (currentLine: CurrentLine) => {
         return expected.map((expected, index) => {
             const parameter = actual[index];
             if (expected == "number") {
-                return numeric(parameter, index + indexOffset);
+                return numeric(parameter, index + parameterOffset);
             }
             if (expected == "boolean") {
                 return parameter ? true : false;
@@ -66,11 +67,12 @@ export const directiveParameters = (currentLine: CurrentLine) => {
     };
 
     const variable = (
-        expected: ParameterTypes, actual: Array<unknown>, indexOffset: number
+        expected: ParameterTypes, actual: Array<unknown>,
+        parameterOffset: number
     ) => actual.map((actual, index) => {
         if (!(expected as Array<string>).includes(typeOf(actual))) {
             const failure = valueTypeFailure(expected.join(", "), actual);
-            failure.location = {"parameter": index + 1 + indexOffset};
+            failure.location = {"parameter": index + 1 + parameterOffset};
             addFailure(currentLine().failures, failure);
         }
         return expected.length == 1 && expected[0] == "number"

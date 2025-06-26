@@ -1,33 +1,27 @@
-import type { Failure } from "../failure/bags.ts";
+import type { AssertionFailure, Failure } from "../failure/bags.ts";
 import type { JsExpression } from "../javascript/expression.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import type { OperandType } from "./data-types.ts";
+import type { Conversion, StringConversion, OperandType } from "./data-types.ts";
 
-import { assertionFailure, clueFailure, valueTypeFailure } from "../failure/bags.ts";
-
-type Converter = (
-    symbolic: string | undefined, operandType: OperandType
-) => number | Failure;
+import { clueFailure, valueTypeFailure } from "../failure/bags.ts";
 
 export const numeric = (
     symbolTable: SymbolTable, cpuRegisters: CpuRegisters,
     jsExpression: JsExpression
 ) => {
     const register = (
-        operand: string | undefined, _operandType: OperandType
+        operand: string, _operandType: OperandType
     ): number | Failure =>
-        !cpuRegisters.has(operand!)
-        ? clueFailure("register_notFound", operand!)
-        : parseInt(symbolTable.use(operand!) as string);
+        !cpuRegisters.has(operand)
+        ? clueFailure("register_notFound", operand)
+        : parseInt(symbolTable.use(operand) as string);
 
     const aNumber = (
-        operand: string | undefined, operandType: OperandType
+        operand: string, operandType: OperandType
     ): number | Failure => {
-        if (cpuRegisters.has(operand!)) {
-            return assertionFailure(
-                "value_type", operandType, `register: ${operand}`
-            );
+        if (cpuRegisters.has(operand)) {
+            return valueTypeFailure(operandType, `register: ${operand}`);
         }
         const result = operand ? jsExpression(operand) : "";
         const integer = parseInt(result);
@@ -40,7 +34,7 @@ export const numeric = (
     const specificSymbolic = (
         options: Record<string, number>
     ) => (
-        operand: string | undefined
+        operand: string, _operandType: OperandType
     ): number | Failure => {
         for (const [optionSymbol, optionValue] of Object.entries(options)) {
             if (operand == undefined && optionSymbol == "") {
@@ -56,7 +50,30 @@ export const numeric = (
         return valueTypeFailure(explanation, operand);
     };
 
-    const converters: Record<OperandType, Converter> = {
+    const offsetIndex = (options: Record<string, number>) => {
+        const specific = specificSymbolic(options);
+        return (
+            operand: string, operandType: OperandType
+        ): number | Failure => {
+            const result = specific(operand.slice(0, 2), operandType);
+            if (typeof result != "number") {
+                (result as AssertionFailure).actual = operand;
+            }
+            return result;
+        };
+    };
+
+    const offsetValue = (
+        operand: string, operandType: OperandType
+    ): number | Failure => {
+        const result = aNumber(operand.slice(2), operandType);
+        if (typeof result != "number") {
+            (result as AssertionFailure).actual = operand;
+        }
+        return result;
+    }
+
+    const converters: Record<OperandType, StringConversion> = {
         "register":            register,
         "registerPair":        register,
         "anyRegisterPair":     register,
@@ -65,6 +82,13 @@ export const numeric = (
         "onlyZ":               specificSymbolic({"Z":  0}),
         "optionalZ+":          specificSymbolic({"":   0, "Z+": 1}),
         "ZorZ+":               specificSymbolic({"Z":  0, "Z+": 1}),
+        "indexIndirect":       specificSymbolic({
+            "Z": 0b00000, "Z+": 0b10001, "-Z": 0b10010,
+            "Y": 0b01000, "Y+": 0b11001, "-Y": 0b11010,
+            "X": 0b11100, "X+": 0b11101, "-X": 0b11110
+        }),
+        "indexWithOffset":     offsetIndex({"Z+": 0, "Y+": 1}),
+        "6BitOffset":          offsetValue,
         "nybble":              aNumber,
         "6BitNumber":          aNumber,
         "byte":                aNumber,
@@ -78,10 +102,11 @@ export const numeric = (
         "12BitRelative":       aNumber,
     };
 
-    return (
-        symbolic: string | undefined, operandType: OperandType
+    const conversion = (
+        operand: string, operandType: OperandType
     ): number | Failure => {
         const converter = converters[operandType];
-        return converter(symbolic, operandType);
+        return converter(operand, operandType);
     };
+    return conversion as Conversion;
 };

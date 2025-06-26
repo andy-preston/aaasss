@@ -1,5 +1,3 @@
-import type { AssertionFailure, ClueFailure, ExceptionFailure } from "../failure/bags.ts";
-
 import { expect } from "jsr:@std/expect";
 import { directiveFunction } from "../directives/directives.ts";
 import { currentLine } from "../line/current-line.ts";
@@ -35,80 +33,62 @@ Deno.test("Line must have at least the expected register operands", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["Z"];
     systemUnderTest.operands(["onlyZ", "register"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(2);
-    {
-        const failure =
-            systemUnderTest.currentLine().failures[0] as AssertionFailure;
-        expect(failure.kind).toBe("operand_count");
-        expect(failure.expected).toBe("2");
-        expect(failure.actual).toBe("1");
-    } {
-        const failure =
-            systemUnderTest.currentLine().failures[1] as ClueFailure;
-        expect(failure.kind).toBe("register_notFound");
-        expect(failure.clue).toBe(undefined);
-    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "operand_count",
+        "expected": "2",  "actual": "1",
+        "location": undefined
+    }, {
+        "kind": "register_notFound",
+        "clue": "",
+        "location": {"operand": 2}
+    }]);
 });
 
-Deno.test("Line must have at least the expected register operands", () => {
+Deno.test("Line must have at least the expected numeric operands", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["Z"];
     systemUnderTest.operands(["onlyZ", "6BitNumber"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(2);
-    {
-        const failure =
-            systemUnderTest.currentLine().failures[0] as AssertionFailure;
-        expect(failure.kind).toBe("operand_count");
-        expect(failure.expected).toBe("2");
-        expect(failure.actual).toBe("1");
-    } {
-        const failure =
-            systemUnderTest.currentLine().failures[1] as AssertionFailure;
-        expect(failure.kind).toBe("value_type");
-        expect(failure.expected).toBe("6BitNumber");
-        expect(failure.actual).toBe("string: ()");
-        expect(failure.location).toEqual({"operand": 2});
-    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "operand_count",
+        "expected": "2",  "actual": "1",
+        "location": undefined
+    }, {
+        "kind": "value_type",
+        "expected": "6BitNumber", "actual": "string: ()",
+        "location": {"operand": 2}
+    }]);
 });
 
-Deno.test("line must not exceed expected operands", () => {
+Deno.test("Line must not exceed expected operands", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["R10", "R11", "R12"];
     systemUnderTest.operands(["register", "register"]);
-    const failures = systemUnderTest.currentLine().failures;
-    expect(failures.length).toBe(1);
-    const failure = failures[0] as AssertionFailure;
-    expect(failure.kind).toBe("operand_count");
-    expect(failure.expected).toBe("2");
-    expect(failure.actual).toBe("3");
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "operand_count",
+        "expected": "2", "actual": "3"
+    }]);
 });
 
 Deno.test("line and expectation types must not be different", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["R10", "R12"];
     systemUnderTest.operands(["nybble", "ioPort"]);
-    const failures = systemUnderTest.currentLine().failures;
-    expect(failures.length).toBe(2);
-    {
-        const failure = failures[0] as AssertionFailure;
-        expect(failure.kind).toBe("value_type");
-        expect(failure.location!).toEqual({"operand": 1});
-        expect(failure.expected).toBe("nybble");
-        expect(failure.actual).toBe("register: R10");
-    } {
-        const failure = failures[1] as AssertionFailure;
-        expect(failure.kind).toBe("value_type");
-        expect(failure.location!).toEqual({"operand": 2});
-        expect(failure.expected).toBe("ioPort");
-        expect(failure.actual).toBe("register: R12");
-    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "value_type",
+        "expected": "nybble", "actual": "string: (register: R10)",
+        "location": {"operand": 1}
+    }, {
+        "kind": "value_type",
+        "expected": "ioPort", "actual": "string: (register: R12)",
+        "location": {"operand": 2}
+    }]);
 });
 
 Deno.test("Everything's lovely when actual and expected match", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["R10", "10 / 2"];
     const result = systemUnderTest.operands(["register", "nybble"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(result).toEqual([10, 5]);
 });
 
@@ -116,14 +96,14 @@ Deno.test("Some operands can be optional", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = [];
     expect(systemUnderTest.operands(["optionalZ+"])).toEqual([0]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 });
 
 Deno.test("An expression yields a value", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["20 / 2"];
     const result = systemUnderTest.operands(["nybble"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(result).toEqual([10]);
 });
 
@@ -131,7 +111,7 @@ Deno.test("A register symbol yields a value", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["R7"];
     const result = systemUnderTest.operands(["register"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(result).toEqual([7]);
 });
 
@@ -139,11 +119,11 @@ Deno.test("A non-existant register symbol yields failures", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["R99"];
     const result = systemUnderTest.operands(["register"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as ClueFailure;
-    expect(failure.kind).toBe("register_notFound");
-    expect(failure.clue).toBe("R99");
-    expect(failure.location).toEqual({"operand": 1});
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "register_notFound",
+        "clue": "R99",
+        "location": {"operand": 1}
+    }]);
     expect(result).toEqual([0]);
 });
 
@@ -151,12 +131,11 @@ Deno.test("A register can't be used for a number", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["R7"];
     const result = systemUnderTest.operands(["6BitNumber"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
-    expect(failure.kind).toBe("value_type");
-    expect(failure.actual).toBe("register: R7");
-    expect(failure.expected).toBe("6BitNumber");
-    expect(failure.location).toEqual({"operand": 1});
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "value_type",
+        "expected": "6BitNumber", "actual": "string: (register: R7)",
+        "location": {"operand": 1}
+    }]);
     expect(result).toEqual([0]);
 });
 
@@ -165,40 +144,84 @@ Deno.test("A symbol can't be used as a register", () => {
     systemUnderTest.symbolTable.builtInSymbol("plop", 5);
     systemUnderTest.currentLine().operands = ["plop", "plop"];
     const result = systemUnderTest.operands(["byte", "register"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as ClueFailure;
-    expect(failure.kind).toBe("register_notFound");
-    expect(failure.clue).toBe("plop");
-    expect(failure.location).toEqual({"operand": 2});
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "register_notFound",
+        "clue": "plop",
+        "location": {"operand": 2}
+    }]);
     expect(result).toEqual([5, 0]);
 });
 
-Deno.test("'Special' operands yield a numeric value", () => {
+Deno.test("'Specific Symbolic' operands yield a numeric value", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["Z+"];
     const result = systemUnderTest.operands(["ZorZ+"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(result).toEqual([1]);
 });
 
-Deno.test("Bad 'special' operands yield failures", () => {
+Deno.test("Bad 'Specific Symbolic' operands yield failures", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["plop"];
     const result = systemUnderTest.operands(["onlyZ"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
-    expect(failure.kind).toBe("value_type");
-    expect(failure.expected).toBe("Z");
-    expect(failure.actual).toBe("string: (plop)");
-    expect(failure.location).toEqual({"operand": 1});
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "value_type",
+        "expected": "Z", "actual": "string: (plop)",
+        "location": {"operand": 1}
+    }]);
     expect(result).toEqual([0]);
+});
+
+Deno.test("Indirect Offset operands are extracted from a single operand with horrible syntax", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().operands = ["Y+23"];
+    const result = systemUnderTest.operands(["indexWithOffset", "6BitOffset"]);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(result).toEqual([1, 23]);
+});
+
+
+Deno.test("Indirect Offset operands can be an expression", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().operands = ["Y+5+5"];
+    const result = systemUnderTest.operands(["indexWithOffset", "6BitOffset"]);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(result).toEqual([1, 10]);
+});
+
+Deno.test("Indirect Offset doesn't use the X register", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().operands = ["X+23"];
+    const result = systemUnderTest.operands(["indexWithOffset", "6BitOffset"]);
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "value_type",
+        "expected": "Z+, Y+", "actual": "X+23",
+        "location": {"operand": 1}
+    }]);
+    expect(result).toEqual([0, 23]);
+});
+
+Deno.test("Indirect Offset must resolve to a number", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().operands = ["Y+plop"];
+    const result = systemUnderTest.operands(["indexWithOffset", "6BitOffset"]);
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "js_error",
+        "exception": "ReferenceError", "message": "plop is not defined",
+        "location": undefined,
+    }, {
+        "kind": "value_type",
+        "expected": "6BitOffset", "actual": "Y+plop",
+        "location": {"operand": 1},
+    }]);
+    expect(result).toEqual([1, 0]);
 });
 
 Deno.test("Optional parameters can be absent", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = [];
     const result = systemUnderTest.operands(["optionalZ+"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(result).toEqual([0]);
 });
 
@@ -206,7 +229,7 @@ Deno.test("... or present", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["Z+"];
     const result = systemUnderTest.operands(["optionalZ+"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(result).toEqual([1]);
 });
 
@@ -214,12 +237,11 @@ Deno.test("Incorrect optional parameters yield a failure", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["plop"];
     const result = systemUnderTest.operands(["optionalZ+"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as AssertionFailure;
-    expect(failure.kind).toBe("value_type");
-    expect(failure.expected).toBe("undefined, Z+");
-    expect(failure.actual).toBe("string: (plop)");
-    expect(failure.location).toEqual({"operand": 1});
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "value_type",
+        "expected": "undefined, Z+", "actual": "string: (plop)",
+        "location": {"operand": 1}
+    }]);
     expect(result).toEqual([0]);
 });
 
@@ -227,21 +249,13 @@ Deno.test("An uninitialised symbol yields a failure", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().operands = ["plop"];
     const result = systemUnderTest.operands(["nybble"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(2);
-    {
-        const failure =
-            systemUnderTest.currentLine().failures[0] as ExceptionFailure;
-        expect(failure.kind).toBe("js_error");
-        expect(failure.exception).toBe("ReferenceError");
-        expect(failure.message).toBe("plop is not defined");
-        expect(result).toEqual([0]);
-    } {
-        const failure =
-            systemUnderTest.currentLine().failures[1] as AssertionFailure;
-        expect(failure.kind).toBe("value_type");
-        expect(failure.expected).toBe("nybble");
-        expect(failure.actual).toBe("string: ()");
-        expect(failure.location).toEqual({"operand": 1});
-        expect(result).toEqual([0]);
-    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "js_error",
+        "exception": "ReferenceError", "message": "plop is not defined"
+    }, {
+        "kind": "value_type",
+        "expected": "nybble", "actual": "string: ()",
+        "location": {"operand": 1}
+    }]);
+    expect(result).toEqual([0]);
 });

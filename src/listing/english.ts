@@ -68,12 +68,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Instruction mnemonic",
         failure as ClueFailure
     )),
-    "operand_offsetNotLdd": (failure) => withLocation(failure, [
-        "An Index offset in the second parameter can only be used on the LDD instruction"
-    ]),
-    "operand_offsetNotStd": (failure) => withLocation(failure, [
-        "An Index offset in the first parameter can only be used on the STD instruction"
-    ]),
     "operand_offsetX": (failure) => withLocation(failure, [
         "Index offset instructions only operate on the Y or Z registers"
     ]),

@@ -13,6 +13,7 @@ const bitSource = (decimal: number) => {
 };
 
 export type TemplateOperand =
+    | "x"  // Index (Indirect)
     | "r"  // register (pair)
     | "s"  // source register
     | "d"  // destination register

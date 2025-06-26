@@ -17,8 +17,11 @@ const limits: Record<
     "onlyZ":               [undefined, undefined, undefined               ],
     "optionalZ+":          [undefined, undefined, undefined               ],
     "ZorZ+":               [undefined, undefined, undefined               ],
+    "indexWithOffset":     [undefined, undefined, undefined               ],
+    "indexIndirect":       [undefined, undefined, undefined               ],
     "nybble":              [        0,      0x0f, undefined               ],
     "6BitNumber":          [        0,  0b111111, undefined               ],
+    "6BitOffset":          [        0,  0b111111, undefined               ],
     "byte":                [        0,      0xff, undefined               ],
     "invertedByte":        [        0,      0xff, undefined               ],
     "bitIndex":            [        0,         7, undefined               ],
@@ -32,7 +35,7 @@ const limits: Record<
 
 export const range = (
     given: number, operandType: OperandType
-): Failure | undefined => {
+): Failure | number => {
     const [min, max, specificValues] = limits[operandType];
     const reasons: Array<string> = [];
     if (max != undefined && given > max) {
@@ -44,10 +47,7 @@ export const range = (
     if (specificValues != undefined && !specificValues.includes(given)) {
         reasons.push(`${given} != (${specificValues.join(",")})`);
     }
-    if (reasons.length == 0) {
-        return undefined;
-    }
-    return reasons.length == 0 ? undefined : assertionFailure(
-        "value_type", operandType, reasons.join(", ")
-    );
+    return reasons.length == 0
+        ? given
+        : assertionFailure("value_type", operandType, reasons.join(", "));
 };

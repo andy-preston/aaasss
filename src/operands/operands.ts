@@ -3,7 +3,7 @@ import type { CurrentLine } from "../line/current-line.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import type { OperandType } from "./data-types.ts";
+import type { Conversion, OperandType } from "./data-types.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure } from "../failure/bags.ts";
@@ -16,8 +16,7 @@ export const operands = (
     symbolTable: SymbolTable, cpuRegisters: CpuRegisters,
     programMemory: ProgramMemory, jsExpression: JsExpression
 ) => {
-    const converted = numeric(symbolTable, cpuRegisters, jsExpression);
-    const scaled = scale(programMemory);
+    let indexOffsetAt = -1;
 
     const optional = (requiredTypes: Array<OperandType>) => {
         const count = requiredTypes.filter(
@@ -40,7 +39,10 @@ export const operands = (
                 ));
             }
         } else {
-            if (requiredTypes.length != actualLength) {
+            const requiredLength = indexOffsetAt < 0
+                ? requiredTypes.length
+                : requiredTypes.length - 1;
+            if (requiredLength != actualLength) {
                 addFailure(currentLine().failures, assertionFailure(
                     "operand_count", `${requiredTypes.length}`, `${actualLength}`
                 ));
@@ -48,33 +50,36 @@ export const operands = (
         }
     };
 
+    const operand = (index: number) => {
+        const operand = currentLine().operands[index];
+        return operand ? operand : "";
+    }
+
+    const operations: Array<Conversion> = [
+        numeric(symbolTable, cpuRegisters, jsExpression),
+        range as Conversion,
+        scale(programMemory)
+    ];
+
     return (requiredTypes: Array<OperandType>): Array<number> => {
+        indexOffsetAt = requiredTypes.findIndex(
+            requiredType => requiredType == "indexWithOffset"
+        );
         lengthMatchCheck(requiredTypes);
-
         return requiredTypes.map((requiredType, index) => {
-            const numeric = converted(
-                currentLine().operands[index], requiredType
-            );
-            if (typeof numeric != "number") {
-                numeric.location = {"operand": index + 1};
-                addFailure(currentLine().failures, numeric);
-                return 0;
+            const useIndex = indexOffsetAt < 0 || index <= indexOffsetAt
+                ? index : index - 1
+            let value: string | number = operand(useIndex);
+            for (const operation of operations) {
+                const result = operation(value, requiredType);
+                if (typeof result != "number") {
+                    result.location = {"operand": useIndex + 1};
+                    addFailure(currentLine().failures, result);
+                    return 0;
+                }
+                value = result;
             }
-
-            const invalid = range(numeric, requiredType);
-            if (invalid) {
-                invalid.location = {"operand": index + 1};
-                addFailure(currentLine().failures, invalid);
-                return 0;
-            }
-
-            const result = scaled(numeric, requiredType);
-            if (typeof result == "number") {
-                return result;
-            }
-            result.location = {operand: index + 1};
-            addFailure(currentLine().failures, result);
-            return 0;
+            return value as number;
         });
     };
 };

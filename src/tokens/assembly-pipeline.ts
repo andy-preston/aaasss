@@ -3,7 +3,6 @@ import type { CurrentLine } from "../line/current-line.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure } from "../failure/bags.ts";
-import { pushOperandCheckingIndexOffset } from "./index-offset.ts";
 import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
 
@@ -38,15 +37,7 @@ export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
     }
 
     const operandsList = splitOperands(operandsText);
-    const fullOperands: Array<string> = [];
-
-    operandsList.slice(0, 2).forEach(operand => {
-        pushOperandCheckingIndexOffset(
-            operand, mnemonic, fullOperands, currentLine()
-        );
-    });
-
-    currentLine().operands = fullOperands.map(upperCaseRegisters);
+    currentLine().operands = operandsList.map(upperCaseRegisters);
     currentLine().label = label;
     currentLine().mnemonic = mnemonic;
 };
