@@ -62,7 +62,7 @@ export const objectCode = (
         assemblyIsActivated = required;
     };
 
-    const poke = (data: Array<number | string>): DirectiveResult => {
+    const poke = (data: Array<unknown>): DirectiveResult => {
         if (!disabled()) {
             toLine(pokedBytes(data, currentLine().failures), false);
         }

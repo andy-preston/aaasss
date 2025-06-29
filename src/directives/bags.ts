@@ -27,7 +27,7 @@ export type ValueDirective = {
 
 export type DataDirective = {
     "type": "dataDirective",
-    "it": (data: Array<number | string>) => DirectiveResult
+    "it": (data: Array<unknown>) => DirectiveResult
 };
 
 export type FunctionDefineDirective = {

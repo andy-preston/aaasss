@@ -241,56 +241,7 @@ Deno.test("A ValueDirective has a string and a NUMERIC parameter", () => {
     expect(systemUnderTest.currentLine().failures.length).toBe(0);
 });
 
-Deno.test("A DataDirective can't have boolean parameters", () => {
-    const systemUnderTest = testSystem();
-    const untyped = systemUnderTest.directiveFunction("plop", {
-        "type": "dataDirective",
-        "it": (_data: Array<string | number>) => ""
-    });
-    expect(untyped(false)).toBe("");
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure =
-        systemUnderTest.currentLine().failures[0] as AssertionFailure;
-    expect(failure.kind).toBe("value_type");
-    expect(failure.expected).toBe("string, number");
-    expect(failure.actual).toBe("boolean: (false)");
-    expect(failure.location).toEqual({"parameter": 1});
-});
-
-Deno.test("A DataDirective can't have object or array parameters", () => {
-    const systemUnderTest = testSystem();
-    const untyped = systemUnderTest.directiveFunction("plop", {
-        "type": "dataDirective",
-        "it": (_data: Array<string | number>) => ""
-    });
-    expect(untyped({}, [])).toBe("");
-    expect(systemUnderTest.currentLine().failures.length).toBe(2);
-    {
-        const failure =
-            systemUnderTest.currentLine().failures[0] as AssertionFailure;
-        expect(failure.kind).toBe("value_type");
-        expect(failure.expected).toBe("string, number");
-        expect(failure.actual).toBe("object: ([object Object])");
-        expect(failure.location).toEqual({"parameter": 1});
-    } {
-        const failure =
-            systemUnderTest.currentLine().failures[1] as AssertionFailure;
-        expect(failure.kind).toBe("value_type");
-        expect(failure.expected).toBe("string, number");
-        expect(failure.actual).toBe("array: ()");
-        expect(failure.location).toEqual({"parameter": 2});
-    }
-});
-
-Deno.test("A DataDirective has any number of string or NUMERIC parameters", () => {
-    const systemUnderTest = testSystem();
-    const untyped = systemUnderTest.directiveFunction("plop", {
-        "type": "dataDirective",
-        "it": (_data: Array<string | number>) => ""
-    });
-    expect(untyped("hello", 2, 3, "goodbye")).toBe("");
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
-});
+// A DataDirective is expected to do it's own type checking!
 
 Deno.test("A FunctionUseDirective can't have boolean parameters", () => {
     const systemUnderTest = testSystem();

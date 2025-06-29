@@ -21,10 +21,7 @@ export const directiveFunction = (currentLine: CurrentLine) => {
 
     const dataDirective = (
         directive: DataDirective
-    ) => (...actual: Array<unknown>) => {
-        const use = parameters.variable(["string", "number"], actual, 0);
-        return directive.it(use as Array<number | string>);
-    };
+    ) => (...actual: Array<unknown>) => directive.it(actual);
 
     const functionDefineDirective = (
         directive: FunctionDefineDirective

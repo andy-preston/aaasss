@@ -6,7 +6,7 @@ import { valueTypeFailure } from "../failure/bags.ts";
 const textEncoder = new TextEncoder();
 
 export const pokedBytes = (
-    data: Array<number | string>, failures: Array<Failure>
+    data: Array<unknown>, failures: Array<Failure>
 ): Array<number> => data.flatMap((item, index) => {
     if (typeof item == "string") {
         return Array.from(textEncoder.encode(item));

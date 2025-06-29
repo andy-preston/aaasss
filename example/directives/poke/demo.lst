@@ -1,0 +1,52 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("AT Tiny 2313"); }}
+                      2
+                      3     ; Poke inserts bytes directly into the object file
+                      4
+                      5     ; This odd number of bytes will be zero padded to word align
+000000 01 02 03 04    6     {{ poke(1, 2, 3, 4, 5, 6, 7); }}
+000002 05 06 07 00
+000004 48 65 6C 6C    7     {{ poke("Hello there!"); }}
+000006 6F 20 74 68
+000008 65 72 65 21
+                      8
+                      9     ; It's OK to poke multiple times in a JavaScript block
+                     10     {{
+                     11         const stuff = [1, 2, 3, 4];
+                     12         poke(...stuff);
+                     13         poke(...stuff);
+00000A 01 02 03 04   14     }}
+00000C 01 02 03 04
+                     15
+                     16     ; Sorry, Any errors will be reported on the whole code block
+                     17     {{
+                     18         const stuff = [1, 2, 3, 4];
+                     19         poke(stuff);
+                     20         poke(...stuff);
+00000E 00 00 01 02   21     }}
+000010 03 04            value_type
+                        location.parameter: 1
+                        expected: string, byte
+                        actual: array: (1,2,3,4)
+                     22
+                     23     ; If you need a label on your data, you need to put it on a line before
+                     24     ; the poke
+                     25 here:
+000011 FF 00         26     {{ poke(0xff); }}
+                     27
+                     28     ; Or use a lebel directive in your code block
+000012 FF 00         29     {{ label("there"); poke(0xff); }}
+                     30
+                     31     ; Sorry, but this is because all directives are done before the actual
+                     32     ; assembly code.
+000013 FA 00 20 E0   33 theLdi: {{ poke(0xfa); }} LDI R18, 00
+                     34
+
+Symbol Table
+============
+
+here   | 17 | 11 | /var/tmp/demo.asm:25 | 0
+R18    |    |    | REGISTER             | 1
+theLdi | 20 | 14 | /var/tmp/demo.asm:33 | 0
+there  | 18 | 12 | /var/tmp/demo.asm:29 | 0

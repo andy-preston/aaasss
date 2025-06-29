@@ -76,7 +76,8 @@ export const directiveParameters = (currentLine: CurrentLine) => {
             addFailure(currentLine().failures, failure);
         }
         return expected.length == 1 && expected[0] == "number"
-            ? numeric(actual, index) : actual;
+            ? numeric(actual, index)
+            : actual;
     });
 
     return {"firstName": firstName, "fixed": fixed, "variable": variable};
