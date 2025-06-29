@@ -1,0 +1,34 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATTiny24"); }}
+                      2
+000000 00 30          3     CPI R16, 0
+000001 F0 30          4     CPI R31, 0
+000002 0F 3F          5     CPI R16, 255
+000003 35 33          6     CPI R19, 53
+000004 23 41          7     SBCI R18, 19
+000005 1F 52          8     SUBI R17, 47
+000006 16 65          9     ORI R17, 86
+000007 30 64         10     SBR R19, 64
+000008 46 70         11     ANDI R20, 6
+000009 7F 77         12     CBR R23, 128
+00000A 1D E4         13     LDI R17, 77
+00000B 10 E8         14     LDI R17, complement(-128)
+00000C 3F EF         15     LDI R19, 255
+00000D 3F EF         16     SER R19
+                     17
+00000E 15 96         18     ADIW R26, 5
+00000F D9 97         19     SBIW R26, 57
+                     20
+
+Symbol Table
+============
+
+R16 |   |   | REGISTER | 2
+R17 |   |   | REGISTER | 4
+R18 |   |   | REGISTER | 1
+R19 |   |   | REGISTER | 4
+R20 |   |   | REGISTER | 1
+R23 |   |   | REGISTER | 1
+R26 |   |   | REGISTER | 2
+R31 |   |   | REGISTER | 1

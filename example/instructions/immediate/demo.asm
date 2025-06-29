@@ -1,4 +1,5 @@
     {{ device("ATTiny24"); }}
+
     CPI R16, 0
     CPI R31, 0
     CPI R16, 255
@@ -13,3 +14,6 @@
     LDI R17, complement(-128)
     LDI R19, 255
     SER R19
+
+    ADIW R26, 5
+    SBIW R26, 57
