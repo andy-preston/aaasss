@@ -1,0 +1,56 @@
+/var/tmp/demo.asm
+=================
+                      1     {{ device("ATTiny24") }}
+                      2
+000000 EC 90          3     LD R14, X
+000001 FD 90          4     LD R15, X+
+000002 0E 91          5     LD R16, -X
+000003 18 81          6     LD R17, Y
+000004 29 91          7     LD R18, Y+
+000005 3A 91          8     LD R19, -Y
+000006 50 81          9     LD R21, Z
+000007 61 91         10     LD R22, Z+
+000008 72 91         11     LD R23, -Z
+                     12
+000009 0C 92         13     ST X, R0
+00000A 1D 92         14     ST X+, R1
+00000B 2E 92         15     ST -X, R2
+00000C 38 82         16     ST Y, R3
+00000D 49 92         17     ST Y+, R4
+00000E 5A 92         18     ST -Y, R5
+00000F 70 82         19     ST Z, R7
+000010 81 92         20     ST Z+, R8
+000011 92 92         21     ST -Z, R9
+                     22
+000012 48 85         23     LDD R20, Y+8
+000013 86 81         24     LDD R24, Z+6
+                     25
+000014 69 86         26     STD Y+9, R6
+000015 A5 86         27     STD Z+13, R10
+                     28
+
+Symbol Table
+============
+
+R0  |   |   | REGISTER | 1
+R1  |   |   | REGISTER | 1
+R2  |   |   | REGISTER | 1
+R3  |   |   | REGISTER | 1
+R4  |   |   | REGISTER | 1
+R5  |   |   | REGISTER | 1
+R6  |   |   | REGISTER | 1
+R7  |   |   | REGISTER | 1
+R8  |   |   | REGISTER | 1
+R9  |   |   | REGISTER | 1
+R10 |   |   | REGISTER | 1
+R14 |   |   | REGISTER | 1
+R15 |   |   | REGISTER | 1
+R16 |   |   | REGISTER | 1
+R17 |   |   | REGISTER | 1
+R18 |   |   | REGISTER | 1
+R19 |   |   | REGISTER | 1
+R20 |   |   | REGISTER | 1
+R21 |   |   | REGISTER | 1
+R22 |   |   | REGISTER | 1
+R23 |   |   | REGISTER | 1
+R24 |   |   | REGISTER | 1

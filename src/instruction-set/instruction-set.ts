@@ -1,4 +1,5 @@
 import type { CurrentLine } from "../line/current-line.ts";
+import type { InstructionOperands } from "../operands/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
@@ -10,25 +11,23 @@ export const instructionSet = (
     currentLine: CurrentLine, symbolTable: SymbolTable
 ) => {
     const unsupported = unsupportedInstructions(symbolTable);
-    let variations = nonReducedCore;
+    let reducedCoreVariations = nonReducedCore;
 
-    const reducedCore = (value: boolean) => {
-        if (value) {
-            variations = withReducedCore;
-        }
+    const reducedCore = (isIt: boolean) => {
+        reducedCoreVariations = isIt ? withReducedCore : nonReducedCore;
     };
 
-    const instruction = () => {
+    const instruction = (): [string, InstructionOperands?] | undefined => {
         if (unsupported.isIt(currentLine())) {
             return undefined;
         }
 
         const templateAndOperands =
-            ["LPM", "ELPM"].includes(currentLine().mnemonic)
-            && currentLine().operands.length == 0
+            currentLine().mnemonic in lpmImplied
+                && currentLine().operands.length == 0
             ? lpmImplied[currentLine().mnemonic]
-            : currentLine().mnemonic in variations
-            ? variations[currentLine().mnemonic]
+            : currentLine().mnemonic in reducedCoreVariations
+            ? reducedCoreVariations[currentLine().mnemonic]
             : instructions[currentLine().mnemonic];
 
         if (templateAndOperands == undefined) {
