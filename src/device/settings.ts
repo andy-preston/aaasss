@@ -3,7 +3,6 @@ import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { SpecItems } from "./data-types.ts";
 
-
 export const deviceSettings = (
     instructionSet: InstructionSet, cpuRegisters: CpuRegisters,
     symbolTable: SymbolTable,
