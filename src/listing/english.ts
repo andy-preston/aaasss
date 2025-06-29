@@ -68,9 +68,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Instruction mnemonic",
         failure as ClueFailure
     )),
-    "operand_offsetX": (failure) => withLocation(failure, [
-        "Index offset instructions only operate on the Y or Z registers"
-    ]),
     "operand_count": (failure) => withLocation(failure, assertionFailure(
         ["Number of operands not expected"],
         "Expected", "Actual",
@@ -139,11 +136,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "type_relativeAddress": (failure) => withLocation(failure, [
         "Relative address"
     ]),
-    "type_bytesOrString": (failure) => withLocation(failure, numericTypeFailure(
-        ["Should be a string or an array of byte values"],
-        "Defined range", "Actual value",
-        failure as NumericTypeFailure
-    )),
     "type_positive": (failure) => withLocation(failure, numericTypeFailure(
         ["This should be a positive number only"],
         "Defined value", "Actual value",

@@ -9,12 +9,12 @@ export const failureKinds = {
         "ram_sizeUnknown", "ram_stackAllocated"
     ],
     "assertion": [
-        "macro_params", "operand_count", "operand_offsetX",
+        "macro_params", "operand_count",
         "parameter_count",
         "programMemory_outOfRange", "ram_outOfRange", "value_type"
     ],
     "numericType": [
-        "type_bytesOrString", "type_relativeAddress", "type_positive"
+        "type_relativeAddress", "type_positive"
     ],
     "clue": [
         "file_notFound",  "device_notFound", "register_notFound",
