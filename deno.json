@@ -1,8 +1,8 @@
 {
     "tasks": {
         "run": "deno run -A ./src/cli.ts",
-        "check": "deno test --allow-read --ignore=\"**/*doc_test*\" && deno lint",
-        "doctest": "deno test --allow-read --allow-write --ignore=\"**/*.test*\"",
+        "check": "deno test --allow-read --ignore=\"src/examples-as-tests/\" && deno lint",
+        "examples": "deno test --allow-read --allow-write src/examples-as-tests/examples.test.ts",
         "getCoverage": "deno test --clean --allow-read --allow-write --coverage=_coverage",
         "coverage": {
             "dependencies": ["getCoverage"],
