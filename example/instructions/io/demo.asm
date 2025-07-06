@@ -1,4 +1,4 @@
-    {{ device("ATTiny24"); }}
+    .device("ATTiny24")
     ; Note that we're adding 0x20 to literal IO Address here
     IN R19, 25 + 0x20
     ; Because operands are given as data memory addresses

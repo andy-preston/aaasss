@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("ATMega 328"); }}
+                      1     .device("ATMega 328")
                       2 branch:
                       3
                       4     ; Single Register Direct

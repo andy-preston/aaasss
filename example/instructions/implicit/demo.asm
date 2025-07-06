@@ -1,4 +1,4 @@
-    {{ device("AT Mega 328"); }}
+    .device("AT Mega 328")
     BREAK
     NOP
     RET

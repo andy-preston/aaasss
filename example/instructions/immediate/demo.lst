@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("ATTiny24"); }}
+                      1     .device("ATTiny24")
                       2
 000000 00 30          3     CPI R16, 0
 000001 F0 30          4     CPI R31, 0

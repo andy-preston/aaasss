@@ -1,4 +1,4 @@
-    {{ device("Fake Device"); }}
+    .device("Fake Device")
     SPM
     SPM Z+
     ELPM

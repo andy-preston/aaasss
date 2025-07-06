@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("ATTiny24"); }}
+                      1     .device("ATTiny24")
                       2     ; Note that we're adding 0x20 to literal IO Address here
 000000 39 B3          3     IN R19, 25 + 0x20
                       4     ; Because operands are given as data memory addresses

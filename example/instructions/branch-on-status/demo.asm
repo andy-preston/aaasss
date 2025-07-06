@@ -1,4 +1,4 @@
-    {{ device("AT Tiny 24"); }}
+    .device("AT Tiny 24")
 back:
     NOP
     NOP

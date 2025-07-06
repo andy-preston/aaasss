@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("ATtiny20"); }}
+                      1     .device("ATtiny20")
 000000 E8 A7          2     LDS R30, 12 * 10
 000001 2E AF          3     STS 126, R18
                       4

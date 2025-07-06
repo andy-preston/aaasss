@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("AT Mega 168A"); }}
+                      1     .device("AT Mega 168A")
 000000 0C 94 00 00    2     JMP 9216
                         programMemory_outOfRange
                         location.operand: 1

@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("AT Mega 328"); }}
+                      1     .device("AT Mega 328")
 000000 98 95          2     BREAK
 000001 00 00          3     NOP
 000002 08 95          4     RET

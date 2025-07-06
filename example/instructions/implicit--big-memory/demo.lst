@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("imaginary"); }}
+                      1     .device("imaginary")
 000000 19 94          2     EIJMP
 000001 19 95          3     EICALL
                       4

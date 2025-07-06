@@ -1,3 +1,3 @@
-    {{ device("imaginary"); }}
+    .device("imaginary")
     EIJMP
     EICALL

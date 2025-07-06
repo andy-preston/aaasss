@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("DemoDevice"); }}
+                      1     .device("DemoDevice")
 000000 46 93          2     LAC R30, R20
                         value_type
                         location.operand: 1

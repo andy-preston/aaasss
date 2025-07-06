@@ -1,4 +1,4 @@
-    {{ device("ATMega 328"); }}
+    .device("ATMega 328")
 branch:
 
     ; Single Register Direct

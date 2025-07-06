@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("testing"); }}
+                      1     .device("testing")
 000000 0B 94          2     DES 0x00
 000001 1B 94          3     DES 0x01
 000002 2B 94          4     DES 0x02

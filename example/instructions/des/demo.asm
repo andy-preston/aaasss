@@ -1,4 +1,4 @@
-    {{ device("testing"); }}
+    .device("testing")
     DES 0x00
     DES 0x01
     DES 0x02

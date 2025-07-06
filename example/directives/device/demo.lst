@@ -8,22 +8,22 @@
                         programMemory_sizeUnknown
                       3
                       4 ; The device name needs to be a string
-                      5     {{ device(ATTiny24); }}
+                      5     .device(ATTiny24)
                         js_error
                         exception: ReferenceError
                         message: ATTiny24 is not defined
                       6
                       7 ; Once the device is selected, we can access the IO Port names, etc
-                      8     {{ device("ATTiny24"); }}
+                      8     .device("ATTiny24")
 000000 E0 91 45 00    9     LDS R30, ICR1H
                      10
                      11 ; But only one device can be selected per assembly.
                      12 ; Even if it's the same name as the previous one.
-                     13     {{ device("ATTiny24"); }}
+                     13     .device("ATTiny24")
                         symbol_alreadyExists
                         name: deviceName
                         definition: /var/tmp/demo.asm:8
-                     14     {{ device("ATTiny2313"); }}
+                     14     .device("ATTiny2313")
                         symbol_alreadyExists
                         name: deviceName
                         definition: /var/tmp/demo.asm:8

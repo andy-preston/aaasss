@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1       {{ device("ATTiny24"); }}
+                      1       .device("ATTiny24")
 000000 B1 F8          2 plop: BLD R11, 1
 000001 C3 FA          3 plop: BST R12, 3
                         symbol_alreadyExists

@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("Fake Device"); }}
+                      1     .device("Fake Device")
 000000 E8 95          2     SPM X
                         value_type
                         location.operand: 1

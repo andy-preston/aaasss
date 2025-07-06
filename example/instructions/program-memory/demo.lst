@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("Fake Device"); }}
+                      1     .device("Fake Device")
 000000 E8 95          2     SPM
 000001 F8 95          3     SPM Z+
 000002 D8 95          4     ELPM

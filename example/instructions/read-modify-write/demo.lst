@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("DemoDevice"); }}
+                      1     .device("DemoDevice")
 000000 46 93          2     LAC Z, R20
 000001 55 93          3     LAS Z, R21
 000002 67 93          4     LAT Z, R22

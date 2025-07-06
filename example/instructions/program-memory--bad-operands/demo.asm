@@ -1,4 +1,4 @@
-    {{ device("Fake Device"); }}
+    .device("Fake Device")
     SPM X
     ELPM R12, 10
     LPM R25, Y

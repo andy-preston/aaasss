@@ -1,4 +1,4 @@
-    {{ device("AT Tiny 24"); }}
+    .device("AT Tiny 24")
     BCLR 1
     CLC
     CLZ

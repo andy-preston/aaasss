@@ -1,4 +1,4 @@
-    {{ device("ATTiny24"); }}
+    .device("ATTiny24")
 
     CPI R16, 0
     CPI R31, 0

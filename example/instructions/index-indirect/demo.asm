@@ -1,4 +1,4 @@
-    {{ device("ATTiny24") }}
+    .device("ATTiny24")
 
     LD R14, X
     LD R15, X+

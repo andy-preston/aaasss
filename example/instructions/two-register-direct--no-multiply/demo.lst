@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("ATTiny 24"); }}
+                      1     .device("ATTiny 24")
                       2     MUL R0, R1
                         notSupported_mnemonic
                         used: MUL

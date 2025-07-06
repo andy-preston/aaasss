@@ -1,6 +1,6 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("ATTiny24") }}
+                      1     .device("ATTiny24")
                       2
 000000 EC 90          3     LD R14, X
 000001 FD 90          4     LD R15, X+
