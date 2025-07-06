@@ -3,7 +3,6 @@ import type { CurrentLine } from "../line/current-line.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure } from "../failure/bags.ts";
-import { splitSource } from "./split-source.ts";
 import { upperCaseRegisters } from "./upper-case-registers.ts";
 
 const anyWhitespace = /\s+/g;
@@ -16,6 +15,20 @@ const clean = (sourceLine: string) =>
 const splitOperands = (text: string): Array<string> =>
     text == "" ? [] : text.split(",").map(operand => operand.trim());
 
+const splitSource = (
+    keep: "before" | "after", marker: string, raw: string
+): [string, string] => {
+    const position = raw.indexOf(marker);
+    if (position == -1) {
+        return keep == "before" ? [raw.trim(), ""] : ["", raw.trim()];
+    }
+
+    return [
+        raw.substring(0, position).trim(),
+        raw.substring(position + 1).trim()
+    ];
+};
+
 export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
     const cleaned = clean(currentLine().assemblySource);
 
@@ -26,11 +39,18 @@ export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
         ));
     }
 
-    const mnemonicAndOperands = splitSource("before", " ", withoutLabel);
+    const mnemonicAndOperands: [string, string] =
+        withoutLabel.charAt(0) == "."
+            ? [".", withoutLabel.substring(1).trim()]
+            : splitSource("before", " ", withoutLabel);
+
     const mnemonic = mnemonicAndOperands[0].toUpperCase();
     const operandsText = mnemonicAndOperands[1];
 
-    if (mnemonic != "" && !mnemonic.match("^[A-Z]+$")) {
+    const mnemonicIsValid = ["", "."].includes(mnemonic)
+        || mnemonic.match("^[A-Z]+$");
+
+    if (!mnemonicIsValid) {
         addFailure(currentLine().failures, boringFailure(
             "syntax_invalidMnemonic"
         ));
