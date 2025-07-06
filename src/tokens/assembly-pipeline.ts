@@ -13,7 +13,13 @@ const clean = (sourceLine: string) =>
     sourceLine.replace(comment, "").replace(anyWhitespace, " ").trim();
 
 const splitOperands = (text: string): Array<string> =>
-    text == "" ? [] : text.split(",").map(operand => operand.trim());
+    text == "" ? [] : text.split(
+        ","
+    ).map(
+        operand => operand.trim()
+    ).map(
+        upperCaseRegisters
+    );
 
 const splitSource = (
     keep: "before" | "after", marker: string, raw: string
@@ -56,8 +62,7 @@ export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
         ));
     }
 
-    const operandsList = splitOperands(operandsText);
-    currentLine().operands = operandsList.map(upperCaseRegisters);
+    currentLine().operands = splitOperands(operandsText);
     currentLine().label = label;
     currentLine().mnemonic = mnemonic;
 };
