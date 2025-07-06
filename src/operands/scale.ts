@@ -7,6 +7,7 @@ export type Scaler = ScalerFunction | undefined;
 
 export const scale = (programMemory: ProgramMemory) => {
     const scalers: Record<OperandType, Scaler> = {
+        "directiveDummy":      undefined,
         "register":            undefined,
         "registerPair":        value => (value - 24) / 2,
         "anyRegisterPair":     value => value / 2,

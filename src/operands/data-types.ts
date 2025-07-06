@@ -16,6 +16,7 @@ export type Conversion = (
 ) => number | Failure;
 
 export type OperandType =
+    "directiveDummy" |
     "register" | "anyRegisterPair" | "registerPair" |
     "registerImmediate" | "registerMultiply" |
     "onlyZ" | "optionalZ+" | "ZorZ+" | "indexIndirect" |

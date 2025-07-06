@@ -7,6 +7,7 @@ import { assertionFailure } from "../failure/bags.ts";
 const limits: Record<
     OperandType,           [      Min,       Max, AllowedValues           ]
 > = {
+    "directiveDummy":      [undefined, undefined, undefined               ],
     "register":            [        0,        31, undefined               ],
     "registerPair":        [undefined, undefined, [        24, 26, 28, 30]],
     "anyRegisterPair":     [undefined, undefined, [ 0,  2,  4,  6, 8,

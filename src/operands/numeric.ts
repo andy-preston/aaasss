@@ -17,6 +17,16 @@ export const numeric = (
         ? clueFailure("register_notFound", operand)
         : parseInt(symbolTable.use(operand) as string);
 
+    const expression = (
+        operand: string, _operandType: OperandType
+    ): number | Failure => {
+        if (!operand) {
+            return valueTypeFailure("directive", operand);
+        }
+        jsExpression(operand);
+        return 0;
+    }
+
     const aNumber = (
         operand: string, operandType: OperandType
     ): number | Failure => {
@@ -74,6 +84,7 @@ export const numeric = (
     }
 
     const converters: Record<OperandType, StringConversion> = {
+        "directiveDummy":      expression,
         "register":            register,
         "registerPair":        register,
         "anyRegisterPair":     register,

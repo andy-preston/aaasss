@@ -35,6 +35,11 @@ export const objectCode = (
             return;
         }
 
+        if (currentLine().mnemonic == ".") {
+            operands(["directiveDummy"]);
+            return;
+        }
+
         const encoded = encode();
         if (encoded != undefined) {
            toLine(encoded, true);
