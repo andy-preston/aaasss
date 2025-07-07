@@ -28,7 +28,7 @@ import { fileStack } from "../source-code/file-stack.ts";
 import { sourceCodeCoupling } from "../source-code/coupling.ts";
 import { symbolTableCoupling } from "../symbol-table/coupling.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { tokens } from "../tokens/assembly-pipeline.ts";
+import { tokensCoupling } from "../tokens/coupling.ts";
 import { assemblyPipeline as thePipeline } from "./assembly-pipeline.ts";
 import { outputFile } from "./output-file.ts";
 import { directiveFunction } from "../directives/directives.ts";
@@ -49,7 +49,7 @@ export const coupling = (
         $currentLine, $symbolTable, $directiveFunction
     );
     const $embeddedJs = embeddedJs($currentLine, $jsExpression);
-    const $tokens = tokens($currentLine);
+    const $tokensCoupling = tokensCoupling($currentLine);
     const $instructionSet = instructionSet($currentLine, $symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
     const $dataMemory = dataMemory($currentLine, $symbolTable);
@@ -111,7 +111,7 @@ export const coupling = (
             $macroCoupling.taggedLine,
             $programMemoryCoupling.lineAddress,
             $embeddedJs.pipeline,
-            $tokens,
+            $tokensCoupling,
             $macroCoupling.processedLine,
             $programMemoryCoupling.lineLabel,
             $objectCodeCoupling.line

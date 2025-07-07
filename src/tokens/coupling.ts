@@ -35,7 +35,9 @@ const splitSource = (
     ];
 };
 
-export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
+export const tokensCoupling = (
+    currentLine: CurrentLine
+): PipelineProcess => () => {
     const cleaned = clean(currentLine().assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
