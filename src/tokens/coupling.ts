@@ -3,7 +3,7 @@ import type { CurrentLine } from "../line/current-line.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure } from "../failure/bags.ts";
-import { upperCaseRegisters } from "./upper-case-registers.ts";
+import { operands } from "./operands.ts";
 
 const anyWhitespace = /\s+/g;
 const comment = /;.*$/;
@@ -11,15 +11,6 @@ const validLabel = /^\w*$/;
 
 const clean = (sourceLine: string) =>
     sourceLine.replace(comment, "").replace(anyWhitespace, " ").trim();
-
-const splitOperands = (text: string): Array<string> =>
-    text == "" ? [] : text.split(
-        ","
-    ).map(
-        operand => operand.trim()
-    ).map(
-        upperCaseRegisters
-    );
 
 const splitSource = (
     keep: "before" | "after", marker: string, raw: string
@@ -41,7 +32,9 @@ export const tokensCoupling = (
     const cleaned = clean(currentLine().assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
-    if (!validLabel.test(label)) {
+    if (validLabel.test(label)) {
+        currentLine().label = label;
+    } else {
         addFailure(currentLine().failures, boringFailure(
             "syntax_invalidLabel"
         ));
@@ -53,18 +46,17 @@ export const tokensCoupling = (
             : splitSource("before", " ", withoutLabel);
 
     const mnemonic = mnemonicAndOperands[0].toUpperCase();
-    const operandsText = mnemonicAndOperands[1];
 
     const mnemonicIsValid = ["", "."].includes(mnemonic)
         || mnemonic.match("^[A-Z]+$");
 
-    if (!mnemonicIsValid) {
+    if (mnemonicIsValid) {
+        currentLine().mnemonic = mnemonic;
+    } else {
         addFailure(currentLine().failures, boringFailure(
             "syntax_invalidMnemonic"
         ));
     }
 
-    currentLine().operands = splitOperands(operandsText);
-    currentLine().label = label;
-    currentLine().mnemonic = mnemonic;
+    currentLine().operands = operands(mnemonicAndOperands[1]);
 };

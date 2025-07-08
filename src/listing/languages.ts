@@ -13,8 +13,8 @@ export const location = (operand: string, parameter: string) =>
     (failure: Failure, messages: Array<string>) =>
         failure.location != undefined && "operand" in failure.location
         ? messages.concat([`${operand}: ${failure.location.operand}`])
-        :
-        failure.location != undefined && "parameter" in failure.location
+
+        : failure.location != undefined && "parameter" in failure.location
         ? messages.concat([`${parameter}: ${failure.location.parameter}`])
-        :
-        messages;
+
+        : messages;

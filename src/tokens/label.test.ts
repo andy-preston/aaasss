@@ -1,5 +1,3 @@
-import { BoringFailure } from "../failure/bags.ts";
-
 import { expect } from "jsr:@std/expect";
 import { testSystem } from "./testing.ts";
 
@@ -18,7 +16,7 @@ Deno.test("A line can contain JUST a label", () => {
     systemUnderTest.tokens();
     expect(systemUnderTest.currentLine().label).toBe("label");
     expect(systemUnderTest.currentLine().mnemonic).toBe("");
-    expect(systemUnderTest.currentLine().operands.length).toBe(0);
+    expect(systemUnderTest.currentLine().operands).toEqual([]);
 });
 
 Deno.test("A label must only contain alphanumerics or underscore", () => {
@@ -27,10 +25,9 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
             const systemUnderTest = testSystem();
             systemUnderTest.currentLine().assemblySource = sourceCode;
             systemUnderTest.tokens();
-            expect(systemUnderTest.currentLine().failures.length).toBe(1);
-            const failure =
-                systemUnderTest.currentLine().failures[0] as BoringFailure;
-            expect(failure.kind).toBe("syntax_invalidLabel");
+            expect(systemUnderTest.currentLine().failures).toEqual([{
+                "kind": "syntax_invalidLabel", "location": undefined
+            }]);
         }
     );
     ["countBytes:", "count_bytes:", "count_8bit:"].forEach(
@@ -38,7 +35,7 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
             const systemUnderTest = testSystem();
             systemUnderTest.currentLine().assemblySource = sourceCode;
             systemUnderTest.tokens();
-            expect(systemUnderTest.currentLine().failures.length).toBe(0);
+            expect(systemUnderTest.currentLine().failures).toEqual([]);
         }
     );
 });

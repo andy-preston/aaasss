@@ -16,7 +16,7 @@ Deno.test("Lines could be entirely blank", () => {
     systemUnderTest.tokens();
     expect(systemUnderTest.currentLine().label).toBe("");
     expect(systemUnderTest.currentLine().mnemonic).toBe("");
-    expect(systemUnderTest.currentLine().operands.length).toBe(0);
+    expect(systemUnderTest.currentLine().operands).toEqual([]);
 });
 
 Deno.test("Multiple spaces are reduced to one space", () => {
@@ -43,5 +43,5 @@ Deno.test("A line could be just a comment", () => {
     systemUnderTest.tokens();
     expect(systemUnderTest.currentLine().label).toBe("");
     expect(systemUnderTest.currentLine().mnemonic).toBe("");
-    expect(systemUnderTest.currentLine().operands.length).toBe(0);
+    expect(systemUnderTest.currentLine().operands).toEqual([]);
 });

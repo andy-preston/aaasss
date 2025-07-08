@@ -27,7 +27,7 @@ Deno.test("A missing parameter is tokenised as an empty string", () => {
     systemUnderTest.tokens();
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(systemUnderTest.currentLine().operands).toEqual(["", "23"]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 });
 
 Deno.test("Trailing commas count as an empty operand", () => {
@@ -36,7 +36,7 @@ Deno.test("Trailing commas count as an empty operand", () => {
     systemUnderTest.tokens();
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(systemUnderTest.currentLine().operands).toEqual(["R16", ""]);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 });
 
 Deno.test("Some instructions only have one operand", () => {
@@ -56,7 +56,7 @@ Deno.test("Some instructions have no operands at all", () => {
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(systemUnderTest.currentLine().label).toBe("label");
     expect(systemUnderTest.currentLine().mnemonic).toBe("RETI");
-    expect(systemUnderTest.currentLine().operands.length).toBe(0);
+    expect(systemUnderTest.currentLine().operands).toEqual([]);
 });
 
 Deno.test("Operands can contain whitespace and even be JS expressions", () => {
@@ -87,12 +87,28 @@ Deno.test("... unless they are register names", () => {
     expect(systemUnderTest.currentLine().operands).toEqual(["R16", "23"]);
 });
 
-Deno.test("... or index register names", () => {
+Deno.test("... or (word) index register names", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().assemblySource = "ldi x, 23";
     systemUnderTest.tokens();
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(systemUnderTest.currentLine().operands).toEqual(["X", "23"]);
+});
+
+Deno.test("... or (byte) index register names", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().assemblySource = "ldi zh, 23";
+    systemUnderTest.tokens();
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().operands).toEqual(["ZH", "23"]);
+});
+
+Deno.test("... or mixed-case (byte) index register names", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().assemblySource = "ldi Yl, 23";
+    systemUnderTest.tokens();
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().operands).toEqual(["YL", "23"]);
 });
 
 Deno.test("... or post/pre increment", () => {
@@ -101,4 +117,14 @@ Deno.test("... or post/pre increment", () => {
     systemUnderTest.tokens();
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(systemUnderTest.currentLine().operands).toEqual(["Z+", "R12"]);
+});
+
+Deno.test("Commas inside parentheses do not delimit operands", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().assemblySource = "cmp r12, testing(1,2,3)";
+    systemUnderTest.tokens();
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().operands).toEqual([
+        "R12", "testing(1,2,3)"
+    ]);
 });

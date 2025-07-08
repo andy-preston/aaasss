@@ -1,13 +1,13 @@
 /var/tmp/demo.asm
 =================
-                      1     {{ device("AT Tiny 2313"); }}
+                      1     .device("AT Tiny 2313")
                       2
                       3     ; Poke inserts bytes directly into the object file
                       4
                       5     ; This odd number of bytes will be zero padded to word align
-000000 01 02 03 04    6     {{ poke(1, 2, 3, 4, 5, 6, 7); }}
+000000 01 02 03 04    6     .poke(1, 2, 3, 4, 5, 6, 7)
 000002 05 06 07 00
-000004 48 65 6C 6C    7     {{ poke("Hello there!"); }}
+000004 48 65 6C 6C    7     .poke("Hello there!")
 000006 6F 20 74 68
 000008 65 72 65 21
                       8
@@ -30,23 +30,11 @@
                         expected: string, byte
                         actual: array: (1,2,3,4)
                      22
-                     23     ; If you need a label on your data, you need to put it on a line before
-                     24     ; the poke
-                     25 here:
-000011 FF 00         26     {{ poke(0xff); }}
-                     27
-                     28     ; Or use a lebel directive in your code block
-000012 FF 00         29     {{ label("there"); poke(0xff); }}
-                     30
-                     31     ; Sorry, but this is because all directives are done before the actual
-                     32     ; assembly code.
-000013 FA 00 20 E0   33 theLdi: {{ poke(0xfa); }} LDI R18, 00
-                     34
+                     23     ; You can put a label on your data
+000011 FF 00         24 here: .poke(0xff)
+                     25
 
 Symbol Table
 ============
 
-here   | 17 | 11 | /var/tmp/demo.asm:25 | 0
-R18    |    |    | REGISTER             | 1
-theLdi | 20 | 14 | /var/tmp/demo.asm:33 | 0
-there  | 18 | 12 | /var/tmp/demo.asm:29 | 0
+here | 17 | 11 | /var/tmp/demo.asm:24 | 0

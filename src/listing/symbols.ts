@@ -21,12 +21,14 @@ export const formattedSymbolTable = (symbolTable: SymbolTable) => {
             return [symbol[0], decimal, hex, symbol[2], `${symbol[3]}`];
         }
     );
+
     const width = stringSymbols.reduce(
         (widths, symbol) => widths.map(
             (width, index) => Math.max(width, symbol[index]!.length)
         ),
         [1, 1, 1, 1, 1]
     );
+
     return stringSymbols.map(
         (symbol) => symbol.map(
             (column, index) => column.padEnd(width[index]!)
