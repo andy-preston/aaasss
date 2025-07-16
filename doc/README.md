@@ -4,7 +4,7 @@
 
 + [AVR Instruction Set](../src/instruction-set/instructions.ts)
 + Operand Types
-+ Directives
++ [Directives](../src/directives/directive-list.ts)
 + [Supported Devices](../devices)
 
 ## Examples
