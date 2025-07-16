@@ -1,29 +1,21 @@
-import type { DirectiveFunction } from "../directives/directives.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { isDiscrete } from "../assembler/data-types.ts";
-import { isDirective } from "../directives/bags.ts";
 import { addFailure } from "../failure/add-failure.ts";
 import { exceptionFailure } from "../failure/bags.ts";
 
 const trailingSemicolons = /;*$/;
 
 export const jSExpression = (
-    currentLine: CurrentLine,
-    symbolTable: SymbolTable, directiveFunction: DirectiveFunction
+    currentLine: CurrentLine, symbolTable: SymbolTable
 ) => {
     const executionContext = new Proxy({}, {
         has(_target: object, symbolName: string) {
             return symbolTable.isDefinedSymbol(symbolName);
         },
         get(_target: object, symbolName: string) {
-            const symbolValue = symbolTable.use(symbolName);
-            return isDiscrete(symbolValue)
-                ? symbolValue
-                : isDirective(symbolValue)
-                ? directiveFunction(symbolName, symbolValue)
-                : undefined;
+            return symbolTable.use(symbolName);
         },
         set() {
             throw new ReferenceError("this_assignment");
@@ -47,7 +39,7 @@ export const jSExpression = (
 
     return (jsSource: string): string => {
         const clean = jsSource
-            .replaceAll("\n", " ")
+            .replaceAll("\n", "\\\n")
             .replaceAll('"', '\\\"')
             .trim()
             .replace(trailingSemicolons, "")

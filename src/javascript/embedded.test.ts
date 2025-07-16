@@ -1,5 +1,4 @@
 import { expect } from "jsr:@std/expect";
-import { directiveFunction } from "../directives/directives.ts";
 import { currentLine } from "../line/current-line.ts";
 import { emptyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -12,10 +11,7 @@ const testSystem = () => {
     $currentLine(emptyLine("plop.asm"));
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $directiveFunction = directiveFunction($currentLine);
-    const $jsExpression = jSExpression(
-        $currentLine, $symbolTable, $directiveFunction
-    );
+    const $jsExpression = jSExpression($currentLine, $symbolTable);
     const $embeddedJs = embeddedJs($currentLine, $jsExpression);
     return {
         "embeddedJs": $embeddedJs,
@@ -58,8 +54,29 @@ Deno.test("JS can be delimited by moustaches across several lines", () => {
 
     systemUnderTest.currentLine().rawSource = "message; }} matey!";
     systemUnderTest.embeddedJs.pipeline();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(systemUnderTest.currentLine().assemblySource).toBe("hello matey!");
+});
+
+Deno.test("JS can contain comments", () => {
+    const systemUnderTest = testSystem();
+
+    systemUnderTest.currentLine().rawSource = "{{ const test = 27; /* part 1 ";
+    systemUnderTest.embeddedJs.pipeline();
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+
+    systemUnderTest.currentLine().rawSource = ' part 2 */';
+    systemUnderTest.embeddedJs.pipeline();
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+
+    systemUnderTest.currentLine().rawSource = 'const message = "hello";';
+    systemUnderTest.embeddedJs.pipeline();
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+
+    systemUnderTest.currentLine().rawSource = "/* part 3 */ message; }}";
+    systemUnderTest.embeddedJs.pipeline();
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().assemblySource).toBe("hello");
 });
 
 Deno.test("Multiple opening moustaches are illegal", () => {

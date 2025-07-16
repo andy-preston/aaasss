@@ -1,16 +1,14 @@
 import type { PipelineProcess, PipelineReset } from "../assembler/data-types.ts";
-import type { FunctionUseDirective } from "../directives/bags.ts";
-import type { DirectiveResult } from "../directives/data-types.ts";
+import type { DirectiveResult, UncheckedParameters } from "../directives/data-types.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
-import type { Macro, MacroList, MacroName, MacroParameters } from "./data-types.ts";
+import type { Macro, MacroList, MacroName } from "./data-types.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure, clueFailure } from "../failure/bags.ts";
 import { macro } from "./data-types.ts";
 import { remapping } from "./remapping.ts";
-import { removedDirective } from "./removed-directive.ts";
 
 export const macros = (
     currentLine: CurrentLine, symbolTable: SymbolTable, fileStack: FileStack
@@ -19,27 +17,26 @@ export const macros = (
 
     let definingMacro: Macro | undefined = undefined;
     let definingName: MacroName = "";
-    let firstLine = false;
 
     const remap = remapping(macroList);
 
     const isDefining = () => definingMacro != undefined || definingName != "";
 
     const define = (
-        newName: MacroName, parameters: MacroParameters
+        newName: string, ...parameters: UncheckedParameters
     ): DirectiveResult => {
         if (isDefining()) {
             addFailure(currentLine().failures, clueFailure(
                 "macro_multiDefine", definingName
             ));
-            return;
+            return undefined;
         }
         if (symbolTable.alreadyInUse(newName)) {
-            return;
+            return undefined;
         }
         definingName = newName;
         definingMacro = macro(parameters);
-        firstLine = true;
+        return undefined;
     };
 
     const end = (): DirectiveResult => {
@@ -49,17 +46,16 @@ export const macros = (
         }
 
         macroList.set(definingName, definingMacro!);
-        if (useMacroDirective == undefined) {
-            throw new Error("Macro use directive is not defined");
-        }
-        symbolTable.userSymbol(definingName, useMacroDirective);
+        symbolTable.userSymbol(definingName, useDirective(definingName));
         definingMacro = undefined;
         definingName = "";
         return;
     };
 
-    const use = (
-        macroName: string, parameters: MacroParameters
+    const useDirective = (
+        macroName: string
+    ) => (
+        ...parameters: UncheckedParameters
     ): DirectiveResult => {
         const macro = macroList.get(macroName)!;
         const macroCount = symbolTable.count(macroName);
@@ -68,29 +64,43 @@ export const macros = (
         );
         if (prepareFailure) {
             addFailure(currentLine().failures, prepareFailure);
-            return;
+            return undefined;
         }
 
         if (!isDefining()) {
             fileStack.pushImaginary(remap.imaginaryFile(macroName, macroCount));
         }
-    };
-
-    const useMacroDirective: FunctionUseDirective = {
-        "type": "functionUseDirective", "it": use
+        return undefined;
     };
 
     const taggedLine: PipelineProcess = () => {
         currentLine().isDefiningMacro = isDefining();
     };
 
-    const recordedLine = () => {
-        const lineToPush = firstLine
-            ? removedDirective(definingName, currentLine()) : currentLine();
-        if (lineToPush != undefined) {
-            definingMacro!.lines.push(lineToPush);
+    const looksLikeEndDirective = (): boolean => {
+        if (currentLine().mnemonic != ".") {
+            return false;
         }
-        firstLine = false;
+        if (currentLine().operands.length == 0) {
+            return false;
+        }
+        const firstMatches = currentLine().operands[0]!.replace(
+            /\s/g, ""
+        ).match(
+            /^end\(\);?$/
+        );
+        if (firstMatches == null) {
+            return false;
+        }
+        return true;
+    };
+
+    const recordedLine = () => {
+        if (looksLikeEndDirective()) {
+            currentLine().isDefiningMacro = false;
+        } else {
+            definingMacro!.lines.push(currentLine());
+        }
     };
 
     const processedLine: PipelineProcess = () => {
@@ -111,7 +121,7 @@ export const macros = (
     };
 
     return {
-        "define": define, "end": end, "use": use,
+        "define": define, "end": end,
         "taggedLine": taggedLine, "processedLine": processedLine, "reset": reset
     };
 };

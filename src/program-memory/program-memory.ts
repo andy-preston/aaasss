@@ -5,6 +5,7 @@ import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure, boringFailure, numericTypeFailure } from "../failure/bags.ts";
+import { DirectiveResult } from "../directives/data-types.ts";
 
 export const programMemory = (
     currentLine: CurrentLine, symbolTable: SymbolTable
@@ -82,12 +83,12 @@ export const programMemory = (
         return;
     }
 
-    const origin = (newAddress: number): void => {
+    const origin = (newAddress: number): DirectiveResult => {
         if (currentLine().code.length > 0) {
             addFailure(currentLine().failures, boringFailure(
                 "programMemory_cantOrg"
             ));
-            return;
+            return undefined;
         }
 
         if (newAddress < 0) {
@@ -96,21 +97,19 @@ export const programMemory = (
             );
             negative.location = {"parameter": 1};
             addFailure(currentLine().failures, negative);
-            return;
+            return undefined;
         }
 
         const tooFar = setAddress(newAddress);
         if (tooFar) {
             tooFar.location = {"parameter": 1};
             addFailure(currentLine().failures, tooFar);
-            return;
+            return undefined;
         }
 
         currentLine().address = address;
+        return undefined;
     };
-
-    const label = (symbolName: string): void =>
-        symbolTable.persistentSymbol(symbolName, address);
 
     const lineAddress: PipelineProcess = () => {
         currentLine().address = address;
@@ -122,7 +121,7 @@ export const programMemory = (
 
     const lineLabel: PipelineProcess = () => {
         if (currentLine().label) {
-            label(currentLine().label);
+            symbolTable.persistentSymbol(currentLine().label, address);
         }
     };
 
@@ -138,7 +137,6 @@ export const programMemory = (
         "relativeAddress": relativeAddress,
         "address": () => address,
         "origin": origin,
-        "label": label,
         "addressStep": addressStep,
         "lineAddress": lineAddress,
         "lineLabel": lineLabel,

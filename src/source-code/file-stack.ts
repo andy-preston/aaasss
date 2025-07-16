@@ -55,6 +55,7 @@ export const fileStack = (
                 "iterator": fileLineByLine(contents)
             });
         }
+        return undefined;
     };
 
     // Another file could have been pushed by an include directive

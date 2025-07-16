@@ -8,6 +8,7 @@ import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure, definitionFailure } from "../failure/bags.ts";
 import { counting } from "./counting.ts";
 import { definitionList } from "./definition-list.ts";
+import { DirectiveResult } from "../directives/data-types.ts";
 
 export const symbolTable = (
     currentLine: CurrentLine, cpuRegisters: CpuRegisters
@@ -99,12 +100,15 @@ export const symbolTable = (
         return result;
     };
 
-    const persistentSymbol = (symbolName: string, value: SymbolValue): void => {
+    const persistentSymbol = (
+        symbolName: string, value: SymbolValue
+    ): DirectiveResult => {
         if (!alreadyInUse(symbolName, value)) {
             constSymbols.set(symbolName, value);
             counts.set(symbolName);
             definitions.set(symbolName);
         }
+        return undefined;
     };
 
     const builtInSymbol = (symbolName: string, value: SymbolValue): void => {

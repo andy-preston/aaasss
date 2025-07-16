@@ -1,4 +1,4 @@
 import type { DiscreteType } from "../assembler/data-types.ts";
-import type { BaggedDirective } from "../directives/bags.ts";
+import type { DirectiveFunction } from "../directives/data-types.ts";
 
-export type SymbolValue = DiscreteType | BaggedDirective;
+export type SymbolValue = DiscreteType | DirectiveFunction;

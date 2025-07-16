@@ -1,4 +1,3 @@
-import type { BaggedDirective } from "../directives/bags.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 
 import { expect } from "jsr:@std/expect";
@@ -7,11 +6,9 @@ import { testSystem } from "./testing.ts";
 Deno.test("A mnemonic of dot evaluates a mock operand", () => {
     const systemUnderTest = testSystem();
     let directiveWasExecuted = false;
-    const testDirective: BaggedDirective = {
-        "type": "voidDirective",
-        "it": (): DirectiveResult => {
-            directiveWasExecuted = true;
-        }
+    const testDirective = (): DirectiveResult => {
+        directiveWasExecuted = true;
+        return undefined;
     };
     systemUnderTest.symbolTable.builtInSymbol("testDirective", testDirective);
     systemUnderTest.currentLine().mnemonic = ".";
@@ -46,11 +43,10 @@ Deno.test("A dot must have one operand (directive)", () => {
     }]);
 });
 
-Deno.test("A dot must have one operand (directive)", () => {
+Deno.test("A dot can't have multiple operands", () => {
     const systemUnderTest = testSystem();
-    const testDirective: BaggedDirective = {
-        "type": "voidDirective",
-        "it": (): DirectiveResult => {}
+    const testDirective = (): DirectiveResult => {
+        return undefined;
     };
     systemUnderTest.symbolTable.builtInSymbol("one", testDirective);
     systemUnderTest.currentLine().mnemonic = ".";

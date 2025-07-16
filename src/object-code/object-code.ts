@@ -65,12 +65,14 @@ export const objectCode = (
 
     const assembleIf = (required: boolean): DirectiveResult => {
         assemblyIsActivated = required;
+        return undefined;
     };
 
-    const poke = (data: Array<unknown>): DirectiveResult => {
+    const poke = (...data: Array<unknown>): DirectiveResult => {
         if (!disabled()) {
             toLine(pokedBytes(data, currentLine().failures), false);
         }
+        return undefined;
     };
 
     return {

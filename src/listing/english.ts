@@ -73,11 +73,18 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Expected", "Actual",
         failure as AssertionFailure
     )),
-    "parameter_firstName": (failure) => withLocation(failure, [
-        "A first parameter of a definition should be a name"
-    ]),
     "parameter_count": (failure) => withLocation(failure, assertionFailure(
         ["Parameter count is not what was expected"],
+        "Expected", "Actual",
+        failure as AssertionFailure
+    )),
+    "parameter_type": (failure) => withLocation(failure, assertionFailure(
+        ["Parameter type is not what was expected"],
+        "Expected", "Actual",
+        failure as AssertionFailure
+    )),
+    "parameter_value": (failure) => withLocation(failure, assertionFailure(
+        ["Parameter value is not what was expected"],
         "Expected", "Actual",
         failure as AssertionFailure
     )),

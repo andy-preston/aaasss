@@ -1,6 +1,5 @@
-import type { BaggedDirective } from "../directives/bags.ts";
-
 import { expect } from "jsr:@std/expect";
+import { isFunction } from "../directives/testing.ts";
 import { emptyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
@@ -28,9 +27,13 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
+    const macro = systemUnderTest.symbolTable.use("macro");
+    const end = systemUnderTest.symbolTable.use("end");
 
-    systemUnderTest.macros.define("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    if (isFunction(macro)) {
+        macro("testMacro");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     testLines.forEach(([source, label, mnemonic]) => {
         systemUnderTest.currentLine(emptyLine("plop.asm"));
         systemUnderTest.currentLine().rawSource = source;
@@ -39,11 +42,16 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
         systemUnderTest.currentLine().mnemonic = mnemonic;
         systemUnderTest.macros.processedLine();
     });
-    systemUnderTest.macros.end();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    if (isFunction(end)) {
+        end();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 
-    systemUnderTest.macros.use("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    const testMacro = systemUnderTest.symbolTable.use("testMacro");
+    if (isFunction(testMacro)) {
+        testMacro();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     let index = 0;
     systemUnderTest.fileStack.lines(() => {
         expect(
@@ -58,9 +66,13 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
 
 Deno.test("Lines that are being replayed have a macro name and count", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
+    const macro = systemUnderTest.symbolTable.use("macro");
+    const end = systemUnderTest.symbolTable.use("end");
 
-    systemUnderTest.macros.define("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    if (isFunction(macro)) {
+        macro("testMacro");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     testLines.forEach(([source, label, mnemonic]) => {
         systemUnderTest.currentLine(emptyLine("plop.asm"));
         systemUnderTest.currentLine().rawSource = source;
@@ -69,15 +81,16 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
         systemUnderTest.currentLine().mnemonic = mnemonic;
         systemUnderTest.macros.processedLine();
     });
-    systemUnderTest.macros.end();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    const forceSymbolIncrement = systemUnderTest.symbolTable.use("testMacro");
-    expect((forceSymbolIncrement as BaggedDirective).type).toBe(
-        "functionUseDirective"
-    );
+    if (isFunction(end)) {
+        end();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 
-    systemUnderTest.macros.use("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    const testMacro = systemUnderTest.symbolTable.use("testMacro");
+    if (isFunction(testMacro)) {
+        testMacro();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     let index = 0;
     systemUnderTest.fileStack.lines(() => {
         expect(systemUnderTest.currentLine().macroName).toBe("testMacro");

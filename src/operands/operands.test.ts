@@ -1,5 +1,4 @@
 import { expect } from "jsr:@std/expect";
-import { directiveFunction } from "../directives/directives.ts";
 import { currentLine } from "../line/current-line.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
@@ -14,11 +13,8 @@ const testSystem = () => {
     const $cpuRegisters = cpuRegisters();
     $cpuRegisters.initialise(false);
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $directiveFunction = directiveFunction($currentLine);
     const $programMemory = programMemory($currentLine, $symbolTable);
-    const $jsExpression = jSExpression(
-        $currentLine, $symbolTable, $directiveFunction
-    );
+    const $jsExpression = jSExpression($currentLine, $symbolTable);
     const $operands = operands(
         $currentLine, $symbolTable, $cpuRegisters, $programMemory, $jsExpression
     );

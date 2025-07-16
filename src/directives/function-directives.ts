@@ -1,43 +1,36 @@
 import type { CurrentLine } from "../line/current-line.ts";
-import type { NumberDirective } from "./bags.ts";
+import type { DirectiveResult } from "./data-types.ts";
 
 import { complement, highByte, lowByte } from "../assembler/byte-operations.ts";
 import { addFailure } from "../failure/add-failure.ts";
-import { range } from "./valid-parameters.ts";
+import { assertionFailure } from "../failure/bags.ts";
 
 export const functionDirectives = (currentLine: CurrentLine) => {
-    const lowDirective: NumberDirective = {
-        "type": "numberDirective",
-        "it": (word: number) => {
-            const invalid = range(word, "word", 1);
-            if (invalid != undefined) {
-                addFailure(currentLine().failures, invalid);
-                return "0";
-            }
-            return `${lowByte(word)}`;
+
+    const validWord = (word: number) => {
+        const good = word >= 0 && word <= 0xffff;
+        if (!good) {
+            addFailure(currentLine().failures, assertionFailure(
+                "parameter_value", "(word) 0-FFFF", `${word}`
+            ));
         }
+        return good;
     };
 
-    const highDirective: NumberDirective = {
-        "type": "numberDirective",
-        "it": (word: number) => {
-            const invalid = range(word, "word", 1);
-            if (invalid != undefined) {
-                addFailure(currentLine().failures, invalid);
-                return "0";
-            }
-            return `${highByte(word)}`;
-        }
-    };
+    const lowDirective = (word: number): DirectiveResult =>
+        validWord(word) ? lowByte(word) : 0;
 
-    const complementDirective: NumberDirective = {
-        "type": "numberDirective",
-        "it": (value: number) => `${complement(value)}`
-    };
+    const highDirective = (word: number): DirectiveResult =>
+        validWord(word) ? highByte(word) : 0;
+
+    const complementDirective = (value: number): DirectiveResult =>
+        complement(value);
 
     return {
-        "lowDirective": lowDirective,
-        "highDirective": highDirective,
-        "complementDirective": complementDirective
+        "low": lowDirective,
+        "high": highDirective,
+        "complement": complementDirective
     };
 };
+
+export type FunctionDirectives = ReturnType<typeof functionDirectives>;

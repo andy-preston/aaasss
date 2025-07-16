@@ -27,7 +27,7 @@ export const deviceChooser = (
         const baseName = deviceFinder(name);
         if (typeof baseName != "string") {
             addFailure(currentLine().failures, baseName);
-            return;
+            return undefined;
         }
 
         const baseSpec = loadTomlFile(baseName) as DeviceSpec;
@@ -39,6 +39,7 @@ export const deviceChooser = (
             ) as SpecItems);
         }
         deviceSettings(name, fullSpec);
+        return undefined;
     };
 };
 

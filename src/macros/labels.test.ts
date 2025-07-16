@@ -1,19 +1,29 @@
 import { expect } from "jsr:@std/expect";
+import { isFunction } from "../directives/testing.ts";
 import { emptyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("Labels in macro operands are expanded on each invocation", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
+    const macro = systemUnderTest.symbolTable.use("macro");
+    const end = systemUnderTest.symbolTable.use("end");
 
-    systemUnderTest.macros.define("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    if (isFunction(macro)) {
+        macro("testMacro");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     systemUnderTest.currentLine().label = "aLabel";
     systemUnderTest.macros.processedLine();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    systemUnderTest.macros.end();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    systemUnderTest.macros.use("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    if (isFunction(end)) {
+        end();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    const testMacro = systemUnderTest.symbolTable.use("testMacro");
+    if (isFunction(testMacro)) {
+        testMacro();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 
     systemUnderTest.currentLine(emptyLine("plop.asm"));
     systemUnderTest.currentLine().label = "aLabel";
@@ -24,21 +34,32 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     systemUnderTest.currentLine().mnemonic = "JMP";
     systemUnderTest.currentLine().operands = ["aLabel"];
     systemUnderTest.macros.processedLine();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    expect(systemUnderTest.currentLine().operands[0]).toBe("testMacro$2$aLabel");
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().operands[0]).toBe(
+        "testMacro$2$aLabel"
+    );
 });
 
 Deno.test("But label operands from outside the macro are left as is", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
-    systemUnderTest.macros.define("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    const macro = systemUnderTest.symbolTable.use("macro");
+    const end = systemUnderTest.symbolTable.use("end");
+    if (isFunction(macro)) {
+        macro("testMacro");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     systemUnderTest.currentLine().label = "aLabel";
     systemUnderTest.macros.processedLine();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    systemUnderTest.macros.end();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    systemUnderTest.macros.use("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    if (isFunction(end)) {
+        end();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    const testMacro = systemUnderTest.symbolTable.use("testMacro");
+    if (isFunction(testMacro)) {
+        testMacro();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 
     systemUnderTest.currentLine(emptyLine("plop.asm"));
     systemUnderTest.currentLine().macroName = "testMacro";
@@ -47,8 +68,10 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     systemUnderTest.currentLine().mnemonic = "JMP";
     systemUnderTest.currentLine().operands = ["aDifferentLabel"];
     systemUnderTest.macros.processedLine();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    expect(systemUnderTest.currentLine().operands[0]).toBe("aDifferentLabel");
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().operands[0]).toBe(
+        "aDifferentLabel"
+    );
 });
 
 Deno.test("Actual labels in macros are also expanded on playback", () => {
@@ -57,20 +80,29 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
     const plainLabel = "aLabel";
     const expandedLabel = `${macroName}$${macroCount}$${plainLabel}`;
     const systemUnderTest = testSystem(() => [], "plop.asm");
+    const macro = systemUnderTest.symbolTable.use("macro");
+    const end = systemUnderTest.symbolTable.use("end");
 
-    systemUnderTest.macros.define("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    if (isFunction(macro)) {
+        macro("testMacro");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 
     systemUnderTest.currentLine().label = plainLabel;
     systemUnderTest.macros.processedLine();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     systemUnderTest.currentLine(emptyLine("plop.asm"));
 
-    systemUnderTest.macros.end();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    if (isFunction(end)) {
+        end();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 
-    systemUnderTest.macros.use("testMacro", []);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    const testMacro = systemUnderTest.symbolTable.use("testMacro");
+    if (isFunction(testMacro)) {
+        testMacro();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
 
     systemUnderTest.currentLine().macroName = macroName;
     systemUnderTest.currentLine().macroCount = macroCount;
@@ -78,7 +110,7 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
     systemUnderTest.currentLine().mnemonic = "RJMP";
     systemUnderTest.currentLine().operands = [plainLabel];
     systemUnderTest.macros.processedLine();
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(systemUnderTest.currentLine().label).toBe(expandedLabel);
     expect(systemUnderTest.currentLine().operands[0]).toBe(expandedLabel);
 });

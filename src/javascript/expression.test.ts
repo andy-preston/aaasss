@@ -1,7 +1,6 @@
 import type { ExceptionFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
-import { directiveFunction } from "../directives/directives.ts";
 import { currentLine } from "../line/current-line.ts";
 import { emptyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
@@ -13,10 +12,7 @@ const testSystem = () => {
     $currentLine(emptyLine("plop.asm"));
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $directiveFunction = directiveFunction($currentLine);
-    const $jSExpression = jSExpression(
-        $currentLine, $symbolTable, $directiveFunction
-    );
+    const $jSExpression = jSExpression($currentLine, $symbolTable);
     return {
         "currentLine": $currentLine,
         "symbolTable": $symbolTable,

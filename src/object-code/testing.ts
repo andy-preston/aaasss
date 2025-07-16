@@ -1,4 +1,3 @@
-import { directiveFunction } from "../directives/directives.ts";
 import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { currentLine } from "../line/current-line.ts";
@@ -14,11 +13,9 @@ export const testSystem = () => {
     $currentLine(emptyLine("plop.asm"));
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
-    const $directiveFunction = directiveFunction($currentLine);
     const $instructionSet = instructionSet($currentLine, $symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
-    const $jsExpression = jSExpression(
-        $currentLine, $symbolTable, $directiveFunction);
+    const $jsExpression = jSExpression($currentLine, $symbolTable);
     const $operands = operands(
         $currentLine, $symbolTable, $cpuRegisters, $programMemory, $jsExpression
     );

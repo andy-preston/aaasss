@@ -4,13 +4,12 @@ export const failureKinds = {
         "device_notSelected",
         "js_jsMode", "js_assemblerMode",
         "macro_end", "macro_noEnd",
-        "parameter_firstName",
         "programMemory_cantOrg", "programMemory_sizeUnknown",
         "ram_sizeUnknown", "ram_stackAllocated"
     ],
     "assertion": [
         "macro_params", "operand_count",
-        "parameter_count",
+        "parameter_count", "parameter_type", "parameter_value",
         "programMemory_outOfRange", "ram_outOfRange", "value_type"
     ],
     "numericType": [

@@ -1,13 +1,10 @@
-import type { VoidDirective } from "../directives/bags.ts";
-
 import { expect } from "jsr:@std/expect";
 import { testSystem } from "./testing.ts";
+import { DirectiveFunction } from "../directives/data-types.ts";
 
 Deno.test("A symbol is returned but not counted if it's a directive", () => {
     const systemUnderTest = testSystem();
-    const fakeDirective: VoidDirective = {
-        "type": "voidDirective", "it": () => undefined
-    };
+    const fakeDirective: DirectiveFunction = () => undefined;
     systemUnderTest.symbolTable.builtInSymbol("findMe", fakeDirective);
     expect(systemUnderTest.symbolTable.use("findMe")).toEqual(fakeDirective);
     expect(systemUnderTest.symbolTable.count("findMe")).toBe(0);

@@ -43,6 +43,7 @@ export const dataMemory = (
             symbolName, pastEnd(bytes) ? 0 : availableAddress()!
         );
         allocated = allocated + bytes;
+        return undefined;
     };
 
     const allocStack = (bytes: number): DirectiveResult => {
@@ -57,6 +58,7 @@ export const dataMemory = (
         } else {
             stack = pastEnd(bytes) ? 0 : bytes;
         }
+        return undefined;
     };
 
     const reset: PipelineReset = (_: Pass) => {
