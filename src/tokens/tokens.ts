@@ -3,11 +3,13 @@ import type { CurrentLine } from "../line/current-line.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure } from "../failure/bags.ts";
-import { operands } from "./operands.ts";
 
 const anyWhitespace = /\s+/g;
 const comment = /;.*$/;
 const validLabel = /^\w*$/;
+const registerName = /^r\d{1,2}$/;
+const indexRegisterWord = /^\+?[xyz]\+?$/;
+const indexRegisterByte = /^[xyz][hl]$/i;
 
 const clean = (sourceLine: string) =>
     sourceLine.replace(comment, "").replace(anyWhitespace, " ").trim();
@@ -26,9 +28,55 @@ const splitSource = (
     ];
 };
 
-export const tokensCoupling = (
+const isRegister = (operand: string) =>
+    operand.match(registerName) != null
+        || operand.match(indexRegisterWord) != null
+        || operand.match(indexRegisterByte) != null;
+
+export const tokens = (
     currentLine: CurrentLine
 ): PipelineProcess => () => {
+
+    const operands = (text: string): Array<string> => {
+        const operands: Array<string> = [];
+        let parentheses = 0;
+        let characters: Array<string> = [];
+        let trailingComma = false;
+
+        const push = () => {
+            const operand = characters.join("").trim();
+            operands.push(
+                isRegister(operand) ? operand.toUpperCase() : operand
+            );
+            characters = [];
+        };
+
+        text.split("").forEach(character => {
+            if (character != "," || parentheses > 0) {
+                trailingComma = false;
+                characters.push(character);
+            }
+            if (character == "(") {
+                parentheses = parentheses + 1;
+            }
+            if (character == ")") {
+                parentheses = parentheses - 1;
+            }
+            if (character == "," && parentheses == 0) {
+                trailingComma = true;
+                push();
+            }
+        });
+        if (parentheses == 0) {
+            if (characters.length > 0 || trailingComma) {
+                push();
+            }
+        } else {
+            throw new Error("Parenthesis error should be a failure");
+        }
+        return operands;
+    };
+
     const cleaned = clean(currentLine().assemblySource);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
