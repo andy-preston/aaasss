@@ -17,7 +17,8 @@ export const failureKinds = {
     ],
     "clue": [
         "file_notFound",  "device_notFound", "register_notFound",
-        "macro_multiDefine", "mnemonic_unknown", "mnemonic_supportedUnknown"
+        "macro_multiDefine", "mnemonic_unknown", "mnemonic_supportedUnknown",
+        "syntax_parenthesesNesting"
     ],
     "notSupported": [
         "notSupported_mnemonic", "notSupported_ioRange"

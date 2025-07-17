@@ -2,7 +2,7 @@ import type { PipelineProcess } from "../assembler/data-types.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
-import { boringFailure } from "../failure/bags.ts";
+import { boringFailure, clueFailure } from "../failure/bags.ts";
 
 const anyWhitespace = /\s+/g;
 const comment = /;.*$/;
@@ -33,9 +33,7 @@ const isRegister = (operand: string) =>
         || operand.match(indexRegisterWord) != null
         || operand.match(indexRegisterByte) != null;
 
-export const tokens = (
-    currentLine: CurrentLine
-): PipelineProcess => () => {
+export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
 
     const operands = (text: string): Array<string> => {
         const operands: Array<string> = [];
@@ -43,7 +41,7 @@ export const tokens = (
         let characters: Array<string> = [];
         let trailingComma = false;
 
-        const push = () => {
+        const operandDone = () => {
             const operand = characters.join("").trim();
             operands.push(
                 isRegister(operand) ? operand.toUpperCase() : operand
@@ -64,16 +62,19 @@ export const tokens = (
             }
             if (character == "," && parentheses == 0) {
                 trailingComma = true;
-                push();
+                operandDone();
             }
         });
-        if (parentheses == 0) {
-            if (characters.length > 0 || trailingComma) {
-                push();
-            }
-        } else {
-            throw new Error("Parenthesis error should be a failure");
+        if (parentheses != 0) {
+            addFailure(currentLine().failures, clueFailure(
+                "syntax_parenthesesNesting", `${parentheses}`
+            ));
+            return [];
         }
+
+        if (characters.length > 0 || trailingComma) {
+            operandDone();
+        };
         return operands;
     };
 

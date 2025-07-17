@@ -140,6 +140,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "syntax_invalidMnemonic": (failure) => withLocation(failure, [
         "A mnemonic should only contain letters"
     ]),
+    "syntax_parenthesesNesting": (failure) => withLocation(failure, clueFailure(
+        ["Wonky parenthesis nesting"],
+        "Nesting level",
+        failure as ClueFailure
+    )),
     "type_relativeAddress": (failure) => withLocation(failure, [
         "Relative address"
     ]),

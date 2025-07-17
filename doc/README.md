@@ -6,6 +6,7 @@
 + Operand Types
 + [Directives](../src/directives/directive-list.ts)
 + [Supported Devices](../devices)
++ [Failures](../failure/kinds.ts)
 
 ## Examples
 

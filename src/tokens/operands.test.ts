@@ -128,3 +128,25 @@ Deno.test("Commas inside parentheses do not delimit operands", () => {
         "R12", "testing(1,2,3)"
     ]);
 });
+
+Deno.test("Too many opening parentheses result in failure", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().assemblySource = "cmp r12, testing((1,2,3)";
+    systemUnderTest.tokens();
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "syntax_parenthesesNesting", "location": undefined,
+        "clue": "1"
+    }]);
+    expect(systemUnderTest.currentLine().operands).toEqual([]);
+});
+
+Deno.test("Too many closing parentheses result in failure", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.currentLine().assemblySource = "cmp r12, testing(1,2,3)))";
+    systemUnderTest.tokens();
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "syntax_parenthesesNesting", "location": undefined,
+        "clue": "-2"
+    }]);
+    expect(systemUnderTest.currentLine().operands).toEqual([]);
+});
