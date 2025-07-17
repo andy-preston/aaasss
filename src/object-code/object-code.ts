@@ -25,13 +25,10 @@ export const objectCode = (
         programMemory.addressStep(words);
     };
 
-    const disabled = () => !assemblyIsActivated
-        || currentLine().isDefiningMacro;
-
     const line: PipelineProcess = () => {
         const emptyLine = currentLine().mnemonic == ""
             && currentLine().operands.length == 0;
-        if (emptyLine || disabled()) {
+        if (emptyLine || !enabled()) {
             return;
         }
 
@@ -63,13 +60,24 @@ export const objectCode = (
         assemblyIsActivated = true;
     };
 
+    const enabled = () => !currentLine().isDefiningMacro &&
+        (assemblyIsActivated || looksLikeAssembleIfDirective());
+
     const assembleIf = (required: boolean): DirectiveResult => {
         assemblyIsActivated = required;
         return undefined;
     };
 
+    const looksLikeAssembleIfDirective = (): boolean =>
+        currentLine().mnemonic == "."
+            && currentLine().operands.length == 1
+            && currentLine().operands[0]!.match(/^assembleIf\(/) != null;
+
     const poke = (...data: Array<unknown>): DirectiveResult => {
-        if (!disabled()) {
+        // we need to check `enabled` here because this dorective
+        // could be being issued from a JS file and the normal mechanism
+        // in `line` above may not be followed
+        if (enabled()) {
             toLine(pokedBytes(data, currentLine().failures), false);
         }
         return undefined;

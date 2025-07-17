@@ -1,3 +1,4 @@
+import { directives } from "../directives/directives.ts";
 import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { currentLine } from "../line/current-line.ts";
@@ -22,6 +23,9 @@ export const testSystem = () => {
     const $objectCode = objectCode(
         $currentLine, $instructionSet, $operands, $programMemory
     );
+    directives({
+        "assembleIf": [$objectCode.assembleIf, ["boolean"]]
+    }, $currentLine, $symbolTable);
     return {
         "currentLine": $currentLine,
         "instructionSet": $instructionSet,
