@@ -78,18 +78,32 @@
 00001A F1 F7         36     BRNE loopy
 00001B E0 91 00 08   36     LDS R30, address
                      37
+                     38     ; You can use anything for a macros parameters
+                     39     ; But you'll get errors when they're used if you pass
+                     40     ; something "peculiar"
+                     41     .aMacro(false)
+                     41 loopy:
+00001D EA 95         41     DEC R30
+00001E F1 F7         41     BRNE loopy
+00001F E0 91 00 00   41     LDS R30, address
+                        value_type
+                        location.operand: 2
+                        expected: 16BitDataAddress
+                        actual: string: ()
+                     42
 
 Symbol Table
 ============
 
-aMacro         |    |    | /var/tmp/def.asm:7   | 5
+aMacro         |    |    | /var/tmp/def.asm:7   | 6
 aMacro$1$loopy | 0  | 0  | /var/tmp/demo.asm:3  | 1
 aMacro$2$loopy | 17 | 11 | /var/tmp/demo.asm:29 | 1
 aMacro$3$loopy | 13 | D  | /var/tmp/demo.asm:29 | 1
 aMacro$4$loopy | 21 | 15 | /var/tmp/demo.asm:34 | 1
 aMacro$5$loopy | 25 | 19 | /var/tmp/demo.asm:36 | 1
+aMacro$6$loopy | 29 | 1D | /var/tmp/demo.asm:41 | 1
 innerMacro     |    |    | /var/tmp/demo.asm:17 | 2
 loopy          | 0  | 0  | /var/tmp/def.asm:3   | 0
 outerMacro     |    |    | /var/tmp/demo.asm:22 | 1
 pokingMacro    |    |    | /var/tmp/demo.asm:10 | 1
-R30            |    |    | REGISTER             | 13
+R30            |    |    | REGISTER             | 15

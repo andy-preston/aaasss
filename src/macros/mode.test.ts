@@ -1,9 +1,13 @@
 import { expect } from "jsr:@std/expect";
+import { isFunction } from "../directives/testing.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("the last line has a failure is a definition wasn't closed", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
-    systemUnderTest.macros.define("plop", []);
+    const macro = systemUnderTest.symbolTable.use("macro");
+    if (isFunction(macro)) {
+        macro("plop");
+    }
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     systemUnderTest.macros.reset(1);
     expect(systemUnderTest.currentLine().failures).toEqual([{
@@ -13,9 +17,14 @@ Deno.test("the last line has a failure is a definition wasn't closed", () => {
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
-    systemUnderTest.macros.define("aMacro", []);
+    const macro = systemUnderTest.symbolTable.use("macro");
+    if (isFunction(macro)) {
+        macro("aMacro");
+    }
     expect(systemUnderTest.currentLine().failures).toEqual([]);
-    systemUnderTest.macros.define("anotherOne", []);
+    if (isFunction(macro)) {
+        macro("anotherOne");
+    }
     expect(systemUnderTest.currentLine().failures).toEqual([{
         "kind": "macro_multiDefine", "location": undefined,
         "clue": "aMacro"
@@ -24,10 +33,16 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
 
 Deno.test("Multiple macros can be defined", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
+    const macro = systemUnderTest.symbolTable.use("macro");
+    const end = systemUnderTest.symbolTable.use("end");
     for (const macroName of ["aMacro", "anotherOne", "yetAnotherOne"]) {
-        systemUnderTest.macros.define(macroName, []);
+        if (isFunction(macro)) {
+            macro(macroName);
+        }
         expect(systemUnderTest.currentLine().failures).toEqual([]);
-        systemUnderTest.macros.end();
+        if (isFunction(end)) {
+            end();
+        }
         expect(systemUnderTest.currentLine().failures).toEqual([]);
     };
 });
@@ -42,7 +57,10 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
 
 Deno.test("Whilst a macro is being defined, isDefiningMacro is set", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
-    systemUnderTest.macros.define("testMacro", []);
+    const macro = systemUnderTest.symbolTable.use("macro");
+    if (isFunction(macro)) {
+        macro("plop");
+    }
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     systemUnderTest.macros.taggedLine();
     expect(systemUnderTest.currentLine().isDefiningMacro).toBe(true);

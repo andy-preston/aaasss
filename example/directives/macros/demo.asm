@@ -34,3 +34,8 @@
     .aMacro(1024)
 
     .aMacro(2048)
+
+    ; You can use anything for a macros parameters
+    ; But you'll get errors when they're used if you pass
+    ; something "peculiar"
+    .aMacro(false)

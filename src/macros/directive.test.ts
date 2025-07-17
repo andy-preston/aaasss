@@ -18,6 +18,36 @@ Deno.test("The macro doesn't have to have parameters", () => {
     ).toBe("function");
 });
 
+Deno.test("The macro directive must have at least one parameter - the macro name", () => {
+    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const macro = systemUnderTest.symbolTable.use("macro");
+    if (isFunction(macro)) {
+        macro();
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "parameter_count", "location": undefined,
+        "expected": ">=1", "actual": "0"
+    }]);
+});
+
+Deno.test("The macro directive parameters must all be strings", () => {
+    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const macro = systemUnderTest.symbolTable.use("macro");
+    if (isFunction(macro)) {
+        macro(1, 2, 3);
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "parameter_type", "location": {"parameter": 1},
+        "expected": "string", "actual": "number"
+    }, {
+        "kind": "parameter_type", "location": {"parameter": 2},
+        "expected": "string", "actual": "number"
+    }, {
+        "kind": "parameter_type", "location": {"parameter": 3},
+        "expected": "string", "actual": "number"
+    }]);
+});
+
 Deno.test("Parameter count mismatches result in a failure", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");

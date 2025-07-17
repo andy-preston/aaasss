@@ -5,8 +5,9 @@ import type { FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Macro, MacroList, MacroName } from "./data-types.ts";
 
+import { typeOf } from "../assembler/data-types.ts";
 import { addFailure } from "../failure/add-failure.ts";
-import { boringFailure, clueFailure } from "../failure/bags.ts";
+import { assertionFailure, boringFailure, clueFailure } from "../failure/bags.ts";
 import { macro } from "./data-types.ts";
 import { remapping } from "./remapping.ts";
 
@@ -23,7 +24,7 @@ export const macros = (
     const isDefining = () => definingMacro != undefined || definingName != "";
 
     const define = (
-        newName: string, ...parameters: UncheckedParameters
+        ...directiveParameters: UncheckedParameters
     ): DirectiveResult => {
         if (isDefining()) {
             addFailure(currentLine().failures, clueFailure(
@@ -31,11 +32,39 @@ export const macros = (
             ));
             return undefined;
         }
+
+        if (directiveParameters.length < 1) {
+            addFailure(currentLine().failures, assertionFailure(
+                "parameter_count", ">=1", `${directiveParameters.length}`
+            ));
+            return undefined;
+        }
+
+        const badParameters = directiveParameters.reduce(
+            (allGood, parameter, index) => {
+                const actual = typeOf(parameter);
+                if (actual != "string") {
+                    const failure = assertionFailure(
+                        "parameter_type", "string", actual
+                    );
+                    failure.location = {"parameter": index + 1};
+                    addFailure(currentLine().failures, failure);
+                    return true;
+                }
+                return allGood;
+            }, false
+        );
+        if (badParameters) {
+            return undefined;
+        }
+
+        const stringParameters = directiveParameters as Array<string>;
+        const newName = stringParameters.shift()!;
         if (symbolTable.alreadyInUse(newName)) {
             return undefined;
         }
         definingName = newName;
-        definingMacro = macro(parameters);
+        definingMacro = macro(stringParameters);
         return undefined;
     };
 
