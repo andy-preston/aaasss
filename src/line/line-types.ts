@@ -15,7 +15,6 @@ export const emptyLine = (fileName: FileName) => ({
     "assemblySource": "" as SourceCode,
     "label": "" as Label,
     "mnemonic": "" as Mnemonic,
-    "isDefiningMacro": false,
     "macroName": "",
     "macroCount": 0,
     "operands": [] as Operands,

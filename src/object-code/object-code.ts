@@ -60,8 +60,8 @@ export const objectCode = (
         assemblyIsActivated = true;
     };
 
-    const enabled = () => !currentLine().isDefiningMacro &&
-        (assemblyIsActivated || looksLikeAssembleIfDirective());
+    const enabled = () => assemblyIsActivated
+        || looksLikeAssembleIfDirective();
 
     const assembleIf = (required: boolean): DirectiveResult => {
         assemblyIsActivated = required;

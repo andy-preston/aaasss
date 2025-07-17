@@ -3,7 +3,6 @@ import type { DirectiveResult } from "./data-types.ts";
 import { expect } from "jsr:@std/expect";
 import { isFunction, testSystem } from "./testing.ts";
 
-
 Deno.test("Any directives that are added can be called as functions", () => {
     let directiveParameter = "";
     const directiveBody = (parameter: string): DirectiveResult => {

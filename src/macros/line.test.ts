@@ -18,7 +18,6 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
         systemUnderTest.currentLine().label = label;
         systemUnderTest.currentLine().mnemonic = mnemonic;
         systemUnderTest.macros.processedLine();
-        expect(systemUnderTest.currentLine().isDefiningMacro).toBe(false);
         expect(systemUnderTest.currentLine().macroName).toBe("");
         expect(systemUnderTest.currentLine().macroCount).toBe(0);
         expect(systemUnderTest.currentLine().label).toBe(label);

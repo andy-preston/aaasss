@@ -72,7 +72,6 @@ export const coupling = (
     return thePipeline(
         $fileStack.lines,
         [
-            $macros.taggedLine,
             $programMemory.lineAddress,
             $embeddedJs.pipeline,
             $tokens,

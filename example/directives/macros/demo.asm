@@ -2,8 +2,8 @@
     .include("/var/tmp/def.asm")
     .aMacro(1024)
 
-    ; Any JS in a macro is executed during definition AND playback
-    ; but any code it may generate at define time is discarded
+    ; Any directives included in a macro will be recorded
+    ; but not be executed during definition
     .macro("pokingMacro")
     .poke("testing")
     LDI R30, 23

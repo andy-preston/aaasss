@@ -55,17 +55,30 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
     }]);
 });
 
-Deno.test("Whilst a macro is being defined, isDefiningMacro is set", () => {
+Deno.test("During definition, no operations will be processed except `.end()`", () => {
     const systemUnderTest = testSystem(() => [], "plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     if (isFunction(macro)) {
         macro("plop");
     }
     expect(systemUnderTest.currentLine().failures).toEqual([]);
-    systemUnderTest.macros.taggedLine();
-    expect(systemUnderTest.currentLine().isDefiningMacro).toBe(true);
-    systemUnderTest.macros.end();
+    systemUnderTest.currentLine().mnemonic = "NOP";
+    systemUnderTest.macros.processedLine();
     expect(systemUnderTest.currentLine().failures).toEqual([]);
-    systemUnderTest.macros.taggedLine();
-    expect(systemUnderTest.currentLine().isDefiningMacro).toBe(false);
+    expect(systemUnderTest.currentLine().mnemonic).toEqual("");
+
+    systemUnderTest.currentLine().mnemonic = "LDI";
+    systemUnderTest.currentLine().operands = ["R28", "5"];
+    systemUnderTest.macros.processedLine();
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().mnemonic).toEqual("");
+    expect(systemUnderTest.currentLine().operands).toEqual([]);
+
+    systemUnderTest.currentLine().mnemonic = ".";
+    systemUnderTest.currentLine().operands = ["end()"];
+    systemUnderTest.macros.processedLine();
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().mnemonic).toEqual(".");
+    expect(systemUnderTest.currentLine().operands).toEqual(["end()"]);
+
 });

@@ -22,8 +22,8 @@
 000001 F1 F7          3     BRNE loopy
 000002 E0 91 00 04    3     LDS R30, address
                       4
-                      5     ; Any JS in a macro is executed during definition AND playback
-                      6     ; but any code it may generate at define time is discarded
+                      5     ; Any directives included in a macro will be recorded
+                      6     ; but not be executed during definition
                       7     .macro("pokingMacro")
                       8     .poke("testing")
                       9     LDI R30, 23
@@ -103,7 +103,6 @@ aMacro$4$loopy | 21 | 15 | /var/tmp/demo.asm:34 | 1
 aMacro$5$loopy | 25 | 19 | /var/tmp/demo.asm:36 | 1
 aMacro$6$loopy | 29 | 1D | /var/tmp/demo.asm:41 | 1
 innerMacro     |    |    | /var/tmp/demo.asm:17 | 2
-loopy          | 0  | 0  | /var/tmp/def.asm:3   | 0
 outerMacro     |    |    | /var/tmp/demo.asm:22 | 1
 pokingMacro    |    |    | /var/tmp/demo.asm:10 | 1
 R30            |    |    | REGISTER             | 15

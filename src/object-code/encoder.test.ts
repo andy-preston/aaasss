@@ -63,18 +63,6 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     expect(systemUnderTest.programMemory.address()).toBe(1);
 });
 
-Deno.test("If a line has `isDefiningMacro == true`, no code is generated", () => {
-    const systemUnderTest = testSystem();
-    systemUnderTest.symbolTable.deviceSymbol("deviceName", "plop");
-    systemUnderTest.currentLine().mnemonic = "DES";
-    systemUnderTest.currentLine().operands = ["15"];
-    systemUnderTest.currentLine().isDefiningMacro = true;
-    systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
-    expect(systemUnderTest.currentLine().code).toEqual([]);
-    expect(systemUnderTest.programMemory.address()).toBe(0);
-});
-
 Deno.test("Generating code will increment the programMemory address", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.symbolTable.deviceSymbol("deviceName", "plop");

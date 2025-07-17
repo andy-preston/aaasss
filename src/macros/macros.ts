@@ -5,10 +5,10 @@ import type { FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Macro, MacroList, MacroName } from "./data-types.ts";
 
-import { typeOf } from "../assembler/data-types.ts";
 import { addFailure } from "../failure/add-failure.ts";
-import { assertionFailure, boringFailure, clueFailure } from "../failure/bags.ts";
+import { boringFailure, clueFailure } from "../failure/bags.ts";
 import { macro } from "./data-types.ts";
+import { directiveParameters } from "./directive-parameters.ts";
 import { remapping } from "./remapping.ts";
 
 export const macros = (
@@ -24,7 +24,7 @@ export const macros = (
     const isDefining = () => definingMacro != undefined || definingName != "";
 
     const define = (
-        ...directiveParameters: UncheckedParameters
+        ...uncheckedParameters: UncheckedParameters
     ): DirectiveResult => {
         if (isDefining()) {
             addFailure(currentLine().failures, clueFailure(
@@ -33,36 +33,16 @@ export const macros = (
             return undefined;
         }
 
-        if (directiveParameters.length < 1) {
-            addFailure(currentLine().failures, assertionFailure(
-                "parameter_count", ">=1", `${directiveParameters.length}`
-            ));
+        if (directiveParameters(uncheckedParameters, currentLine())) {
             return undefined;
         }
 
-        const badParameters = directiveParameters.reduce(
-            (allGood, parameter, index) => {
-                const actual = typeOf(parameter);
-                if (actual != "string") {
-                    const failure = assertionFailure(
-                        "parameter_type", "string", actual
-                    );
-                    failure.location = {"parameter": index + 1};
-                    addFailure(currentLine().failures, failure);
-                    return true;
-                }
-                return allGood;
-            }, false
-        );
-        if (badParameters) {
-            return undefined;
-        }
-
-        const stringParameters = directiveParameters as Array<string>;
+        const stringParameters = uncheckedParameters as Array<string>;
         const newName = stringParameters.shift()!;
         if (symbolTable.alreadyInUse(newName)) {
             return undefined;
         }
+
         definingName = newName;
         definingMacro = macro(stringParameters);
         return undefined;
@@ -102,33 +82,19 @@ export const macros = (
         return undefined;
     };
 
-    const taggedLine: PipelineProcess = () => {
-        currentLine().isDefiningMacro = isDefining();
-    };
-
-    const looksLikeEndDirective = (): boolean => {
-        if (currentLine().mnemonic != ".") {
-            return false;
-        }
-        if (currentLine().operands.length == 0) {
-            return false;
-        }
-        const firstMatches = currentLine().operands[0]!.replace(
-            /\s/g, ""
-        ).match(
-            /^end\(\);?$/
-        );
-        if (firstMatches == null) {
-            return false;
-        }
-        return true;
-    };
-
     const recordedLine = () => {
-        if (looksLikeEndDirective()) {
-            currentLine().isDefiningMacro = false;
-        } else {
-            definingMacro!.lines.push(currentLine());
+        const looksLikeEndDirective : boolean =
+            currentLine().mnemonic == "."
+            && currentLine().operands[0]!.match(/^end\(/) != null;
+
+        if (!looksLikeEndDirective) {
+            definingMacro!.lines.push({
+                "rawSource": currentLine().rawSource,
+                "label": currentLine().label
+            });
+            currentLine().label = "";
+            currentLine().mnemonic = "";
+            currentLine().operands = [];
         }
     };
 
@@ -151,7 +117,7 @@ export const macros = (
 
     return {
         "define": define, "end": end,
-        "taggedLine": taggedLine, "processedLine": processedLine, "reset": reset
+        "processedLine": processedLine, "reset": reset
     };
 };
 

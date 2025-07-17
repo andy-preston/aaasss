@@ -151,15 +151,3 @@ Deno.test("Insufficient program memory causes poking to fail", () => {
     // But the address doesn't advance
     expect(systemUnderTest.programMemory.address()).toBe(preFailureAddress);
 });
-
-Deno.test("Nothing gets poked, if we're currently defining a macro", () => {
-    const systemUnderTest = testSystem();
-    systemUnderTest.symbolTable.deviceSymbol("deviceName", "plop");
-    systemUnderTest.symbolTable.deviceSymbol("programMemoryBytes", 0x00);
-    const prePokeAddress = systemUnderTest.programMemory.address();
-    systemUnderTest.currentLine().isDefiningMacro = true;
-    systemUnderTest.objectCode.poke(1, 2, 3, 4);
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
-    expect(systemUnderTest.programMemory.address()).toBe(prePokeAddress);
-    expect(systemUnderTest.currentLine().code).toEqual([]);
-});
