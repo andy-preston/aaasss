@@ -35,7 +35,7 @@
 
     .aMacro(2048)
 
-    ; You can use anything for a macros parameters
+    ; You can use anything for a macro's parameters
     ; But you'll get errors when they're used if you pass
     ; something "peculiar"
     .aMacro(false)
