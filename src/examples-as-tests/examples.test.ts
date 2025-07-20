@@ -55,7 +55,7 @@ const root = import.meta.url.split('/').slice(2, -3).join('/');
 
 let filterIndex = 0;
 ["programs", "directives", "instructions"].forEach(section => {
-    const sectionDir = `${root}/example/${section}`;
+    const sectionDir = `${root}/examples/${section}`;
     Deno.readDirSync(sectionDir).filter(
         example => example.isDirectory
     ).map (
