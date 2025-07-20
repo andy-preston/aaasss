@@ -1,4 +1,3 @@
-import { isDiscrete } from "../assembler/data-types.ts";
 import { JsFunction } from "./function.ts";
 
 const trailingSemicolons = /;*$/;
@@ -17,8 +16,10 @@ export const jSExpression = (
     const result = clean == ""
         ? ""
         : jsFunction(`return eval("${clean}");`);
-    return isDiscrete(result)
-        ? `${result}`
+    return result === true ? "1"
+        : result === false ? "0"
+        : typeof result == "number" ? `${result}`
+        : typeof result == "string" ? result
         : "";
 };
 

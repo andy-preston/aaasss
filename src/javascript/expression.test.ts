@@ -42,9 +42,40 @@ Deno.test("Javascript can contain double quoted strings", () => {
     expect(result).toBe("double quoted");
 });
 
-Deno.test("If the result is undefined, `value` returns empty string", () => {
+Deno.test("If an expression returns a number, it is cast as a string", () => {
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression("47;");
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(result).toBe("47");
+});
+
+Deno.test("If an expression returns a boolean, it is cast as a binary digit in a string", () => {
+    const systemUnderTest = testSystem();
+    const trueResult = systemUnderTest.jsExpression("true;");
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(trueResult).toBe("1");
+    const falseResult = systemUnderTest.jsExpression("false;");
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(falseResult).toBe("0");
+});
+
+Deno.test("If an expression returns undefined, it is cast as a string", () => {
     const systemUnderTest = testSystem();
     const result = systemUnderTest.jsExpression("undefined;");
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(result).toBe("");
+});
+
+Deno.test("If an expression returns an object, it is yielded as a blank string", () => {
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression('({"a": 57});');
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(result).toBe("");
+});
+
+Deno.test("If an expression returns an array, it is yielded as a blank string", () => {
+    const systemUnderTest = testSystem();
+    const result = systemUnderTest.jsExpression('[1,2,3];');
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(result).toBe("");
 });
