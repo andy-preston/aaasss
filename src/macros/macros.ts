@@ -89,7 +89,7 @@ export const macros = (
 
         if (!looksLikeEndDirective) {
             definingMacro!.lines.push({
-                "rawSource": currentLine().rawSource,
+                "sourceCode": currentLine().sourceCode,
                 "label": currentLine().label
             });
             currentLine().label = "";

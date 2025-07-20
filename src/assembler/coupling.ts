@@ -12,7 +12,8 @@ import { functionDirectives } from "../directives/function-directives.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { jSExpression } from "../javascript/expression.ts";
-import { embeddedJs } from "../javascript/embedded.ts";
+import { jsFunction } from "../javascript/function.ts";
+import { jsFilePipeline } from "../javascript/file-pipeline.ts";
 import { currentLine } from "../line/current-line.ts";
 import { listing } from "../listing/listing.ts";
 import { macros } from "../macros/macros.ts";
@@ -35,11 +36,12 @@ export const coupling = (
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
+    const $jsFunction = jsFunction($currentLine, $symbolTable);
+    const $jsExpression = jSExpression($jsFunction);
+    const $jsFilePipeline = jsFilePipeline($currentLine, $jsFunction);
     const $fileStack = fileStack($currentLine, readerMethod, fileName);
     const $macros = macros($currentLine, $symbolTable, $fileStack);
     const $functionDirectives = functionDirectives($currentLine);
-    const $jsExpression = jSExpression($currentLine, $symbolTable);
-    const $embeddedJs = embeddedJs($currentLine, $jsExpression);
     const $tokens = tokens($currentLine);
     const $instructionSet = instructionSet($currentLine, $symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
@@ -73,7 +75,7 @@ export const coupling = (
         $fileStack.lines,
         [
             $programMemory.lineAddress,
-            $embeddedJs.pipeline,
+            $jsFilePipeline,
             $tokens,
             $macros.processedLine,
             $programMemory.lineLabel,
@@ -82,7 +84,6 @@ export const coupling = (
             $listing, $hexFile
         ], [
             $programMemory.reset,
-            $embeddedJs.reset,
             $macros.reset,
             $objectCode.reset,
             $dataMemory.reset,

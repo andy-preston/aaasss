@@ -25,7 +25,7 @@ const expectFileContents = (extension: FileExtension) => {
 const demo = (directory: string) => {
     const demo = assembler();
     const tempFiles = fileList();
-    Deno.readDirSync(directory).map (
+    Deno.readDirSync(directory).map(
         file => file.name
     ).toArray().sort().forEach(file => {
         if (file.endsWith(".asm") || file.endsWith(".js")) {

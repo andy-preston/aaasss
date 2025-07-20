@@ -6,7 +6,7 @@ export type MacroName = string;
 export type MacroParameters = Array<string>;
 
 type StoredLine = {
-    "rawSource": SourceCode,
+    "sourceCode": SourceCode,
     "label": Label
 }
 

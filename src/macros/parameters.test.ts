@@ -3,7 +3,7 @@ import { testSystem } from "./testing.ts";
 import { isFunction } from "../directives/testing.ts";
 
 Deno.test("If a macro has parameters, they are substituted", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
 
@@ -28,7 +28,7 @@ Deno.test("If a macro has parameters, they are substituted", () => {
 });
 
 Deno.test("Parameter count mismatches result in a failure", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
 

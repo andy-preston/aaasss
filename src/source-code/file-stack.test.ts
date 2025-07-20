@@ -27,7 +27,7 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
         lineNumber = lineNumber + 1;
         expect(systemUnderTest.currentLine().fileName).toBe("mock.test");
         expect(systemUnderTest.currentLine().lineNumber).toBe(lineNumber);
-        expect(systemUnderTest.currentLine().rawSource).toBe(
+        expect(systemUnderTest.currentLine().sourceCode).toBe(
             expected[lineNumber - 1]
         );
         expect(systemUnderTest.currentLine().failures.length).toBe(0);
@@ -48,7 +48,7 @@ Deno.test("The last line of a file is tagged with EOF", () => {
         expect(
             systemUnderTest.currentLine().eof
         ).toBe(
-            systemUnderTest.currentLine().rawSource == "yes"
+            systemUnderTest.currentLine().sourceCode == "yes"
         );
     };
     systemUnderTest.fileStack.lines(mockPipeline, () => {});
@@ -62,7 +62,7 @@ Deno.test("Reading a non existant source file gives one line with a failure", ()
         lineNumber = lineNumber + 1;
         expect(systemUnderTest.currentLine().fileName).toBe("not-exist.test");
         expect(systemUnderTest.currentLine().lineNumber).toBe(0);
-        expect(systemUnderTest.currentLine().rawSource).toBe("");
+        expect(systemUnderTest.currentLine().sourceCode).toBe("");
         expect(systemUnderTest.currentLine().failures.length).toBe(1);
         const failure =
             systemUnderTest.currentLine().failures[0] as ClueFailure;
@@ -87,7 +87,7 @@ Deno.test("An included file is inserted into the source stream", () => {
     let lineNumber = 0;
     const mockPipeline = () => {
         lineNumber = lineNumber + 1;
-        expect(systemUnderTest.currentLine().rawSource).toBe(
+        expect(systemUnderTest.currentLine().sourceCode).toBe(
             expected[lineNumber - 1]
         );
         expect(systemUnderTest.currentLine().failures.length).toBe(0);
@@ -121,7 +121,7 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
         const actual = systemUnderTest.currentLine();
         expect(actual.fileName).toBe("top.file");
         expect(actual.lineNumber).toBe(expectedLineNumber);
-        expect(actual.rawSource).toBe(expectedSource);
+        expect(actual.sourceCode).toBe(expectedSource);
         expect(actual.failures.length).toBe(0);
         if (lineNumber == 1) {
             systemUnderTest.fileStack.pushImaginary(imaginaryFile());

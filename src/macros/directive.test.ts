@@ -3,7 +3,7 @@ import { isFunction } from "../directives/testing.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("The macro doesn't have to have parameters", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
     if (isFunction(macro)) {
@@ -19,7 +19,7 @@ Deno.test("The macro doesn't have to have parameters", () => {
 });
 
 Deno.test("The macro directive must have at least one parameter - the macro name", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     if (isFunction(macro)) {
         macro();
@@ -31,7 +31,7 @@ Deno.test("The macro directive must have at least one parameter - the macro name
 });
 
 Deno.test("The macro directive parameters must all be strings", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     if (isFunction(macro)) {
         macro(1, 2, 3);
@@ -49,7 +49,7 @@ Deno.test("The macro directive parameters must all be strings", () => {
 });
 
 Deno.test("Parameter count mismatches result in a failure", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
 
@@ -73,7 +73,7 @@ Deno.test("Parameter count mismatches result in a failure", () => {
 });
 
 Deno.test("A macro can be defined in both passes", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
 

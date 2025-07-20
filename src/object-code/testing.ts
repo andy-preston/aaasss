@@ -1,6 +1,7 @@
 import { directives } from "../directives/directives.ts";
 import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { jSExpression } from "../javascript/expression.ts";
+import { jsFunction } from "../javascript/function.ts";
 import { currentLine } from "../line/current-line.ts";
 import { emptyLine } from "../line/line-types.ts";
 import { operands } from "../operands/operands.ts";
@@ -16,7 +17,8 @@ export const testSystem = () => {
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $instructionSet = instructionSet($currentLine, $symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
-    const $jsExpression = jSExpression($currentLine, $symbolTable);
+    const $jsFunction = jsFunction($currentLine, $symbolTable);
+    const $jsExpression = jSExpression($jsFunction);
     const $operands = operands(
         $currentLine, $symbolTable, $cpuRegisters, $programMemory, $jsExpression
     );

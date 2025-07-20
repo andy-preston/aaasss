@@ -4,7 +4,7 @@ import { emptyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("Labels in macro operands are expanded on each invocation", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
 
@@ -29,8 +29,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
     systemUnderTest.currentLine().label = "aLabel";
     systemUnderTest.currentLine().macroName = "testMacro";
     systemUnderTest.currentLine().macroCount = 2;
-    systemUnderTest.currentLine().rawSource = "JMP aLabel";
-    systemUnderTest.currentLine().assemblySource = "JMP aLabel";
+    systemUnderTest.currentLine().sourceCode = "JMP aLabel";
     systemUnderTest.currentLine().mnemonic = "JMP";
     systemUnderTest.currentLine().operands = ["aLabel"];
     systemUnderTest.macros.processedLine();
@@ -41,7 +40,7 @@ Deno.test("Labels in macro operands are expanded on each invocation", () => {
 });
 
 Deno.test("But label operands from outside the macro are left as is", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
     if (isFunction(macro)) {
@@ -64,7 +63,7 @@ Deno.test("But label operands from outside the macro are left as is", () => {
     systemUnderTest.currentLine(emptyLine("plop.asm"));
     systemUnderTest.currentLine().macroName = "testMacro";
     systemUnderTest.currentLine().macroCount = 3;
-    systemUnderTest.currentLine().rawSource = "JMP aDifferentLabel";
+    systemUnderTest.currentLine().sourceCode = "JMP aDifferentLabel";
     systemUnderTest.currentLine().mnemonic = "JMP";
     systemUnderTest.currentLine().operands = ["aDifferentLabel"];
     systemUnderTest.macros.processedLine();
@@ -79,7 +78,7 @@ Deno.test("Actual labels in macros are also expanded on playback", () => {
     const macroCount = 4;
     const plainLabel = "aLabel";
     const expandedLabel = `${macroName}$${macroCount}$${plainLabel}`;
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
 

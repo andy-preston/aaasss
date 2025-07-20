@@ -3,7 +3,7 @@ import { isFunction } from "../directives/testing.ts";
 import { testSystem } from "./testing.ts";
 
 Deno.test("the last line has a failure is a definition wasn't closed", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     if (isFunction(macro)) {
         macro("plop");
@@ -16,7 +16,7 @@ Deno.test("the last line has a failure is a definition wasn't closed", () => {
 });
 
 Deno.test("You can't define a macro whilst still in definition mode", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     if (isFunction(macro)) {
         macro("aMacro");
@@ -32,7 +32,7 @@ Deno.test("You can't define a macro whilst still in definition mode", () => {
 });
 
 Deno.test("Multiple macros can be defined", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
     for (const macroName of ["aMacro", "anotherOne", "yetAnotherOne"]) {
@@ -48,7 +48,7 @@ Deno.test("Multiple macros can be defined", () => {
 });
 
 Deno.test("You can't end a macro definition if one isn't being defined", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     systemUnderTest.macros.end();
     expect(systemUnderTest.currentLine().failures).toEqual([{
         "kind": "macro_end", "location": undefined
@@ -56,7 +56,7 @@ Deno.test("You can't end a macro definition if one isn't being defined", () => {
 });
 
 Deno.test("During definition, no operations will be processed except `.end()`", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     if (isFunction(macro)) {
         macro("plop");

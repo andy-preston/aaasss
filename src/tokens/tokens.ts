@@ -78,7 +78,11 @@ export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
         return operands;
     };
 
-    const cleaned = clean(currentLine().assemblySource);
+    if (currentLine().fileName.endsWith(".js")) {
+        return;
+    }
+
+    const cleaned = clean(currentLine().sourceCode);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
     if (validLabel.test(label)) {

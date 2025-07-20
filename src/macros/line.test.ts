@@ -3,29 +3,26 @@ import { isFunction } from "../directives/testing.ts";
 import { emptyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
-const testLines: Array<[string, string, string]> = [
-    ["testLabel: TST", "testLabel", "TST"],
-    ["testLabel: AND", "testLabel", "AND"],
-    ["           TST", "",          "TST"]
+const testLines: Array<string> = [
+    "testLabel: TST",
+    "testLabel: AND",
+    "           TST"
 ] as const;
 
 Deno.test("Most of the time, lines will just be passed on to the next stage", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
-    testLines.forEach(([source, label, mnemonic]) => {
+    const systemUnderTest = testSystem("plop.asm");
+    testLines.forEach(sourceCode => {
         systemUnderTest.currentLine(emptyLine("plop.asm"));
-        systemUnderTest.currentLine().rawSource = source;
-        systemUnderTest.currentLine().assemblySource = source;
-        systemUnderTest.currentLine().label = label;
-        systemUnderTest.currentLine().mnemonic = mnemonic;
+        systemUnderTest.currentLine().sourceCode = sourceCode;
         systemUnderTest.macros.processedLine();
         expect(systemUnderTest.currentLine().macroName).toBe("");
         expect(systemUnderTest.currentLine().macroCount).toBe(0);
-        expect(systemUnderTest.currentLine().label).toBe(label);
+        expect(systemUnderTest.currentLine().sourceCode).toBe(sourceCode);
     });
 });
 
 Deno.test("Once a macro has been recorded, it can be played-back", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
 
@@ -33,12 +30,9 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
         macro("testMacro");
     }
     expect(systemUnderTest.currentLine().failures).toEqual([]);
-    testLines.forEach(([source, label, mnemonic]) => {
+    testLines.forEach(sourceCode => {
         systemUnderTest.currentLine(emptyLine("plop.asm"));
-        systemUnderTest.currentLine().rawSource = source;
-        systemUnderTest.currentLine().assemblySource = source;
-        systemUnderTest.currentLine().label = label;
-        systemUnderTest.currentLine().mnemonic = mnemonic;
+        systemUnderTest.currentLine().sourceCode = sourceCode;
         systemUnderTest.macros.processedLine();
     });
     if (isFunction(end)) {
@@ -54,9 +48,9 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     let index = 0;
     systemUnderTest.fileStack.lines(() => {
         expect(
-            systemUnderTest.currentLine().rawSource
+            systemUnderTest.currentLine().sourceCode
         ).toBe(
-            testLines[index]![0]
+            testLines[index]!
         );
         index = index + 1;
     }, () => {});
@@ -64,7 +58,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
 });
 
 Deno.test("Lines that are being replayed have a macro name and count", () => {
-    const systemUnderTest = testSystem(() => [], "plop.asm");
+    const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
 
@@ -72,12 +66,9 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
         macro("testMacro");
     }
     expect(systemUnderTest.currentLine().failures).toEqual([]);
-    testLines.forEach(([source, label, mnemonic]) => {
+    testLines.forEach(sourceCode => {
         systemUnderTest.currentLine(emptyLine("plop.asm"));
-        systemUnderTest.currentLine().rawSource = source;
-        systemUnderTest.currentLine().assemblySource = source;
-        systemUnderTest.currentLine().label = label;
-        systemUnderTest.currentLine().mnemonic = mnemonic;
+        systemUnderTest.currentLine().sourceCode = sourceCode;
         systemUnderTest.macros.processedLine();
     });
     if (isFunction(end)) {

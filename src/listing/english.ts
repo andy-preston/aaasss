@@ -31,17 +31,11 @@ export const messages: Record<FailureKind, FailureMessage> = {
         "Javascript error message",
         failure as ClueFailure
     )),
-    "js_assemblerMode": (failure) => withLocation(failure, [
-        "\"}}\" when already in assembly mode"
-    ]),
     "js_error": (failure) => withLocation(failure, exceptionFailure(
         ["Javascript error"],
         "Exception name", "Exception details",
         failure as ExceptionFailure
     )),
-    "js_jsMode": (failure) => withLocation(failure, [
-        "\"{{\" when already in js mode"
-    ]),
     "macro_noEnd": (failure) => withLocation(failure, [
         "Macro definition was not closed"
     ]),

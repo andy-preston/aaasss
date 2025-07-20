@@ -74,7 +74,7 @@ export const objectCode = (
             && currentLine().operands[0]!.match(/^assembleIf\(/) != null;
 
     const poke = (...data: Array<unknown>): DirectiveResult => {
-        // we need to check `enabled` here because this dorective
+        // we need to check `enabled` here because this directive
         // could be being issued from a JS file and the normal mechanism
         // in `line` above may not be followed
         if (enabled()) {

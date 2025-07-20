@@ -32,29 +32,30 @@ export const fileStack = (
         }
     };
 
-    const include = (fileName: FileName): DirectiveResult => {
-        const fileContents = () => {
-            try {
-                return read(fileName);
-            }
-            catch (error) {
-                if (error instanceof Deno.errors.NotFound) {
-                    addFailure(currentLine().failures, clueFailure(
-                        "file_notFound", error.message
-                    ));
-                    return;
-                }
-                throw error;
-            }
-        };
-
-        const contents = fileContents();
-        if (contents) {
-            fileStack.push({
-                "fileName": fileName,
-                "iterator": fileLineByLine(contents)
-            });
+    const fileContents = (fileName: FileName) => {
+        try {
+            return read(fileName);
         }
+        catch (error) {
+            if (error instanceof Deno.errors.NotFound) {
+                addFailure(currentLine().failures, clueFailure(
+                    "file_notFound", error.message
+                ));
+                return;
+            }
+            throw error;
+        }
+    };
+
+    const include = (fileName: FileName): DirectiveResult => {
+        const contents = fileContents(fileName);
+        if (contents == undefined) {
+            return undefined;
+        }
+        fileStack.push({
+            "fileName": fileName,
+            "iterator": fileLineByLine(contents)
+        });
         return undefined;
     };
 
@@ -102,7 +103,7 @@ export const fileStack = (
             }
             currentLine(emptyLine(currentFile()!.fileName));
             [
-                currentLine().rawSource,
+                currentLine().sourceCode,
                 currentLine().macroName, currentLine().macroCount,
                 currentLine().eof
             ] = next;
@@ -112,9 +113,7 @@ export const fileStack = (
     };
 
     return {
-        "include": include,
-        "pushImaginary": pushImaginary,
-        "lines": lines,
+        "include": include, "pushImaginary": pushImaginary, "lines": lines
     };
 };
 
