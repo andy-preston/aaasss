@@ -78,7 +78,7 @@
 00001A F1 F7         36     BRNE loopy
 00001B E0 91 00 08   36     LDS R30, address
                      37
-                     38     ; You can use anything for a macros parameters
+                     38     ; You can use anything for a macro's parameters
                      39     ; But you'll get errors when they're used if you pass
                      40     ; something "peculiar"
                      41     .aMacro(false)
