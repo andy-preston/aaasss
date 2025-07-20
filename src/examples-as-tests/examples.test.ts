@@ -55,24 +55,15 @@ const root = import.meta.url.split('/').slice(2, -3).join('/');
 
 let filterIndex = 0;
 ["programs", "directives", "instructions"].forEach(section => {
-    const sectionDir = `${root}/examples/${section}`;
+    const sectionSubDir = `examples/${section}`;
+    const sectionDir = `${root}/${sectionSubDir}`;
     Deno.readDirSync(sectionDir).filter(
         example => example.isDirectory
     ).map (
         example => example.name
     ).toArray().sort().forEach(example => {
         filterIndex = filterIndex + 1;
-        const title = `${section}: ${example} [${filterIndex}]`.replaceAll(
-            "--", ", "
-        ).replaceAll(
-            "-", " "
-        ).split(
-            " "
-        ).map(
-            word => word.charAt(0).toUpperCase() + word.slice(1)
-        ).join(
-            " "
-        );
+        const title = `${sectionSubDir}/${example} [${filterIndex}]`;
         Deno.test(title, () => {
             demo(`${sectionDir}/${example}`);
         });
