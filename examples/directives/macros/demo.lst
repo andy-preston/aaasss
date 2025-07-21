@@ -95,14 +95,14 @@
 Symbol Table
 ============
 
-aMacro         |    |    | /var/tmp/def.asm:7   | 6
-aMacro$1$loopy | 0  | 0  | /var/tmp/demo.asm:3  | 1
-aMacro$2$loopy | 17 | 11 | /var/tmp/demo.asm:29 | 1
-aMacro$3$loopy | 13 | D  | /var/tmp/demo.asm:29 | 1
-aMacro$4$loopy | 21 | 15 | /var/tmp/demo.asm:34 | 1
-aMacro$5$loopy | 25 | 19 | /var/tmp/demo.asm:36 | 1
-aMacro$6$loopy | 29 | 1D | /var/tmp/demo.asm:41 | 1
-innerMacro     |    |    | /var/tmp/demo.asm:17 | 2
-outerMacro     |    |    | /var/tmp/demo.asm:22 | 1
-pokingMacro    |    |    | /var/tmp/demo.asm:10 | 1
-R30            |    |    | REGISTER             | 15
+aMacro           |    |    | /var/tmp/def.asm:7   | 6
+innerMacro       |    |    | /var/tmp/demo.asm:17 | 2
+loopy (aMacro 1) | 0  | 0  | /var/tmp/demo.asm:3  | 1
+loopy (aMacro 2) | 17 | 11 | /var/tmp/demo.asm:29 | 1
+loopy (aMacro 3) | 13 | D  | /var/tmp/demo.asm:29 | 1
+loopy (aMacro 4) | 21 | 15 | /var/tmp/demo.asm:34 | 1
+loopy (aMacro 5) | 25 | 19 | /var/tmp/demo.asm:36 | 1
+loopy (aMacro 6) | 29 | 1D | /var/tmp/demo.asm:41 | 1
+outerMacro       |    |    | /var/tmp/demo.asm:22 | 1
+pokingMacro      |    |    | /var/tmp/demo.asm:10 | 1
+R30              |    |    | REGISTER             | 15

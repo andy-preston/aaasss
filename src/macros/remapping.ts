@@ -32,7 +32,7 @@ export const remapping = (macroList: MacroList) => {
     };
 
     const expandedLabel = (line: Line, label: Label) =>
-        `${line.macroName}$${line.macroCount}$${label}`;
+        `${label}$${line.macroName}$${line.macroCount}`;
 
     const remappedLabel = (line: Line) =>
         line.label ? expandedLabel(line, line.label) : "";
