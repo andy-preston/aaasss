@@ -3,10 +3,10 @@ import type { CurrentLine } from "../line/current-line.ts";
 
 import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure, clueFailure } from "../failure/bags.ts";
+import { badLabel } from "./label.ts";
 
 const anyWhitespace = /\s+/g;
 const comment = /;.*$/;
-const validLabel = /^\w*$/;
 const registerName = /^r\d{1,2}$/;
 const indexRegisterWord = /^\+?[xyz]\+?$/;
 const indexRegisterByte = /^[xyz][hl]$/i;
@@ -85,12 +85,11 @@ export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
     const cleaned = clean(currentLine().sourceCode);
 
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
-    if (validLabel.test(label)) {
-        currentLine().label = label;
+    const labelFailure = badLabel(label);
+    if (labelFailure) {
+        addFailure(currentLine().failures, labelFailure);
     } else {
-        addFailure(currentLine().failures, boringFailure(
-            "syntax_invalidLabel"
-        ));
+        currentLine().label = label;
     }
 
     const mnemonicAndOperands: [string, string] =

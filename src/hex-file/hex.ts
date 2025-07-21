@@ -3,7 +3,7 @@ import type { OutputFile } from "../assembler/output-file.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { FileName } from "../source-code/data-types.ts";
 
-import { highByte, lowByte } from "../assembler/byte-operations.ts";
+import { highByte, lowByte } from "../directives/function-directives.ts";
 import { hexBuffer } from "./hex-buffer.ts";
 
 const dataRecordType = "00";
@@ -16,9 +16,11 @@ const hexRecord = (address: number, bytes: Array<number>) => {
         // https://en.wikipedia.org/wiki/Intel_HEX
         const total = bytes.reduce(
             (total, byte) => total + byte,
-            bytes.length + lowByte(address) + highByte(address)
+            bytes.length
+                + (lowByte(address) as number)
+                + (highByte(address) as number)
         );
-        return 0x0100 - lowByte(total);
+        return 0x0100 - (lowByte(total) as number);
     };
 
     return [

@@ -8,7 +8,6 @@ import { deviceChooser } from "../device/chooser.ts";
 import { deviceSettings } from "../device/settings.ts";
 import { directiveList } from "../directives/directive-list.ts";
 import { directives } from "../directives/directives.ts";
-import { functionDirectives } from "../directives/function-directives.ts";
 import { hexFile } from "../hex-file/hex.ts";
 import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { jSExpression } from "../javascript/expression.ts";
@@ -41,7 +40,6 @@ export const coupling = (
     const $jsFilePipeline = jsFilePipeline($currentLine, $jsFunction);
     const $fileStack = fileStack($currentLine, readerMethod, fileName);
     const $macros = macros($currentLine, $symbolTable, $fileStack);
-    const $functionDirectives = functionDirectives($currentLine);
     const $tokens = tokens($currentLine);
     const $instructionSet = instructionSet($currentLine, $symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);
@@ -66,7 +64,7 @@ export const coupling = (
     const $hexFile = hexFile($currentLine, outputFile, fileName);
 
     const $directiveList = directiveList(
-        $dataMemory, $deviceChooser, $fileStack, $functionDirectives,
+        $dataMemory, $deviceChooser, $fileStack,
         $macros, $programMemory, $symbolTable, $objectCode
     );
     directives($directiveList, $currentLine, $symbolTable);

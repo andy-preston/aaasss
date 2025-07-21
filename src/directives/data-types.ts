@@ -9,6 +9,10 @@ export type DirectiveFunction = (
     ...parameters: UncheckedParameters
 ) => DirectiveResult;
 
-export type ParameterTypes = Array<"string" | "number" | "boolean">;
+export type ParameterTypes = Array<
+    "label" | "string" |
+    "word" | "signedByte" | "number" |
+    "boolean"
+>;
 
 export type Parameters = undefined | ParameterTypes;

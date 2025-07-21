@@ -6,7 +6,7 @@ import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { DirectiveFunction, DirectiveName, Parameters } from "./data-types.ts";
-import type { FunctionDirectives } from "./function-directives.ts";
+import { complement, highByte, lowByte } from "./function-directives.ts";
 
 const none: Parameters = [], itsComplicated: Parameters = undefined;
 
@@ -14,7 +14,6 @@ export const directiveList = (
     dataMemory: DataMemory,
     deviceChooser: DeviceChooser,
     fileStack: FileStack,
-    functionDirectives: FunctionDirectives,
     macros: Macros,
     programMemory: ProgramMemory,
     symbolTable: SymbolTable,
@@ -22,16 +21,16 @@ export const directiveList = (
 ): Record<
 DirectiveName, [DirectiveFunction,             Parameters,         ]
 > => ({
-"alloc":       [dataMemory.alloc,              ["string", "number"]],
+"alloc":       [dataMemory.alloc,              ["label",  "number"]],
 "allocStack":  [dataMemory.allocStack,         [          "number"]],
 "assembleIf":  [objectCode.assembleIf,         [         "boolean"]],
-"complement":  [functionDirectives.complement, [          "number"]],
-"define":      [symbolTable.persistentSymbol,  ["string", "number"]],
+"complement":  [complement,                    [      "signedByte"]],
+"define":      [symbolTable.persistentSymbol,  ["label",  "number"]],
 "device":      [deviceChooser,                 ["string"          ]],
 "end":         [macros.end,                      none,             ],
-"high":        [functionDirectives.high,       [          "number"]],
+"high":        [highByte,                      [            "word"]],
 "include":     [fileStack.include,             ["string"          ]],
-"low":         [functionDirectives.low,        [          "number"]],
+"low":         [lowByte,                       [            "word"]],
 "macro":       [macros.define,                   itsComplicated,   ],
 "origin":      [programMemory.origin,          [          "number"]],
 "poke":        [objectCode.poke,                 itsComplicated,   ]

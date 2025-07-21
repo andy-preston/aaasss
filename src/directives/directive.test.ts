@@ -132,6 +132,103 @@ Deno.test("Parameters of the wrong type give a failure", () => {
     }]);
 });
 
+Deno.test("Label parameters should follow the rules of the tokeniser", () => {
+    const directiveBody = (parameter: string): DirectiveResult => parameter;
+    const systemUnderTest = testSystem({
+        "plop": [directiveBody, ["label", "label", "label"]]
+    });
+    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    if (isFunction(directive)) {
+        directive("bad$dollar", "nice", "bad-dash");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "syntax_invalidLabel", "location": {"parameter": 1}
+    }, {
+        "kind": "syntax_invalidLabel", "location": {"parameter": 3}
+    }]);
+});
+
+Deno.test("Label parameters also check for strings", () => {
+    const directiveBody = (parameter: string): DirectiveResult => parameter;
+    const systemUnderTest = testSystem({
+        "plop": [directiveBody, ["label"]]
+    });
+    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    if (isFunction(directive)) {
+        directive(1);
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "parameter_type", "location": {"parameter": 1},
+        "expected": "string", "actual": "number"
+    }]);
+});
+
+Deno.test("Word parameters can't be negative or over FFFF", () => {
+    const directiveBody = (parameter: string): DirectiveResult => parameter;
+    const systemUnderTest = testSystem({
+        "plop": [directiveBody, ["word", "word", "word"]]
+    });
+    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    if (isFunction(directive)) {
+        directive(-1, 0xcafe, 0x10000);
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "parameter_value", "location": {"parameter": 1},
+        "expected": "(word) 0-FFFF", "actual": "-1"
+    }, {
+        "kind": "parameter_value", "location": {"parameter": 3},
+        "expected": "(word) 0-FFFF", "actual": "65536"
+    }]);
+});
+
+Deno.test("Word parameters also check for numbers", () => {
+    const directiveBody = (parameter: string): DirectiveResult => parameter;
+    const systemUnderTest = testSystem({
+        "plop": [directiveBody, ["word"]]
+    });
+    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    if (isFunction(directive)) {
+        directive("not!");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "parameter_type", "location": {"parameter": 1},
+        "expected": "number", "actual": "string"
+    }]);
+});
+
+Deno.test("Signed-byte parameters must be between -128 -> 127", () => {
+    const directiveBody = (parameter: string): DirectiveResult => parameter;
+    const systemUnderTest = testSystem({
+        "plop": [directiveBody, ["signedByte", "signedByte", "signedByte"]]
+    });
+    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    if (isFunction(directive)) {
+        directive(-200, 25, 255);
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "parameter_value", "location": {"parameter": 1},
+        "expected": "(signed byte) (-128)-127", "actual": "-200"
+    }, {
+        "kind": "parameter_value", "location": {"parameter": 3},
+        "expected": "(signed byte) (-128)-127", "actual": "255"
+    }]);
+});
+
+Deno.test("Signed-byte parameters also check for numbers", () => {
+    const directiveBody = (parameter: string): DirectiveResult => parameter;
+    const systemUnderTest = testSystem({
+        "plop": [directiveBody, ["signedByte"]]
+    });
+    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    if (isFunction(directive)) {
+        directive("not!");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "parameter_type", "location": {"parameter": 1},
+        "expected": "number", "actual": "string"
+    }]);
+});
+
 Deno.test("untyped directives will handle their own parameter validation", () => {
     const directiveBody = (
         ...parameters: Array<unknown>

@@ -6,6 +6,9 @@ import type { DirectiveList } from "./directive-list.ts";
 import { typeOf } from "../assembler/data-types.ts";
 import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure } from "../failure/bags.ts";
+import { badLabel } from "../tokens/label.ts";
+
+type Validator = (actual: unknown, location: number) => boolean;
 
 export const directives = (
     directiveList: DirectiveList,
@@ -21,20 +24,79 @@ export const directives = (
         return good;
     };
 
+    const simpleType = (
+        requiredType: string, actual: unknown, location: number
+    ) => {
+        const actualType = typeOf(actual);
+        if (requiredType != actualType) {
+            const failure = assertionFailure(
+                "parameter_type", requiredType, actualType
+            );
+            failure.location = {"parameter": location};
+            addFailure(currentLine().failures, failure);
+            return false;
+        }
+        return true;
+    };
+
+    const validLabel: Validator = (actual: unknown, location: number) => {
+        if (!simpleType("string", actual, location)) {
+            return false;
+        }
+        const bad = badLabel(actual as string);
+        if (bad != undefined) {
+            bad.location = {"parameter": location};
+            addFailure(currentLine().failures, bad);
+            return false;
+        }
+        return true;
+    };
+
+    const validSignedByte: Validator = (actual: unknown, location: number) => {
+        if (!simpleType("number", actual, location)) {
+            return false;
+        }
+        const good = actual as number >= -128 && actual as number <= 127;
+        if (!good) {
+            const failure = assertionFailure(
+                "parameter_value", "(signed byte) (-128)-127", `${actual}`
+            );
+            failure.location = {"parameter": location};
+            addFailure(currentLine().failures, failure);
+        }
+        return good;
+    };
+
+    const validWord: Validator = (actual: unknown, location: number) => {
+        if (!simpleType("number", actual, location)) {
+            return false;
+        }
+        const good = actual as number >= 0 && actual as number <= 0xffff;
+        if (!good) {
+            const failure = assertionFailure(
+                "parameter_value", "(word) 0-FFFF", `${actual}`
+            );
+            failure.location = {"parameter": location};
+            addFailure(currentLine().failures, failure);
+        }
+        return good;
+    };
+
+    const specialTypes: Record<string, Validator> = {
+        "label": validLabel,
+        "signedByte": validSignedByte,
+        "word": validWord,
+    };
+
     const typesGood = (
         required: Array<string>, actual: Array<unknown>
     ) => required.reduce(
         (goodSoFar, requiredType, index) => {
-            const actualType = typeOf(actual[index]);
-            if (requiredType != actualType) {
-                const failure = assertionFailure(
-                    "parameter_type", requiredType, actualType
-                );
-                failure.location = {"parameter": index + 1};
-                addFailure(currentLine().failures, failure);
-                return false;
-            }
-            return goodSoFar;
+            const special = specialTypes[requiredType];
+            const good = special == undefined
+                ? simpleType(requiredType, actual[index], index + 1)
+                : special(actual[index], index + 1);
+            return good ? goodSoFar : false;
         },
         true
     );
