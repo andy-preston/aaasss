@@ -53,7 +53,6 @@ const demo = (directory: string) => {
 
 const root = import.meta.url.split('/').slice(2, -3).join('/');
 
-let filterIndex = 0;
 ["programs", "directives", "instructions"].forEach(section => {
     const sectionSubDir = `examples/${section}`;
     const sectionDir = `${root}/${sectionSubDir}`;
@@ -62,8 +61,7 @@ let filterIndex = 0;
     ).map (
         example => example.name
     ).toArray().sort().forEach(example => {
-        filterIndex = filterIndex + 1;
-        const title = `${sectionSubDir}/${example} [${filterIndex}]`;
+        const title = `${sectionSubDir}/${example}`;
         Deno.test(title, () => {
             demo(`${sectionDir}/${example}`);
         });
