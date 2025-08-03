@@ -1,7 +1,7 @@
 /var/tmp/demo.asm
 =================
                       1     .device("ATTiny24")
-                      2     .include("/var/tmp/def.asm")
+                      2     .include("def.asm")
 
 /var/tmp/def.asm
 ================

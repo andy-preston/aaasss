@@ -79,11 +79,11 @@ Deno.test("An included file is inserted into the source stream", () => {
     const mockReader = (path: FileName) =>
         [1, 2, 3].map(line => `${path} ${line}`);
     const expected = [
-        "top.file 1",
-        "plop.txt 1", "plop.txt 2", "plop.txt 3",
-        "top.file 2", "top.file 3"
+        "/path/top.file 1",
+        "/path/plop.txt 1", "/path/plop.txt 2", "/path/plop.txt 3",
+        "/path/top.file 2", "/path/top.file 3"
     ];
-    const systemUnderTest = testSystem(mockReader, "top.file");
+    const systemUnderTest = testSystem(mockReader, "/path/top.file");
     let lineNumber = 0;
     const mockPipeline = () => {
         lineNumber = lineNumber + 1;

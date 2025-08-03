@@ -11,7 +11,7 @@
 000006 6F 20 74 68
 000008 65 72 65 21
                       8
-                      9     .include("/var/tmp/poke1.js")
+                      9     .include("poke1.js")
 
 /var/tmp/poke1.js
 =================
@@ -24,7 +24,7 @@
 
 /var/tmp/demo.asm
 =================
-                     10     .include("/var/tmp/poke2.js")
+                     10     .include("poke2.js")
 
 /var/tmp/poke2.js
 =================

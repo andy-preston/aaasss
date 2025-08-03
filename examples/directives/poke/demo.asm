@@ -6,8 +6,8 @@
     .poke(1, 2, 3, 4, 5, 6, 7)
     .poke("Hello there!")
 
-    .include("/var/tmp/poke1.js")
-    .include("/var/tmp/poke2.js")
+    .include("poke1.js")
+    .include("poke2.js")
 
     ; You can put a label on your data
 here: .poke(0xff)

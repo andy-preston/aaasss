@@ -1,5 +1,5 @@
     .device("ATTiny2313")
-    .include("/var/tmp/timing.js")
+    .include("timing.js")
 
     cli
     clr R0

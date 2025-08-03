@@ -1,5 +1,5 @@
     .device("ATTiny24")
-    .include("/var/tmp/def.asm")
+    .include("def.asm")
     .aMacro(1024)
 
     ; Any directives included in a macro will be recorded

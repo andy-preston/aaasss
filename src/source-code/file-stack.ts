@@ -3,6 +3,7 @@ import type { DirectiveResult } from "../directives/data-types.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { FileLineIterator, FileName, LineNumber } from "./data-types.ts";
 
+import { dirname } from "jsr:@std/path";
 import { addFailure } from "../failure/add-failure.ts";
 import { clueFailure } from "../failure/bags.ts";
 import { emptyLine } from "../line/line-types.ts";
@@ -47,13 +48,18 @@ export const fileStack = (
         }
     };
 
+    const currentPath = () => fileStack.length == 0 ? ""
+        : `${dirname(currentFile()!.fileName)}/`;
+
     const include = (fileName: FileName): DirectiveResult => {
-        const contents = fileContents(fileName);
+        const fullName = fileName.startsWith("/") ? fileName
+            : `${currentPath()}${fileName}`;
+        const contents = fileContents(fullName);
         if (contents == undefined) {
             return undefined;
         }
         fileStack.push({
-            "fileName": fileName,
+            "fileName": fullName,
             "iterator": fileLineByLine(contents)
         });
         return undefined;
