@@ -1,6 +1,6 @@
 import type { PipelineSink } from "../assembler/data-types.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 import type { OutputFile } from "../assembler/output-file.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { ExtractedCode } from "./code.ts";

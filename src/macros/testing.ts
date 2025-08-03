@@ -1,8 +1,7 @@
 import type { FileName } from "../source-code/data-types.ts";
 
+import { currentLine, emptyLine } from "../assembler/line.ts";
 import { directives } from "../directives/directives.ts";
-import { currentLine } from "../line/current-line.ts";
-import { emptyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { fileStack } from "../source-code/file-stack.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";

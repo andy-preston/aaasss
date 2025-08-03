@@ -1,6 +1,6 @@
 import type { PipelineProcess, PipelineReset } from "../assembler/data-types.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 import type { Failure } from "../failure/bags.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { addFailure } from "../failure/add-failure.ts";

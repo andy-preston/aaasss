@@ -1,8 +1,7 @@
 import type { ReaderMethod } from "./reader.ts";
 
-import { currentLine } from "../line/current-line.ts";
+import { currentLine, emptyLine } from "../assembler/line.ts";
 import { fileStack } from "./file-stack.ts";
-import { emptyLine } from "../line/line-types.ts";
 
 export const testSystem = (readerMethod: ReaderMethod, topFileName: string) => {
     const $currentLine = currentLine();

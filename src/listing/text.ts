@@ -1,4 +1,4 @@
-import type { Line } from "../line/line-types.ts";
+import type { Line } from "../assembler/line.ts";
 
 const lineNumberWidth = 4;
 

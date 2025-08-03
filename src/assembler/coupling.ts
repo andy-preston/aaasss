@@ -3,6 +3,7 @@ import type { FailureMessageTranslator } from "../listing/languages.ts";
 import type { FileName } from "../source-code/data-types.ts";
 import type { ReaderMethod } from "../source-code/reader.ts";
 
+import { currentLine } from "../assembler/line.ts";
 import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser } from "../device/chooser.ts";
 import { deviceSettings } from "../device/settings.ts";
@@ -13,7 +14,6 @@ import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { jsFunction } from "../javascript/function.ts";
 import { jsFilePipeline } from "../javascript/file-pipeline.ts";
-import { currentLine } from "../line/current-line.ts";
 import { listing } from "../listing/listing.ts";
 import { macroConstructor } from "../macros/macro.ts";
 import { macros } from "../macros/macros.ts";

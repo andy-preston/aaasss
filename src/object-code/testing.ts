@@ -1,9 +1,8 @@
+import { currentLine, emptyLine } from "../assembler/line.ts";
 import { directives } from "../directives/directives.ts";
 import { instructionSet } from "../instruction-set/instruction-set.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { jsFunction } from "../javascript/function.ts";
-import { currentLine } from "../line/current-line.ts";
-import { emptyLine } from "../line/line-types.ts";
 import { operands } from "../operands/operands.ts";
 import { programMemory } from "../program-memory/program-memory.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";

@@ -1,4 +1,4 @@
-import type { Line } from "../line/line-types.ts";
+import type { Line } from "../assembler/line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 

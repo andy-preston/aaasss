@@ -1,4 +1,4 @@
-import type { CurrentLine } from "../line/current-line.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { DirectiveFunction, ParameterTypes } from "./data-types.ts";
 import type { DirectiveList } from "./directive-list.ts";

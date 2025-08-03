@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
+import { emptyLine } from "../assembler/line.ts";
 import { isFunction } from "../directives/testing.ts";
-import { emptyLine } from "../line/line-types.ts";
 import { testSystem } from "./testing.ts";
 
 const testLines: Array<string> = [

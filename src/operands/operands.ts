@@ -1,5 +1,5 @@
+import type { CurrentLine } from "../assembler/line.ts";
 import type { JsExpression } from "../javascript/expression.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";

@@ -1,6 +1,5 @@
+import type { CurrentLine, Line } from "../assembler/line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { CurrentLine } from "../line/current-line.ts";
-import type { Line } from "../line/line-types.ts";
 import type { FileLineIterator, SourceCode } from "../source-code/data-types.ts";
 import type { FileStack } from "../source-code/file-stack.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";

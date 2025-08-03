@@ -1,6 +1,6 @@
 import type { Pass, PipelineReset } from "../assembler/data-types.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { DiscreteType, SymbolValue } from "./data-types.ts";
 

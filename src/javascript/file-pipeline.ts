@@ -1,5 +1,5 @@
 import type { PipelineProcess } from "../assembler/data-types.ts";
-import type { CurrentLine } from "../line/current-line.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 import type { SourceCode } from "../source-code/data-types.ts";
 import type { JsFunction } from "./function.ts";
 

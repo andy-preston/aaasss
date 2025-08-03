@@ -1,5 +1,4 @@
-import { currentLine } from "../line/current-line.ts";
-import { emptyLine } from "../line/line-types.ts";
+import { currentLine, emptyLine } from "../assembler/line.ts";
 import { tokens } from "./tokens.ts";
 
 export const testSystem = () => {

@@ -1,8 +1,7 @@
-import { instructionSet } from "./instruction-set.ts";
-import { symbolTable } from "../symbol-table/symbol-table.ts";
-import { currentLine } from "../line/current-line.ts";
-import { emptyLine } from "../line/line-types.ts";
+import { currentLine, emptyLine } from "../assembler/line.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
+import { symbolTable } from "../symbol-table/symbol-table.ts";
+import { instructionSet } from "./instruction-set.ts";
 
 export const testSystem = () => {
     const $currentLine = currentLine();

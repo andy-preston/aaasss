@@ -1,4 +1,4 @@
-import type { Pass } from "../assembler/data-types.ts";
+import type { Pass } from "./data-types.ts";
 import type { Failure } from "../failure/bags.ts";
 import type { Code } from "../object-code/data-types.ts";
 import type { Operands } from "../operands/data-types.ts";
@@ -21,3 +21,16 @@ export const emptyLine = (fileName: FileName) => ({
 });
 
 export type Line = ReturnType<typeof emptyLine>;
+
+export const currentLine = () => {
+    let theLine: Line | undefined;
+
+    return (line?: Line) => {
+        if (line != undefined) {
+            theLine = line;
+        }
+        return theLine!;
+    };
+};
+
+export type CurrentLine = ReturnType<typeof currentLine>;

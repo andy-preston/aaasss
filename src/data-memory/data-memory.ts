@@ -1,6 +1,6 @@
 import type { Pass, PipelineReset } from "../assembler/data-types.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { addFailure } from "../failure/add-failure.ts";

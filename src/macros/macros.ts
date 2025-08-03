@@ -1,6 +1,6 @@
 import type { PipelineProcess, PipelineReset } from "../assembler/data-types.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult, UncheckedParameters } from "../directives/data-types.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { Macro, MacroConstructor } from "./macro.ts";
 
 import { addFailure } from "../failure/add-failure.ts";

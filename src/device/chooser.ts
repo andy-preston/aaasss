@@ -1,5 +1,5 @@
+import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { DeviceSpec, SpecItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./file.ts";
 import type { DeviceSettings } from "./settings.ts";

@@ -1,6 +1,6 @@
 import { expect } from "jsr:@std/expect";
+import { emptyLine } from "../assembler/line.ts";
 import { testSystem } from "./testing.ts";
-import { emptyLine } from "../line/line-types.ts";
 
 Deno.test("The symbol table is reset at the end of the first pass", () => {
     const systemUnderTest = testSystem();

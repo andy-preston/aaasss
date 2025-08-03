@@ -1,8 +1,7 @@
 import { expect } from "jsr:@std/expect";
+import { currentLine, emptyLine } from "../assembler/line.ts";
 import { jSExpression } from "../javascript/expression.ts";
 import { jsFunction } from "../javascript/function.ts";
-import { currentLine } from "../line/current-line.ts";
-import { emptyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { programMemory } from "../program-memory/program-memory.ts";

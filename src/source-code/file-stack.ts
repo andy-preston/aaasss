@@ -1,12 +1,12 @@
 import type { PipelineProcess, PipelineSource } from "../assembler/data-types.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { FileLineIterator, FileName, LineNumber, StackEntry } from "./data-types.ts";
 import type { ReaderMethod } from "./reader.ts";
 
+import { emptyLine } from "../assembler/line.ts";
 import { addFailure } from "../failure/add-failure.ts";
 import { clueFailure } from "../failure/bags.ts";
-import { emptyLine } from "../line/line-types.ts";
 import { includeSensible } from "./include-sensible.ts";
 
 export const fileStack = (

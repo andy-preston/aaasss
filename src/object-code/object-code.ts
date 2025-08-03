@@ -1,7 +1,7 @@
 import type { Pass, PipelineProcess, PipelineReset } from "../assembler/data-types.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { InstructionSet } from "../instruction-set/instruction-set.ts";
-import type { CurrentLine } from "../line/current-line.ts";
 import type { Operands } from "../operands/operands.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 

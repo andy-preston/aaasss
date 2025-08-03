@@ -1,4 +1,4 @@
-import type { CurrentLine } from "../line/current-line.ts";
+import type { CurrentLine } from "../assembler/line.ts";
 
 export const definitionList = (currentLine: CurrentLine) => {
     const list: Map<string, string> = new Map();

@@ -1,6 +1,5 @@
+import { currentLine, emptyLine } from "../assembler/line.ts";
 import { instructionSet } from "../instruction-set/instruction-set.ts";
-import { currentLine } from "../line/current-line.ts";
-import { emptyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { deviceChooser } from "./chooser.ts";

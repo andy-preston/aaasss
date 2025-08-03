@@ -2,8 +2,7 @@ import type { AssertionFailure } from "../failure/bags.ts";
 
 import { expect } from "jsr:@std/expect";
 import { passes } from "../assembler/data-types.ts";
-import { currentLine } from "../line/current-line.ts";
-import { emptyLine } from "../line/line-types.ts";
+import { currentLine, emptyLine } from "../assembler/line.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
 import { dataMemory } from "./data-memory.ts";
