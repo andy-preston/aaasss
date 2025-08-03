@@ -5,7 +5,6 @@ import type { InstructionSet } from "../instruction-set/instruction-set.ts";
 import type { Operands } from "../operands/operands.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { AssertionFailure, supportFailure } from "../failure/bags.ts";
 import { ioAlternatives } from "../instruction-set/alternatives.ts";
 import { asWords } from "./as-words.ts";
@@ -41,14 +40,14 @@ export const objectCode = (
         if (encoded != undefined) {
            toLine(encoded, true);
         }
-        for (const failure of currentLine().failures) {
+        for (const failure of currentLine().failures()) {
             if (failure.kind == "value_type") {
                 const expected = (failure as AssertionFailure).expected;
                 const alternative = ioAlternatives[
                     `${currentLine().mnemonic}__${expected}`
                 ];
                 if (alternative != undefined) {
-                    addFailure(currentLine().failures, supportFailure(
+                    currentLine().failures(supportFailure(
                         alternative.kind, currentLine().mnemonic, alternative.try
                     ));
                 }

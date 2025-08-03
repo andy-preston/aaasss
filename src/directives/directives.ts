@@ -4,7 +4,6 @@ import type { DirectiveFunction, ParameterTypes } from "./data-types.ts";
 import type { DirectiveList } from "./directive-list.ts";
 
 import { typeOf } from "../assembler/data-types.ts";
-import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure } from "../failure/bags.ts";
 import { badLabel } from "../tokens/label.ts";
 
@@ -17,7 +16,7 @@ export const directives = (
     const countGood = (required: number, actual: number) => {
         const good = actual == required;
         if (!good) {
-            addFailure(currentLine().failures, assertionFailure(
+            currentLine().failures(assertionFailure(
                 "parameter_count", `${required}`, `${actual}`
             ));
         }
@@ -33,7 +32,7 @@ export const directives = (
                 "parameter_type", requiredType, actualType
             );
             failure.location = {"parameter": location};
-            addFailure(currentLine().failures, failure);
+            currentLine().failures(failure);
             return false;
         }
         return true;
@@ -46,7 +45,7 @@ export const directives = (
         const bad = badLabel(actual as string);
         if (bad != undefined) {
             bad.location = {"parameter": location};
-            addFailure(currentLine().failures, bad);
+            currentLine().failures(bad);
             return false;
         }
         return true;
@@ -62,7 +61,7 @@ export const directives = (
                 "parameter_value", "(signed byte) (-128)-127", `${actual}`
             );
             failure.location = {"parameter": location};
-            addFailure(currentLine().failures, failure);
+            currentLine().failures(failure);
         }
         return good;
     };
@@ -77,7 +76,7 @@ export const directives = (
                 "parameter_value", "(word) 0-FFFF", `${actual}`
             );
             failure.location = {"parameter": location};
-            addFailure(currentLine().failures, failure);
+            currentLine().failures(failure);
         }
         return good;
     };

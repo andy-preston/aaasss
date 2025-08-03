@@ -1,5 +1,3 @@
-import type { SupportFailure } from "../failure/bags.ts";
-
 import { expect } from "jsr:@std/expect";
 import { testSystem } from "./testing.ts";
 
@@ -9,12 +7,10 @@ Deno.test("RCALL is offered as an alternative to CALL", () => {
     systemUnderTest.instructionSet.unsupportedGroups(["flashMore8"]);
     systemUnderTest.currentLine().mnemonic = "CALL";
     const result = systemUnderTest.instructionSet.instruction()!;
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure =
-        systemUnderTest.currentLine().failures[0] as SupportFailure;
-    expect(failure.kind).toBe("notSupported_mnemonic");
-    expect(failure.used).toBe("CALL");
-    expect(failure.suggestion).toBe("RCALL");
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "notSupported_mnemonic", "location": undefined,
+        "used": "CALL", "suggestion": "RCALL"
+    }]);
     expect(result).toBe(undefined);
 });
 
@@ -24,12 +20,10 @@ Deno.test("RJMP is offered as an alternative to JMP", () => {
     systemUnderTest.instructionSet.unsupportedGroups(["flashMore8"]);
     systemUnderTest.currentLine().mnemonic = "JMP";
     const result = systemUnderTest.instructionSet.instruction()!;
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure =
-        systemUnderTest.currentLine().failures[0] as SupportFailure;
-    expect(failure.kind).toBe("notSupported_mnemonic");
-    expect(failure.used).toBe("JMP");
-    expect(failure.suggestion).toBe("RJMP");
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "notSupported_mnemonic", "location": undefined,
+        "used": "JMP", "suggestion": "RJMP"
+    }]);
     expect(result).toBe(undefined);
 });
 
@@ -39,12 +33,10 @@ Deno.test("ICALL is offered as an alternative to EICALL", () => {
     systemUnderTest.instructionSet.unsupportedGroups(["flashMore128"]);
     systemUnderTest.currentLine().mnemonic = "EICALL";
     const result = systemUnderTest.instructionSet.instruction()!;
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure =
-        systemUnderTest.currentLine().failures[0] as SupportFailure;
-    expect(failure.kind).toBe("notSupported_mnemonic");
-    expect(failure.used).toBe("EICALL");
-    expect(failure.suggestion).toBe("ICALL");
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "notSupported_mnemonic", "location": undefined,
+        "used": "EICALL", "suggestion": "ICALL"
+    }]);
     expect(result).toBe(undefined);
 });
 
@@ -54,12 +46,10 @@ Deno.test("IJMP is offered as an alternative to EIJMP", () => {
     systemUnderTest.instructionSet.unsupportedGroups(["flashMore128"]);
     systemUnderTest.currentLine().mnemonic = "EIJMP";
     const result = systemUnderTest.instructionSet.instruction()!;
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure =
-        systemUnderTest.currentLine().failures[0] as SupportFailure;
-    expect(failure.kind).toBe("notSupported_mnemonic");
-    expect(failure.used).toBe("EIJMP");
-    expect(failure.suggestion).toBe("IJMP");
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "notSupported_mnemonic", "location": undefined,
+        "used": "EIJMP", "suggestion": "IJMP"
+    }]);
     expect(result).toBe(undefined);
 });
 
@@ -69,11 +59,9 @@ Deno.test("DES has no alternative", () => {
     systemUnderTest.instructionSet.unsupportedGroups(["DES"]);
     systemUnderTest.currentLine().mnemonic = "DES";
     const result = systemUnderTest.instructionSet.instruction()!;
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure =
-        systemUnderTest.currentLine().failures[0] as SupportFailure;
-    expect(failure.kind).toBe("notSupported_mnemonic");
-    expect(failure.used).toBe("DES");
-    expect(failure.suggestion).toBe(undefined);
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "notSupported_mnemonic", "location": undefined,
+        "used": "DES", "suggestion": undefined
+    }]);
     expect(result).toBe(undefined);
 });

@@ -1,5 +1,3 @@
-import type { BoringFailure, ClueFailure, SupportFailure } from "../failure/bags.ts";
-
 import { expect } from "jsr:@std/expect";
 import { testSystem } from "./testing.ts";
 
@@ -7,15 +5,12 @@ Deno.test("Unsupported instruction check fails when no device is selected", () =
     const systemUnderTest = testSystem();
     systemUnderTest.currentLine().mnemonic = "MUL";
     const result = systemUnderTest.instructionSet.instruction()!;
-    expect(systemUnderTest.currentLine().failures.length).toBe(2);
-    {
-        const failure = systemUnderTest.currentLine().failures[0] as BoringFailure;
-        expect(failure.kind).toBe("device_notSelected");
-    } {
-        const failure = systemUnderTest.currentLine().failures[1] as ClueFailure;
-        expect(failure.kind).toBe("mnemonic_supportedUnknown");
-        expect(failure.clue).toBe("MUL");
-    }
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "device_notSelected", "location": undefined,
+    }, {
+        "kind": "mnemonic_supportedUnknown", "location": undefined,
+        "clue": "MUL"
+    }]);
     expect(result.length).toBe(2);
     expect(typeof result[0]).toBe("string");
     expect(typeof result[1]).toBe("object");
@@ -28,12 +23,10 @@ Deno.test("Instructions are added to the unsupported list in groups", () => {
         systemUnderTest.instructionSet.unsupportedGroups(["readModifyWrite"]);
         systemUnderTest.currentLine().mnemonic = mnemonic;
         const result = systemUnderTest.instructionSet.instruction();
-        expect(systemUnderTest.currentLine().failures.length).toBe(1);
-        const failure = systemUnderTest.currentLine().failures[0] as SupportFailure;
-        expect(failure.kind).toBe("notSupported_mnemonic");
-        expect(failure.used).toBe(mnemonic);
-        expect(failure.suggestion).toBe(undefined);
-        expect(failure.location).toBe(undefined);
+        expect(systemUnderTest.currentLine().failures()).toEqual([{
+            "kind": "notSupported_mnemonic", "location": undefined,
+            "used": mnemonic, "suggestion": undefined
+        }]);
         expect(result).toBe(undefined);
     });
     ["MUL", "MULS", "MULSU"].forEach(mnemonic => {
@@ -42,8 +35,7 @@ Deno.test("Instructions are added to the unsupported list in groups", () => {
         systemUnderTest.instructionSet.unsupportedGroups(["readModifyWrite"]);
         systemUnderTest.currentLine().mnemonic = mnemonic;
         const result = systemUnderTest.instructionSet.instruction()!;
-        expect(systemUnderTest.currentLine().failures.length).toBe(0);
-        expect(systemUnderTest.currentLine().failures.length).toBe(0);
+        expect(systemUnderTest.currentLine().failures()).toEqual([]);
         expect(result.length).toBe(2);
         expect(typeof result[0]).toBe("string");
         expect(typeof result[1]).toBe("object");
@@ -65,10 +57,9 @@ Deno.test("Some unsupported instructions come with suggested alternatives", () =
     systemUnderTest.instructionSet.unsupportedGroups(["flashMore8"]);
     systemUnderTest.currentLine().mnemonic = "CALL";
     const result = systemUnderTest.instructionSet.instruction()!;
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as SupportFailure;
-    expect(failure.kind).toBe("notSupported_mnemonic");
-    expect(failure.used).toBe("CALL");
-    expect(failure.suggestion).toBe("RCALL");
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "notSupported_mnemonic", "location": undefined,
+        "used": "CALL", "suggestion": "RCALL"
+    }]);
     expect(result).toBe(undefined);
 });

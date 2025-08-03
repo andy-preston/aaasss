@@ -1,13 +1,11 @@
-import type { DefinitionFailure, BoringFailure } from "../failure/bags.ts";
-
 import { expect } from "jsr:@std/expect";
 import { testSystem } from "./testing.ts";
 
 Deno.test("A symbol can be defined and accessed", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.symbolTable.persistentSymbol("plop", 57);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    expect(systemUnderTest.symbolTable.use("plop")).toEqual(57);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
+    expect(systemUnderTest.symbolTable.use("plop")).toBe(57);
 });
 
 Deno.test("A symbol can only be redefined if it's value has not changed", () => {
@@ -15,19 +13,17 @@ Deno.test("A symbol can only be redefined if it's value has not changed", () => 
     systemUnderTest.currentLine().fileName = "plop.asm";
     systemUnderTest.currentLine().lineNumber = 23;
     systemUnderTest.symbolTable.persistentSymbol("plop", 57);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     const value = systemUnderTest.symbolTable.use("plop");
     expect(value).toBe(57);
 
     systemUnderTest.symbolTable.persistentSymbol("plop", 57);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     systemUnderTest.symbolTable.persistentSymbol("plop", 75);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure =
-        systemUnderTest.currentLine().failures[0] as DefinitionFailure;
-    expect(failure.kind).toBe("symbol_alreadyExists");
-    expect(failure.name).toBe("plop");
-    expect(failure.definition).toBe("plop.asm:23");
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "symbol_alreadyExists", "location": undefined,
+        "name": "plop", "definition": "plop.asm:23"
+    }]);
 });
 
 Deno.test("Getting a device property when no deviceName is present fails", () => {
@@ -35,9 +31,9 @@ Deno.test("Getting a device property when no deviceName is present fails", () =>
     systemUnderTest.symbolTable.deviceSymbol("something", 23);
     const result = systemUnderTest.symbolTable.deviceSymbolValue("something", "number");
     expect(result).toBe(undefined);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as BoringFailure;
-    expect(failure.kind).toBe("device_notSelected");
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "device_notSelected", "location": undefined
+    }]);
 });
 
 Deno.test("After loading the device, it returns property values", () => {
@@ -46,7 +42,7 @@ Deno.test("After loading the device, it returns property values", () => {
     systemUnderTest.symbolTable.deviceSymbol("PORTD", 0x3f);
     const result = systemUnderTest.symbolTable.deviceSymbolValue("PORTD", "number");
     expect(result).toBe(0x3f);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
 });
 
 Deno.test("Device dependent property values are type checked", () => {

@@ -4,7 +4,7 @@ import { testSystem } from "./testing.ts";
 Deno.test("Lines with no mnemonic don't bother generating code", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([]);
     expect(systemUnderTest.programMemory.address()).toBe(0);
 });
@@ -14,7 +14,7 @@ Deno.test("Attempting to generate code with no device selected fails", () => {
     systemUnderTest.currentLine().mnemonic = "DES";
     systemUnderTest.currentLine().operands = ["1"];
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([{
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
         "kind": "device_notSelected", "location": undefined
     }, {
         "kind": "mnemonic_supportedUnknown", "location": undefined,
@@ -31,7 +31,7 @@ Deno.test("Lines with unsupported instructions fail", () => {
     systemUnderTest.instructionSet.unsupportedGroups(["DES"]);
     systemUnderTest.currentLine().mnemonic = "DES";
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([{
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
         "kind": "notSupported_mnemonic", "location": undefined,
         "used": "DES", "suggestion": undefined
     }]);
@@ -43,7 +43,7 @@ Deno.test("Lines with unknown instructions fail", () => {
     systemUnderTest.symbolTable.deviceSymbol("deviceName", "plop");
     systemUnderTest.currentLine().mnemonic = "NOT_REAL";
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([{
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
         "kind": "mnemonic_unknown", "location": undefined,
         "clue": "NOT_REAL"
     }]);
@@ -58,7 +58,7 @@ Deno.test("Lines with real/supported instructions produce code", () => {
     systemUnderTest.currentLine().mnemonic = "DES";
     systemUnderTest.currentLine().operands = ["15"];
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([[0xfb, 0x94]]);
     expect(systemUnderTest.programMemory.address()).toBe(1);
 });
@@ -70,7 +70,7 @@ Deno.test("Generating code will increment the programMemory address", () => {
     systemUnderTest.currentLine().mnemonic = "NOP";
     expect(systemUnderTest.programMemory.address()).toBe(0);
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([[0, 0]]);
     expect(systemUnderTest.programMemory.address()).toBe(1);
 });
@@ -82,7 +82,7 @@ Deno.test("Insufficient program memory causes generation to fail", () => {
     const preFailureAddress = systemUnderTest.programMemory.address();
     systemUnderTest.currentLine().mnemonic = "NOP";
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([{
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
         "kind": "programMemory_outOfRange", "location": undefined,
         "expected": "0", "actual": "1"
     }]);

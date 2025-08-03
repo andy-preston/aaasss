@@ -11,7 +11,7 @@ Deno.test("By default, code is generated", () => {
 
     systemUnderTest.currentLine().mnemonic = "SLEEP";
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([aSleepInstruction]);
 });
 
@@ -21,7 +21,7 @@ Deno.test("AssembleIf takes a boolean parameter", () => {
     if (isFunction(assembleIf)) {
         assembleIf("plop");
     }
-    expect(systemUnderTest.currentLine().failures).toEqual([{
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
         "kind": "parameter_type", "location": {"parameter": 1},
         "expected": "boolean", "actual": "string"
     }]);
@@ -33,7 +33,7 @@ Deno.test("AssembleIf takes a single parameter", () => {
     if (isFunction(assembleIf)) {
         assembleIf(true, false);
     }
-    expect(systemUnderTest.currentLine().failures).toEqual([{
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
         "kind": "parameter_count", "location": undefined,
         "expected": "1", "actual": "2"
     }]);
@@ -50,7 +50,7 @@ Deno.test("The assembleIf directive can turn code generation off", () => {
         assembleIf(false);
     }
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([]);
 });
 
@@ -65,14 +65,14 @@ Deno.test("The assembleIf directive can turn code generation back on", () => {
         assembleIf(false);
     }
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([]);
 
     if (isFunction(assembleIf)) {
         assembleIf(true);
     }
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([aSleepInstruction]);
 });
 
@@ -85,18 +85,18 @@ Deno.test("assembleIf will be evaluated even if code generation is off", () => {
     systemUnderTest.currentLine().mnemonic = "SLEEP";
     systemUnderTest.currentLine().operands = [];
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([]);
 
     systemUnderTest.currentLine().mnemonic = ".";
     systemUnderTest.currentLine().operands = ["assembleIf(true)"];
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([]);
 
     systemUnderTest.currentLine().mnemonic = "SLEEP";
     systemUnderTest.currentLine().operands = [];
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().code).toEqual([aSleepInstruction]);
 });

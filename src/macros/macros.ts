@@ -3,7 +3,6 @@ import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult, UncheckedParameters } from "../directives/data-types.ts";
 import type { Macro, MacroConstructor } from "./macro.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure, clueFailure } from "../failure/bags.ts";
 
 export const macros = (
@@ -15,7 +14,7 @@ export const macros = (
         ...uncheckedParameters: UncheckedParameters
     ): DirectiveResult => {
         if (currentMacro != undefined) {
-            addFailure(currentLine().failures, clueFailure(
+            currentLine().failures(clueFailure(
                 "macro_multiDefine", currentMacro.name
             ));
             return undefined;
@@ -27,7 +26,7 @@ export const macros = (
 
     const end = (): DirectiveResult => {
         if (currentMacro == undefined) {
-            addFailure(currentLine().failures, boringFailure("macro_end"));
+            currentLine().failures(boringFailure("macro_end"));
             return;
         }
 
@@ -44,7 +43,7 @@ export const macros = (
 
     const reset: PipelineReset = () => {
         if (currentMacro != undefined) {
-            addFailure(currentLine().failures, boringFailure("macro_noEnd"));
+            currentLine().failures(boringFailure("macro_noEnd"));
         }
         currentMacro = undefined;
     };

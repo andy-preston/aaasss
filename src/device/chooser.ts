@@ -4,8 +4,6 @@ import type { DeviceSpec, SpecItems } from "./data-types.ts";
 import type { DeviceFileOperations } from "./file.ts";
 import type { DeviceSettings } from "./settings.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
-
 export const deviceChooser = (
     currentLine: CurrentLine,
     deviceSettings: DeviceSettings, fileOperations: DeviceFileOperations
@@ -26,7 +24,7 @@ export const deviceChooser = (
 
         const baseName = deviceFinder(name);
         if (typeof baseName != "string") {
-            addFailure(currentLine().failures, baseName);
+            currentLine().failures(baseName);
             return undefined;
         }
 

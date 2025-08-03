@@ -4,7 +4,6 @@ import type { DirectiveResult } from "../directives/data-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { DiscreteType, SymbolValue } from "./data-types.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure, definitionFailure } from "../failure/bags.ts";
 import { counting } from "./counting.ts";
 import { isDiscrete } from "./data-types.ts";
@@ -38,7 +37,7 @@ export const symbolTable = (
         symbolName: string, checkExistingValue?: SymbolValue
     ): boolean => {
         if (cpuRegisters.has(symbolName)) {
-            addFailure(currentLine().failures, definitionFailure(
+            currentLine().failures(definitionFailure(
                 "symbol_alreadyExists", symbolName, "REGISTER"
             ));
             return true;
@@ -49,7 +48,7 @@ export const symbolTable = (
         const failed = checkExistingValue == undefined
             || internalValue(symbolName) !== checkExistingValue
         if (failed) {
-            addFailure(currentLine().failures, definitionFailure(
+            currentLine().failures(definitionFailure(
                 "symbol_alreadyExists", symbolName,
                 definitions.text(symbolName, 'BUILT_IN')
             ));
@@ -67,7 +66,7 @@ export const symbolTable = (
         symbolName: string, expectedType: DiscreteType
     ): SymbolValue | undefined => {
         if (!varSymbols.has("deviceName")) {
-            addFailure(currentLine().failures, boringFailure(
+            currentLine().failures(boringFailure(
                 "device_notSelected"
             ));
             return undefined;

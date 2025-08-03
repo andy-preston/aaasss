@@ -57,7 +57,7 @@ export const listing = (
             currentName = currentLine().fileName;
             heading(currentName);
         }
-        const messages = currentLine().failures.reduce(
+        const messages = currentLine().failures().reduce(
             (messages, failure) =>
                 messages.concat(failureMessages(failure)),
             [] as Array<string>

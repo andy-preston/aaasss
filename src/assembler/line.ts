@@ -1,12 +1,13 @@
 import type { Pass } from "./data-types.ts";
-import type { Failure } from "../failure/bags.ts";
 import type { Code } from "../object-code/data-types.ts";
 import type { Operands } from "../operands/data-types.ts";
 import type { FileName, LineNumber, SourceCode } from "../source-code/data-types.ts";
 import type { Label, Mnemonic } from "../tokens/data-types.ts";
 
+import { failures } from "../failure/failures.ts";
+
 export const emptyLine = (fileName: FileName) => ({
-    "failures": [] as Array<Failure>,
+    "failures": failures(),
     "pass": 0 as Pass,
     "fileName": fileName,
     "lineNumber": 0 as LineNumber,

@@ -5,7 +5,7 @@ import { testSystem } from "./testing.ts";
 Deno.test("The symbol table is reset at the end of the first pass", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.symbolTable.persistentSymbol("plop", 57);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     [1, 2, 3].forEach(expectedCount => {
         const use = systemUnderTest.symbolTable.use("plop");
         expect(use).toEqual(57);
@@ -19,7 +19,7 @@ Deno.test("The symbol table is reset at the end of the first pass", () => {
 Deno.test("... but left intact at the end of the second pass", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.symbolTable.persistentSymbol("plop", 57);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     [1, 2, 3].forEach(expectedCount => {
         const use = systemUnderTest.symbolTable.use("plop");
         expect(use).toEqual(57);

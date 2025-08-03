@@ -3,7 +3,6 @@ import type { CurrentLine } from "../assembler/line.ts";
 import type { Failure } from "../failure/bags.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure, boringFailure, numericTypeFailure } from "../failure/bags.ts";
 import { DirectiveResult } from "../directives/data-types.ts";
 
@@ -85,9 +84,7 @@ export const programMemory = (
 
     const origin = (newAddress: number): DirectiveResult => {
         if (currentLine().code.length > 0) {
-            addFailure(currentLine().failures, boringFailure(
-                "programMemory_cantOrg"
-            ));
+            currentLine().failures(boringFailure("programMemory_cantOrg"));
             return undefined;
         }
 
@@ -96,14 +93,14 @@ export const programMemory = (
                 "type_positive", newAddress, 0, undefined, undefined
             );
             negative.location = {"parameter": 1};
-            addFailure(currentLine().failures, negative);
+            currentLine().failures(negative);
             return undefined;
         }
 
         const tooFar = setAddress(newAddress);
         if (tooFar) {
             tooFar.location = {"parameter": 1};
-            addFailure(currentLine().failures, tooFar);
+            currentLine().failures(tooFar);
             return undefined;
         }
 
@@ -128,7 +125,7 @@ export const programMemory = (
     const addressStep = (steps: number) => {
         const failed = setAddress(address + steps);
         if (failed) {
-            addFailure(currentLine().failures, failed);
+            currentLine().failures(failed);
         }
     };
 

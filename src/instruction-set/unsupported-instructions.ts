@@ -2,7 +2,6 @@ import type { Line } from "../assembler/line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure, clueFailure, supportFailure } from "../failure/bags.ts";
 import { simpleAlternatives } from "./alternatives.ts";
 
@@ -40,10 +39,8 @@ export const unsupportedInstructions = (symbolTable: SymbolTable) => {
                 return true;
             }
 
-            addFailure(line.failures, boringFailure(
-                "device_notSelected"
-            ));
-            addFailure(line.failures, clueFailure(
+            line.failures(boringFailure("device_notSelected"));
+            line.failures(clueFailure(
                 "mnemonic_supportedUnknown", line.mnemonic
             ));
             return false;
@@ -72,7 +69,7 @@ export const unsupportedInstructions = (symbolTable: SymbolTable) => {
             return false;
         }
 
-        addFailure(line.failures, supportFailure(
+        line.failures(supportFailure(
             "notSupported_mnemonic",
             unsupported, simpleAlternatives[unsupported]
         ));

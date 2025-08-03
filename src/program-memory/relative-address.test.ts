@@ -38,7 +38,7 @@ Deno.test("Testing a 12 bit relative address that is in range", () => {
     systemUnderTest.programMemory.origin(1000);
     const result = systemUnderTest.programMemory.relativeAddress(2000, 12);
     expect(result).toBe(999);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
 });
 
 Deno.test("7 bit relative address can't be too big", () => {

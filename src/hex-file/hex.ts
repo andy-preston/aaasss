@@ -45,7 +45,7 @@ export const hexFile = (
     let noHexFile: boolean = false;
 
     const line = () => {
-        if (currentLine().failures.length > 0) {
+        if (currentLine().failures().length > 0) {
             noHexFile = true;
         }
         const newAddress = programMemoryAddressInBytes(

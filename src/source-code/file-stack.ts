@@ -5,7 +5,6 @@ import type { FileLineIterator, FileName, LineNumber, StackEntry } from "./data-
 import type { ReaderMethod } from "./reader.ts";
 
 import { emptyLine } from "../assembler/line.ts";
-import { addFailure } from "../failure/add-failure.ts";
 import { clueFailure } from "../failure/bags.ts";
 import { includeSensible } from "./include-sensible.ts";
 
@@ -30,7 +29,7 @@ export const fileStack = (
         }
         catch (error) {
             if (error instanceof Deno.errors.NotFound) {
-                addFailure(currentLine().failures, clueFailure(
+                currentLine().failures(clueFailure(
                     "file_notFound", error.message
                 ));
                 return;
@@ -88,7 +87,7 @@ export const fileStack = (
     ) => {
         currentLine(emptyLine(topFileName));
         include(topFileName);
-        if (currentLine().failures.length > 0) {
+        if (currentLine().failures().length > 0) {
             eachLine();
             atEnd();
             return;

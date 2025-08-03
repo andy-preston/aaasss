@@ -25,7 +25,7 @@ Deno.test("A label must only contain alphanumerics or underscore", () => {
             const systemUnderTest = testSystem();
             systemUnderTest.currentLine().sourceCode = sourceCode;
             systemUnderTest.tokens();
-            expect(systemUnderTest.currentLine().failures).toEqual([]);
+            expect(systemUnderTest.currentLine().failures()).toEqual([]);
         }
     );
 });
@@ -37,7 +37,7 @@ Deno.test("A label with characters outside that character set failes", () => {
             systemUnderTest.currentLine().sourceCode = sourceCode;
             systemUnderTest.tokens();
             expect(
-                systemUnderTest.currentLine().failures,
+                systemUnderTest.currentLine().failures(),
                 sourceCode
             ).toEqual([{
                 "kind": "syntax_invalidLabel", "location": undefined

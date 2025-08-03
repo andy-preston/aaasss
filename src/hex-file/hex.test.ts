@@ -2,7 +2,6 @@ import type { Code } from "../object-code/data-types.ts";
 
 import { expect } from "jsr:@std/expect";
 import { currentLine, emptyLine } from "../assembler/line.ts";
-import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure } from "../failure/bags.ts";
 import { hexFile } from "./hex.ts";
 
@@ -60,7 +59,7 @@ Deno.test("If there are any failures, no hex is produced", () => {
         systemUnderTest.currentLine().code = [[1, 2], [3, 4]];
         systemUnderTest.hex.line();
     } {
-        addFailure(systemUnderTest.currentLine().failures, boringFailure(
+        systemUnderTest.currentLine().failures(boringFailure(
             "syntax_invalidLabel"
         ));
         systemUnderTest.hex.line();

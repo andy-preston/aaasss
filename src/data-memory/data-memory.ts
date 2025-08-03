@@ -3,7 +3,6 @@ import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure, boringFailure } from "../failure/bags.ts";
 
 export const dataMemory = (
@@ -21,7 +20,7 @@ export const dataMemory = (
         const currentAddress = availableAddress();
         const ramEnd = symbolTable.deviceSymbolValue("ramEnd", "number");
         if (currentAddress == undefined || typeof ramEnd != "number") {
-            addFailure(currentLine().failures, boringFailure(
+            currentLine().failures(boringFailure(
                 "ram_sizeUnknown"
             ));
             return false;
@@ -32,7 +31,7 @@ export const dataMemory = (
             return false;
         }
 
-        addFailure(currentLine().failures, assertionFailure(
+        currentLine().failures(assertionFailure(
             "ram_outOfRange", `${bytesAvailable}`, `${bytesRequested}`
         ));
         return true;
@@ -52,7 +51,7 @@ export const dataMemory = (
         // all the space.
         // On AVRs, the stack is at RamEnd and grows down!
         if (stack != 0) {
-            addFailure(currentLine().failures, boringFailure(
+            currentLine().failures(boringFailure(
                 "ram_stackAllocated"
             ));
         } else {

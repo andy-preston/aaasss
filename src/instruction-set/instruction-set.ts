@@ -2,7 +2,6 @@ import type { CurrentLine } from "../assembler/line.ts";
 import type { InstructionOperands } from "../operands/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { clueFailure } from "../failure/bags.ts";
 import { instructions, lpmImplied, nonReducedCore, withReducedCore } from "./instructions.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
@@ -31,7 +30,7 @@ export const instructionSet = (
             : instructions[currentLine().mnemonic];
 
         if (templateAndOperands == undefined) {
-            addFailure(currentLine().failures, clueFailure(
+            currentLine().failures(clueFailure(
                 "mnemonic_unknown", currentLine().mnemonic
             ));
         }

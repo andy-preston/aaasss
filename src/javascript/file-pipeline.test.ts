@@ -43,7 +43,7 @@ Deno.test("JS can contain comments", () => {
         systemUnderTest.currentLine().sourceCode = sourceLine;
         systemUnderTest.currentLine().eof = index + 1 == testSource.length;
         systemUnderTest.jsFilePipeline();
-        expect(systemUnderTest.currentLine().failures).toEqual([]);
+        expect(systemUnderTest.currentLine().failures()).toEqual([]);
     });
     expect(systemUnderTest.testResult()).toBe("27,hello");
 });
@@ -54,7 +54,7 @@ Deno.test("JS Can execute get values from the symbol table", () => {
     systemUnderTest.currentLine().sourceCode = "testResult(plop);";
     systemUnderTest.currentLine().eof = true;
     systemUnderTest.jsFilePipeline();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.testResult()).toBe("57");
 });
 
@@ -64,7 +64,7 @@ Deno.test("A symbol assignment does not pollute the `this` context object", () =
         "plop = 27; testResult(this.plop);";
     systemUnderTest.currentLine().eof = true;
     systemUnderTest.jsFilePipeline();
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.testResult()).not.toBe("27");
     expect(systemUnderTest.testResult()).toBe("");
 });

@@ -1,7 +1,6 @@
 import type { CurrentLine } from "../assembler/line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { exceptionFailure } from "../failure/bags.ts";
 
 export const jsFunction = (
@@ -29,7 +28,7 @@ export const jsFunction = (
         } catch (error) {
             if (error instanceof Error) {
                 //console.error(error.stack);
-                addFailure(currentLine().failures, exceptionFailure(
+                currentLine().failures(exceptionFailure(
                     "js_error", error.name, error.message
                 ));
                 return "";

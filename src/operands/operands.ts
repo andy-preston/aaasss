@@ -5,7 +5,6 @@ import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Conversion, OperandType } from "./data-types.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { assertionFailure } from "../failure/bags.ts";
 import { scale } from "./scale.ts";
 import { numeric } from "./numeric.ts";
@@ -34,7 +33,7 @@ export const operands = (
         const actualLength = currentLine().operands.length;
         if (optional(requiredTypes)) {
             if (![0, 1].includes(actualLength)) {
-                addFailure(currentLine().failures, assertionFailure(
+                currentLine().failures(assertionFailure(
                     "operand_count", "0/1", `${actualLength}`
                 ));
             }
@@ -43,7 +42,7 @@ export const operands = (
                 ? requiredTypes.length
                 : requiredTypes.length - 1;
             if (requiredLength != actualLength) {
-                addFailure(currentLine().failures, assertionFailure(
+                currentLine().failures(assertionFailure(
                     "operand_count", `${requiredTypes.length}`, `${actualLength}`
                 ));
             }
@@ -74,7 +73,7 @@ export const operands = (
                 const result = operation(value, requiredType);
                 if (typeof result != "number") {
                     result.location = {"operand": useIndex + 1};
-                    addFailure(currentLine().failures, result);
+                    currentLine().failures(result);
                     return 0;
                 }
                 value = result;

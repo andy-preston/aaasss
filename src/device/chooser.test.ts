@@ -1,5 +1,3 @@
-import type { ClueFailure, DefinitionFailure } from "../failure/bags.ts";
-
 import { expect } from "jsr:@std/expect";
 import { testSystem } from "./testing.ts";
 
@@ -7,7 +5,7 @@ Deno.test("You can choose any device that has a definition file", () => {
     for (const deviceName of ["AT-Tiny 84", "AT_Tiny 24", "AT.Tiny 44"]) {
         const systemUnderTest = testSystem();
         systemUnderTest.deviceChooser(deviceName);
-        expect(systemUnderTest.currentLine().failures.length).toBe(0);
+        expect(systemUnderTest.currentLine().failures()).toEqual([]);
     }
 });
 
@@ -18,14 +16,15 @@ Deno.test("Choosing multiple devices results in failure", () => {
     systemUnderTest.currentLine().fileName = "plop.asm";
     systemUnderTest.currentLine().lineNumber = 23;
     systemUnderTest.deviceChooser(firstName);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
 
     systemUnderTest.deviceChooser(secondName);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as DefinitionFailure;
-    expect(failure.kind).toBe("symbol_alreadyExists");
-    expect(failure.name).toBe("deviceName");
-    expect(failure.definition).toBe("plop.asm:23");
+    expect(
+        systemUnderTest.currentLine().failures()
+    ).toEqual([{
+        "kind": "symbol_alreadyExists", "location": undefined,
+        "name": "deviceName", "definition": "plop.asm:23"
+    }]);
 });
 
 Deno.test("Choosing the same device by different names is also a failure", () => {
@@ -38,29 +37,28 @@ Deno.test("Choosing the same device by different names is also a failure", () =>
     systemUnderTest.currentLine().lineNumber = 23;
 
     systemUnderTest.deviceChooser(firstName);
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
 
     systemUnderTest.deviceChooser(secondName);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as DefinitionFailure;
-    expect(failure.kind).toBe("symbol_alreadyExists");
-    expect(failure.name).toBe("deviceName");
-    expect(failure.definition).toBe("plop.asm:23");
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "symbol_alreadyExists", "location": undefined,
+        "name": "deviceName", "definition": "plop.asm:23"
+    }]);
 });
 
 Deno.test("Choosing an non-existant device returns a Failure", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.deviceChooser("plop");
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as ClueFailure;
-    expect(failure.kind).toBe("device_notFound");
-    expect(failure.clue).toBe("./devices/plop.toml");
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "device_notFound", "location": undefined,
+        "clue": "./devices/plop.toml"
+    }]);
 });
 
 Deno.test("It correctly interprets the hex stings in the TOML files", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.deviceChooser("ATTiny2313");
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     const value = systemUnderTest.symbolTable.internalValue("TCCR1A");
     expect(value).toBe(0x4f);
 });
@@ -74,6 +72,6 @@ Deno.test("It calls a callback in instruction-set with the value of 'reducedCore
     systemUnderTest.instructionSet.reducedCore = mockCallback;
     expect(testIndicator).toBe(undefined);
     systemUnderTest.deviceChooser("ATTiny2313");
-    expect(systemUnderTest.currentLine().failures.length).toBe(0);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(testIndicator).toBe(false);
 });

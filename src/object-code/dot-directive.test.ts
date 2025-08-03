@@ -22,7 +22,7 @@ Deno.test("And shows any failures on the current line", () => {
     systemUnderTest.currentLine().mnemonic = ".";
     systemUnderTest.currentLine().operands = ["testDirective()"];
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([{
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
         "kind": "js_error", "location": undefined,
         "exception": "ReferenceError",
         "message": "testDirective is not defined"
@@ -34,7 +34,7 @@ Deno.test("A dot must have one operand (directive)", () => {
     systemUnderTest.currentLine().mnemonic = ".";
     systemUnderTest.currentLine().operands = [];
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([{
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
         "kind": "operand_count", "location": undefined,
         "expected": "1", "actual": "0"
     }, {
@@ -52,7 +52,7 @@ Deno.test("A dot can't have multiple operands", () => {
     systemUnderTest.currentLine().mnemonic = ".";
     systemUnderTest.currentLine().operands = ["one", "2"];
     systemUnderTest.objectCode.line();
-    expect(systemUnderTest.currentLine().failures).toEqual([{
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
         "kind": "operand_count", "location": undefined,
         "expected": "1", "actual": "2"
     }]);

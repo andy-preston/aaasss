@@ -28,7 +28,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     if (isFunction(macro)) {
         macro("testMacro");
     }
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     testLines.forEach(sourceCode => {
         systemUnderTest.currentLine(emptyLine("plop.asm"));
         systemUnderTest.currentLine().sourceCode = sourceCode;
@@ -37,13 +37,13 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     if (isFunction(end)) {
         end();
     }
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
 
     const testMacro = systemUnderTest.symbolTable.use("testMacro");
     if (isFunction(testMacro)) {
         testMacro();
     }
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     let index = 0;
     systemUnderTest.fileStack.lines(() => {
         expect(
@@ -64,7 +64,7 @@ Deno.test("Lines that are being replayed have a label suffix", () => {
     if (isFunction(macro)) {
         macro("testMacro");
     }
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     testLines.forEach(sourceCode => {
         systemUnderTest.currentLine(emptyLine("plop.asm"));
         systemUnderTest.currentLine().sourceCode = sourceCode;
@@ -73,13 +73,13 @@ Deno.test("Lines that are being replayed have a label suffix", () => {
     if (isFunction(end)) {
         end();
     }
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
 
     const testMacro = systemUnderTest.symbolTable.use("testMacro");
     if (isFunction(testMacro)) {
         testMacro();
     }
-    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
     let index = 0;
     systemUnderTest.fileStack.lines(() => {
         expect(

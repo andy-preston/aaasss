@@ -1,7 +1,6 @@
 import type { PipelineProcess } from "../assembler/data-types.ts";
 import type { CurrentLine } from "../assembler/line.ts";
 
-import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure, clueFailure } from "../failure/bags.ts";
 import { badLabel } from "./label.ts";
 
@@ -66,7 +65,7 @@ export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
             }
         });
         if (parentheses != 0) {
-            addFailure(currentLine().failures, clueFailure(
+            currentLine().failures(clueFailure(
                 "syntax_parenthesesNesting", `${parentheses}`
             ));
             return [];
@@ -87,7 +86,7 @@ export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
     const [label, withoutLabel] = splitSource("after", ":", cleaned);
     const labelFailure = badLabel(label);
     if (labelFailure) {
-        addFailure(currentLine().failures, labelFailure);
+        currentLine().failures(labelFailure);
     } else {
         currentLine().label = label;
     }
@@ -105,9 +104,7 @@ export const tokens = (currentLine: CurrentLine): PipelineProcess => () => {
     if (mnemonicIsValid) {
         currentLine().mnemonic = mnemonic;
     } else {
-        addFailure(currentLine().failures, boringFailure(
-            "syntax_invalidMnemonic"
-        ));
+        currentLine().failures(boringFailure("syntax_invalidMnemonic"));
     }
 
     currentLine().operands = operands(mnemonicAndOperands[1]);

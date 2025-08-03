@@ -1,4 +1,3 @@
-import type { ClueFailure } from "../failure/bags.ts";
 import type { FileLineIterator, FileName } from "./data-types.ts";
 
 import { expect } from "jsr:@std/expect";
@@ -9,12 +8,10 @@ Deno.test("Including a non existant file fails", () => {
     const fileName = "does-not-exist.asm";
     const systemUnderTest = testSystem(defaultReaderMethod, "");
     systemUnderTest.fileStack.include(fileName);
-    expect(systemUnderTest.currentLine().failures.length).toBe(1);
-    const failure = systemUnderTest.currentLine().failures[0] as ClueFailure;
-    expect(failure.kind).toBe("file_notFound");
-    expect(failure.clue).toBe(
-        `No such file or directory (os error 2): readfile '${fileName}'`
-    );
+    expect(systemUnderTest.currentLine().failures()).toEqual([{
+        "kind": "file_notFound", "location": undefined,
+        "clue": `No such file or directory (os error 2): readfile '${fileName}'`
+    }]);
 });
 
 Deno.test("Reading a file yields multiple lines with the file contents", () => {
@@ -30,7 +27,7 @@ Deno.test("Reading a file yields multiple lines with the file contents", () => {
         expect(systemUnderTest.currentLine().sourceCode).toBe(
             expected[lineNumber - 1]
         );
-        expect(systemUnderTest.currentLine().failures.length).toBe(0);
+        expect(systemUnderTest.currentLine().failures()).toEqual([]);
     }
     systemUnderTest.fileStack.lines(mockPipeline, () => {});
     expect(lineNumber).toBe(expected.length);
@@ -63,13 +60,10 @@ Deno.test("Reading a non existant source file gives one line with a failure", ()
         expect(systemUnderTest.currentLine().fileName).toBe("not-exist.asm");
         expect(systemUnderTest.currentLine().lineNumber).toBe(0);
         expect(systemUnderTest.currentLine().sourceCode).toBe("");
-        expect(systemUnderTest.currentLine().failures.length).toBe(1);
-        const failure =
-            systemUnderTest.currentLine().failures[0] as ClueFailure;
-        expect(failure.kind).toBe("file_notFound");
-        expect(failure.clue).toBe(
-            "No such file or directory (os error 2): readfile 'not-exist.asm'"
-        );
+        expect(systemUnderTest.currentLine().failures()).toEqual([{
+            "kind": "file_notFound", "location": undefined,
+            "clue": "No such file or directory (os error 2): readfile 'not-exist.asm'"
+        }]);
     };
     systemUnderTest.fileStack.lines(mockPipeline, () => {});
     expect(lineNumber).toBe(1);
@@ -83,10 +77,9 @@ Deno.test("the top-level file must be assembler, not JS", () => {
         expect(systemUnderTest.currentLine().fileName).toBe("./src/cli.js");
         expect(systemUnderTest.currentLine().lineNumber).toBe(0);
         expect(systemUnderTest.currentLine().sourceCode).toBe("");
-        expect(systemUnderTest.currentLine().failures.length).toBe(1);
-        const failure =
-            systemUnderTest.currentLine().failures[0] as ClueFailure;
-        expect(failure.kind).toBe("file_topLevelAsm");
+        expect(systemUnderTest.currentLine().failures()).toEqual([{
+            "kind": "file_topLevelAsm", "location": undefined
+        }]);
     };
     systemUnderTest.fileStack.lines(mockPipeline, () => {});
     expect(lineNumber).toBe(1);
@@ -107,10 +100,10 @@ Deno.test("An included file is inserted into the source stream", () => {
         expect(systemUnderTest.currentLine().sourceCode).toBe(
             expected[lineNumber - 1]
         );
-        expect(systemUnderTest.currentLine().failures.length).toBe(0);
+        expect(systemUnderTest.currentLine().failures()).toEqual([]);
         if (lineNumber == 1) {
             systemUnderTest.fileStack.include("plop.asm");
-            expect(systemUnderTest.currentLine().failures.length).toBe(0);
+            expect(systemUnderTest.currentLine().failures()).toEqual([]);
         }
     };
     systemUnderTest.fileStack.lines(mockPipeline, () => {});
@@ -139,10 +132,10 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
         expect(actual.fileName).toBe("top.asm");
         expect(actual.lineNumber).toBe(expectedLineNumber);
         expect(actual.sourceCode).toBe(expectedSource);
-        expect(actual.failures.length).toBe(0);
+        expect(actual.failures()).toEqual([]);
         if (lineNumber == 1) {
             systemUnderTest.fileStack.pushImaginary(imaginaryFile());
-            expect(systemUnderTest.currentLine().failures.length).toBe(0);
+            expect(systemUnderTest.currentLine().failures()).toEqual([]);
         }
     };
     systemUnderTest.fileStack.lines(mockPipeline, () => {});
