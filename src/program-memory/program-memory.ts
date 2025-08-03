@@ -1,9 +1,9 @@
 import type { PipelineProcess, PipelineReset } from "../assembler/data-types.ts";
 import type { CurrentLine } from "../assembler/line.ts";
-import type { Failure } from "../failure/bags.ts";
+import type { Failure } from "../failure/failures.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-import { assertionFailure, boringFailure, numericTypeFailure } from "../failure/bags.ts";
+import { assertionFailure, boringFailure, numericTypeFailure } from "../failure/failures.ts";
 import { DirectiveResult } from "../directives/data-types.ts";
 
 export const programMemory = (

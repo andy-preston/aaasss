@@ -1,10 +1,10 @@
-import type { AssertionFailure, Failure } from "../failure/bags.ts";
+import type { AssertionFailure, Failure } from "../failure/failures.ts";
 import type { JsExpression } from "../javascript/expression.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Conversion, StringConversion, OperandType } from "./data-types.ts";
 
-import { clueFailure, valueTypeFailure } from "../failure/bags.ts";
+import { clueFailure, valueTypeFailure } from "../failure/failures.ts";
 
 export const numeric = (
     symbolTable: SymbolTable, cpuRegisters: CpuRegisters,

@@ -4,7 +4,7 @@ import type { DirectiveFunction, ParameterTypes } from "./data-types.ts";
 import type { DirectiveList } from "./directive-list.ts";
 
 import { typeOf } from "../assembler/data-types.ts";
-import { assertionFailure } from "../failure/bags.ts";
+import { assertionFailure } from "../failure/failures.ts";
 import { badLabel } from "../tokens/label.ts";
 
 type Validator = (actual: unknown, location: number) => boolean;

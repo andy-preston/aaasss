@@ -2,7 +2,7 @@ import type { CurrentLine } from "../assembler/line.ts";
 import type { InstructionOperands } from "../operands/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-import { clueFailure } from "../failure/bags.ts";
+import { clueFailure } from "../failure/failures.ts";
 import { instructions, lpmImplied, nonReducedCore, withReducedCore } from "./instructions.ts";
 import { unsupportedInstructions } from "./unsupported-instructions.ts";
 

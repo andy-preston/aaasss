@@ -5,7 +5,7 @@ import type { FileLineIterator, FileName, LineNumber, StackEntry } from "./data-
 import type { ReaderMethod } from "./reader.ts";
 
 import { emptyLine } from "../assembler/line.ts";
-import { clueFailure } from "../failure/bags.ts";
+import { clueFailure } from "../failure/failures.ts";
 import { includeSensible } from "./include-sensible.ts";
 
 export const fileStack = (

@@ -1,7 +1,7 @@
 import type {
     AssertionFailure, ClueFailure, DefinitionFailure,
     ExceptionFailure, NumericTypeFailure, SupportFailure
-} from "../failure/bags.ts";
+} from "../failure/failures.ts";
 import type { FailureKind } from "../failure/kinds.ts";
 import type { FailureMessage } from "./languages.ts";
 

@@ -1,11 +1,12 @@
-import type { StringOrFailure } from "../failure/bags.ts";
 import type { DeviceSpec, SpecItems } from "./data-types.ts";
 
 import { existsSync } from "jsr:@std/fs/exists";
 import { parse } from "jsr:@std/toml";
-import { clueFailure } from "../failure/bags.ts";
+import { clueFailure, Failure } from "../failure/failures.ts";
 
-export const defaultDeviceFinder = (deviceName: string): StringOrFailure => {
+export const defaultDeviceFinder = (
+    deviceName: string
+): string | Failure => {
     const fileName = deviceName.replace(/[^\w]|_/g, "").toLowerCase();
     const baseName = `./devices/${fileName}.toml`;
     return existsSync(baseName)

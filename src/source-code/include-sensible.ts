@@ -1,8 +1,8 @@
+import type { Failures } from "../failure/failures.ts";
 import type { FileName, StackEntry } from "./data-types.ts";
 
 import { dirname, extname, isAbsolute, normalize } from "jsr:@std/path";
-import { boringFailure } from "../failure/bags.ts"
-import { Failures } from "../failure/failures.ts";
+import { boringFailure } from "../failure/failures.ts"
 
 export const includeSensible = (
     newName: FileName,

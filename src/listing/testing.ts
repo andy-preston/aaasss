@@ -1,4 +1,4 @@
-import type { Failure } from "../failure/bags.ts";
+import type { Failure } from "../failure/failures.ts";
 
 export const mockFailureMessages = (failure: Failure) =>
     ([failure.kind] as Array<string>).concat(

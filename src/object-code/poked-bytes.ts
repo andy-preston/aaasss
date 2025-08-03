@@ -1,6 +1,6 @@
 import type { Failures } from "../failure/failures.ts";
 
-import { valueTypeFailure } from "../failure/bags.ts";
+import { valueTypeFailure } from "../failure/failures.ts";
 
 const textEncoder = new TextEncoder();
 

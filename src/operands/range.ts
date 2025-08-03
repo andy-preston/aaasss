@@ -1,8 +1,8 @@
 import type { AllowedValues, Min, Max } from "../assembler/data-types.ts";
-import type { Failure } from "../failure/bags.ts";
+import type { Failure } from "../failure/failures.ts";
 import type { OperandType } from "./data-types.ts";
 
-import { assertionFailure } from "../failure/bags.ts";
+import { assertionFailure } from "../failure/failures.ts";
 
 const limits: Record<
     OperandType,           [      Min,       Max, AllowedValues           ]

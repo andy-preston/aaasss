@@ -3,7 +3,7 @@ import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult, UncheckedParameters } from "../directives/data-types.ts";
 import type { Macro, MacroConstructor } from "./macro.ts";
 
-import { boringFailure, clueFailure } from "../failure/bags.ts";
+import { boringFailure, clueFailure } from "../failure/failures.ts";
 
 export const macros = (
     currentLine: CurrentLine, macro: MacroConstructor

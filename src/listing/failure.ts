@@ -2,7 +2,7 @@ import type {
     AssertionFailure, ClueFailure, DefinitionFailure,
     ExceptionFailure, NumericTypeFailure,
     SupportFailure
-} from "../failure/bags.ts";
+} from "../failure/failures.ts";
 
 export const assertionFailure = (
     messages: Array<string>, expected: string, actual: string,

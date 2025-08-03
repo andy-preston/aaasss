@@ -1,4 +1,4 @@
-import { Failure } from "../failure/bags.ts";
+import { Failure } from "../failure/failures.ts";
 
 export type Operand = string;
 export type Operands = Array<Operand>;

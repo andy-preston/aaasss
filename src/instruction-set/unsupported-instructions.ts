@@ -2,7 +2,7 @@ import type { Line } from "../assembler/line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Mnemonic } from "../tokens/data-types.ts";
 
-import { boringFailure, clueFailure, supportFailure } from "../failure/bags.ts";
+import { boringFailure, clueFailure, supportFailure } from "../failure/failures.ts";
 import { simpleAlternatives } from "./alternatives.ts";
 
 // It looks like we're assuming that everything is at least AVRe

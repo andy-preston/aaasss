@@ -1,11 +1,12 @@
 import type { Pass, PipelineProcess, PipelineReset } from "../assembler/data-types.ts";
 import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
+import type { AssertionFailure } from "../failure/failures.ts";
 import type { InstructionSet } from "../instruction-set/instruction-set.ts";
 import type { Operands } from "../operands/operands.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 
-import { AssertionFailure, supportFailure } from "../failure/bags.ts";
+import { supportFailure } from "../failure/failures.ts";
 import { ioAlternatives } from "../instruction-set/alternatives.ts";
 import { asWords } from "./as-words.ts";
 import { encoder } from "./encoder.ts";

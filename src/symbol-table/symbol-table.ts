@@ -4,7 +4,7 @@ import type { DirectiveResult } from "../directives/data-types.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { DiscreteType, SymbolValue } from "./data-types.ts";
 
-import { boringFailure, definitionFailure } from "../failure/bags.ts";
+import { boringFailure, definitionFailure } from "../failure/failures.ts";
 import { counting } from "./counting.ts";
 import { isDiscrete } from "./data-types.ts";
 import { definitionList } from "./definition-list.ts";

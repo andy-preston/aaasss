@@ -1,4 +1,4 @@
-import { boringFailure } from "../failure/bags.ts";
+import { boringFailure } from "../failure/failures.ts";
 
 const validLabel = /^\w*$/;
 

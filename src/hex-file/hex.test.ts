@@ -2,7 +2,7 @@ import type { Code } from "../object-code/data-types.ts";
 
 import { expect } from "jsr:@std/expect";
 import { currentLine, emptyLine } from "../assembler/line.ts";
-import { boringFailure } from "../failure/bags.ts";
+import { boringFailure } from "../failure/failures.ts";
 import { hexFile } from "./hex.ts";
 
 const testSystem = () => {

@@ -5,7 +5,7 @@ import type { CpuRegisters } from "../registers/cpu-registers.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 import type { Conversion, OperandType } from "./data-types.ts";
 
-import { assertionFailure } from "../failure/bags.ts";
+import { assertionFailure } from "../failure/failures.ts";
 import { scale } from "./scale.ts";
 import { numeric } from "./numeric.ts";
 import { range } from "./range.ts";

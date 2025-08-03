@@ -3,7 +3,7 @@ import type { CurrentLine } from "../assembler/line.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-import { assertionFailure, boringFailure } from "../failure/bags.ts";
+import { assertionFailure, boringFailure } from "../failure/failures.ts";
 
 export const dataMemory = (
     currentLine: CurrentLine, symbolTable: SymbolTable

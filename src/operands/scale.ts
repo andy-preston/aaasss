@@ -1,4 +1,4 @@
-import type { Failure } from "../failure/bags.ts";
+import type { Failure } from "../failure/failures.ts";
 import type { ProgramMemory } from "../program-memory/program-memory.ts";
 import type { Conversion, OperandType } from "./data-types.ts";
 

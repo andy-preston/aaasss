@@ -1,4 +1,4 @@
-import type { Failure } from "../failure/bags.ts";
+import type { Failure } from "../failure/failures.ts";
 
 import { messages } from "./english.ts";
 

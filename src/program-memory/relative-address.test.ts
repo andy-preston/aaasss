@@ -1,4 +1,4 @@
-import type { AssertionFailure, NumericTypeFailure } from "../failure/bags.ts";
+import type { AssertionFailure, NumericTypeFailure } from "../failure/failures.ts";
 
 import { expect } from "jsr:@std/expect";
 import { testSystem } from "./testing.ts";

@@ -1,7 +1,7 @@
 import type { PipelineProcess } from "../assembler/data-types.ts";
 import type { CurrentLine } from "../assembler/line.ts";
 
-import { boringFailure, clueFailure } from "../failure/bags.ts";
+import { boringFailure, clueFailure } from "../failure/failures.ts";
 import { badLabel } from "./label.ts";
 
 const anyWhitespace = /\s+/g;

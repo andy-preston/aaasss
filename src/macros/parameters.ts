@@ -3,7 +3,7 @@ import type { Failures } from "../failure/failures.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { typeOf } from "../assembler/data-types.ts";
-import { assertionFailure } from "../failure/bags.ts";
+import { assertionFailure } from "../failure/failures.ts";
 import { discreteTypes, isDiscrete } from "../symbol-table/data-types.ts";
 
 export type MacroParameters = Array<string>;

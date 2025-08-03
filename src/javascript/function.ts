@@ -1,7 +1,7 @@
 import type { CurrentLine } from "../assembler/line.ts";
 import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
-import { exceptionFailure } from "../failure/bags.ts";
+import { exceptionFailure } from "../failure/failures.ts";
 
 export const jsFunction = (
     currentLine: CurrentLine, symbolTable: SymbolTable,
