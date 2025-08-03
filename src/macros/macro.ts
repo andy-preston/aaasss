@@ -1,5 +1,4 @@
 import type { DirectiveResult } from "../directives/data-types.ts";
-import type { Failure } from "../failure/bags.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { Line } from "../line/line-types.ts";
 import type { FileLineIterator, SourceCode } from "../source-code/data-types.ts";
