@@ -15,8 +15,7 @@ Deno.test("Most of the time, lines will just be passed on to the next stage", ()
         systemUnderTest.currentLine(emptyLine("plop.asm"));
         systemUnderTest.currentLine().sourceCode = sourceCode;
         systemUnderTest.macros.processedLine();
-        expect(systemUnderTest.currentLine().macroName).toBe("");
-        expect(systemUnderTest.currentLine().macroCount).toBe(0);
+        expect(systemUnderTest.currentLine().symbolSuffix).toBe("");
         expect(systemUnderTest.currentLine().sourceCode).toBe(sourceCode);
     });
 });
@@ -57,7 +56,7 @@ Deno.test("Once a macro has been recorded, it can be played-back", () => {
     expect(index).toBe(3);
 });
 
-Deno.test("Lines that are being replayed have a macro name and count", () => {
+Deno.test("Lines that are being replayed have a label suffix", () => {
     const systemUnderTest = testSystem("plop.asm");
     const macro = systemUnderTest.symbolTable.use("macro");
     const end = systemUnderTest.symbolTable.use("end");
@@ -83,8 +82,9 @@ Deno.test("Lines that are being replayed have a macro name and count", () => {
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     let index = 0;
     systemUnderTest.fileStack.lines(() => {
-        expect(systemUnderTest.currentLine().macroName).toBe("testMacro");
-        expect(systemUnderTest.currentLine().macroCount).toBe(1);
+        expect(
+            systemUnderTest.currentLine().symbolSuffix
+        ).toBe("$testMacro$1");
         index = index + 1;
     }, () => {});
     expect(index).toBe(3);

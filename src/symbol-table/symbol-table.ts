@@ -1,14 +1,14 @@
-import type { DiscreteType, Pass, PipelineReset } from "../assembler/data-types.ts";
+import type { Pass, PipelineReset } from "../assembler/data-types.ts";
+import type { DirectiveResult } from "../directives/data-types.ts";
 import type { CurrentLine } from "../line/current-line.ts";
 import type { CpuRegisters } from "../registers/cpu-registers.ts";
-import type { SymbolValue } from "./data-types.ts";
+import type { DiscreteType, SymbolValue } from "./data-types.ts";
 
-import { isDiscrete } from "../assembler/data-types.ts";
 import { addFailure } from "../failure/add-failure.ts";
 import { boringFailure, definitionFailure } from "../failure/bags.ts";
 import { counting } from "./counting.ts";
+import { isDiscrete } from "./data-types.ts";
 import { definitionList } from "./definition-list.ts";
-import { DirectiveResult } from "../directives/data-types.ts";
 
 export const symbolTable = (
     currentLine: CurrentLine, cpuRegisters: CpuRegisters
@@ -27,10 +27,14 @@ export const symbolTable = (
         }
     };
 
-    const isDefinedSymbol = (symbolName: string) =>
+    const isInLists = (symbolName: string) =>
         constSymbols.has(symbolName) || varSymbols.has(symbolName);
 
-    const alreadyInUse = (
+    const has = (symbolName: string) =>
+        isInLists(symbolName)
+        || isInLists(`${symbolName}${currentLine().symbolSuffix}`);
+
+    const failIfInUse = (
         symbolName: string, checkExistingValue?: SymbolValue
     ): boolean => {
         if (cpuRegisters.has(symbolName)) {
@@ -39,12 +43,12 @@ export const symbolTable = (
             ));
             return true;
         }
-        if (!isDefinedSymbol(symbolName)) {
+        if (!isInLists(symbolName)) {
             return false;
         }
-        const withDifferentValue = checkExistingValue == undefined
-            || symbolValue(symbolName) !== checkExistingValue
-        if (withDifferentValue) {
+        const failed = checkExistingValue == undefined
+            || internalValue(symbolName) !== checkExistingValue
+        if (failed) {
             addFailure(currentLine().failures, definitionFailure(
                 "symbol_alreadyExists", symbolName,
                 definitions.text(symbolName, 'BUILT_IN')
@@ -54,15 +58,10 @@ export const symbolTable = (
         return false;
     };
 
-    const symbolValue = (symbolName: string): SymbolValue =>
+    const internalValue = (symbolName: string): SymbolValue =>
         constSymbols.has(symbolName) ? constSymbols.get(symbolName)!
         : varSymbols.has(symbolName) ? varSymbols.get(symbolName)!
         : ("" as SymbolValue);
-
-    const deviceNameForError = () => {
-        const device = varSymbols.get("deviceName");
-        return typeof device != "string" ? "" : (device as string);
-    };
 
     const deviceSymbolValue = (
         symbolName: string, expectedType: DiscreteType
@@ -73,18 +72,19 @@ export const symbolTable = (
             ));
             return undefined;
         }
-        const value = symbolValue(symbolName);
+        const value = internalValue(symbolName);
         if ((typeof value) != expectedType) {
             throw new Error([
                 "Device configuration error",
-                deviceNameForError(), symbolName, expectedType, `${value}`
+                varSymbols.get("deviceName") as string,
+                symbolName, expectedType, `${value}`
             ].join(" - "));
         }
         return value;
     };
 
     const userSymbol = (symbolName: string, value: SymbolValue): void => {
-        if (!alreadyInUse(symbolName)) {
+        if (!failIfInUse(symbolName)) {
             varSymbols.set(symbolName, value);
             counts.set(symbolName);
             definitions.set(symbolName);
@@ -92,7 +92,7 @@ export const symbolTable = (
     };
 
     const deviceSymbol = (symbolName: string, value: SymbolValue): boolean => {
-        const result = !alreadyInUse(symbolName);
+        const result = !failIfInUse(symbolName);
         if (result) {
             varSymbols.set(symbolName, value);
             definitions.set(symbolName);
@@ -103,16 +103,17 @@ export const symbolTable = (
     const persistentSymbol = (
         symbolName: string, value: SymbolValue
     ): DirectiveResult => {
-        if (!alreadyInUse(symbolName, value)) {
-            constSymbols.set(symbolName, value);
-            counts.set(symbolName);
-            definitions.set(symbolName);
+        const expandedSymbolName = `${symbolName}${currentLine().symbolSuffix}`;
+        if (!failIfInUse(expandedSymbolName, value)) {
+            constSymbols.set(expandedSymbolName, value);
+            counts.set(expandedSymbolName);
+            definitions.set(expandedSymbolName);
         }
         return undefined;
     };
 
     const builtInSymbol = (symbolName: string, value: SymbolValue): void => {
-        if (isDefinedSymbol(symbolName)) {
+        if (isInLists(symbolName)) {
             throw new Error(`Redefined built in symbol: ${symbolName}`);
         }
         constSymbols.set(symbolName, value);
@@ -127,6 +128,11 @@ export const symbolTable = (
             counts.increment(symbolName, "revealIfHidden");
             return varSymbols.get(symbolName)!;
         }
+        const expanded = `${symbolName}${currentLine().symbolSuffix}`;
+        if (constSymbols.has(expanded)) {
+            counts.increment(expanded, "keepHidden");
+            return constSymbols.get(expanded)!;
+        }
         if (constSymbols.has(symbolName)) {
             counts.increment(symbolName, "keepHidden");
             return constSymbols.get(symbolName)!;
@@ -135,7 +141,7 @@ export const symbolTable = (
     };
 
     const listValue = (symbolName: string): DiscreteType => {
-        const value = symbolValue(symbolName);
+        const value = internalValue(symbolName);
         return isDiscrete(value) ? value : "";
     };
 
@@ -152,13 +158,13 @@ export const symbolTable = (
     );
 
     return {
-        "isDefinedSymbol": isDefinedSymbol,
-        "alreadyInUse": alreadyInUse,
+        "has": has,
+        "failIfInUse": failIfInUse,
         "userSymbol": userSymbol,
         "persistentSymbol": persistentSymbol,
         "builtInSymbol": builtInSymbol,
         "deviceSymbol": deviceSymbol,
-        "symbolValue": symbolValue,
+        "internalValue": internalValue,
         "deviceSymbolValue": deviceSymbolValue,
         "use": use,
         "count": counts.count,

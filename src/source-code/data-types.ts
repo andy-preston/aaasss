@@ -1,8 +1,13 @@
+export type SourceCode = string;
+
+type SymbolSuffix = string;
+
+type EndOfFile = boolean;
+
 export type FileLineIterator =
-    Generator<[SourceCode, string, number, boolean], void, unknown>;
+    Generator<[SourceCode, SymbolSuffix, EndOfFile], void, unknown>;
 
 export type FileName = string;
 
 export type LineNumber = number;
 
-export type SourceCode = string;

@@ -35,7 +35,7 @@ export const unsupportedInstructions = (symbolTable: SymbolTable) => {
     const isIt = (line: Line): boolean => {
 
         const deviceDefined = (): boolean => {
-            const deviceName = symbolTable.symbolValue("deviceName");
+            const deviceName = symbolTable.internalValue("deviceName");
             if (typeof deviceName == "string" && deviceName != "") {
                 return true;
             }

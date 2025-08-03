@@ -61,7 +61,7 @@ Deno.test("It correctly interprets the hex stings in the TOML files", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.deviceChooser("ATTiny2313");
     expect(systemUnderTest.currentLine().failures.length).toBe(0);
-    const value = systemUnderTest.symbolTable.symbolValue("TCCR1A");
+    const value = systemUnderTest.symbolTable.internalValue("TCCR1A");
     expect(value).toBe(0x4f);
 });
 

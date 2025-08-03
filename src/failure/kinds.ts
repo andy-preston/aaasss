@@ -7,8 +7,7 @@ export const failureKinds = {
         "ram_sizeUnknown", "ram_stackAllocated"
     ],
     "assertion": [
-        "macro_params", "operand_count",
-        "parameter_count", "parameter_type", "parameter_value",
+        "operand_count", "parameter_count", "parameter_type", "parameter_value",
         "programMemory_outOfRange", "ram_outOfRange", "value_type"
     ],
     "numericType": [

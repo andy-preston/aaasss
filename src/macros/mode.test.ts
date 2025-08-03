@@ -80,5 +80,4 @@ Deno.test("During definition, no operations will be processed except `.end()`", 
     expect(systemUnderTest.currentLine().failures).toEqual([]);
     expect(systemUnderTest.currentLine().mnemonic).toEqual(".");
     expect(systemUnderTest.currentLine().operands).toEqual(["end()"]);
-
 });

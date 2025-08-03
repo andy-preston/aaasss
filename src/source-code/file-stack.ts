@@ -28,7 +28,7 @@ export const fileStack = (
             // Real files provide a line number here!
             // but imaginary files just reuse this one without incrementing
             lineNumber = index + 1;
-            yield [text, "", 0, lineNumber == lines.length];
+            yield [text, "", lineNumber == lines.length];
         }
     };
 
@@ -104,7 +104,7 @@ export const fileStack = (
             currentLine(emptyLine(currentFile()!.fileName));
             [
                 currentLine().sourceCode,
-                currentLine().macroName, currentLine().macroCount,
+                currentLine().symbolSuffix,
                 currentLine().eof
             ] = next;
             currentLine().lineNumber = lineNumber;

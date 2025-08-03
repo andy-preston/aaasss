@@ -6,6 +6,7 @@ import { emptyLine } from "../line/line-types.ts";
 import { cpuRegisters } from "../registers/cpu-registers.ts";
 import { fileStack } from "../source-code/file-stack.ts";
 import { symbolTable } from "../symbol-table/symbol-table.ts";
+import { macroConstructor } from "./macro.ts";
 import { macros } from "./macros.ts";
 
 export const testSystem = (topFileName: FileName) => {
@@ -14,7 +15,8 @@ export const testSystem = (topFileName: FileName) => {
     const $cpuRegisters = cpuRegisters();
     const $symbolTable = symbolTable($currentLine, $cpuRegisters);
     const $fileStack = fileStack($currentLine, () => [], topFileName);
-    const $macros = macros($currentLine, $symbolTable, $fileStack);
+    const $macro = macroConstructor($currentLine, $symbolTable, $fileStack);
+    const $macros = macros($currentLine, $macro);
     directives({
         "macro": [$macros.define, undefined],
         "end": [$macros.end, []]

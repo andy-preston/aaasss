@@ -115,6 +115,19 @@ Deno.test("...but not any of the registers", () => {
     expect(result).toBe("");
 });
 
+Deno.test("If a 'local scope' suffix is defined, symbols with the suffix take priorty", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.persistentSymbol("notLocal", "global");
+    systemUnderTest.symbolTable.persistentSymbol("plop", "global");
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    systemUnderTest.currentLine().symbolSuffix = "$aMacro$3";
+    systemUnderTest.symbolTable.persistentSymbol("plop", "local");
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(systemUnderTest.symbolTable.use("plop")).toBe("local");
+    expect(systemUnderTest.symbolTable.use("notLocal")).toBe("global");
+
+});
+
 Deno.test("An unknown variable gives a reference error", () => {
     const systemUnderTest = testSystem();
     const result = systemUnderTest.jsExpression("const test = plop * 10;");

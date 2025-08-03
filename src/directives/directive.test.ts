@@ -12,7 +12,7 @@ Deno.test("Any directives that are added can be called as functions", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["string"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive("says hello");
     }
@@ -25,7 +25,7 @@ Deno.test("Directives can return a string", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, []]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     const result = isFunction(directive) ? directive() : null;
     expect(result).toBe("hello");
     expect(systemUnderTest.currentLine().failures).toEqual([]);
@@ -36,7 +36,7 @@ Deno.test("Directives can return a number", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, []]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     const result = isFunction(directive) ? directive() : null;
     expect(result).toBe(528);
     expect(systemUnderTest.currentLine().failures).toEqual([]);
@@ -47,7 +47,7 @@ Deno.test("Directives can return undefined", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, []]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     const result = isFunction(directive) ? directive() : null;
     expect(result).toBe(undefined);
     expect(systemUnderTest.currentLine().failures).toEqual([]);
@@ -58,7 +58,7 @@ Deno.test("Some directives have no parameters", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, []]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     const result = isFunction(directive) ? directive(null) : null;
     expect(result).not.toBe("hello");
     expect(result).toBe(undefined);
@@ -73,7 +73,7 @@ Deno.test("A directive that expects parameters won't like getting none", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["string"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive();
     }
@@ -88,7 +88,7 @@ Deno.test("Directives complain about too many parameters", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["string"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive("plop", "plop");
     }
@@ -105,7 +105,7 @@ Deno.test("Parameters can be string number or boolean", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["string", "number", "boolean"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     const result = isFunction(directive) ? directive("hello", 42, false) : null;
     expect(result).toBe("hello 42 false");
     expect(systemUnderTest.currentLine().failures).toEqual([]);
@@ -116,7 +116,7 @@ Deno.test("Parameters of the wrong type give a failure", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["string", "number", "boolean"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive([], {}, null);
     }
@@ -137,7 +137,7 @@ Deno.test("Label parameters should follow the rules of the tokeniser", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["label", "label", "label"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive("bad$dollar", "nice", "bad-dash");
     }
@@ -153,7 +153,7 @@ Deno.test("Label parameters also check for strings", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["label"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive(1);
     }
@@ -168,7 +168,7 @@ Deno.test("Word parameters can't be negative or over FFFF", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["word", "word", "word"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive(-1, 0xcafe, 0x10000);
     }
@@ -186,7 +186,7 @@ Deno.test("Word parameters also check for numbers", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["word"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive("not!");
     }
@@ -201,7 +201,7 @@ Deno.test("Signed-byte parameters must be between -128 -> 127", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["signedByte", "signedByte", "signedByte"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive(-200, 25, 255);
     }
@@ -219,7 +219,7 @@ Deno.test("Signed-byte parameters also check for numbers", () => {
     const systemUnderTest = testSystem({
         "plop": [directiveBody, ["signedByte"]]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         directive("not!");
     }
@@ -236,7 +236,7 @@ Deno.test("untyped directives will handle their own parameter validation", () =>
     const systemUnderTest = testSystem({
         "plop": [directiveBody, undefined]
     });
-    const directive = systemUnderTest.symbolTable.symbolValue("plop");
+    const directive = systemUnderTest.symbolTable.internalValue("plop");
     if (isFunction(directive)) {
         expect(directive(1, "two", 3)).toBe(3);
         expect(systemUnderTest.currentLine().failures).toEqual([]);

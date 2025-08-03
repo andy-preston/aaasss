@@ -47,11 +47,6 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "macro_end": (failure) => withLocation(failure, [
         "Can't end macro definition when a macro is not being defined"
     ]),
-    "macro_params": (failure) => withLocation(failure, assertionFailure(
-        ["Macro parameters different from defined number"],
-        "Expected parameter count", "Actual parameter count",
-        failure as AssertionFailure
-    )),
     "mnemonic_supportedUnknown": (failure) => withLocation(failure, clueFailure(
         ["Can't determine if instruction is supported or not"],
         "Instruction mnemonic",

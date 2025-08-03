@@ -104,9 +104,9 @@ Deno.test("Imaginary files (e.g. macros) can be included", () => {
     const mockReader = (path: FileName) =>
         [1, 2, 3].map(line => `${path} ${line}`);
     const imaginaryFile = function* (): FileLineIterator {
-        yield ["one", "", 0, false];
-        yield ["two", "", 0, false];
-        yield ["three", "", 0, false];
+        yield ["one", "", false];
+        yield ["two", "", false];
+        yield ["three", "", false];
     }
     const expected: Array<[number, string]> = [
         [1, "top.file 1"],

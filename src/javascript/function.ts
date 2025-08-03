@@ -9,10 +9,13 @@ export const jsFunction = (
 ) => {
     const proxy = new Proxy({}, {
         has(_target: object, symbolName: string) {
-            return symbolTable.isDefinedSymbol(symbolName);
+            return symbolTable.has(symbolName);
         },
-        get(_target: object, symbolName: string) {
-            return symbolTable.use(symbolName);
+        get(_target: object, symbolName: string | symbol) {
+            if (symbolName == Symbol.unscopables) {
+                return undefined;
+            }
+            return symbolTable.use(symbolName as string);
         },
         set() {
             throw new ReferenceError("this_assignment");

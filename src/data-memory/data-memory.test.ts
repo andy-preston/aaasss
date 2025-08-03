@@ -69,7 +69,7 @@ Deno.test("Memory allocations start at the top of SRAM and work down", () => {
         const name = `plop${expectedStartAddress}`;
         systemUnderTest.dataMemory.alloc(name, 25);
         expect(systemUnderTest.currentLine().failures.length).toBe(0);
-        const startAddress = systemUnderTest.symbolTable.symbolValue(name);
+        const startAddress = systemUnderTest.symbolTable.internalValue(name);
         expect(startAddress).toBe(expectedStartAddress);
     });
 });
@@ -124,7 +124,7 @@ Deno.test("Allocations aren't considered repeated on the second pass", () => {
             const name = `plop${expectedStartAddress}`;
             systemUnderTest.dataMemory.alloc(name, 25);
             expect(systemUnderTest.currentLine().failures.length).toBe(0);
-            const startAddress = systemUnderTest.symbolTable.symbolValue(name);
+            const startAddress = systemUnderTest.symbolTable.internalValue(name);
             expect(startAddress).toBe(expectedStartAddress);
         });
         systemUnderTest.dataMemory.reset(pass);

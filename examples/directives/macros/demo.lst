@@ -63,46 +63,79 @@
 000012 F1 F7         29     BRNE loopy
 000013 E0 91 00 08   29     LDS R30, address
                      30
-                     31     ; Should we expect to see LDS R30, 1024
-                     32     ;                      or LDS R30, address
-                     33     ; And should macro parameters end up in the symbol table
-                     34     .aMacro(1024)
-                     34 loopy:
-000015 EA 95         34     DEC R30
-000016 F1 F7         34     BRNE loopy
-000017 E0 91 00 04   34     LDS R30, address
-                     35
-                     36     .aMacro(2048)
-                     36 loopy:
-000019 EA 95         36     DEC R30
-00001A F1 F7         36     BRNE loopy
-00001B E0 91 00 08   36     LDS R30, address
+                     31     ; A macro parameter could be used as part of an expression
+                     32     .macro("expressionMacro", "baseValue")
+                     33     LDI R23, baseValue + 5
+                     34     LDI R23, 15
+                     35     .end()
+                     36     .expressionMacro(10)
+000015 7F E0         36     LDI R23, baseValue + 5
+000016 7F E0         36     LDI R23, 15
                      37
-                     38     ; You can use anything for a macro's parameters
-                     39     ; But you'll get errors when they're used if you pass
-                     40     ; something "peculiar"
-                     41     .aMacro(false)
-                     41 loopy:
-00001D EA 95         41     DEC R30
-00001E F1 F7         41     BRNE loopy
-00001F E0 91 00 00   41     LDS R30, address
-                        value_type
-                        location.operand: 2
-                        expected: 16BitDataAddress
-                        actual: string: ()
-                     42
+                     38     ; Labels can be internal to a macro, or global across the program
+                     39 outerLabel:
+000017 00 00         40     nop
+000018 00 00         41     nop
+000019 00 00         42     nop
+                     43     .macro("jumpMacro")
+                     44 innerLabel:
+                     45     rjmp outerLabel
+                     46     rjmp innerLabel
+                     47     .end()
+                     48     .jumpMacro()
+                     48 innerLabel:
+00001A FC CF         48     rjmp outerLabel
+00001B FE CF         48     rjmp innerLabel
+                     49     .jumpMacro()
+                     49 innerLabel:
+00001C FA CF         49     rjmp outerLabel
+00001D FE CF         49     rjmp innerLabel
+                     50
+                     51     ; Should we expect to see LDS R30, 1024
+                     52     ;                      or LDS R30, address
+                     53     .aMacro(1024)
+                     53 loopy:
+00001E EA 95         53     DEC R30
+00001F F1 F7         53     BRNE loopy
+000020 E0 91 00 04   53     LDS R30, address
+                     54     .aMacro(2048)
+                     54 loopy:
+000022 EA 95         54     DEC R30
+000023 F1 F7         54     BRNE loopy
+000024 E0 91 00 08   54     LDS R30, address
+                     55
+                     56     ; Macro parameters can only be numbers or strings
+                     57     .aMacro(false)
+                        parameter_type
+                        location.parameter: 1
+                        expected: string, number: (address)
+                        actual: boolean: (false)
+                     58
 
 Symbol Table
 ============
 
-aMacro           |    |    | /var/tmp/def.asm:7   | 6
-innerMacro       |    |    | /var/tmp/demo.asm:17 | 2
-loopy (aMacro 1) | 0  | 0  | /var/tmp/demo.asm:3  | 1
-loopy (aMacro 2) | 17 | 11 | /var/tmp/demo.asm:29 | 1
-loopy (aMacro 3) | 13 | D  | /var/tmp/demo.asm:29 | 1
-loopy (aMacro 4) | 21 | 15 | /var/tmp/demo.asm:34 | 1
-loopy (aMacro 5) | 25 | 19 | /var/tmp/demo.asm:36 | 1
-loopy (aMacro 6) | 29 | 1D | /var/tmp/demo.asm:41 | 1
-outerMacro       |    |    | /var/tmp/demo.asm:22 | 1
-pokingMacro      |    |    | /var/tmp/demo.asm:10 | 1
-R30              |    |    | REGISTER             | 15
+address (aMacro 1)            | 1024 | 400 | /var/tmp/demo.asm:3  | 1
+address (aMacro 2)            | 2048 | 800 | /var/tmp/demo.asm:29 | 1
+address (aMacro 3)            | 1024 | 400 | /var/tmp/demo.asm:29 | 1
+address (aMacro 4)            | 1024 | 400 | /var/tmp/demo.asm:53 | 1
+address (aMacro 5)            | 2048 | 800 | /var/tmp/demo.asm:54 | 1
+address (innerMacro 1)        | 1024 | 400 | /var/tmp/demo.asm:24 | 1
+address (innerMacro 2)        | 2048 | 800 | /var/tmp/demo.asm:24 | 1
+aMacro                        |      |     | /var/tmp/def.asm:7   | 6
+baseValue (expressionMacro 1) | 10   | A   | /var/tmp/demo.asm:36 | 1
+expressionMacro               |      |     | /var/tmp/demo.asm:35 | 1
+innerLabel (jumpMacro 1)      | 26   | 1A  | /var/tmp/demo.asm:48 | 1
+innerLabel (jumpMacro 2)      | 28   | 1C  | /var/tmp/demo.asm:49 | 1
+innerMacro                    |      |     | /var/tmp/demo.asm:17 | 2
+jumpMacro                     |      |     | /var/tmp/demo.asm:47 | 2
+loopy (aMacro 1)              | 0    | 0   | /var/tmp/demo.asm:3  | 1
+loopy (aMacro 2)              | 17   | 11  | /var/tmp/demo.asm:29 | 1
+loopy (aMacro 3)              | 13   | D   | /var/tmp/demo.asm:29 | 1
+loopy (aMacro 4)              | 30   | 1E  | /var/tmp/demo.asm:53 | 1
+loopy (aMacro 5)              | 34   | 22  | /var/tmp/demo.asm:54 | 1
+outerLabel                    | 23   | 17  | /var/tmp/demo.asm:39 | 2
+outerMacro                    |      |     | /var/tmp/demo.asm:22 | 1
+pokingMacro                   |      |     | /var/tmp/demo.asm:10 | 1
+R23                           |      |     | REGISTER             | 2
+R30                           |      |     | REGISTER             | 13

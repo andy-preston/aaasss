@@ -67,8 +67,59 @@ Deno.test("Parameter count mismatches result in a failure", () => {
         testMacro("1", "2");
     }
     expect(systemUnderTest.currentLine().failures).toEqual([{
-        "kind": "macro_params", "location": undefined,
+        "kind": "parameter_count", "location": undefined,
         "expected": "3", "actual": "2"
+    }, {
+        "kind": "parameter_type", "location": {"parameter": 3},
+        "expected": "string, number: (c)", "actual": "undefined: (undefined)"
+    }]);
+});
+
+Deno.test("Any macro parameters are inserted in the symbol table", () => {
+    const systemUnderTest = testSystem("plop.asm");
+    const macro = systemUnderTest.symbolTable.use("macro");
+    const end = systemUnderTest.symbolTable.use("end");
+    if (isFunction(macro)) {
+        macro("testMacro", "a", "b");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    if (isFunction(end)) {
+        end();
+    }
+    const testMacro = systemUnderTest.symbolTable.use("testMacro");
+    if (isFunction(testMacro)) {
+        testMacro("1", "2");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    expect(
+        systemUnderTest.symbolTable.internalValue("a$testMacro$1")
+    ).toBe("1");
+    expect(
+        systemUnderTest.symbolTable.internalValue("b$testMacro$1")
+    ).toBe("2");
+});
+
+Deno.test("A Parameter has to be a number or a string", () => {
+    const systemUnderTest = testSystem("plop.asm");
+    const macro = systemUnderTest.symbolTable.use("macro");
+    const end = systemUnderTest.symbolTable.use("end");
+    if (isFunction(macro)) {
+        macro("testMacro", "a", "b");
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([]);
+    if (isFunction(end)) {
+        end();
+    }
+    const testMacro = systemUnderTest.symbolTable.use("testMacro");
+    if (isFunction(testMacro)) {
+        testMacro([1,2,3], false);
+    }
+    expect(systemUnderTest.currentLine().failures).toEqual([{
+        "kind": "parameter_type", "location": {"parameter": 1},
+        "expected": "string, number: (a)", "actual": "array: (1,2,3)"
+    }, {
+        "kind": "parameter_type", "location": {"parameter": 2},
+        "expected": "string, number: (b)", "actual": "boolean: (false)"
     }]);
 });
 
@@ -94,7 +145,7 @@ Deno.test("A macro can be defined in both passes", () => {
     expect(systemUnderTest.currentLine().failures).toEqual([]);
 
     expect (
-        systemUnderTest.symbolTable.alreadyInUse("testMacro")
+        systemUnderTest.symbolTable.failIfInUse("testMacro")
     ).toBe(true);
     expect(systemUnderTest.currentLine().failures).toEqual([{
         "kind": "symbol_alreadyExists", "location": undefined,
@@ -104,7 +155,7 @@ Deno.test("A macro can be defined in both passes", () => {
 
     systemUnderTest.symbolTable.reset(1);
     expect (
-        systemUnderTest.symbolTable.alreadyInUse("testMacro")
+        systemUnderTest.symbolTable.failIfInUse("testMacro")
     ).toBe(false);
     expect(systemUnderTest.currentLine().failures).toEqual([]);
 

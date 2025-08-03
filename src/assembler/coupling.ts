@@ -15,6 +15,7 @@ import { jsFunction } from "../javascript/function.ts";
 import { jsFilePipeline } from "../javascript/file-pipeline.ts";
 import { currentLine } from "../line/current-line.ts";
 import { listing } from "../listing/listing.ts";
+import { macroConstructor } from "../macros/macro.ts";
 import { macros } from "../macros/macros.ts";
 import { objectCode } from "../object-code/object-code.ts";
 import { operands } from "../operands/operands.ts";
@@ -39,7 +40,8 @@ export const coupling = (
     const $jsExpression = jSExpression($jsFunction);
     const $jsFilePipeline = jsFilePipeline($currentLine, $jsFunction);
     const $fileStack = fileStack($currentLine, readerMethod, fileName);
-    const $macros = macros($currentLine, $symbolTable, $fileStack);
+    const $macro = macroConstructor($currentLine, $symbolTable, $fileStack);
+    const $macros = macros($currentLine, $macro);
     const $tokens = tokens($currentLine);
     const $instructionSet = instructionSet($currentLine, $symbolTable);
     const $programMemory = programMemory($currentLine, $symbolTable);

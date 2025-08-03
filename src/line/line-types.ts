@@ -14,8 +14,7 @@ export const emptyLine = (fileName: FileName) => ({
     "sourceCode": "" as SourceCode,
     "label": "" as Label,
     "mnemonic": "" as Mnemonic,
-    "macroName": "",
-    "macroCount": 0,
+    "symbolSuffix": "",
     "operands": [] as Operands,
     "address": 0,
     "code": [] as Array<Code>

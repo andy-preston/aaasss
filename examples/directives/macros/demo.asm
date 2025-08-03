@@ -28,14 +28,30 @@
     ; reverse order - hence the reversing of the array
     .([1024, 2048].reverse().forEach(a => aMacro(a)))
 
+    ; A macro parameter could be used as part of an expression
+    .macro("expressionMacro", "baseValue")
+    LDI R23, baseValue + 5
+    LDI R23, 15
+    .end()
+    .expressionMacro(10)
+
+    ; Labels can be internal to a macro, or global across the program
+outerLabel:
+    nop
+    nop
+    nop
+    .macro("jumpMacro")
+innerLabel:
+    rjmp outerLabel
+    rjmp innerLabel
+    .end()
+    .jumpMacro()
+    .jumpMacro()
+
     ; Should we expect to see LDS R30, 1024
     ;                      or LDS R30, address
-    ; And should macro parameters end up in the symbol table
     .aMacro(1024)
-
     .aMacro(2048)
 
-    ; You can use anything for a macro's parameters
-    ; But you'll get errors when they're used if you pass
-    ; something "peculiar"
+    ; Macro parameters can only be numbers or strings
     .aMacro(false)
