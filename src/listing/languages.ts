@@ -9,12 +9,11 @@ export const defaultFailureMessages = (failure: Failure) =>
 
 export type FailureMessageTranslator = typeof defaultFailureMessages;
 
-export const location = (operand: string, parameter: string) =>
-    (failure: Failure, messages: Array<string>) =>
+export const withLocation = (failure: Failure, messages: Array<string>) =>
         failure.location != undefined && "operand" in failure.location
-        ? messages.concat([`${operand}: ${failure.location.operand}`])
+        ? messages.concat([`operand: ${failure.location.operand}`])
 
         : failure.location != undefined && "parameter" in failure.location
-        ? messages.concat([`${parameter}: ${failure.location.parameter}`])
+        ? messages.concat([`parameter: ${failure.location.parameter}`])
 
         : messages;

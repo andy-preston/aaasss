@@ -1,0 +1,33 @@
+/var/tmp/demo.asm
+=================
+                      1     .device("at tiny 2313")
+                      2     .include("include.js")
+
+/var/tmp/include.js
+===================
+                      1     // It doesn't make any sense to include from a JS file
+                      2     include("another.asm");
+                      3
+                        file_includeInJs
+
+/var/tmp/demo.asm
+=================
+                      3     .include("include.asm")
+
+/var/tmp/include.asm
+====================
+000000 00 00          1     nop
+000001 00 00          2     nop
+000002 00 00          3     nop
+000003 00 00          4     nop
+000004 00 00          5     nop
+000005 00 00          6     nop
+000006 00 00          7     nop
+000007 00 00          8     nop
+000008 00 00          9     nop
+000009 00 00         10     nop
+                     11
+
+/var/tmp/demo.asm
+=================
+                      4

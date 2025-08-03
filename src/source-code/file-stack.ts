@@ -1,22 +1,13 @@
 import type { PipelineProcess, PipelineSource } from "../assembler/data-types.ts";
 import type { DirectiveResult } from "../directives/data-types.ts";
 import type { CurrentLine } from "../line/current-line.ts";
-import type { FileLineIterator, FileName, LineNumber } from "./data-types.ts";
+import type { FileLineIterator, FileName, LineNumber, StackEntry } from "./data-types.ts";
+import type { ReaderMethod } from "./reader.ts";
 
-import { dirname } from "jsr:@std/path";
 import { addFailure } from "../failure/add-failure.ts";
 import { clueFailure } from "../failure/bags.ts";
 import { emptyLine } from "../line/line-types.ts";
-
-type StackEntry = {
-    "fileName": FileName;
-    "iterator": FileLineIterator;
-};
-
-export const defaultReaderMethod = (fileName: FileName) =>
-    Deno.readTextFileSync(fileName).split("\n");
-
-export type ReaderMethod = typeof defaultReaderMethod;
+import { includeSensible } from "./include-sensible.ts";
 
 export const fileStack = (
     currentLine: CurrentLine, read: ReaderMethod, topFileName: FileName
@@ -48,16 +39,19 @@ export const fileStack = (
         }
     };
 
-    const currentPath = () => fileStack.length == 0 ? ""
-        : `${dirname(currentFile()!.fileName)}/`;
-
     const include = (fileName: FileName): DirectiveResult => {
-        const fullName = fileName.startsWith("/") ? fileName
-            : `${currentPath()}${fileName}`;
+        const fullName = includeSensible(
+            fileName, currentFile(), currentLine().failures
+        );
+        if (fullName == "") {
+            return undefined;
+        }
+
         const contents = fileContents(fullName);
         if (contents == undefined) {
             return undefined;
         }
+
         fileStack.push({
             "fileName": fullName,
             "iterator": fileLineByLine(contents)

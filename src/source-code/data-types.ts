@@ -11,3 +11,7 @@ export type FileName = string;
 
 export type LineNumber = number;
 
+export type StackEntry = {
+    "fileName": FileName;
+    "iterator": FileLineIterator;
+};

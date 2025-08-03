@@ -2,6 +2,7 @@ export const failureKinds = {
     "boring": [
         "syntax_invalidLabel", "syntax_invalidMnemonic",
         "device_notSelected",
+        "file_includeInJs", "file_topLevelAsm",
         "macro_end", "macro_noEnd",
         "programMemory_cantOrg", "programMemory_sizeUnknown",
         "ram_sizeUnknown", "ram_stackAllocated"

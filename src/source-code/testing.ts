@@ -1,4 +1,4 @@
-import type { ReaderMethod } from "./file-stack.ts";
+import type { ReaderMethod } from "./reader.ts";
 
 import { currentLine } from "../line/current-line.ts";
 import { fileStack } from "./file-stack.ts";

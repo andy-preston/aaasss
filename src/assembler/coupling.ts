@@ -1,7 +1,7 @@
 import type { DeviceFileOperations } from "../device/file.ts";
 import type { FailureMessageTranslator } from "../listing/languages.ts";
 import type { FileName } from "../source-code/data-types.ts";
-import type { ReaderMethod } from "../source-code/file-stack.ts";
+import type { ReaderMethod } from "../source-code/reader.ts";
 
 import { dataMemory } from "../data-memory/data-memory.ts";
 import { deviceChooser } from "../device/chooser.ts";
@@ -31,7 +31,8 @@ export const coupling = (
     fileName: FileName,
     readerMethod: ReaderMethod,
     failureMessageTranslator: FailureMessageTranslator,
-    deviceFileOperations: DeviceFileOperations
+    deviceFileOperations: DeviceFileOperations,
+    echoListing: boolean
 ) => {
     const $currentLine = currentLine();
     const $cpuRegisters = cpuRegisters();
@@ -61,7 +62,8 @@ export const coupling = (
 
     const $listing = listing(
         $currentLine,
-        outputFile, fileName, failureMessageTranslator, $symbolTable
+        outputFile, fileName, failureMessageTranslator, $symbolTable,
+        echoListing
     );
     const $hexFile = hexFile($currentLine, outputFile, fileName);
 

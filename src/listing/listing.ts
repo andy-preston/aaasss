@@ -15,17 +15,25 @@ export const listing = (
     currentLine: CurrentLine,
     outputFile: OutputFile, topFileName: FileName,
     failureMessages: FailureMessageTranslator,
-    symbolTable: SymbolTable
+    symbolTable: SymbolTable,
+    echoOn: boolean
 ): PipelineSink => {
     const file = outputFile(topFileName, ".lst");
     let currentName = "";
 
-    const heading = (text: string) => {
-        if (!file.empty()) {
-            file.write("");
+    const write = (text: string) => {
+        if (echoOn) {
+            console.log(text);
         }
         file.write(text);
-        file.write("=".repeat(text.length));
+    }
+
+    const heading = (text: string) => {
+        if (!file.empty()) {
+            write("");
+        }
+        write(text);
+        write("=".repeat(text.length));
     };
 
     const body = (code: ExtractedCode, text: ExtractedText) => {
@@ -40,7 +48,7 @@ export const listing = (
             }
             const codeColumn = pad(nextCode.value, codeWidth);
             const textColumn = pad(nextText.value, 0);
-            file.write(`${codeColumn} ${textColumn}`.trimEnd());
+            write(`${codeColumn} ${textColumn}`.trimEnd());
         }
     };
 
@@ -64,8 +72,8 @@ export const listing = (
         const symbols = formattedSymbolTable(symbolTable);
         if (symbols.length > 0) {
             heading("Symbol Table");
-            file.write("");
-            symbols.forEach(symbol => file.write(symbol));
+            write("");
+            symbols.forEach(write);
         };
         file.close();
     };

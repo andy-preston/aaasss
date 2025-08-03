@@ -9,13 +9,11 @@ import {
     assertionFailure, clueFailure, definitionFailure,
     exceptionFailure, numericTypeFailure, supportFailure
 } from "./failure.ts";
-import { location } from "./languages.ts";
+import { withLocation } from "./languages.ts";
 
 export const listingTitles = {
     "symbolTable": "Symbol Table"
 };
-
-const withLocation = location("operand", "parameter");
 
 export const messages: Record<FailureKind, FailureMessage> = {
     "device_notFound": (failure) => withLocation(failure, clueFailure(
@@ -26,11 +24,17 @@ export const messages: Record<FailureKind, FailureMessage> = {
     "device_notSelected": (failure) => withLocation(failure, [
         "No device selected (use the 'device' directive?)"
     ]),
+    "file_includeInJs": (failure) => withLocation(failure, [
+        "Include in JS file"
+    ]),
     "file_notFound": (failure) => withLocation(failure, clueFailure(
         ["File not found"],
         "Javascript error message",
         failure as ClueFailure
     )),
+    "file_topLevelAsm": (failure) => withLocation(failure, [
+        "Top level file should be .ASM"
+    ]),
     "js_error": (failure) => withLocation(failure, exceptionFailure(
         ["Javascript error"],
         "Exception name", "Exception details",

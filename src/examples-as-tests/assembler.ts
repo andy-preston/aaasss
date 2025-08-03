@@ -4,7 +4,7 @@ import type { DeviceFileOperations } from "../device/file.ts";
 import { coupling } from "../assembler/coupling.ts";
 import { defaultDeviceFinder, defaultTomlLoader } from "../device/file.ts";
 import { mockFailureMessages } from "../listing/testing.ts";
-import { defaultReaderMethod } from "../source-code/file-stack.ts";
+import { defaultReaderMethod } from "../source-code/reader.ts";
 
 export const assembler = () => {
     let deviceFile: DeviceFileOperations =
@@ -19,7 +19,9 @@ export const assembler = () => {
 
     const assemble = (topFileName: string) => {
         coupling(
-            topFileName, defaultReaderMethod, mockFailureMessages, deviceFile
+            topFileName,
+            defaultReaderMethod, mockFailureMessages, deviceFile,
+            false
         );
     };
 
