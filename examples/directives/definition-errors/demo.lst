@@ -11,6 +11,6 @@
 Symbol Table
 ============
 
-plop | 0 | 0 | /var/tmp/demo.asm:2 | 0
-R11  |   |   | REGISTER            | 1
-R12  |   |   | REGISTER            | 1
+plop | 0 | 00 | /var/tmp/demo.asm:2 | 0
+R11  |   |    | REGISTER            | 1
+R12  |   |    | REGISTER            | 1

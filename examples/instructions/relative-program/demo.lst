@@ -19,5 +19,5 @@
 Symbol Table
 ============
 
-back    | 0  | 0 | /var/tmp/demo.asm:2  | 2
-forward | 10 | A | /var/tmp/demo.asm:13 | 0
+back    |  0 | 00 | /var/tmp/demo.asm:2  | 2
+forward | 10 | 0A | /var/tmp/demo.asm:13 | 0

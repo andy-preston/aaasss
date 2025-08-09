@@ -55,5 +55,5 @@
 Symbol Table
 ============
 
-back    | 0  | 0  | /var/tmp/demo.asm:2  | 20
-forward | 46 | 2E | /var/tmp/demo.asm:49 | 0
+back    |  0 | 00 | /var/tmp/demo.asm:2  | 20
+forward | 46 | 2E | /var/tmp/demo.asm:49 |  0

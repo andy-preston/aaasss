@@ -22,10 +22,15 @@ export const formattedSymbolTable = (symbolTable: SymbolTable) => {
         )
     );
 
+    const hexadecimal = (value: number): string => {
+        const unpadded = value.toString(16).toUpperCase();
+        return unpadded.padStart(unpadded.length + unpadded.length % 2, "0");
+    };
+
     const stringSymbols = symbols.map(
         symbol => {
             const [decimal, hex] = typeof symbol[1] == "number"
-                ? [symbol[1].toString(10), symbol[1].toString(16).toUpperCase()]
+                ? [symbol[1].toString(10), hexadecimal(symbol[1])]
                 : [symbol[1], ""];
             return [
                 macroLabel(symbol[0]), decimal, hex, symbol[2], `${symbol[3]}`
@@ -42,7 +47,9 @@ export const formattedSymbolTable = (symbolTable: SymbolTable) => {
 
     return stringSymbols.map(
         (symbol) => symbol.map(
-            (column, index) => column.padEnd(width[index]!)
+            (column, index) => [0, 3].includes(index)
+                ? column.padEnd(width[index]!)
+                : column.padStart(width[index]!)
         ).join(" | ").trimEnd()
     );
 };
