@@ -17,9 +17,11 @@
 =================
                       1 // It's OK to poke multiple times in a JavaScript file
                       2 const stuff = [1, 2, 3, 4];
-                      3 poke(...stuff);
+                      3 label("firstPoke");
                       4 poke(...stuff);
-00000A 01 02 03 04    5
+                      5 label("secondPoke");
+                      6 poke(...stuff);
+00000A 01 02 03 04    7
 00000C 01 02 03 04
 
 /var/tmp/demo.asm
@@ -48,4 +50,6 @@
 Symbol Table
 ============
 
-here | 17 | 11 | /var/tmp/demo.asm:13 | 0
+firstPoke  | 10 | 0A | /var/tmp/poke1.js:7  | 0
+here       | 17 | 11 | /var/tmp/demo.asm:13 | 0
+secondPoke | 12 | 0C | /var/tmp/poke1.js:7  | 0

@@ -30,6 +30,7 @@ DirectiveName, [DirectiveFunction,             Parameters,         ]
 "end":         [macros.end,                      none,             ],
 "high":        [highByte,                      [            "word"]],
 "include":     [fileStack.include,             ["string"          ]],
+"label":       [programMemory.label,           ["label"           ]],
 "low":         [lowByte,                       [            "word"]],
 "macro":       [macros.define,                   itsComplicated,   ],
 "origin":      [programMemory.origin,          [          "number"]],

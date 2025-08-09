@@ -5,6 +5,7 @@ import type { SymbolTable } from "../symbol-table/symbol-table.ts";
 
 import { assertionFailure, boringFailure, numericTypeFailure } from "../failure/failures.ts";
 import { DirectiveResult } from "../directives/data-types.ts";
+import { Label } from "../tokens/data-types.ts";
 
 export const programMemory = (
     currentLine: CurrentLine, symbolTable: SymbolTable
@@ -116,9 +117,14 @@ export const programMemory = (
         address = 0;
     };
 
+    const label = (labelName: Label): DirectiveResult => {
+        symbolTable.persistentSymbol(labelName, address);
+        return undefined;
+    };
+
     const lineLabel: PipelineProcess = () => {
         if (currentLine().label) {
-            symbolTable.persistentSymbol(currentLine().label, address);
+            label(currentLine().label);
         }
     };
 
@@ -135,6 +141,7 @@ export const programMemory = (
         "address": () => address,
         "origin": origin,
         "addressStep": addressStep,
+        "label": label,
         "lineAddress": lineAddress,
         "lineLabel": lineLabel,
         "reset": reset
