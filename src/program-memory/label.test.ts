@@ -58,15 +58,27 @@ Deno.test("Labels can only be redefined if their value doesn't change", () => {
     expect(systemUnderTest.symbolTable.use("aLabel")).toEqual(10);
 });
 
-Deno.test("Labels are available to javascript", () => {
+Deno.test("Labels are available to Javascript", () => {
     const systemUnderTest = testSystem();
     systemUnderTest.symbolTable.deviceSymbol("deviceName", "test");
     systemUnderTest.symbolTable.deviceSymbol("programMemoryBytes", 0xff);
-    systemUnderTest.currentLine().label = "aLabel";
     systemUnderTest.programMemory.origin(10);
     expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.currentLine().address).toBe(10);
+    systemUnderTest.currentLine().label = "aLabel";
     systemUnderTest.programMemory.lineLabel();
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
+    expect(systemUnderTest.symbolTable.use("aLabel")).toEqual(10);
+});
+
+Deno.test("We have a directive to create labels in Javascript", () => {
+    const systemUnderTest = testSystem();
+    systemUnderTest.symbolTable.deviceSymbol("deviceName", "test");
+    systemUnderTest.symbolTable.deviceSymbol("programMemoryBytes", 0xff);
+    systemUnderTest.programMemory.origin(10);
+    expect(systemUnderTest.currentLine().failures()).toEqual([]);
+    expect(systemUnderTest.currentLine().address).toBe(10);
+    systemUnderTest.programMemory.label("aLabel");
     expect(systemUnderTest.currentLine().failures()).toEqual([]);
     expect(systemUnderTest.symbolTable.use("aLabel")).toEqual(10);
 });
